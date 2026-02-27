@@ -1,0 +1,51 @@
+/* 管理后台布局样式 */
+.adminMainLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: 0 !important;
+}
+
+/* 内容区域样式 */
+.adminContent {
+  flex: 1;
+  padding: 10px;
+  background: #f7f7f7;
+  overflow-y: auto;
+
+  .contentWrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+}
+
+.siderLayout {
+  min-height: '100vh'
+}
+
+.siderInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.siderInnerCollapsed {
+  justify-content: center;
+}
+
+.sidebar {
+  height: 100vh;
+  transition: all 0.25s ease;
+  background-color: #f7f7f7;
+}
+
+.collapsed {
+  background-color: #f7f7f7;
+  border-right: none;
+}
+
+.rightContent {
+  padding: 24px;
+  background-color: #f7f7f7;
+}
