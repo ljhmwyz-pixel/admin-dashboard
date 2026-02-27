@@ -1,8 +1,8 @@
 import React from 'react'
-import Logo from '../../../public/logo.png'
-import LogoText from '../../../public/logo-text.png'
-import collapsedOpen from '../../../public/collapsed_open.png'
-import collapsedClose from '../../../public/collapsed_close.png'
+import Logo from '@/assets/images/layout/logo.png'
+import LogoText from '@/assets/images/layout/logo-text.png'
+import collapsedOpen from '@/assets/images/layout/collapsed_open.png'
+import collapsedClose from '@/assets/images/layout/collapsed_close.png'
 import styles from './SiderHeader.module.scss'
 
 interface Props {

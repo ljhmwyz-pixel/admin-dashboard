@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { Menu, ConfigProvider } from 'antd'
 import { useNavigate } from 'react-router-dom';
 
-import orgActiveIcon from '../../../public/org_active_icon.png'
-import orgDefaultIcon from '../../../public/org_default_icon.png'
-import roleActiveIcon from '../../../public/role_active_icon.png'
-import roleDefaultIcon from '../../../public/role_default_icon.png'
-import userActiveIcon from '../../../public/user_active_icon.png'
-import userDefaultIcon from '../../../public/user_default_icon.png'
-import menuIconOpen from '../../../public/menu_icon_open.png'
-import menuIconClose from '../../../public/menu_icon_close.png'
+import orgActiveIcon from '@/assets/images/layout/org_active_icon.png'
+import orgDefaultIcon from '@/assets/images/layout/org_default_icon.png'
+import roleActiveIcon from '@/assets/images/layout/role_active_icon.png'
+import roleDefaultIcon from '@/assets/images/layout/role_default_icon.png'
+import userActiveIcon from '@/assets/images/layout/user_active_icon.png'
+import userDefaultIcon from '@/assets/images/layout/user_default_icon.png'
+import menuIconOpen from '@/assets/images/layout/menu_icon_open.png'
+import menuIconClose from '@/assets/images/layout/menu_icon_close.png'
 import styles from './SiderMenu.module.scss'
 
 interface Props {

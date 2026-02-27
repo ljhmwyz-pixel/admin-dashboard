@@ -1,17 +1,14 @@
 import React from 'react'
 
-import { Dropdown } from 'antd'
+import { Dropdown, Menu } from 'antd'
+import type { MenuProps } from 'antd';
 import {
   LogoutOutlined,
   BgColorsOutlined,
   GlobalOutlined
 } from '@ant-design/icons';
-import avatarIcon from '../../../public/avatar_icon.png'
-import moreIcon from '../../../public/more_icon.png'
-import footLanguageIcon from '../../../public/foot_language_icon.png'
-import footUserIcon from '../../../public/foot_user_icon.png'
-import footerArrowRightActiveIcon from '../../../public/footer_arrow_right_active_icon.png'
-import footerArrowRightDefaultIcon from '../../../public/footer_arrow_right_default_icon.png'
+import avatarIcon from '@/assets/images/layout/avatar_icon.png'
+import moreIcon from '@/assets/images/layout/more_icon.png'
 import styles from './SiderFooter.module.scss'
 
 interface Props {
@@ -20,43 +17,29 @@ interface Props {
 
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
 
-  const userMenuItems = [
+  const userMenuItems: MenuProps['items'] = [
     {
-      key: 'theme',
-      label: (
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: 140 }}>
-          <span>
-            <BgColorsOutlined /> Theme
-          </span>
-          {/* <Switch
-            size="small"
-            checked={mode === 'dark'}
-            onChange={() => dispatch(toggleTheme())}
-          /> */}
-        </div>
-      ),
+      key: '1',
+      label: '简体中文',
     },
     {
-      key: 'lang',
-      label: (
-        <div>
-          <GlobalOutlined /> Language
-          {/* <div style={{ marginTop: 8 }}>
-            <div onClick={() => changeLang('en')}>English</div>
-            <div onClick={() => changeLang('zh')}>中文</div>
-          </div> */}
-        </div>
-      ),
+      key: '2',
+      label: 'English',
     },
     {
-      type: 'divider',
+      key: '3',
+      label: 'Deutsch',
     },
     {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: 'Logout',
+      key: '4',
+      label: 'Italiano',
+    },
+    {
+      key: '5',
+      label: '日本语',
     },
   ]
+
   return (
     <div
       className={`${styles.sideMenuContainer} ${collapsed ? styles.sideMenuContainerCollapsed : ''}`}
@@ -64,22 +47,43 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       {/* 展开后的内容 */}
       {!collapsed && (
         <>
-          {/* 先放扩展内容 */}
+          {/* 扩展内容 */}
           <div className={styles.expandArea}>
             <div className={styles.extraItem}>
               <div className={styles.leftInfo}>
-                <img src={footUserIcon} className={styles.leftIcon} alt="footUserIcon" />
-                <span className={styles.extraItemText}>Pylontech</span>
+                <div className={`${styles.leftIcon} ${styles.leftIcon1}`} />
+                <span className={`${styles.extraItemText} ${styles.extraItemText1}`}>Pylontech</span>
               </div>
-              <img src={footerArrowRightDefaultIcon} className={styles.rightArrowIcon} alt="footerArrowRightDefaultIcon" />
-            </div>
-            <div className={styles.extraItem}>
-              <div className={styles.leftInfo}>
-                <img src={footLanguageIcon} className={styles.leftIcon} alt="footLanguageIcon" />
-                <span className={styles.extraItemText}>English</span>
+              <div className={styles.arrowContainer}>
+                <div className={styles.rightArrowIcon} />
               </div>
-              <img src={footerArrowRightActiveIcon} className={styles.rightArrowIcon} alt="footerArrowRightDefaultIcon" />
             </div>
+            <Dropdown
+              // menu={{ items:  }}
+              trigger={['hover']}
+              placement="bottomRight"
+              align={{
+                points: ['bl', 'tl'],
+                offset: [186, 74],
+              }}
+              popupRender={(menu) => (
+                <div className={styles.dropdownStyle}>
+                  {userMenuItems.map((item:any)=>{
+                    return <div key={item?.key} className={styles.dropdownItem}>{item.label}</div>
+                  })}
+                </div>
+              )}
+            >
+              <div className={styles.extraItem}>
+                <div className={styles.leftInfo}>
+                  <div className={`${styles.leftIcon} ${styles.leftIcon2}`} />
+                  <span className={`${styles.extraItemText} ${styles.extraItemText2}`}>English</span>
+                </div>
+                <div className={styles.arrowContainer}>
+                  <div className={styles.rightArrowIcon}></div>
+                </div>
+              </div>
+            </Dropdown>
           </div>
 
           {/* 最底部固定显示的 */}
@@ -100,6 +104,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       {collapsed && <div className={styles.userContainerCollapsed}>
         <img src={avatarIcon} className={styles.avatar} alt='avatar' />
       </div>}
+      {/* 第二层级弹出框 */}
+      {/* <div className={styles.dropdownContainer}>12312</div> */}
     </div>
   )
 }
