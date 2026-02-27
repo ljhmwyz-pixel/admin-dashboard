@@ -213,5 +213,9 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         align-items: center;
         justify-content: center;
         padding: 0 24px;
+
+        &:hover {
+            color: #33C2C8;
+        }
     }
 }
