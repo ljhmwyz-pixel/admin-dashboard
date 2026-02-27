@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, ConfigProvider } from 'antd'
+import { Menu, ConfigProvider, type MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom';
 
 import orgActiveIcon from '@/assets/images/layout/org_active_icon.png'
@@ -62,6 +62,11 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     };
   }
 
+  const languageItems: MenuProps['items'] = [
+    { key: '1', label: 'Organization List' },
+    { key: '2', label: 'Organization Type' },
+  ]
+
   return (
     <ConfigProvider
       theme={{
@@ -76,6 +81,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       }}
     >
       <Menu
+        // theme={'dark'} 
+        theme={'light'}
         mode="inline"
         items={menuItems}
         onSelect={({ key }) => setSelectedKeys([key])}
@@ -83,6 +90,17 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         className={`${styles.menu} ${collapsed ? styles.collapsedMenu : ''}`}
         inlineIndent={16} // padding-left
         onClick={handleMenuClick}
+        popupRender={() => (
+          <div
+            className={styles.subMenuCollapsedStyle}
+          >
+            {languageItems?.map((item: any) => (
+              <div key={item.key} className={styles.subMenuItem}>
+                {item.label}
+              </div>
+            ))}
+          </div>
+        )}
       />
     </ConfigProvider>
   )

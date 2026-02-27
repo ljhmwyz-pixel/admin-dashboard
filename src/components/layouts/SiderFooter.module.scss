@@ -29,6 +29,7 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
             display: flex;
             flex-direction: column;
             gap: 6px;
+            margin-left: 10px;
 
             .userName {
                 font-weight: 500;
@@ -50,7 +51,6 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        margin-right: 10px;
     }
 
     .more {
