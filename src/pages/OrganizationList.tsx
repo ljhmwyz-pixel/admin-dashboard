@@ -6,7 +6,7 @@ import OrganizationTree from '../components/OrganizationTree/OrganizationTree';
 import './OrganizationList.css';
 
 const OrganizationList: React.FC = () => {
-  const [selectedKey, setSelectedKey] = useState<string>('p001');
+  const [selectedKey, setSelectedKey] = useState<string>('');
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
 
   // 获取当前选中的组织详情
@@ -169,7 +169,7 @@ const OrganizationList: React.FC = () => {
     <div className="organization-list-page">
       <Splitter style={{ height: '100%' }}>
         {/* 左侧面板 - 组织树 */}
-        <Splitter.Panel>
+        <Splitter.Panel  defaultSize="40%" min="20%" max="70%">
           <div className="organization-list-panel">
             <OrganizationTree
               onSelect={(key) => {

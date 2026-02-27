@@ -1,7 +1,7 @@
 /* OrganizationList 组件样式 */
 
 .organization-list-page {
-  height: calc(100vh - 64px);
+  height: 100%;
   overflow: hidden;
 }
 
@@ -49,10 +49,6 @@
 
 .resize-handle:hover div {
   background-color: #1890ff !important;
-}
-
-.selected-row {
-  background-color: #e6f7ff !important;
 }
 
 .organization-search-area {

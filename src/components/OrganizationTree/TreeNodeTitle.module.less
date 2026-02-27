@@ -1,0 +1,23 @@
+.treeNodeTitleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 34px;
+  margin: 0;
+  
+  .treeNodeTitle {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 20px;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: fit-content;
+  }
+}
