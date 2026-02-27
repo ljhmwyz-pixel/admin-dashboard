@@ -44,7 +44,6 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
                 color: rgba(25, 27, 31, 0.6);
             }
         }
-
     }
 
     .avatar {
@@ -59,7 +58,6 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         height: 16px;
         cursor: pointer;
     }
-
 }
 
 .sideMenuContainerCollapsed {
@@ -71,6 +69,12 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
     transition: all 0.25s ease;
 }
 
+.expanded {
+    max-height: 200px;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px rgba(25, 27, 31, 0.06);
+}
+
 .expandArea {
     display: flex;
     flex-direction: column;
@@ -80,23 +84,22 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         height: 40px;
         display: flex;
         align-items: center;
-        padding: 8px;
         cursor: pointer;
         justify-content: space-between;
-        // 抵消外层padding
         margin-left: -6px;
         margin-right: -6px;
         padding: 16px;
+        transition: all 0.15s ease;
 
-        &:hover {
+        /* ✅ hover + active 合并 */
+        &:hover,
+        &.extraItemActive {
             background: rgba(51, 194, 200, 0.06);
-            transition: all 0.1s ease;
             border-radius: 4px;
         }
 
         .leftInfo {
             display: flex;
-            flex-direction: row;
             align-items: center;
 
             .extraItemText {
@@ -106,39 +109,12 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
                 color: #191B1F;
                 transition: color 0.3s ease;
             }
-
         }
-
     }
 }
 
-.expanded {
-  max-height: 200px;
-  background-color: #fff;
-  box-shadow: 0px 2px 4px rgba(25, 27, 31, 0.06);
-}
+/* ========== 图标状态合并 ========== */
 
-
-.bottomRow {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(25, 27, 31, 0.06);
-    // 抵消外层padding
-    margin-left: -10px;
-    margin-right: -10px;
-    padding: 10px 10px 0 10px;
-}
-
-.userContainerCollapsed {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-// 左侧图标
 .leftIcon {
     width: 16px;
     height: 16px;
@@ -152,29 +128,36 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
     background-image: url(#{$footUserDefaultIcon});
 }
 
-.extraItem:hover .leftIcon1 {
-    background-image: url(#{$footUserActiveIcon});
-}
-
 .leftIcon2 {
     background-image: url(#{$footLanguageDefaultIcon});
 }
 
-.extraItem:hover .leftIcon2 {
+/* 用户图标 active */
+.extraItem:hover .leftIcon1,
+.extraItem.extraItemActive .leftIcon1 {
+    background-image: url(#{$footUserActiveIcon});
+}
+
+/* 语言图标 active */
+.extraItem:hover .leftIcon2,
+.extraItem.extraItemActive .leftIcon2 {
     background-image: url(#{$footLanguageActiveIcon});
 }
 
-// 文字
+/* ========== 文字高亮 ========== */
+
 .extraItem:hover .extraItemText1,
-.extraItem:hover .extraItemText2 {
+.extraItem:hover .extraItemText2,
+.extraItem.extraItemActive .extraItemText1,
+.extraItem.extraItemActive .extraItemText2 {
     color: #33C2C8 !important;
 }
 
-// 右侧箭头
+/* ========== 右侧箭头 ========== */
+
 .arrowContainer {
     display: flex;
     align-items: center;
-    position: relative;
 }
 
 .rightArrowIcon {
@@ -186,9 +169,31 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
     transition: background-image 0.3s ease;
 }
 
-.extraItem:hover .rightArrowIcon {
+.extraItem:hover .rightArrowIcon,
+.extraItem.extraItemActive .rightArrowIcon {
     background-image: url(#{$footerArrowRightActiveIcon});
 }
+
+/* ========== 底部 ========== */
+
+.bottomRow {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(25, 27, 31, 0.06);
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 10px 10px 0 10px;
+}
+
+.userContainerCollapsed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========== dropdown ========== */
 
 .dropdownStyle {
     background-color: #fff;
