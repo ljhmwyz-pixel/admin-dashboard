@@ -66,9 +66,9 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                 points: ['bl', 'tl'],
                 offset: [186, 74],
               }}
-              popupRender={(menu) => (
+              popupRender={() => (
                 <div className={styles.dropdownStyle}>
-                  {userMenuItems.map((item:any)=>{
+                  {userMenuItems.map((item: any) => {
                     return <div key={item?.key} className={styles.dropdownItem}>{item.label}</div>
                   })}
                 </div>
