@@ -1,0 +1,14 @@
+# pnpm配置文件
+shamefully-hoist=true
+public-hoist-pattern[]=*@ant-design/icons*
+public-hoist-pattern[]=*react*
+public-hoist-pattern[]=*react-dom*
+public-hoist-pattern[]=*@types/react*
+public-hoist-pattern[]=*@types/react-dom*
+
+# 优化安装速度
+prefer-frozen-lockfile=false
+
+# 网络配置
+registry=https://registry.npmmirror.com/
+strict-peer-dependencies=false
