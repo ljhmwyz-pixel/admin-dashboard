@@ -1,12 +1,7 @@
 import React from 'react'
 
-import { Dropdown, Menu } from 'antd'
+import { Dropdown } from 'antd'
 import type { MenuProps } from 'antd';
-import {
-  LogoutOutlined,
-  BgColorsOutlined,
-  GlobalOutlined
-} from '@ant-design/icons';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png'
 import moreIcon from '@/assets/images/layout/more_icon.png'
 import styles from './SiderFooter.module.scss'

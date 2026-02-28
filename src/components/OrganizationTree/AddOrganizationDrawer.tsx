@@ -9,25 +9,7 @@ interface AddOrganizationProps {
   parentNode?: TreeNodeData; // 父节点信息，用于确定添加位置
 }
 
-interface OrganizationFormData {
-  organizationName: string;
-  organizationType: string;
-  organizationAddress: string;
-  postalCode: string;
-  emailAddress: string;
-  username: string;
-  phoneNumber: string;
-  comment?: string;
-  parentId?: string | null;
-  parentTitle?: string | null;
-}
-
-interface TreeNodeData {
-  key: string;
-  title: string;
-  children?: TreeNodeData[];
-  [key: string]: any;
-}
+import type { TreeNodeData, OrganizationFormData } from '../../types/organization';
 
 const { Option } = Select;
 

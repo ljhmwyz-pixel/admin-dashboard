@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AntTree, AntInput } from '../lib/antd-imports';
 import { searchOrganizations } from '../../services/organizationService';
 import { generateMassiveOrganizationTreeData } from '../../mocks/organizationData';
+import type { TreeNodeData } from '../../types/organization';
 
 import TreeNodeTitle from './TreeNodeTitle';
 import AddOrganizationDrawer from './AddOrganizationDrawer';
@@ -11,13 +12,6 @@ import styles from './OrganizationTree.module.less';
 interface OrganizationTreeProps {
     onSelect?: (selectedKey: string) => void;
     selectedKey?: string;
-}
-
-type TreeNodeData = {
-  key: string;
-  title: string;
-  children?: TreeNodeData[];
-  [key: string]: any;
 };
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
