@@ -3,5 +3,9 @@
   "lang.english": "英語",
   "lang.german": "ドイツ語",
   "lang.italian": "イタリア語",
-  "lang.japanese": "日本語"
+  "lang.japanese": "日本語",
+  "layout.pylontech": "Pylontech",
+  "layout.userName": "Leyu.song",
+  "layout.admin": "管理者",
+  "sidebar.dashboard": "ダッシュボード"
 }

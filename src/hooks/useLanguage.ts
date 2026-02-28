@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type SimpleLanguageKey = 'zh-CN' | 'en-US' | 'de-DE' | 'it-IT' | 'ja-JP';
+import type { LanguageKey } from '../i18n/types';
 
 interface SimpleUseLanguageReturn {
-  currentLanguage: SimpleLanguageKey;
-  supportedLanguages: Array<{ key: SimpleLanguageKey; name: string; flag: string }>;
+  currentLanguage: LanguageKey;
+  supportedLanguages: Array<{ key: LanguageKey; name: string; flag: string }>;
   isLoading: boolean;
   error: string | null;
-  changeLanguage: (lng: SimpleLanguageKey) => Promise<void>;
+  changeLanguage: (lng: LanguageKey) => Promise<void>;
   t: (key: string, options?: Record<string, any>) => string;
 }
 
@@ -19,12 +19,12 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentLanguage, setCurrentLanguage] = useState<SimpleLanguageKey>('zh-CN');
+  const [currentLanguage, setCurrentLanguage] = useState<LanguageKey>('zh-CN');
 
   // 监听语言变化
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
-      setCurrentLanguage(lng as SimpleLanguageKey);
+      setCurrentLanguage(lng as LanguageKey);
     };
 
     // 监听i18n语言变化事件
@@ -33,7 +33,7 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
     }
 
     // 设置初始语言
-    setCurrentLanguage((i18n.language || 'zh-CN') as SimpleLanguageKey);
+    setCurrentLanguage((i18n.language || 'zh-CN') as LanguageKey);
 
     // 清理监听器
     return () => {
@@ -46,7 +46,7 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
   /**
    * 切换语言
    */
-  const changeLanguage = async (lng: SimpleLanguageKey): Promise<void> => {
+  const changeLanguage = async (lng: LanguageKey): Promise<void> => {
     if (lng === currentLanguage) {
       return;
     }

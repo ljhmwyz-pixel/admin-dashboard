@@ -6,5 +6,6 @@
   "lang.japanese": "Japanese",
   "layout.pylontech": "Pylontech",
   "layout.userName": "Leyu.song",
-  "layout.admin": "Admin"
+  "layout.admin": "Admin",
+  "sidebar.dashboard": "Dashboard"
 }
