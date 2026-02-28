@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
-import { useTranslation } from 'react-i18next';
 
 import { ImageIcons } from '@/assets/images/layout';
+
+import { useLanguage } from '@/hooks/useLanguage';
 
 import styles from './SiderFooter.module.scss';
 
@@ -14,7 +15,7 @@ interface Props {
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   // 控制底部整体展开
   const [expanded, setExpanded] = useState(false);
-  const { t } = useTranslation();
+  const { t, currentLanguage, changeLanguage } = useLanguage();
 
   // 控制哪个菜单激活
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -26,12 +27,20 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   ];
 
   const languageItems: MenuProps['items'] = [
-    { key: '1', label: '简体中文' },
-    { key: '2', label: 'English' },
-    { key: '3', label: 'Deutsch' },
-    { key: '4', label: 'Italiano' },
-    { key: '5', label: '日本语' },
+    { key: 'zh-CN', label: t('lang.chinese') },
+    { key: 'en-US', label: t('lang.english') },
+    { key: 'de-DE', label: t('lang.german') },
+    { key: 'it-IT', label: t('lang.italian') },
+    { key: 'ja-JP', label: t('lang.japanese') },
   ];
+
+  const languageMap = {
+    'zh-CN': t('lang.chinese'),
+    'en-US': t('lang.english'),
+    'de-DE': t('lang.german'),
+    'it-IT': t('lang.italian'),
+    'ja-JP': t('lang.japanese'),
+  };
 
   return (
     <div
@@ -104,7 +113,11 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                   onMouseLeave={() => setActiveMenu(null)}
                 >
                   {languageItems?.map((item: any) => (
-                    <div key={item.key} className={styles.dropdownItem}>
+                    <div
+                      key={item.key}
+                      className={styles.dropdownItem}
+                      onClick={() => changeLanguage(item.key)}
+                    >
                       {item.label}
                     </div>
                   ))}
@@ -121,7 +134,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                 <div className={styles.leftInfo}>
                   <div className={`${styles.leftIcon} ${styles.leftIcon2}`} />
                   <span className={`${styles.extraItemText} ${styles.extraItemText2}`}>
-                    English
+                    {languageMap[currentLanguage]}
                   </span>
                 </div>
                 <div className={styles.arrowContainer}>
@@ -136,8 +149,12 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             <div className={styles.userContainer}>
               <img src={ImageIcons.footer.avatarIcon} className={styles.avatar} alt="avatar" />
               <div className={styles.userInfoContainer}>
-                <div className={styles.userName}>{t('layout.userName', 'Leyu.song')}</div>
-                <div className={styles.roleName}>{t('layout.admin', 'Admin')}</div>
+                <div className={styles.userName}>
+                  {t('layout.userName', { defaultValue: 'Leyu.song' })}
+                </div>
+                <div className={styles.roleName}>
+                  {t('layout.admin', { defaultValue: 'Admin' })}
+                </div>
               </div>
             </div>
             <img src={ImageIcons.footer.moreIcon} className={styles.more} alt="more" />
