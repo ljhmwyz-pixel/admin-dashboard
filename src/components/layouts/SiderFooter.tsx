@@ -4,6 +4,7 @@ import { Dropdown } from 'antd';
 
 import { ImageIcons } from '@/assets/images/layout';
 
+import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
 import { useLanguage } from '@/hooks/useLanguage';
 
 import styles from './SiderFooter.module.scss';
@@ -142,6 +143,13 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                 </div>
               </div>
             </Dropdown>
+
+            {/* 主题切换器 */}
+            <div className={styles.extraItem}>
+              <div className={styles.leftInfo}>
+                <ThemeSwitcher size="small" />
+              </div>
+            </div>
           </div>
 
           {/* 底部用户信息 */}
