@@ -1,27 +1,28 @@
-import React, { useState } from 'react'
-import { Dropdown } from 'antd'
-import type { MenuProps } from 'antd'
+import type { MenuProps } from 'antd';
+import { Dropdown } from 'antd';
+import React, { useState } from 'react';
 
-import avatarIcon from '@/assets/images/layout/avatar_icon.png'
-import moreIcon from '@/assets/images/layout/more_icon.png'
-import styles from './SiderFooter.module.scss'
+import avatarIcon from '@/assets/images/layout/avatar_icon.png';
+import moreIcon from '@/assets/images/layout/more_icon.png';
+
+import styles from './SiderFooter.module.scss';
 
 interface Props {
-  collapsed: boolean
+  collapsed: boolean;
 }
 
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   // 控制底部整体展开
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
 
   // 控制哪个菜单激活
-  const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const userMenuItems: MenuProps['items'] = [
     { key: '6', label: '6666' },
     { key: '7', label: '777' },
     { key: '8', label: '8888' },
-  ]
+  ];
 
   const languageItems: MenuProps['items'] = [
     { key: '1', label: '简体中文' },
@@ -29,7 +30,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     { key: '3', label: 'Deutsch' },
     { key: '4', label: 'Italiano' },
     { key: '5', label: '日本语' },
-  ]
+  ];
 
   return (
     <div
@@ -40,14 +41,13 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       `}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => {
-        setExpanded(false)
-        setActiveMenu(null)
+        setExpanded(false);
+        setActiveMenu(null);
       }}
     >
       {!collapsed && (
         <>
           <div className={styles.expandArea}>
-
             {/* 用户菜单 */}
             <Dropdown
               trigger={['hover']}
@@ -69,9 +69,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                   ))}
                 </div>
               )}
-              onOpenChange={(open) =>
-                setActiveMenu(open ? 'user' : null)
-              }
+              onOpenChange={(open) => setActiveMenu(open ? 'user' : null)}
             >
               <div
                 className={`${styles.extraItem} ${
@@ -80,12 +78,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                 onMouseEnter={() => setActiveMenu('user')}
               >
                 <div className={styles.leftInfo}>
-                  <div
-                    className={`${styles.leftIcon} ${styles.leftIcon1}`}
-                  />
-                  <span
-                    className={`${styles.extraItemText} ${styles.extraItemText1}`}
-                  >
+                  <div className={`${styles.leftIcon} ${styles.leftIcon1}`} />
+                  <span className={`${styles.extraItemText} ${styles.extraItemText1}`}>
                     Pylontech
                   </span>
                 </div>
@@ -116,25 +110,17 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                   ))}
                 </div>
               )}
-              onOpenChange={(open) =>
-                setActiveMenu(open ? 'language' : null)
-              }
+              onOpenChange={(open) => setActiveMenu(open ? 'language' : null)}
             >
               <div
                 className={`${styles.extraItem} ${
-                  activeMenu === 'language'
-                    ? styles.extraItemActive
-                    : ''
+                  activeMenu === 'language' ? styles.extraItemActive : ''
                 }`}
                 onMouseEnter={() => setActiveMenu('language')}
               >
                 <div className={styles.leftInfo}>
-                  <div
-                    className={`${styles.leftIcon} ${styles.leftIcon2}`}
-                  />
-                  <span
-                    className={`${styles.extraItemText} ${styles.extraItemText2}`}
-                  >
+                  <div className={`${styles.leftIcon} ${styles.leftIcon2}`} />
+                  <span className={`${styles.extraItemText} ${styles.extraItemText2}`}>
                     English
                   </span>
                 </div>
@@ -143,7 +129,6 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                 </div>
               </div>
             </Dropdown>
-
           </div>
 
           {/* 底部用户信息 */}
@@ -166,7 +151,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default SiderFooter
+export default SiderFooter;

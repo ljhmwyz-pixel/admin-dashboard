@@ -1,6 +1,8 @@
-import React from 'react';
 import type { SelectProps as AntSelectProps } from 'antd';
+import React from 'react';
+
 import { AntSelect } from '../antd-imports';
+
 import './Select.css';
 
 // 扩展的选择器属性接口
@@ -27,18 +29,12 @@ const Select: React.FC<SelectProps> = ({
   ...restProps
 }) => {
   // 构建自定义类名
-  const customClassName = [
-    'custom-select',
-    `custom-select--${theme}`,
-    className
-  ].filter(Boolean).join(' ');
+  const customClassName = ['custom-select', `custom-select--${theme}`, className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <AntSelect
-      className={customClassName}
-      showSearch={showSearch}
-      {...restProps}
-    >
+    <AntSelect className={customClassName} showSearch={showSearch} {...restProps}>
       {children}
     </AntSelect>
   );

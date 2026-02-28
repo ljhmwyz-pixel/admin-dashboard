@@ -1,6 +1,8 @@
-import React from 'react';
 import type { ButtonProps as AntButtonProps } from 'antd';
+import React from 'react';
+
 import { AntButton } from '../antd-imports';
+
 import './Button.css';
 
 // 扩展的按钮属性接口
@@ -42,16 +44,13 @@ const Button: React.FC<ButtonProps> = ({
     `custom-button--${size}`,
     rounded ? 'custom-button--rounded' : '',
     block ? 'custom-button--block' : '',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <AntButton
-      className={customClassName}
-      size={size}
-      block={block}
-      {...restProps}
-    >
+    <AntButton className={customClassName} size={size} block={block} {...restProps}>
       {children}
     </AntButton>
   );

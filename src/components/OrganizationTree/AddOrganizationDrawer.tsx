@@ -1,6 +1,6 @@
-import React from 'react';
-import { Drawer, Form, Input, Select, Button, message, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Drawer, Form, Input, message, Select, Space } from 'antd';
+import React from 'react';
 
 interface AddOrganizationProps {
   visible: boolean;
@@ -9,33 +9,34 @@ interface AddOrganizationProps {
   parentNode?: TreeNodeData; // 父节点信息，用于确定添加位置
 }
 
-import type { TreeNodeData, OrganizationFormData } from '../../types/organization';
+import type { OrganizationFormData, TreeNodeData } from '../../types/organization';
 
 const { Option } = Select;
 
-const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({ 
-  visible, 
-  onClose, 
+const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
+  visible,
+  onClose,
   onAdd,
-  parentNode 
+  parentNode,
 }) => {
   const [form] = Form.useForm();
-  
+
   const handleSubmit = async (values: OrganizationFormData) => {
     try {
       // 验证必填字段
       if (!values.organizationName || !values.organizationType) {
         message.error('请填写组织名称和组织类型');
+
         return;
       }
-      
+
       // 添加父节点信息到提交数据中
       const submitData = {
         ...values,
         parentId: parentNode?.key || null,
-        parentTitle: parentNode?.title || null
+        parentTitle: parentNode?.title || null,
       };
-      
+
       onAdd(submitData);
       message.success('组织添加成功！');
       form.resetFields();
@@ -81,7 +82,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         onFinish={handleSubmit}
         initialValues={{
           organizationType: 'installer',
-          ...(parentNode && { parentId: parentNode.key })
+          ...(parentNode && { parentId: parentNode.key }),
         }}
       >
         {/* 组织名称 */}
@@ -130,7 +131,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
           name="emailAddress"
           rules={[
             { required: true, message: '请输入邮箱地址' },
-            { type: 'email', message: '请输入有效的邮箱地址' }
+            { type: 'email', message: '请输入有效的邮箱地址' },
           ]}
         >
           <Input placeholder="请输入邮箱地址" />
@@ -155,10 +156,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         </Form.Item>
 
         {/* 备注 */}
-        <Form.Item
-          label="备注"
-          name="comment"
-        >
+        <Form.Item label="备注" name="comment">
           <Input.TextArea rows={3} placeholder="请输入备注信息" />
         </Form.Item>
       </Form>

@@ -14,6 +14,7 @@ const ROOT_FONT_SIZE = 16;
  */
 export const pxToRem = (px: number): string => {
   const rem = px / ROOT_FONT_SIZE;
+
   return `${rem}rem`;
 };
 
@@ -23,7 +24,7 @@ export const pxToRem = (px: number): string => {
  * @returns REM字符串数组
  */
 export const pxToRemBatch = (...pxValues: number[]): string[] => {
-  return pxValues.map(px => pxToRem(px));
+  return pxValues.map((px) => pxToRem(px));
 };
 
 /**
@@ -39,10 +40,10 @@ export const setupREM = () => {
 
   // 初始化
   handleResize();
-  
+
   // 监听窗口变化
   window.addEventListener('resize', handleResize);
-  
+
   // 返回清理函数
   return () => {
     window.removeEventListener('resize', handleResize);

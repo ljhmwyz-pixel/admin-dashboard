@@ -1,6 +1,8 @@
-import React from 'react';
 import type { LayoutProps as AntLayoutProps } from 'antd';
+import React from 'react';
+
 import { AntLayout } from '../antd-imports';
+
 import './Layout.css';
 
 // 扩展的布局属性接口
@@ -31,14 +33,13 @@ const Layout: React.FC<LayoutProps> = ({
     'custom-layout',
     `custom-layout--${theme}`,
     fixedSider ? 'custom-layout--fixed-sider' : '',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <AntLayout
-      className={customClassName}
-      {...restProps}
-    >
+    <AntLayout className={customClassName} {...restProps}>
       {children}
     </AntLayout>
   );

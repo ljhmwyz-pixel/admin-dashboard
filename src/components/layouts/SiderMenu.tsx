@@ -1,34 +1,35 @@
-import React, { useState } from 'react'
-import { Menu, ConfigProvider, Popover } from 'antd'
-import type { MenuProps, PopoverProps } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import type { MenuProps, PopoverProps } from 'antd';
+import { ConfigProvider, Menu, Popover } from 'antd';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import orgActiveIcon from '@/assets/images/layout/org_active_icon.png'
-import orgDefaultIcon from '@/assets/images/layout/org_default_icon.png'
-import roleActiveIcon from '@/assets/images/layout/role_active_icon.png'
-import roleDefaultIcon from '@/assets/images/layout/role_default_icon.png'
-import userActiveIcon from '@/assets/images/layout/user_active_icon.png'
-import userDefaultIcon from '@/assets/images/layout/user_default_icon.png'
-import menuIconOpen from '@/assets/images/layout/menu_icon_open.png'
-import menuIconClose from '@/assets/images/layout/menu_icon_close.png'
-import styles from './SiderMenu.module.scss'
+import menuIconClose from '@/assets/images/layout/menu_icon_close.png';
+import menuIconOpen from '@/assets/images/layout/menu_icon_open.png';
+import orgActiveIcon from '@/assets/images/layout/org_active_icon.png';
+import orgDefaultIcon from '@/assets/images/layout/org_default_icon.png';
+import roleActiveIcon from '@/assets/images/layout/role_active_icon.png';
+import roleDefaultIcon from '@/assets/images/layout/role_default_icon.png';
+import userActiveIcon from '@/assets/images/layout/user_active_icon.png';
+import userDefaultIcon from '@/assets/images/layout/user_default_icon.png';
+
+import styles from './SiderMenu.module.scss';
 
 interface Props {
-  collapsed: boolean
+  collapsed: boolean;
 }
 
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
-  const navigate = useNavigate()
-  const [selectedKeys, setSelectedKeys] = useState<string[]>(['orglist'])
+  const navigate = useNavigate();
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(['orglist']);
 
   const handleMenuClick = (key: string) => {
-    setSelectedKeys([key])
+    setSelectedKeys([key]);
 
-    if (key === 'orglist') navigate('/organization/list')
-    if (key === 'orgtype') navigate('/organization/type')
-    if (key === 'role') navigate('/role')
-    if (key === 'user') navigate('/user')
-  }
+    if (key === 'orglist') navigate('/organization/list');
+    if (key === 'orgtype') navigate('/organization/type');
+    if (key === 'role') navigate('/role');
+    if (key === 'user') navigate('/user');
+  };
 
   const menuItems: MenuProps['items'] = [
     {
@@ -38,8 +39,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         <img
           src={
             selectedKeys.includes('org') ||
-              selectedKeys.includes('orglist') ||
-              selectedKeys.includes('orgtype')
+            selectedKeys.includes('orglist') ||
+            selectedKeys.includes('orgtype')
               ? orgActiveIcon
               : orgDefaultIcon
           }
@@ -77,7 +78,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         />
       ),
     },
-  ]
+  ];
 
   /* =======================
      collapsed 自定义渲染
@@ -85,7 +86,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
 
   const renderCollapsedMenu = () => {
     return menuItems?.map((item: any) => {
-      const hasChildren = item.children?.length > 0
+      const hasChildren = item.children?.length > 0;
 
       const stylesFn: PopoverProps['styles'] = (info) => {
         if (!info.props.arrow) {
@@ -97,13 +98,13 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             },
           } satisfies PopoverProps['styles'];
         }
+
         return {};
       };
       const isActive =
         selectedKeys.includes(item.key) ||
-        item.children?.some((sub: any) =>
-          selectedKeys.includes(sub.key)
-        )
+        item.children?.some((sub: any) => selectedKeys.includes(sub.key));
+
       return (
         <Popover
           key={item.key}
@@ -127,27 +128,21 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
                   </div>
                 ))
               ) : (
-                <div
-                  className={styles.subMenuItem}
-                  onClick={() => handleMenuClick(item.key)}
-                >
+                <div className={styles.subMenuItem} onClick={() => handleMenuClick(item.key)}>
                   {item.label}
                 </div>
               )}
             </div>
           }
         >
-          <div className={`${styles.iconOnlyItem} ${isActive ? styles.activeIconOnlyItem : ''
-            }`}>
+          <div className={`${styles.iconOnlyItem} ${isActive ? styles.activeIconOnlyItem : ''}`}>
             {item.icon}
-            {isActive && (
-              <div className={styles.activeBar} />
-            )}
+            {isActive && <div className={styles.activeBar} />}
           </div>
         </Popover>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <ConfigProvider
@@ -167,21 +162,16 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
           selectedKeys={selectedKeys}
           onClick={({ key }) => handleMenuClick(key)}
           expandIcon={({ isOpen }) => (
-            <img
-              src={isOpen ? menuIconOpen : menuIconClose}
-              className={styles.expandIcon}
-            />
+            <img src={isOpen ? menuIconOpen : menuIconClose} className={styles.expandIcon} />
           )}
           className={styles.menu}
           inlineIndent={16}
         />
       ) : (
-        <div className={styles.collapsedWrapper}>
-          {renderCollapsedMenu()}
-        </div>
+        <div className={styles.collapsedWrapper}>{renderCollapsedMenu()}</div>
       )}
     </ConfigProvider>
-  )
-}
+  );
+};
 
-export default SiderFooter
+export default SiderFooter;

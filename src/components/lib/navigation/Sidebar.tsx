@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
-import type { MenuProps } from 'antd';
-import { 
-  DashboardOutlined,
-  UserOutlined,
-  SettingOutlined,
-  FileTextOutlined,
-  BarChartOutlined,
-  TeamOutlined,
-  ShopOutlined,
+import {
   AppstoreOutlined,
+  BarChartOutlined,
+  DashboardOutlined,
+  FileTextOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  SettingOutlined,
+  ShopOutlined,
+  TeamOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import React, { useState } from 'react';
 
 // 图标映射
 const iconMap: Record<string, React.ReactNode> = {
-  'dashboard': <DashboardOutlined />,
-  'users': <UserOutlined />,
-  'products': <ShopOutlined />,
-  'orders': <FileTextOutlined />,
-  'analytics': <BarChartOutlined />,
-  'marketing': <TeamOutlined />,
-  'content': <AppstoreOutlined />,
-  'system': <SettingOutlined />,
-  'appstore': <AppstoreOutlined />,
-  'team': <TeamOutlined />,
-  'user': <UserOutlined />
+  dashboard: <DashboardOutlined />,
+  users: <UserOutlined />,
+  products: <ShopOutlined />,
+  orders: <FileTextOutlined />,
+  analytics: <BarChartOutlined />,
+  marketing: <TeamOutlined />,
+  content: <AppstoreOutlined />,
+  system: <SettingOutlined />,
+  appstore: <AppstoreOutlined />,
+  team: <TeamOutlined />,
+  user: <UserOutlined />,
 };
-import { AntMenu, AntLayout } from '../antd-imports';
+import { AntLayout, AntMenu } from '../antd-imports';
 import { AntAvatar } from '../antd-imports';
+
 import './Sidebar.css';
 
 // 侧边栏菜单项类型定义
@@ -78,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   collapsed = false,
   onCollapse,
   onItemClick,
-  className = ''
+  className = '',
 }) => {
   const [openKeys, setOpenKeys] = useState<string[]>(defaultOpenKeys);
   const [currentSelectedKeys, setCurrentSelectedKeys] = useState<string[]>(defaultSelectedKeys);
@@ -89,13 +90,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       key: 'dashboard',
       icon: <DashboardOutlined />,
       label: '仪表板',
-      path: '/dashboard'
+      path: '/dashboard',
     },
     {
       key: 'users',
       icon: <UserOutlined />,
       label: '用户管理',
-      path: '/users'
+      path: '/users',
     },
     {
       key: 'products',
@@ -105,31 +106,31 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           key: 'product-list',
           label: '商品列表',
-          path: '/products/list'
+          path: '/products/list',
         },
         {
           key: 'product-category',
           label: '商品分类',
-          path: '/products/category'
+          path: '/products/category',
         },
         {
           key: 'product-brand',
           label: '品牌管理',
-          path: '/products/brand'
-        }
-      ]
+          path: '/products/brand',
+        },
+      ],
     },
     {
       key: 'orders',
       icon: <FileTextOutlined />,
       label: '订单管理',
-      path: '/orders'
+      path: '/orders',
     },
     {
       key: 'analytics',
       icon: <BarChartOutlined />,
       label: '数据分析',
-      path: '/analytics'
+      path: '/analytics',
     },
     {
       key: 'marketing',
@@ -139,14 +140,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           key: 'campaigns',
           label: '活动管理',
-          path: '/marketing/campaigns'
+          path: '/marketing/campaigns',
         },
         {
           key: 'coupons',
           label: '优惠券',
-          path: '/marketing/coupons'
-        }
-      ]
+          path: '/marketing/coupons',
+        },
+      ],
     },
     {
       key: 'content',
@@ -156,14 +157,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           key: 'articles',
           label: '文章管理',
-          path: '/content/articles'
+          path: '/content/articles',
         },
         {
           key: 'banners',
           label: '横幅管理',
-          path: '/content/banners'
-        }
-      ]
+          path: '/content/banners',
+        },
+      ],
     },
     {
       key: 'system',
@@ -173,31 +174,31 @@ const Sidebar: React.FC<SidebarProps> = ({
         {
           key: 'settings-basic',
           label: '基本设置',
-          path: '/system/basic'
+          path: '/system/basic',
         },
         {
           key: 'settings-security',
           label: '安全设置',
-          path: '/system/security'
+          path: '/system/security',
         },
         {
           key: 'settings-notification',
           label: '通知设置',
-          path: '/system/notification'
-        }
-      ]
-    }
+          path: '/system/notification',
+        },
+      ],
+    },
   ];
 
   const items = menuItems || defaultMenuItems;
 
   // 转换菜单数据格式
   const convertMenuItems = (items: SidebarMenuItem[]): MenuProps['items'] => {
-    return items.map(item => ({
+    return items.map((item) => ({
       key: item.key,
       icon: typeof item.icon === 'string' ? iconMap[item.icon] || undefined : item.icon,
       label: item.label,
-      children: item.children ? convertMenuItems(item.children) : undefined
+      children: item.children ? convertMenuItems(item.children) : undefined,
     }));
   };
 
@@ -210,7 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   // 构建菜单项，根据折叠状态添加特殊项
   const buildMenuItems = (): MenuProps['items'] => {
     const baseItems = convertMenuItems(items) || [];
-    
+
     if (collapsed) {
       // 收拢状态下，在顶部添加logo和展开按钮
       return [
@@ -218,18 +219,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           key: 'logo-trigger',
           icon: <div className="sidebar-logo-mini">PY</div>,
           label: '',
-          onClick: () => {}
+          onClick: () => {},
         },
         {
           key: 'expand-trigger',
-          icon: <MenuUnfoldOutlined />, 
+          icon: <MenuUnfoldOutlined />,
           label: '',
-          onClick: handleToggleCollapse
+          onClick: handleToggleCollapse,
         },
-        ...baseItems
+        ...baseItems,
       ];
     }
-    
+
     return baseItems;
   };
 
@@ -245,6 +246,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           if (found) return found;
         }
       }
+
       return undefined;
     };
 
@@ -280,14 +282,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </div>
-        <button 
-          className="sidebar-collapse-btn"
-          onClick={handleToggleCollapse}
-        >
+        <button className="sidebar-collapse-btn" onClick={handleToggleCollapse}>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </button>
       </div>
-      
+
       <AntMenu
         className="custom-sidebar-menu"
         mode="inline"
@@ -301,6 +300,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             if (info.key === 'expand-trigger') {
               handleToggleCollapse();
             }
+
             return;
           }
           // 正常菜单项处理
@@ -310,14 +310,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         inlineCollapsed={false}
         inlineIndent={24}
       />
-      
+
       {/* 用户信息区域 */}
       <div className={`user-info ${collapsed ? 'collapsed' : ''}`}>
         <div className="user-info-content">
-          <AntAvatar 
-            size={32}
-            style={{ backgroundColor: '#1890ff' }}
-          >
+          <AntAvatar size={32} style={{ backgroundColor: '#1890ff' }}>
             L
           </AntAvatar>
           {!collapsed && (

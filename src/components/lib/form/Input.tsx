@@ -1,6 +1,8 @@
-import React from 'react';
 import type { InputProps as AntInputProps } from 'antd';
+import React from 'react';
+
 import { AntInput } from '../antd-imports';
+
 import './Input.css';
 
 // 扩展的输入框属性接口
@@ -34,8 +36,10 @@ const Input: React.FC<InputProps> = ({
     'custom-input',
     `custom-input--${theme}`,
     bordered ? '' : 'custom-input--no-border',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <AntInput

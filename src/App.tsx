@@ -1,9 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from './store';
+
 import BaseLayout from './components/layouts/BaseLayout';
 import AppRoutes from './routes/AppRoutes';
+import { store } from './store';
+
 import './App.css';
 
 const App: React.FC = () => {

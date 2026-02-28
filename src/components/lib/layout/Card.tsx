@@ -1,6 +1,8 @@
-import React from 'react';
 import type { CardProps as AntCardProps } from 'antd';
+import React from 'react';
+
 import { AntCard } from '../antd-imports';
+
 import './Card.css';
 
 // 扩展的卡片属性接口
@@ -32,14 +34,13 @@ const Card: React.FC<CardProps> = ({
     'custom-card',
     `custom-card--${theme}`,
     hoverable ? 'custom-card--hoverable' : '',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <AntCard
-      className={customClassName}
-      {...restProps}
-    >
+    <AntCard className={customClassName} {...restProps}>
       {children}
     </AntCard>
   );

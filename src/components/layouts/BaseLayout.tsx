@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Layout,
-  Sider,
-  Content,
-} from '../lib';
-import SiderHeader from './SiderHeader'
-import SiderFooter from './SiderFooter'
-import SiderMenu from './SiderMenu'
+
+import { Content, Layout, Sider } from '../lib';
+import SiderFooter from './SiderFooter';
+import SiderHeader from './SiderHeader';
+import SiderMenu from './SiderMenu';
+
 import styles from './BaseLayout.module.scss';
 
 interface AdminLayoutProps {
@@ -42,15 +40,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         className={styles.adminMainLayout}
         style={{
           marginLeft: collapsed ? 80 : 256,
-          transition: 'margin-left 0.3s ease'
+          transition: 'margin-left 0.3s ease',
         }}
       >
-
         {/* 内容区域 */}
         <Content className={styles.adminContent}>
-          <div className={styles.contentWrapper}>
-            {children}
-          </div>
+          <div className={styles.contentWrapper}>{children}</div>
         </Content>
       </Layout>
     </Layout>
