@@ -63,6 +63,8 @@ export default defineConfig([
               // 其他第三方库
               '^@?\\w',
             ],
+            // 图片组，保持手写顺序
+            ['^@/assets/images/'],
 
             // 绝对路径别名
             ['^@/'],
