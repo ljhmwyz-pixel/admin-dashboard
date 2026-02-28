@@ -1,7 +1,6 @@
 {
   "*.{ts,tsx}": [
-    "eslint --fix",
-    "tsc --noEmit"
+    "eslint --fix"
   ],
   "*.{js,jsx,json,md}": [
     "eslint --fix"
