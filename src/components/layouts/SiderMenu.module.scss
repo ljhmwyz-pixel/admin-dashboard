@@ -53,3 +53,62 @@
         }
     }
 }
+
+.collapsedWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    background-color: #fff;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0px 2px 4px rgba(25, 27, 31, 0.06);
+}
+
+.iconOnlyItem {
+    width: 48px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+
+    .activeBar {
+        position: absolute;
+        right: 0;
+        width: 2px;
+        height: 46px;
+        background: #33C2C8;
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+    }
+}
+
+/* 选中背景 */
+.activeIconOnlyItem {
+    background-color: rgba(51, 194, 200, 0.06);
+}
+
+.subMenuCollapsedStyle {
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(25, 27, 31, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.subMenuItem {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(25, 27, 31, 0.4);
+    width: 180px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+        color: #33C2C8;
+        background-color: rgba(51, 194, 200, 0.06);
+    }
+}
