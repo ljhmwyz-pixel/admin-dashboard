@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import HttpBackend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
+import { cacheManager } from './CacheManager';
 import { DEFAULT_LANGUAGE } from './constants';
 import type { LanguageKey } from './types';
 
@@ -13,6 +14,13 @@ const getStoredLanguage = (): LanguageKey => {
   }
   return DEFAULT_LANGUAGE;
 };
+
+// 启动缓存预热
+setTimeout(() => {
+  cacheManager.warmUpCache().catch((error) => {
+    console.warn('Cache warm-up failed:', error);
+  });
+}, 100); // 稍微延迟以确保应用基本初始化完成
 
 const INITIAL_LANGUAGE = getStoredLanguage();
 
@@ -29,7 +37,7 @@ i18n
       requestOptions: {
         cache: 'no-cache',
       },
-      // 自定义请求处理
+      // 自定义请求处理 - 使用新的缓存管理器
       request: async (
         _options: any,
         url: string,
@@ -37,25 +45,16 @@ i18n
         callback: (error: Error | null, response: { status: number; data: any }) => void,
       ) => {
         // 提取语言代码
-        const lng = url.match(/\/api\/languages\/([^/]+)/)?.[1] || DEFAULT_LANGUAGE;
+        const lng = (url.match(/\/api\/languages\/([^/]+)/)?.[1] ||
+          DEFAULT_LANGUAGE) as LanguageKey;
 
         try {
-          // 尝试从localStorage缓存加载
-          const cacheKey = `i18n_language_${lng}`;
-          const cachedData = localStorage.getItem(cacheKey);
+          // 尝试从缓存加载
+          const cachedEntry = cacheManager.get(lng);
 
-          if (cachedData) {
-            try {
-              const parsedData = JSON.parse(cachedData);
-              // 检查缓存是否过期（24小时）
-              const now = Date.now();
-              if (now - parsedData.timestamp < 24 * 60 * 60 * 1000) {
-                callback(null, { status: 200, data: parsedData.resources });
-                return;
-              }
-            } catch (parseError) {
-              console.warn('Cache parse error:', parseError);
-            }
+          if (cachedEntry) {
+            callback(null, { status: 200, data: cachedEntry.resources });
+            return;
           }
 
           // 如果缓存不存在或过期，则请求云端
@@ -73,13 +72,7 @@ i18n
           const data = await response.json();
 
           // 缓存云端数据
-          const cacheData = {
-            resources: data,
-            timestamp: Date.now(),
-            version: '1.0.0',
-          };
-          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-
+          cacheManager.set(lng, data, '1.0.0');
           callback(null, { status: 200, data });
         } catch (error) {
           console.warn('Language loading failed, using fallback:', error);
@@ -88,6 +81,7 @@ i18n
           try {
             const localResponse = await import(`../locales/${lng}.json`);
             const localData = localResponse.default;
+            cacheManager.set(lng, localData, 'local');
             callback(null, { status: 200, data: localData });
           } catch (localError) {
             console.error('Local language file loading failed:', localError);
@@ -95,6 +89,7 @@ i18n
             try {
               const defaultResponse = await import(`../locales/${DEFAULT_LANGUAGE}.json`);
               const defaultData = defaultResponse.default;
+              cacheManager.set(DEFAULT_LANGUAGE, defaultData, 'default');
               callback(null, { status: 200, data: defaultData });
             } catch (defaultError) {
               console.error('Default language loading failed:', defaultError);
@@ -152,6 +147,7 @@ export const changeLanguage = async (lng: LanguageKey): Promise<void> => {
     await i18n.changeLanguage(lng);
   } catch (error) {
     console.error('Failed to change language:', error);
+
     throw error;
   }
 };
@@ -171,5 +167,8 @@ export const getSupportedLanguages = () => {
     { key: 'ja-JP', name: '日本語', flag: '🇯🇵' },
   ];
 };
+
+// 导出缓存工具
+export { cacheManager };
 
 export default i18n;
