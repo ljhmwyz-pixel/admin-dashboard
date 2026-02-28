@@ -7,12 +7,3 @@ export type { LanguageConfig, LanguageKey, LanguageState, UseLanguageReturn } fr
 
 // 常量
 export { CACHE_EXPIRY_TIME, DEFAULT_LANGUAGE, LANGUAGE_CACHE_PREFIX } from './constants';
-
-// 缓存工具
-export {
-  clearAllLanguageCache,
-  clearLanguageCache,
-  getCacheStats,
-  loadLanguageResources,
-  saveLanguageCache,
-} from './cache';

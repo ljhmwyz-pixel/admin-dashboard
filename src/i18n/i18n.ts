@@ -2,9 +2,19 @@ import i18n from 'i18next';
 import HttpBackend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
-// 默认语言
-type LanguageKey = 'zh-CN' | 'en-US' | 'de-DE' | 'it-IT' | 'ja-JP';
-const DEFAULT_LANGUAGE: LanguageKey = 'zh-CN';
+import { DEFAULT_LANGUAGE } from './constants';
+import type { LanguageKey } from './types';
+
+// 在初始化前优先读取localStorage中的语言设置
+const getStoredLanguage = (): LanguageKey => {
+  const storedLang = localStorage.getItem('i18nextLng');
+  if (storedLang && ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'].includes(storedLang)) {
+    return storedLang as LanguageKey;
+  }
+  return DEFAULT_LANGUAGE;
+};
+
+const INITIAL_LANGUAGE = getStoredLanguage();
 
 // 初始化i18n实例
 i18n
@@ -111,7 +121,8 @@ i18n
     // 支持的语言
     supportedLngs: ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'],
 
-    // 默认语言
+    // 默认语言 - 使用localStorage中保存的语言或默认语言
+    lng: INITIAL_LANGUAGE,
     fallbackLng: DEFAULT_LANGUAGE,
 
     // 命名空间
@@ -135,9 +146,10 @@ i18n
 // 语言切换函数
 export const changeLanguage = async (lng: LanguageKey): Promise<void> => {
   try {
-    await i18n.changeLanguage(lng);
-    // 保存到localStorage
+    // 先保存到localStorage，确保检测器能读取到
     localStorage.setItem('i18nextLng', lng);
+    // 再执行语言切换
+    await i18n.changeLanguage(lng);
   } catch (error) {
     console.error('Failed to change language:', error);
     throw error;
