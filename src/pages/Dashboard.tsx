@@ -1,12 +1,13 @@
 import React from 'react';
+import { useLanguage } from '../hooks/useLanguage';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-
+  const { t } = useLanguage();
 
   return (
     <div className="dashboard">
-      1
+      <h1>{t('sidebar.dashboard')}</h1>
     </div>
   );
 };

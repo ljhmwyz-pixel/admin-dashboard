@@ -4,6 +4,8 @@ import { Dropdown } from 'antd'
 import type { MenuProps } from 'antd';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png'
 import moreIcon from '@/assets/images/layout/more_icon.png'
+import { useLanguage } from '../../hooks/useLanguage'
+import { useTranslation } from 'react-i18next'
 import styles from './SiderFooter.module.scss'
 
 interface Props {
@@ -11,27 +13,46 @@ interface Props {
 }
 
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
+  const { currentLanguage, changeLanguage } = useLanguage();
+  const { t } = useTranslation();
+
+  // 语言映射
+  const languageMap: Record<string, { key: string; label: string }> = {
+    'zh-CN': { key: '1', label: t('lang.chinese') },
+    'en-US': { key: '2', label: t('lang.english') },
+    'de-DE': { key: '3', label: t('lang.german') },
+    'it-IT': { key: '4', label: t('lang.italian') },
+    'ja-JP': { key: '5', label: t('lang.japanese') }
+  };
+
+  // 获取当前语言标签
+  const currentLanguageLabel = languageMap[currentLanguage]?.label || t('lang.english');
 
   const userMenuItems: MenuProps['items'] = [
     {
       key: '1',
-      label: '简体中文',
+      label: t('lang.chinese'),
+      onClick: () => changeLanguage('zh-CN')
     },
     {
       key: '2',
-      label: 'English',
+      label: t('lang.english'),
+      onClick: () => changeLanguage('en-US')
     },
     {
       key: '3',
-      label: 'Deutsch',
+      label: t('lang.german'),
+      onClick: () => changeLanguage('de-DE')
     },
     {
       key: '4',
-      label: 'Italiano',
+      label: t('lang.italian'),
+      onClick: () => changeLanguage('it-IT')
     },
     {
       key: '5',
-      label: '日本语',
+      label: t('lang.japanese'),
+      onClick: () => changeLanguage('ja-JP')
     },
   ]
 
@@ -47,7 +68,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             <div className={styles.extraItem}>
               <div className={styles.leftInfo}>
                 <div className={`${styles.leftIcon} ${styles.leftIcon1}`} />
-                <span className={`${styles.extraItemText} ${styles.extraItemText1}`}>Pylontech</span>
+                <span className={`${styles.extraItemText} ${styles.extraItemText1}`}>{t('layout.pylontech', 'Pylontech')}</span>
               </div>
               <div className={styles.arrowContainer}>
                 <div className={styles.rightArrowIcon} />
@@ -64,7 +85,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
               popupRender={() => (
                 <div className={styles.dropdownStyle}>
                   {userMenuItems.map((item: any) => {
-                    return <div key={item?.key} className={styles.dropdownItem}>{item.label}</div>
+                    return <div key={item?.key} className={styles.dropdownItem} onClick={item.onClick}>{item.label}</div>
                   })}
                 </div>
               )}
@@ -72,7 +93,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
               <div className={styles.extraItem}>
                 <div className={styles.leftInfo}>
                   <div className={`${styles.leftIcon} ${styles.leftIcon2}`} />
-                  <span className={`${styles.extraItemText} ${styles.extraItemText2}`}>English</span>
+                  <span className={`${styles.extraItemText} ${styles.extraItemText2}`}>{currentLanguageLabel}</span>
                 </div>
                 <div className={styles.arrowContainer}>
                   <div className={styles.rightArrowIcon}></div>
@@ -86,8 +107,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             <div className={styles.userContainer}>
               <img src={avatarIcon} className={styles.avatar} alt="avatar" />
               <div className={styles.userInfoContainer}>
-                <div className={styles.userName}>Leyu.song</div>
-                <div className={styles.roleName}>Admin</div>
+                <div className={styles.userName}>{t('layout.userName', 'Leyu.song')}</div>
+                <div className={styles.roleName}>{t('layout.admin', 'Admin')}</div>
               </div>
             </div>
             <img src={moreIcon} className={styles.more} alt="more" />
