@@ -47,7 +47,10 @@ export default defineConfig([
 
       /* ================= 基础风格 ================= */
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^React$' },
+      ],
 
       /* ================= import 排序 ================= */
       'simple-import-sort/imports': [
@@ -85,6 +88,8 @@ export default defineConfig([
 
       /* ================= JSX 优化 ================= */
       'react/self-closing-comp': 'error',
+      // 关闭 JSX 作用域检查（使用新的 JSX 转换）
+      'react/react-in-jsx-scope': 'off',
       // 关闭 any 报错
       '@typescript-eslint/no-explicit-any': 'off',
     },
