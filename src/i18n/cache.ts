@@ -1,17 +1,20 @@
-import { LANGUAGE_CACHE_PREFIX, CACHE_EXPIRY_TIME } from './constants';
+import { CACHE_EXPIRY_TIME, LANGUAGE_CACHE_PREFIX } from './constants';
 import type { LanguageKey } from './types';
 
 /**
  * 保存语言包到本地缓存
  */
-export const saveLanguageCache = async (language: LanguageKey, resources: Record<string, string>): Promise<void> => {
+export const saveLanguageCache = async (
+  language: LanguageKey,
+  resources: Record<string, string>,
+): Promise<void> => {
   try {
     const cacheData = {
       resources,
       timestamp: Date.now(),
-      version: '1.0.0'
+      version: '1.0.0',
     };
-    
+
     const cacheKey = `${LANGUAGE_CACHE_PREFIX}${language}`;
     localStorage.setItem(cacheKey, JSON.stringify(cacheData));
   } catch (error) {
@@ -22,17 +25,19 @@ export const saveLanguageCache = async (language: LanguageKey, resources: Record
 /**
  * 从本地缓存加载语言包
  */
-export const loadLanguageResources = async (language: LanguageKey): Promise<Record<string, string> | null> => {
+export const loadLanguageResources = async (
+  language: LanguageKey,
+): Promise<Record<string, string> | null> => {
   try {
     const cacheKey = `${LANGUAGE_CACHE_PREFIX}${language}`;
     const cachedData = localStorage.getItem(cacheKey);
-    
+
     if (!cachedData) {
       return null;
     }
-    
+
     const parsedData = JSON.parse(cachedData);
-    
+
     // 检查缓存是否过期
     const now = Date.now();
     if (now - parsedData.timestamp > CACHE_EXPIRY_TIME) {
@@ -40,7 +45,7 @@ export const loadLanguageResources = async (language: LanguageKey): Promise<Reco
       localStorage.removeItem(cacheKey);
       return null;
     }
-    
+
     return parsedData.resources;
   } catch (error) {
     console.warn('Failed to load language cache:', error);
@@ -65,7 +70,7 @@ export const clearLanguageCache = (language: LanguageKey): void => {
  */
 export const clearAllLanguageCache = (): void => {
   try {
-    Object.keys(localStorage).forEach(key => {
+    Object.keys(localStorage).forEach((key) => {
       if (key.startsWith(LANGUAGE_CACHE_PREFIX)) {
         localStorage.removeItem(key);
       }
@@ -78,21 +83,24 @@ export const clearAllLanguageCache = (): void => {
 /**
  * 获取缓存统计信息
  */
-export const getCacheStats = (): Record<LanguageKey, { exists: boolean; timestamp?: number; size?: number }> => {
+export const getCacheStats = (): Record<
+  LanguageKey,
+  { exists: boolean; timestamp?: number; size?: number }
+> => {
   const stats: Record<LanguageKey, any> = {} as any;
-  
+
   try {
-    ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'].forEach(lang => {
+    ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'].forEach((lang) => {
       const cacheKey = `${LANGUAGE_CACHE_PREFIX}${lang}`;
       const cachedData = localStorage.getItem(cacheKey);
-      
+
       if (cachedData) {
         try {
           const parsed = JSON.parse(cachedData);
           stats[lang as LanguageKey] = {
             exists: true,
             timestamp: parsed.timestamp,
-            size: cachedData.length
+            size: cachedData.length,
           };
         } catch {
           stats[lang as LanguageKey] = { exists: false };
@@ -104,6 +112,6 @@ export const getCacheStats = (): Record<LanguageKey, { exists: boolean; timestam
   } catch (error) {
     console.warn('Failed to get cache stats:', error);
   }
-  
+
   return stats;
 };

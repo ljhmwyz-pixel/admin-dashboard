@@ -1,6 +1,6 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
+import { initReactI18next } from 'react-i18next';
 
 // 默认语言
 type LanguageKey = 'zh-CN' | 'en-US' | 'de-DE' | 'it-IT' | 'ja-JP';
@@ -17,19 +17,23 @@ i18n
       loadPath: '/api/languages/{{lng}}/{{ns}}',
       // 请求参数
       requestOptions: {
-        cache: 'no-cache'
+        cache: 'no-cache',
       },
       // 自定义请求处理
-      request: async (_options: any, url: string, _payload: any, callback: Function) => {
+      request: async (
+        _options: any,
+        url: string,
+        _payload: any,
+        callback: (error: Error | null, response: { status: number; data: any }) => void,
+      ) => {
         // 提取语言代码
         const lng = url.match(/\/api\/languages\/([^/]+)/)?.[1] || DEFAULT_LANGUAGE;
-        
+
         try {
-          
           // 尝试从localStorage缓存加载
           const cacheKey = `i18n_language_${lng}`;
           const cachedData = localStorage.getItem(cacheKey);
-          
+
           if (cachedData) {
             try {
               const parsedData = JSON.parse(cachedData);
@@ -57,19 +61,19 @@ i18n
           }
 
           const data = await response.json();
-          
+
           // 缓存云端数据
           const cacheData = {
             resources: data,
             timestamp: Date.now(),
-            version: '1.0.0'
+            version: '1.0.0',
           };
           localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-          
+
           callback(null, { status: 200, data });
         } catch (error) {
           console.warn('Language loading failed, using fallback:', error);
-          
+
           // 降级到本地JSON文件
           try {
             const localResponse = await import(`../locales/${lng}.json`);
@@ -84,13 +88,16 @@ i18n
               callback(null, { status: 200, data: defaultData });
             } catch (defaultError) {
               console.error('Default language loading failed:', defaultError);
-              callback(new Error('Failed to load any language resources'), null);
+              callback(new Error('Failed to load any language resources'), {
+                status: 500,
+                data: {},
+              });
             }
           }
         }
-      }
+      },
     },
-    
+
     // 检测器配置
     detection: {
       // 检测顺序
@@ -103,22 +110,22 @@ i18n
 
     // 支持的语言
     supportedLngs: ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'],
-    
+
     // 默认语言
     fallbackLng: DEFAULT_LANGUAGE,
-    
+
     // 命名空间
     ns: ['translation'],
     defaultNS: 'translation',
-    
+
     // 调试模式
     debug: false,
-    
+
     // 插值配置
     interpolation: {
       escapeValue: false, // React已经安全处理
     },
-    
+
     // React配置
     react: {
       useSuspense: false, // 不使用Suspense
@@ -149,7 +156,7 @@ export const getSupportedLanguages = () => {
     { key: 'en-US', name: 'English', flag: '🇺🇸' },
     { key: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
     { key: 'it-IT', name: 'Italiano', flag: '🇮🇹' },
-    { key: 'ja-JP', name: '日本語', flag: '🇯🇵' }
+    { key: 'ja-JP', name: '日本語', flag: '🇯🇵' },
   ];
 };
 

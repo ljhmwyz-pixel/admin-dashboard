@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { useLanguage } from '../hooks/useLanguage';
+
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {

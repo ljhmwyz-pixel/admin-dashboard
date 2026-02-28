@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { ImageIcons } from '@/assets/images/layout';
 
@@ -13,6 +14,7 @@ interface Props {
 const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   // 控制底部整体展开
   const [expanded, setExpanded] = useState(false);
+  const { t } = useTranslation();
 
   // 控制哪个菜单激活
   const [activeMenu, setActiveMenu] = useState<string | null>(null);

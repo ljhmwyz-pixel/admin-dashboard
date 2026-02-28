@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type SimpleLanguageKey = 'zh-CN' | 'en-US' | 'de-DE' | 'it-IT' | 'ja-JP';
@@ -59,18 +59,17 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
       if (i18n && i18n.changeLanguage) {
         await i18n.changeLanguage(lng);
       }
-      
+
       // 保存到localStorage
       localStorage.setItem('i18nextLng', lng);
-      
+
       // 更新状态
       setCurrentLanguage(lng);
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to change language';
       setError(errorMessage);
       console.error('Language change error:', err);
-      
+
       // 如果切换失败，尝试回滚到默认语言
       try {
         if (i18n && i18n.changeLanguage) {
@@ -92,11 +91,11 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
       { key: 'en-US', name: 'English', flag: '🇺🇸' },
       { key: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
       { key: 'it-IT', name: 'Italiano', flag: '🇮🇹' },
-      { key: 'ja-JP', name: '日本語', flag: '🇯🇵' }
+      { key: 'ja-JP', name: '日本語', flag: '🇯🇵' },
     ],
     isLoading,
     error,
     changeLanguage,
-    t
+    t,
   };
 };
