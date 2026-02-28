@@ -3,7 +3,7 @@ import type { ThemeConfig } from 'antd';
 import type { ReactNode } from 'react';
 
 import type { ColorScheme, ThemeAlgorithm, ThemeMode } from '../config/themes';
-import { useAdvancedTheme } from '../hooks/useAdvancedTheme';
+import { useUnifiedTheme } from '../hooks/useUnifiedTheme';
 
 // 主题上下文类型
 interface ThemeContextType {
@@ -43,28 +43,22 @@ interface ThemeProviderProps {
  * 为整个应用提供统一的主题管理
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const themeHook = useAdvancedTheme();
+  const themeHook = useUnifiedTheme();
 
+  // 简化的context value
   const contextValue: ThemeContextType = {
-    // 状态
     mode: themeHook.mode,
     algorithm: themeHook.algorithm,
     colorScheme: themeHook.colorScheme,
     isDarkMode: themeHook.isDarkMode,
     isLoading: themeHook.isLoading,
     isManualOverride: themeHook.isManualOverride,
-
-    // 配置
     currentThemeConfig: themeHook.currentThemeConfig,
-
-    // 方法
     changeThemeMode: themeHook.changeThemeMode,
     changeThemeAlgorithm: themeHook.changeThemeAlgorithm,
     changeColorScheme: themeHook.changeColorScheme,
     toggleDark: themeHook.toggleDark,
     resetToSystemTheme: themeHook.resetToSystemTheme,
-
-    // 工具
     getThemeClassNames: themeHook.getThemeClassNames,
     applyThemeToDOM: themeHook.applyThemeToDOM,
   };

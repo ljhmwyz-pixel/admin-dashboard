@@ -5,7 +5,7 @@ import { I18nextProvider } from 'react-i18next';
 
 import BaseLayout from './components/layouts/BaseLayout';
 import AntdThemeProvider from './contexts/AntdThemeProvider';
-import ThemeProvider from './contexts/ThemeContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import i18n from './i18n/i18n';
 import AppRoutes from './routes/AppRoutes';
 import { store } from './store';

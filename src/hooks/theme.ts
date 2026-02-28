@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import { ThemeContext, type ThemeContextType } from '../contexts/ThemeContext';
+import { useUnifiedTheme } from './useUnifiedTheme';
 
 /**
  * 使用主题上下文的 Hook
@@ -15,17 +16,8 @@ export const useThemeContext = (): ThemeContextType => {
 
 /**
  * 简化的主题 Hook，只暴露常用属性和方法
+ * 基于新的统一主题hook实现
  */
 export const useTheme = () => {
-  const { mode, isDarkMode, currentThemeConfig, toggleDark, changeColorScheme, isLoading } =
-    useThemeContext();
-
-  return {
-    mode,
-    isDark: isDarkMode,
-    themeConfig: currentThemeConfig,
-    toggleDarkMode: toggleDark,
-    changeColorScheme,
-    isLoading,
-  };
+  return useUnifiedTheme();
 };

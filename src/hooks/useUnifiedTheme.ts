@@ -1,6 +1,25 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { ThemeConfig } from 'antd';
+// 使用原生防抖实现
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const debouncedFunc = function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  } as T & { cancel: () => void };
+
+  debouncedFunc.cancel = () => {
+    clearTimeout(timeout);
+  };
+
+  return debouncedFunc;
+}
 
 import type { ColorScheme, ThemeAlgorithm, ThemeMode } from '../config/themes';
 import { getThemeConfig, SystemThemeDetector, ThemePersistence } from '../config/themes';
@@ -18,37 +37,47 @@ import {
 } from '../store/slices/themeSlice';
 
 /**
- * 高级主题切换Hook
- * 提供完整的主题管理功能，包括系统主题检测、状态持久化等
+ * 统一主题管理Hook
+ * 整合了所有主题相关功能，提供高性能的主题切换体验
  */
-export const useAdvancedTheme = () => {
+export const useUnifiedTheme = () => {
   const dispatch = useDispatch();
   const themeState = useSelector(selectTheme);
   const currentAlgorithm = useSelector(selectCurrentAlgorithm);
   const isDarkMode = useSelector(selectIsDarkMode);
 
-  // 初始化系统主题检测器
-  const systemDetector = useMemo(() => new SystemThemeDetector(), []);
+  // 使用useRef避免重复创建实例
+  const systemDetectorRef = useRef<SystemThemeDetector | null>(null);
+  const debouncedSaveRef = useRef<ReturnType<typeof debounce> | null>(null);
 
-  // 获取当前主题配置
+  // 初始化系统主题检测器
+  if (!systemDetectorRef.current) {
+    systemDetectorRef.current = new SystemThemeDetector();
+  }
+
+  // 初始化防抖保存函数
+  if (!debouncedSaveRef.current) {
+    debouncedSaveRef.current = debounce((config: any) => {
+      ThemePersistence.save(config);
+    }, 300);
+  }
+
+  // 获取当前主题配置 - 使用useMemo优化性能
   const currentThemeConfig = useMemo<ThemeConfig>(() => {
     const config = getThemeConfig(currentAlgorithm, themeState.colorScheme);
-    console.log('useAdvancedTheme - generating theme config:', {
-      algorithm: currentAlgorithm,
-      colorScheme: themeState.colorScheme,
-      config,
-    });
     return config;
   }, [currentAlgorithm, themeState.colorScheme]);
 
-  // 初始化主题
+  // 初始化主题 - 只在组件挂载时执行一次
   useEffect(() => {
     const initializeTheme = async () => {
       dispatch(setLoading(true));
 
       try {
+        const detector = systemDetectorRef.current!;
+
         // 获取系统主题偏好
-        const systemPreference = systemDetector.getSystemPreference();
+        const systemPreference = detector.getSystemPreference();
         dispatch(setSystemPreference(systemPreference));
 
         // 加载保存的主题配置
@@ -63,8 +92,8 @@ export const useAdvancedTheme = () => {
         }
 
         // 开始监听系统主题变化
-        systemDetector.startListening();
-        systemDetector.addListener((isDark) => {
+        detector.startListening();
+        detector.addListener((isDark) => {
           dispatch(setSystemPreference(isDark ? 'dark' : 'light'));
         });
       } catch (error) {
@@ -78,28 +107,24 @@ export const useAdvancedTheme = () => {
 
     // 清理函数
     return () => {
-      systemDetector.stopListening();
+      systemDetectorRef.current?.stopListening();
+      debouncedSaveRef.current?.cancel();
     };
-  }, [dispatch, systemDetector]);
+  }, [dispatch]); // 添加dispatch到依赖数组
 
-  // 监听主题状态变化并保存到本地存储
+  // 监听主题状态变化并防抖保存
   useEffect(() => {
-    const saveThemeConfig = () => {
-      const configToSave = {
-        mode: themeState.mode,
-        algorithm: themeState.algorithm,
-        colorScheme: themeState.colorScheme,
-        isManualOverride: themeState.isManualOverride,
-      };
-      ThemePersistence.save(configToSave);
+    const configToSave = {
+      mode: themeState.mode,
+      algorithm: themeState.algorithm,
+      colorScheme: themeState.colorScheme,
+      isManualOverride: themeState.isManualOverride,
     };
 
-    // 使用防抖保存，避免频繁写入
-    const timeoutId = setTimeout(saveThemeConfig, 100);
-    return () => clearTimeout(timeoutId);
+    debouncedSaveRef.current?.(configToSave);
   }, [themeState.mode, themeState.algorithm, themeState.colorScheme, themeState.isManualOverride]);
 
-  // 切换主题模式
+  // 操作方法 - 使用useCallback优化
   const changeThemeMode = useCallback(
     (mode: ThemeMode) => {
       dispatch(setThemeMode(mode));
@@ -107,7 +132,6 @@ export const useAdvancedTheme = () => {
     [dispatch],
   );
 
-  // 切换主题算法
   const changeThemeAlgorithm = useCallback(
     (algorithm: ThemeAlgorithm) => {
       dispatch(setThemeAlgorithm(algorithm));
@@ -115,7 +139,6 @@ export const useAdvancedTheme = () => {
     [dispatch],
   );
 
-  // 切换颜色主题
   const changeColorScheme = useCallback(
     (colorScheme: ColorScheme) => {
       dispatch(setColorScheme(colorScheme));
@@ -123,12 +146,10 @@ export const useAdvancedTheme = () => {
     [dispatch],
   );
 
-  // 切换暗色模式（快捷方法）
   const toggleDark = useCallback(() => {
     dispatch(toggleDarkMode());
   }, [dispatch]);
 
-  // 重置为自动模式
   const resetToSystemTheme = useCallback(() => {
     dispatch(resetToAuto());
   }, [dispatch]);
@@ -146,7 +167,6 @@ export const useAdvancedTheme = () => {
     }
 
     classes.push(`color-scheme-${themeState.colorScheme}`);
-
     return classes.join(' ');
   }, [isDarkMode, themeState.colorScheme]);
 
@@ -181,12 +201,10 @@ export const useAdvancedTheme = () => {
   };
 };
 
-/**
- * 简化的主题Hook，用于只需要基本功能的场景
- */
-export const useSimpleTheme = () => {
-  const { mode, isDarkMode, currentThemeConfig, toggleDark, changeColorScheme } =
-    useAdvancedTheme();
+// 简化版本Hook，用于基本需求
+export const useTheme = () => {
+  const { mode, isDarkMode, currentThemeConfig, toggleDark, changeColorScheme, isLoading } =
+    useUnifiedTheme();
 
   return {
     mode,
@@ -194,5 +212,11 @@ export const useSimpleTheme = () => {
     themeConfig: currentThemeConfig,
     toggleDarkMode: toggleDark,
     changeColorScheme,
+    isLoading,
   };
+};
+
+// 上下文版本Hook
+export const useThemeContext = () => {
+  return useUnifiedTheme();
 };
