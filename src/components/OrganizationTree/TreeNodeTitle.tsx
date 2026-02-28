@@ -1,14 +1,7 @@
 import React from 'react';
 import { AntButton } from '../lib/antd-imports';
+import type { TreeNodeData } from '../../types/organization';
 import styles from './TreeNodeTitle.module.less';
-
-
-interface TreeNodeData {
-    title: string;
-    canAdd?: boolean;
-    canDelete?: boolean;
-    [key: string]: any;
-}
 
 interface TreeNodeTitleProps {
     nodeData: TreeNodeData;

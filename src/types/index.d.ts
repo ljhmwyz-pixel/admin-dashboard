@@ -13,24 +13,12 @@ declare module '*.module.scss' {
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_API_BASE_URL: string;
-  readonly VITE_I18N_CACHE_DURATION: string;
+
   // 更多环境变量...
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
-}
-
-// 国际化相关类型
-interface LanguageResource {
-  translation: Record<string, string>;
-}
-
-interface I18nNamespaces {
-  common: LanguageResource;
-  dashboard: LanguageResource;
-  users: LanguageResource;
-  // 更多命名空间...
 }
 
 // 主题相关类型

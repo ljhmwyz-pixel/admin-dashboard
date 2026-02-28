@@ -58,7 +58,7 @@ src/
 │   ├── Layout/          # 布局组件
 │   └── Dashboard/       # 仪表板组件
 ├── config/             # 配置文件
-│   ├── i18n.ts         # 国际化配置
+
 │   └── theme.ts        # 主题配置
 ├── hooks/              # 自定义Hooks
 ├── styles/             # 样式文件
@@ -72,12 +72,12 @@ src/
 - **框架**: React 19.x + TypeScript 5.x
 - **UI库**: Ant Design 6.x
 - **样式**: Tailwind CSS 4.x + CSS Modules
-- **国际化**: i18next + react-i18next
+
 - **图表**: Recharts 3.x
 
 ## 特性
 ✅ 组件与逻辑文件分离（TSX/TS）
-✅ 国际化支持（云端语言包 + 本地缓存）
+
 ✅ 主题切换（Ant Design主题系统）
 ✅ REM响应式适配
 ✅ Tailwind + CSS Modules混合使用
@@ -87,6 +87,6 @@ src/
 ## 注意事项
 1. 所有样式必须使用CSS Modules，避免全局污染
 2. 组件文件使用.tsx扩展名，逻辑文件使用.ts扩展名
-3. 国际化资源从云端加载，具有本地缓存机制
+
 4. 使用REM单位进行响应式设计
 5. 主题配置基于Ant Design的themeConfig
