@@ -3,14 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
-import menuIconClose from '@/assets/images/layout/menu_icon_close.png';
-import menuIconOpen from '@/assets/images/layout/menu_icon_open.png';
-import orgActiveIcon from '@/assets/images/layout/org_active_icon.png';
-import orgDefaultIcon from '@/assets/images/layout/org_default_icon.png';
-import roleActiveIcon from '@/assets/images/layout/role_active_icon.png';
-import roleDefaultIcon from '@/assets/images/layout/role_default_icon.png';
-import userActiveIcon from '@/assets/images/layout/user_active_icon.png';
-import userDefaultIcon from '@/assets/images/layout/user_default_icon.png';
+import { ImageIcons } from '@/assets/images';
 
 import styles from './SiderMenu.module.scss';
 
@@ -41,8 +34,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             selectedKeys.includes('org') ||
             selectedKeys.includes('orglist') ||
             selectedKeys.includes('orgtype')
-              ? orgActiveIcon
-              : orgDefaultIcon
+              ? ImageIcons.menu.orgActiveIcon
+              : ImageIcons.menu.orgDefaultIcon
           }
           className={styles.menu_icon}
         />
@@ -63,7 +56,11 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       key: 'role',
       icon: (
         <img
-          src={selectedKeys.includes('role') ? roleActiveIcon : roleDefaultIcon}
+          src={
+            selectedKeys.includes('role')
+              ? ImageIcons.menu.roleActiveIcon
+              : ImageIcons.menu.roleDefaultIcon
+          }
           className={styles.menu_icon}
         />
       ),
@@ -73,7 +70,11 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
       key: 'user',
       icon: (
         <img
-          src={selectedKeys.includes('user') ? userActiveIcon : userDefaultIcon}
+          src={
+            selectedKeys.includes('user')
+              ? ImageIcons.menu.userActiveIcon
+              : ImageIcons.menu.userDefaultIcon
+          }
           className={styles.menu_icon}
         />
       ),
@@ -135,7 +136,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             </div>
           }
         >
-          <div className={`${styles.iconOnlyItem} ${isActive ? styles.activeIconOnlyItem : ''}`}>
+          <div className={`${styles.iconOnlyItem} ${isActive && styles.activeIconOnlyItem}`}>
             {item.icon}
             {isActive && <div className={styles.activeBar} />}
           </div>
@@ -162,7 +163,10 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
           selectedKeys={selectedKeys}
           onClick={({ key }) => handleMenuClick(key)}
           expandIcon={({ isOpen }) => (
-            <img src={isOpen ? menuIconOpen : menuIconClose} className={styles.expandIcon} />
+            <img
+              src={isOpen ? ImageIcons.menu.menuIconOpen : ImageIcons.menu.menuIconClose}
+              className={styles.expandIcon}
+            />
           )}
           className={styles.menu}
           inlineIndent={16}

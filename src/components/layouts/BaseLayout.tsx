@@ -23,9 +23,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         collapsed={collapsed}
         width={220}
         collapsedWidth={56}
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}
+        className={`${styles.sidebar} ${collapsed && styles.collapsed}`}
       >
-        <div className={`${styles.siderInner} ${collapsed ? styles.siderInnerCollapsed : ''}`}>
+        <div className={`${styles.siderInner} ${collapsed && styles.siderInnerCollapsed}`}>
           {/* Logo + 折叠按钮 */}
           <SiderHeader collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
           {/* 菜单 */}

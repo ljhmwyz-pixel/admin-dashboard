@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 
-import avatarIcon from '@/assets/images/layout/avatar_icon.png';
-import moreIcon from '@/assets/images/layout/more_icon.png';
+import { ImageIcons } from '@/assets/images';
 
 import styles from './SiderFooter.module.scss';
 
@@ -36,9 +35,9 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     <div
       className={`
         ${styles.sideMenuContainer}
-        ${collapsed && !expanded ? styles.sideMenuContainerCollapsed : ''}
-        ${expanded ? styles.expanded : ''}
-        ${!collapsed || expanded ? styles.expandedHover : ''}
+        ${collapsed && !expanded && styles.sideMenuContainerCollapsed}
+        ${expanded && styles.expanded}
+        ${(!collapsed || expanded) && styles.expandedHover}
       `}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => {
@@ -73,9 +72,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
               onOpenChange={(open) => setActiveMenu(open ? 'user' : null)}
             >
               <div
-                className={`${styles.extraItem} ${
-                  activeMenu === 'user' ? styles.extraItemActive : ''
-                }`}
+                className={`${styles.extraItem} ${activeMenu === 'user' && styles.extraItemActive}`}
                 onMouseEnter={() => setActiveMenu('user')}
               >
                 <div className={styles.leftInfo}>
@@ -115,7 +112,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
             >
               <div
                 className={`${styles.extraItem} ${
-                  activeMenu === 'language' ? styles.extraItemActive : ''
+                  activeMenu === 'language' && styles.extraItemActive
                 }`}
                 onMouseEnter={() => setActiveMenu('language')}
               >
@@ -135,20 +132,20 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
           {/* 底部用户信息 */}
           <div className={styles.bottomRow}>
             <div className={styles.userContainer}>
-              <img src={avatarIcon} className={styles.avatar} alt="avatar" />
+              <img src={ImageIcons.footer.avatarIcon} className={styles.avatar} alt="avatar" />
               <div className={styles.userInfoContainer}>
                 <div className={styles.userName}>Leyu.song</div>
                 <div className={styles.roleName}>Admin</div>
               </div>
             </div>
-            <img src={moreIcon} className={styles.more} alt="more" />
+            <img src={ImageIcons.footer.moreIcon} className={styles.more} alt="more" />
           </div>
         </>
       )}
 
       {collapsed && !expanded && (
         <div className={styles.userContainerCollapsed}>
-          <img src={avatarIcon} className={styles.avatar} alt="avatar" />
+          <img src={ImageIcons.footer.avatarIcon} className={styles.avatar} alt="avatar" />
         </div>
       )}
     </div>
