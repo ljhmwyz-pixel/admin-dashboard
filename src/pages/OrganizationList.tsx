@@ -1,5 +1,5 @@
-import { Splitter } from 'antd';
 import React, { useState } from 'react';
+import { Splitter } from 'antd';
 
 import { AntTabs } from '../components/lib/antd-imports';
 import OrganizationTree from '../components/OrganizationTree/OrganizationTree';

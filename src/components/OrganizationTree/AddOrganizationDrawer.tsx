@@ -1,6 +1,6 @@
+import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Drawer, Form, Input, message, Select, Space } from 'antd';
-import React from 'react';
 
 interface AddOrganizationProps {
   visible: boolean;

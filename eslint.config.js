@@ -54,8 +54,15 @@ export default defineConfig([
         'error',
         {
           groups: [
-            // 第三方库
-            ['^@?\\w'],
+            [
+              // React 系列优先
+              '^react$',
+              '^react-dom$',
+              '^react-router-dom$',
+              '^react-redux$',
+              // 其他第三方库
+              '^@?\\w',
+            ],
 
             // 绝对路径别名
             ['^@/'],

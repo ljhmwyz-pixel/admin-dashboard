@@ -1,5 +1,5 @@
-import type { SelectProps as AntSelectProps } from 'antd';
 import React from 'react';
+import type { SelectProps as AntSelectProps } from 'antd';
 
 import { AntSelect } from '../antd-imports';
 

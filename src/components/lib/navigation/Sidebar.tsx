@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   AppstoreOutlined,
   BarChartOutlined,
@@ -11,7 +12,6 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import React, { useState } from 'react';
 
 // 图标映射
 const iconMap: Record<string, React.ReactNode> = {

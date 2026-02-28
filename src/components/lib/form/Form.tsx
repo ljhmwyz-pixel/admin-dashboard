@@ -1,5 +1,5 @@
-import type { FormProps as AntFormProps } from 'antd';
 import React from 'react';
+import type { FormProps as AntFormProps } from 'antd';
 
 import { AntForm } from '../antd-imports';
 

@@ -1,5 +1,5 @@
-import type { LayoutProps as AntLayoutProps } from 'antd';
 import React from 'react';
+import type { LayoutProps as AntLayoutProps } from 'antd';
 
 import { AntLayout } from '../antd-imports';
 

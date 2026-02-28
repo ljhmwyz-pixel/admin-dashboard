@@ -35,7 +35,7 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
                 font-weight: 500;
                 font-size: 14px;
                 line-height: 14px;
-                color: #191B1F;
+                color: #191b1f;
             }
 
             .roleName {
@@ -106,7 +106,7 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
                 font-size: 14px;
                 font-weight: 500;
                 line-height: 14px;
-                color: #191B1F;
+                color: #191b1f;
                 transition: color 0.3s ease;
             }
         }
@@ -150,7 +150,7 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
 .extraItem:hover .extraItemText2,
 .extraItem.extraItemActive .extraItemText1,
 .extraItem.extraItemActive .extraItemText2 {
-    color: #33C2C8 !important;
+    color: #33c2c8 !important;
 }
 
 /* ========== 右侧箭头 ========== */
@@ -216,7 +216,7 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         padding: 0 24px;
 
         &:hover {
-            color: #33C2C8;
+            color: #33c2c8;
         }
     }
 }

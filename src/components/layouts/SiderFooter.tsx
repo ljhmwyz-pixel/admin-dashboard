@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
-import React, { useState } from 'react';
 
 import avatarIcon from '@/assets/images/layout/avatar_icon.png';
 import moreIcon from '@/assets/images/layout/more_icon.png';

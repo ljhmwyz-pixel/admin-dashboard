@@ -1,6 +1,6 @@
+import React from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag } from 'antd';
-import React from 'react';
 
 const OrganizationType: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);

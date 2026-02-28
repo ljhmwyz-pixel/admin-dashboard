@@ -1,5 +1,5 @@
-import type { InputProps as AntInputProps } from 'antd';
 import React from 'react';
+import type { InputProps as AntInputProps } from 'antd';
 
 import { AntInput } from '../antd-imports';
 

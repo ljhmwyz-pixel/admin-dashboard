@@ -1,6 +1,6 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
 import BaseLayout from './components/layouts/BaseLayout';
 import AppRoutes from './routes/AppRoutes';

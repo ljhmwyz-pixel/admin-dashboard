@@ -1,5 +1,5 @@
-import type { CardProps as AntCardProps } from 'antd';
 import React from 'react';
+import type { CardProps as AntCardProps } from 'antd';
 
 import { AntCard } from '../antd-imports';
 
