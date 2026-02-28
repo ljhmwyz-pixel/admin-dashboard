@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Layout,
-  Sider,
-  Content,
-} from '../lib';
-import SiderHeader from './SiderHeader'
-import SiderFooter from './SiderFooter'
-import SiderMenu from './SiderMenu'
+
+import { Content, Layout, Sider } from '../lib';
+import SiderFooter from './SiderFooter';
+import SiderHeader from './SiderHeader';
+import SiderMenu from './SiderMenu';
+
 import styles from './BaseLayout.module.scss';
 
 interface AdminLayoutProps {
@@ -25,9 +23,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         collapsed={collapsed}
         width={220}
         collapsedWidth={56}
-        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}
+        className={`${styles.sidebar} ${collapsed && styles.collapsed}`}
       >
-        <div className={`${styles.siderInner} ${collapsed ? styles.siderInnerCollapsed : ''}`}>
+        <div className={`${styles.siderInner} ${collapsed && styles.siderInnerCollapsed}`}>
           {/* Logo + 折叠按钮 */}
           <SiderHeader collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
           {/* 菜单 */}
@@ -42,15 +40,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         className={styles.adminMainLayout}
         style={{
           marginLeft: collapsed ? 80 : 256,
-          transition: 'margin-left 0.3s ease'
+          transition: 'margin-left 0.3s ease',
         }}
       >
-
         {/* 内容区域 */}
         <Content className={styles.adminContent}>
-          <div className={styles.contentWrapper}>
-            {children}
-          </div>
+          <div className={styles.contentWrapper}>{children}</div>
         </Content>
       </Layout>
     </Layout>

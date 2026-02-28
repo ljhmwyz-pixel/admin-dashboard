@@ -1,6 +1,8 @@
 import React from 'react';
 import type { FormProps as AntFormProps } from 'antd';
+
 import { AntForm } from '../antd-imports';
+
 import './Form.css';
 
 // 扩展的表单属性接口
@@ -32,14 +34,13 @@ const Form: React.FC<FormProps> = ({
     'custom-form',
     `custom-form--${theme}`,
     animated ? 'custom-form--animated' : '',
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <AntForm
-      className={customClassName}
-      {...restProps}
-    >
+    <AntForm className={customClassName} {...restProps}>
       {children}
     </AntForm>
   );
@@ -49,7 +50,9 @@ const Form: React.FC<FormProps> = ({
 export const FormItem = AntForm.Item;
 export const FormList = AntForm.List;
 export const FormProvider = AntForm.Provider;
+// eslint-disable-next-line react-refresh/only-export-components
 export const useForm = AntForm.useForm;
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFormInstance = AntForm.useFormInstance;
 
 export default Form;

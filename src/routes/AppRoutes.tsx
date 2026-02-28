@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 // 懒加载页面组件
 const Dashboard = lazy(() => import('../pages/Dashboard'));
@@ -8,18 +8,19 @@ const OrganizationType = lazy(() => import('../pages/OrganizationType'));
 
 // 懒加载 fallback 组件
 const LoadingFallback = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '200px'
-  }}>
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '200px',
+    }}
+  >
     <div>页面加载中...</div>
   </div>
 );
 
 const AppRoutes: React.FC = () => {
-
   return (
     <>
       <Suspense fallback={<LoadingFallback />}>

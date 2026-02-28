@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Form, Input, Modal, Select, Space, Table, Tag } from 'antd';
 
 const OrganizationType: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -14,7 +14,7 @@ const OrganizationType: React.FC = () => {
       code: 'TECH',
       description: '科技类组织',
       status: 'enabled',
-      organizations: 25
+      organizations: 25,
     },
     {
       id: 2,
@@ -22,7 +22,7 @@ const OrganizationType: React.FC = () => {
       code: 'MARK',
       description: '市场营销类组织',
       status: 'enabled',
-      organizations: 18
+      organizations: 18,
     },
     {
       id: 3,
@@ -30,8 +30,8 @@ const OrganizationType: React.FC = () => {
       code: 'FIN',
       description: '金融类组织',
       status: 'disabled',
-      organizations: 12
-    }
+      organizations: 12,
+    },
   ];
 
   const columns = [
@@ -70,8 +70,12 @@ const OrganizationType: React.FC = () => {
       key: 'action',
       render: (_: any) => (
         <Space size="middle">
-          <Button type="link" icon={<EditOutlined />}>编辑</Button>
-          <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
+          <Button type="link" icon={<EditOutlined />}>
+            编辑
+          </Button>
+          <Button type="link" danger icon={<DeleteOutlined />}>
+            删除
+          </Button>
         </Space>
       ),
     },
@@ -82,7 +86,7 @@ const OrganizationType: React.FC = () => {
   };
 
   const handleOk = () => {
-    form.validateFields().then(values => {
+    form.validateFields().then((values) => {
       console.log('提交数据:', values);
       setIsModalVisible(false);
       form.resetFields();
@@ -96,7 +100,7 @@ const OrganizationType: React.FC = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card 
+      <Card
         title="组织类型管理"
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
@@ -104,9 +108,9 @@ const OrganizationType: React.FC = () => {
           </Button>
         }
       >
-        <Table 
-          dataSource={dataSource} 
-          columns={columns} 
+        <Table
+          dataSource={dataSource}
+          columns={columns}
           rowKey="id"
           pagination={{
             pageSize: 10,
@@ -139,17 +143,10 @@ const OrganizationType: React.FC = () => {
           >
             <Input placeholder="请输入类型编码" />
           </Form.Item>
-          <Form.Item
-            name="description"
-            label="描述"
-          >
+          <Form.Item name="description" label="描述">
             <Input.TextArea placeholder="请输入描述" rows={3} />
           </Form.Item>
-          <Form.Item
-            name="status"
-            label="状态"
-            initialValue="enabled"
-          >
+          <Form.Item name="status" label="状态" initialValue="enabled">
             <Select>
               <Select.Option value="enabled">启用</Select.Option>
               <Select.Option value="disabled">禁用</Select.Option>

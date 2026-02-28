@@ -41,7 +41,7 @@ export const compactTheme: ThemeConfig = {
 // 获取当前主题
 export const getCurrentTheme = (): ThemeConfig => {
   const themeType = localStorage.getItem('theme') || 'default';
-  
+
   switch (themeType) {
     case 'dark':
       return darkTheme;
