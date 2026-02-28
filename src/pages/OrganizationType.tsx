@@ -68,7 +68,7 @@ const OrganizationType: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: any) => (
         <Space size="middle">
           <Button type="link" icon={<EditOutlined />}>编辑</Button>
           <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>

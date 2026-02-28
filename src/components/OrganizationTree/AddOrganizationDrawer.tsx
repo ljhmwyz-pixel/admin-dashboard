@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Drawer, Form, Input, Select, Button, message, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 interface AddOrganizationProps {
   visible: boolean;
   onClose: () => void;
-  onAdd: (values: any) => void;
-  parentNode?: any; // 父节点信息，用于确定添加位置
+  onAdd: (values: OrganizationFormData) => void;
+  parentNode?: TreeNodeData; // 父节点信息，用于确定添加位置
+}
+
+interface OrganizationFormData {
+  organizationName: string;
+  organizationType: string;
+  organizationAddress: string;
+  postalCode: string;
+  emailAddress: string;
+  username: string;
+  phoneNumber: string;
+  comment?: string;
+  parentId?: string | null;
+  parentTitle?: string | null;
+}
+
+interface TreeNodeData {
+  key: string;
+  title: string;
+  children?: TreeNodeData[];
+  [key: string]: any;
 }
 
 const { Option } = Select;
@@ -19,7 +39,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = Form.useForm();
   
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: OrganizationFormData) => {
     try {
       // 验证必填字段
       if (!values.organizationName || !values.organizationType) {

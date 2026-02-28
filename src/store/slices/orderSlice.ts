@@ -75,11 +75,11 @@ export const orderSlice = createSlice({
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload.data;
+        state.orders = (action.payload as any).data;
         state.pagination = {
-          page: action.payload.page,
-          pageSize: action.payload.pageSize,
-          total: action.payload.total
+          page: (action.payload as any).page,
+          pageSize: (action.payload as any).pageSize,
+          total: (action.payload as any).total
         };
       })
       .addCase(fetchOrders.rejected, (state, action) => {

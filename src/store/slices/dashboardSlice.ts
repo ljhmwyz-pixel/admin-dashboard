@@ -77,7 +77,7 @@ const initialState: DashboardState = {
 export const fetchDashboardStats = createAsyncThunk(
   'dashboard/fetchStats',
   async () => {
-    const response = await api.stats.getDashboardStats();
+    const response: any = await api.stats.getDashboardStats();
     return response;
   }
 );
@@ -85,7 +85,7 @@ export const fetchDashboardStats = createAsyncThunk(
 export const fetchChartData = createAsyncThunk(
   'dashboard/fetchChartData',
   async () => {
-    const response = await api.charts.getSalesData();
+    const response: any = await api.charts.getSalesData();
     return response;
   }
 );
@@ -93,7 +93,7 @@ export const fetchChartData = createAsyncThunk(
 export const fetchRecentActivities = createAsyncThunk(
   'dashboard/fetchActivities',
   async () => {
-    const response = await api.activities.getRecent();
+    const response: any = await api.activities.getRecent();
     return response.data;
   }
 );
@@ -118,7 +118,7 @@ export const dashboardSlice = createSlice({
       })
       .addCase(fetchDashboardStats.fulfilled, (state, action) => {
         state.loading.stats = false;
-        state.stats = action.payload;
+        state.stats = action.payload as any;
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {
         state.loading.stats = false;
@@ -131,7 +131,7 @@ export const dashboardSlice = createSlice({
       })
       .addCase(fetchChartData.fulfilled, (state, action) => {
         state.loading.chart = false;
-        state.chartData = action.payload;
+        state.chartData = action.payload as any;
       })
       .addCase(fetchChartData.rejected, (state, action) => {
         state.loading.chart = false;
@@ -144,7 +144,7 @@ export const dashboardSlice = createSlice({
       })
       .addCase(fetchRecentActivities.fulfilled, (state, action) => {
         state.loading.activities = false;
-        state.activities = action.payload;
+        state.activities = action.payload as any;
       })
       .addCase(fetchRecentActivities.rejected, (state, action) => {
         state.loading.activities = false;

@@ -83,11 +83,11 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.data;
+        state.users = (action.payload as any).data;
         state.pagination = {
-          page: action.payload.page,
-          pageSize: action.payload.pageSize,
-          total: action.payload.total
+          page: (action.payload as any).page,
+          pageSize: (action.payload as any).pageSize,
+          total: (action.payload as any).total
         };
       })
       .addCase(fetchUsers.rejected, (state, action) => {
@@ -101,7 +101,7 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentUser = action.payload;
+        state.currentUser = action.payload as any;
       })
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loading = false;

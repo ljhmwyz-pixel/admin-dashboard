@@ -13,6 +13,13 @@ interface OrganizationTreeProps {
     selectedKey?: string;
 }
 
+type TreeNodeData = {
+  key: string;
+  title: string;
+  children?: TreeNodeData[];
+  [key: string]: any;
+};
+
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     onSelect,
     selectedKey = '',
@@ -20,14 +27,13 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [currentParentNode, setCurrentParentNode] = useState<any>(null);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [treeData, setTreeData] = useState<any[]>([]);
-  const [loadingKeys, setLoadingKeys] = useState<Record<string, boolean>>({});
+  const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
 
   // 初始化加载顶层组织树数据
   useEffect(() => {
       const loadInitialData = async () => {
           try {
-              const data = await searchOrganizations('');
+              await searchOrganizations('');
               const largeOrganizationData = generateMassiveOrganizationTreeData(10000);
               setTreeData(largeOrganizationData);
           } catch (error) {
@@ -65,7 +71,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   };
 
   // 处理节点添加事件
-  const handleNodeAdd = (nodeData: any, e: React.MouseEvent) => {
+  const handleNodeAdd = (nodeData: TreeNodeData, e: React.MouseEvent) => {
       e.stopPropagation();
       setCurrentParentNode(nodeData);
       setAddDrawerVisible(true);
@@ -79,6 +85,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
                   name='search'
                   placeholder="Please enter role name"
                   value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   prefix={<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M13.6001 13.6L10.1001 10.1M11.6001 6.1C11.6001 9.13757 9.13766 11.6 6.1001 11.6C3.06253 11.6 0.600098 9.13757 0.600098 6.1C0.600098 3.06243 3.06253 0.6 6.1001 0.6C9.13766 0.6 11.6001 3.06243 11.6001 6.1Z" stroke="#191B1F" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round" />
                   </svg>
@@ -119,7 +126,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
                   // onNodeAdd?.(currentParentNode, {} as any);
                   setAddDrawerVisible(false);
               }}
-              parentNode={currentParentNode}
+              parentNode={currentParentNode as any}
           />
       </div>
   );

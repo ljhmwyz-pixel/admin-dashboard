@@ -72,11 +72,11 @@ export const productSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload.data;
+        state.products = (action.payload as any).data;
         state.pagination = {
-          page: action.payload.page,
-          pageSize: action.payload.pageSize,
-          total: action.payload.total
+          page: (action.payload as any).page,
+          pageSize: (action.payload as any).pageSize,
+          total: (action.payload as any).total
         };
       })
       .addCase(fetchProducts.rejected, (state, action) => {
