@@ -36,8 +36,9 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     <div
       className={`
         ${styles.sideMenuContainer}
-        ${collapsed ? styles.sideMenuContainerCollapsed : ''}
+        ${collapsed && !expanded ? styles.sideMenuContainerCollapsed : ''}
         ${expanded ? styles.expanded : ''}
+        ${!collapsed || expanded ? styles.expandedHover : ''}
       `}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => {
@@ -45,7 +46,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         setActiveMenu(null);
       }}
     >
-      {!collapsed && (
+      {(!collapsed || expanded) && (
         <>
           <div className={styles.expandArea}>
             {/* 用户菜单 */}
@@ -145,7 +146,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         </>
       )}
 
-      {collapsed && (
+      {collapsed && !expanded && (
         <div className={styles.userContainerCollapsed}>
           <img src={avatarIcon} className={styles.avatar} alt="avatar" />
         </div>
