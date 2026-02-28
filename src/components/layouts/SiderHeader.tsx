@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ImageIcons } from '@/assets/images';
+import { ImageIcons } from '@/assets/images/layout';
 
 import styles from './SiderHeader.module.scss';
 

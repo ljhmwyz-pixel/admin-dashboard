@@ -5,6 +5,11 @@ import { defineConfig } from 'vite';
 import eslintPlugin from 'vite-plugin-eslint';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'), // 关键
+    },
+  },
   plugins: [
     react(),
     eslintPlugin({
@@ -15,9 +20,4 @@ export default defineConfig({
       emitWarning: true, // 控制是否输出警告
     }),
   ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'), // 关键
-    },
-  },
 });

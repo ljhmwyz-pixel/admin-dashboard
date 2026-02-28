@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 
-import { ImageIcons } from '@/assets/images';
+import { ImageIcons } from '@/assets/images/layout';
 
 import styles from './SiderFooter.module.scss';
 
