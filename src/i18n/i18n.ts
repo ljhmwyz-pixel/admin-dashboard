@@ -15,12 +15,15 @@ const getStoredLanguage = (): LanguageKey => {
   return DEFAULT_LANGUAGE;
 };
 
-// 启动缓存预热
-setTimeout(() => {
-  cacheManager.warmUpCache().catch((error) => {
-    console.warn('Cache warm-up failed:', error);
-  });
-}, 100); // 稍微延迟以确保应用基本初始化完成
+// 导出缓存预热函数，让调用方决定何时执行
+export const initializeCacheWarmUp = () => {
+  // 延迟到浏览器环境完全准备好后再执行
+  setTimeout(() => {
+    cacheManager.warmUpCache().catch((error) => {
+      console.warn('Cache warm-up failed:', error);
+    });
+  }, 500); // 增加延迟时间确保环境准备充分
+};
 
 const INITIAL_LANGUAGE = getStoredLanguage();
 

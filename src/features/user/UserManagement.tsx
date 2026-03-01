@@ -34,7 +34,7 @@ const UserManagement: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_: any, record: any) => (
+      render: (_: any, _record: any) => (
         <Space size="middle">
           <Button icon={<EditOutlined />} size="small">
             编辑

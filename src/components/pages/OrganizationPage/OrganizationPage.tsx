@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Layout, Row } from 'antd';
 
-import type { Organization } from '../../../shared/types/organization';
+import type { Organization, TreeNodeData } from '../../../shared/types/organization';
 import OrganizationTree from '../../organisms/OrganizationTree/OrganizationTree';
 
 const { Content } = Layout;
@@ -37,6 +37,17 @@ const OrganizationPage: React.FC = () => {
 
   const [loading] = useState(false);
 
+  // 将Organization数组转换为TreeNodeData数组
+  const convertToTreeNodeData = (orgs: Organization[]): TreeNodeData[] => {
+    return orgs.map((org) => ({
+      key: org.id.toString(),
+      title: org.name,
+      children: org.children ? convertToTreeNodeData(org.children) : undefined,
+    }));
+  };
+
+  const treeData = convertToTreeNodeData(organizations);
+
   const handleAddOrganization = () => {
     console.log('Add organization clicked');
   };
@@ -69,7 +80,7 @@ const OrganizationPage: React.FC = () => {
         }
       >
         <OrganizationTree
-          treeData={organizations}
+          treeData={treeData}
           onSelect={handleTreeSelect}
           showSearch={true}
           className="organization-tree-wrapper"

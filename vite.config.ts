@@ -5,6 +5,10 @@ import { defineConfig } from 'vite';
 import eslintPlugin from 'vite-plugin-eslint';
 
 export default defineConfig({
+  define: {
+    'process.env': {},
+    process: '{}',
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'), // 关键

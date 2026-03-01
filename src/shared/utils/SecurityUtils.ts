@@ -144,8 +144,10 @@ class SecurityUtils {
     // 在生产环境中应该使用专业的加密库
     try {
       const encoder = new TextEncoder();
-      const dataBytes = encoder.encode(data);
-      const keyBytes = encoder.encode(key.padEnd(32, '0')).slice(0, 32);
+      const dataBytes = encoder.encode(data || '');
+      const paddedKey = (key || '').padEnd(32, '0');
+      const encodedKey = encoder.encode(paddedKey);
+      const keyBytes = encodedKey.length > 0 ? encodedKey.slice(0, 32) : new Uint8Array(32);
 
       // 简单的 XOR 加密（仅作示例，生产环境请使用 AES 等标准算法）
       const encrypted = new Uint8Array(dataBytes.length);
@@ -162,11 +164,13 @@ class SecurityUtils {
   public static decryptData(encryptedData: string, key: string): string {
     try {
       const encryptedBytes = new Uint8Array(
-        atob(encryptedData)
+        atob(encryptedData || '')
           .split('')
           .map((char) => char.charCodeAt(0)),
       );
-      const keyBytes = new TextEncoder().encode(key.padEnd(32, '0')).slice(0, 32);
+      const paddedKey = (key || '').padEnd(32, '0');
+      const encodedKey = new TextEncoder().encode(paddedKey);
+      const keyBytes = encodedKey.length > 0 ? encodedKey.slice(0, 32) : new Uint8Array(32);
 
       const decrypted = new Uint8Array(encryptedBytes.length);
       for (let i = 0; i < encryptedBytes.length; i++) {

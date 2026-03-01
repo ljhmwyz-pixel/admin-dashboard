@@ -1,25 +1,18 @@
-// 环境配置管理器
-import { devConfig } from './dev';
-import { prodConfig } from './prod';
+import configSchema from './schema';
 
-class ConfigManager {
-  private static instance: ConfigManager;
+class ModernConfigManager {
+  private static instance: ModernConfigManager;
   private config: any;
 
   private constructor() {
-    this.initConfig();
+    this.config = configSchema.getProperties();
   }
 
-  public static getInstance(): ConfigManager {
-    if (!ConfigManager.instance) {
-      ConfigManager.instance = new ConfigManager();
+  public static getInstance(): ModernConfigManager {
+    if (!ModernConfigManager.instance) {
+      ModernConfigManager.instance = new ModernConfigManager();
     }
-    return ConfigManager.instance;
-  }
-
-  private initConfig(): void {
-    const isDev = import.meta.env.DEV;
-    this.config = isDev ? devConfig : prodConfig;
+    return ModernConfigManager.instance;
   }
 
   public getConfig(): any {
@@ -42,15 +35,15 @@ class ConfigManager {
   }
 
   public isDevelopment(): boolean {
-    return import.meta.env.DEV;
+    return this.get('env') === 'development';
   }
 
   public isProduction(): boolean {
-    return import.meta.env.PROD;
+    return this.get('env') === 'production';
   }
 
   public getEnv(): string {
-    return import.meta.env.MODE || 'development';
+    return this.get('env', 'development');
   }
 
   // 获取API基础URL
@@ -75,13 +68,13 @@ class ConfigManager {
 }
 
 // 创建全局配置实例
-const configManager = ConfigManager.getInstance();
+const modernConfigManager = ModernConfigManager.getInstance();
 
 // 方便使用的快捷方法
-export const getConfig = configManager.getConfig.bind(configManager);
-export const get = configManager.get.bind(configManager);
-export const isDev = configManager.isDevelopment.bind(configManager);
-export const isProd = configManager.isProduction.bind(configManager);
-export const getEnv = configManager.getEnv.bind(configManager);
+export const getConfig = modernConfigManager.getConfig.bind(modernConfigManager);
+export const get = modernConfigManager.get.bind(modernConfigManager);
+export const isDev = modernConfigManager.isDevelopment.bind(modernConfigManager);
+export const isProd = modernConfigManager.isProduction.bind(modernConfigManager);
+export const getEnv = modernConfigManager.getEnv.bind(modernConfigManager);
 
-export default configManager;
+export default modernConfigManager;

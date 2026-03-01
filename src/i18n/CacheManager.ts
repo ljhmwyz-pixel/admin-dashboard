@@ -304,12 +304,36 @@ export class LanguageCacheManager {
     const browserLanguages = this.getBrowserLanguages();
 
     // 合并并去重，优先级：用户偏好 > 地理位置 > 浏览器设置
-    const languagesToPreload = Array.from(
-      new Set([userPreferredLang, ...geoLanguages, ...browserLanguages]),
-    ).slice(0, 3) as LanguageKey[]; // 最多预加载3种语言
+    try {
+      // 确保所有数组都有默认值
+      const safeUserLang = userPreferredLang || 'en-US';
+      const safeGeoLangs = Array.isArray(geoLanguages) ? geoLanguages : ['en-US'];
+      const safeBrowserLangs = Array.isArray(browserLanguages) ? browserLanguages : ['en-US'];
 
-    console.log('🤖 Smart preloading languages:', languagesToPreload);
-    await this.preloadLanguages(languagesToPreload);
+      const mergedLanguages = [safeUserLang, ...safeGeoLangs, ...safeBrowserLangs].filter(
+        (lang): lang is LanguageKey => Boolean(lang) && typeof lang === 'string',
+      );
+
+      // 确保 Set 构造不会失败
+      const uniqueLanguages = new Set(mergedLanguages);
+      const languagesArray = Array.from(uniqueLanguages);
+
+      // 安全的 slice 操作
+      const filteredLanguages = languagesArray
+        .slice(0, 3)
+        .filter((lang): lang is LanguageKey =>
+          ['zh-CN', 'en-US', 'de-DE', 'it-IT', 'ja-JP'].includes(lang as LanguageKey),
+        );
+      const languagesToPreload: LanguageKey[] =
+        filteredLanguages.length > 0 ? filteredLanguages : ['en-US'];
+
+      console.log('🤖 Smart preloading languages:', languagesToPreload);
+      await this.preloadLanguages(languagesToPreload);
+    } catch (error) {
+      console.error('Smart preload failed:', error);
+      // 降级到默认语言
+      await this.preloadLanguages(['en-US']);
+    }
   }
 
   /**
@@ -328,16 +352,23 @@ export class LanguageCacheManager {
    * 获取地理位置相关的语言
    */
   private getGeoBasedLanguages(): LanguageKey[] {
-    // 简化的地理位置判断（实际项目中可以从IP地址获取）
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    try {
+      // 简化的地理位置判断（实际项目中可以从IP地址获取）
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    if (timezone.includes('Asia/Shanghai') || timezone.includes('Asia')) {
-      return ['zh-CN', 'en-US'];
-    } else if (timezone.includes('Europe')) {
-      return ['en-US', 'de-DE', 'it-IT'];
-    } else if (timezone.includes('America')) {
-      return ['en-US'];
-    } else {
+      if (!timezone) return ['en-US'];
+
+      if (timezone.includes('Asia/Shanghai') || timezone.includes('Asia')) {
+        return ['zh-CN', 'en-US'];
+      } else if (timezone.includes('Europe')) {
+        return ['en-US', 'de-DE', 'it-IT'];
+      } else if (timezone.includes('America')) {
+        return ['en-US'];
+      } else {
+        return ['en-US'];
+      }
+    } catch (error) {
+      console.debug('Failed to get geo-based languages:', error);
       return ['en-US'];
     }
   }
@@ -346,24 +377,37 @@ export class LanguageCacheManager {
    * 获取浏览器语言设置
    */
   private getBrowserLanguages(): LanguageKey[] {
-    const browserLangs = navigator.languages || [navigator.language];
-    const supportedLangs: LanguageKey[] = [];
+    try {
+      const browserLangs = navigator.languages || (navigator.language ? [navigator.language] : []);
 
-    browserLangs.forEach((lang) => {
-      if (lang.startsWith('zh')) {
-        supportedLangs.push('zh-CN');
-      } else if (lang.startsWith('en')) {
-        supportedLangs.push('en-US');
-      } else if (lang.startsWith('de')) {
-        supportedLangs.push('de-DE');
-      } else if (lang.startsWith('it')) {
-        supportedLangs.push('it-IT');
-      } else if (lang.startsWith('ja')) {
-        supportedLangs.push('ja-JP');
+      if (!browserLangs || browserLangs.length === 0) {
+        return ['en-US'];
       }
-    });
 
-    return Array.from(new Set(supportedLangs));
+      const supportedLangs: LanguageKey[] = [];
+
+      browserLangs.forEach((lang) => {
+        if (typeof lang === 'string') {
+          if (lang.startsWith('zh')) {
+            supportedLangs.push('zh-CN');
+          } else if (lang.startsWith('en')) {
+            supportedLangs.push('en-US');
+          } else if (lang.startsWith('de')) {
+            supportedLangs.push('de-DE');
+          } else if (lang.startsWith('it')) {
+            supportedLangs.push('it-IT');
+          } else if (lang.startsWith('ja')) {
+            supportedLangs.push('ja-JP');
+          }
+        }
+      });
+
+      const result = Array.from(new Set(supportedLangs));
+      return result.length > 0 ? result : ['en-US'];
+    } catch (error) {
+      console.debug('Failed to get browser languages:', error);
+      return ['en-US'];
+    }
   }
 
   /**

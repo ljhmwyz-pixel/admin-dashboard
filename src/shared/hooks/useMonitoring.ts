@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import ErrorTracker from '../utils/ErrorTracker';
-import PerformanceMonitor from '../utils/PerformanceMonitor';
+import { captureCaughtError, captureError } from '../utils/ModernErrorTracker';
+import logger, { performanceLog } from '../utils/ModernLogger';
 
 // 性能监控 Hook
 export const usePerformanceMonitoring = (componentName: string) => {
@@ -14,17 +14,33 @@ export const usePerformanceMonitoring = (componentName: string) => {
     return () => {
       const unmountTime = performance.now();
       const mountDuration = unmountTime - mountTimeRef.current;
-      PerformanceMonitor.recordMetric(`${componentName}_mount_duration`, mountDuration);
+
+      const perfOp = performanceLog.start(`${componentName}_mount`);
+      perfOp.end({ duration: mountDuration });
+
+      logger.info(`Component ${componentName} unmounted`, {
+        mountDuration: `${mountDuration.toFixed(2)}ms`,
+      });
     };
   }, [componentName]);
 
   // 返回监控方法
   return {
     recordMetric: (name: string, value: number) => {
-      PerformanceMonitor.recordMetric(`${componentName}_${name}`, value);
+      const perfOp = performanceLog.start(`${componentName}_${name}`);
+      perfOp.end({ value });
+
+      logger.debug(`Metric recorded for ${componentName}`, {
+        metric: name,
+        value,
+      });
     },
     captureError: (error: unknown, context?: string) => {
-      ErrorTracker.captureCaughtError(error, `${componentName}: ${context}`);
+      captureCaughtError(error, context);
+      logger.error(`Error in ${componentName}`, {
+        error: error instanceof Error ? error.message : String(error),
+        context,
+      });
     },
   };
 };
@@ -33,15 +49,32 @@ export const usePerformanceMonitoring = (componentName: string) => {
 export const useApiMonitoring = () => {
   const startApiCall = (apiName: string) => {
     const startTime = performance.now();
+    const perfOp = performanceLog.start(`api_${apiName}`);
 
     return {
-      finish: (success: boolean = true) => {
+      finish: (success: boolean = true, error?: any) => {
         const endTime = performance.now();
         const duration = endTime - startTime;
-        PerformanceMonitor.recordMetric(
-          `api_${apiName}_${success ? 'success' : 'failure'}`,
-          duration,
-        );
+
+        perfOp.end({
+          success,
+          duration: `${duration.toFixed(2)}ms`,
+          error: error?.message,
+        });
+
+        if (success) {
+          logger.info(`API call successful: ${apiName}`, {
+            duration: `${duration.toFixed(2)}ms`,
+          });
+        } else {
+          logger.error(`API call failed: ${apiName}`, {
+            duration: `${duration.toFixed(2)}ms`,
+            error: error?.message,
+          });
+          if (error) {
+            captureError(error, { api: apiName });
+          }
+        }
       },
     };
   };
@@ -57,9 +90,19 @@ export const useInteractionMonitoring = () => {
       try {
         handler();
         const endTime = performance.now();
-        PerformanceMonitor.recordMetric(`interaction_${actionName}`, endTime - startTime);
+        const duration = endTime - startTime;
+
+        const perfOp = performanceLog.start(`interaction_${actionName}`);
+        perfOp.end({ duration: `${duration.toFixed(2)}ms` });
+
+        logger.info(`User interaction: ${actionName}`, {
+          duration: `${duration.toFixed(2)}ms`,
+        });
       } catch (error) {
-        ErrorTracker.captureCaughtError(error, `Interaction: ${actionName}`);
+        captureCaughtError(error, `Interaction: ${actionName}`);
+        logger.error(`Interaction failed: ${actionName}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     };
