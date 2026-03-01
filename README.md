@@ -426,27 +426,3 @@ docs/文档更新       # 文档修改
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 🙏 致谢
-
-感谢以下开源项目的支持：
-
-- [React](https://reactjs.org/) - 前端框架
-- [Ant Design](https://ant.design/) - UI组件库
-- [Vite](https://vitejs.dev/) - 构建工具
-- [TypeScript](https://www.typescriptlang.org/) - 类型系统
-- [Redux Toolkit](https://redux-toolkit.js.org/) - 状态管理
-
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系我们：
-
-- 提交 [Issue](https://github.com/your-repo/issues)
-- 发送邮件至：[your-email@example.com](mailto:your-email@example.com)
-- 加入讨论群：[Discord/微信群]
-
----
-
-<p align="center">
-  Made with ❤️ by Your Team
-</p>
