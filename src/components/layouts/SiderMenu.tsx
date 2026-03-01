@@ -11,7 +11,7 @@ interface Props {
   collapsed: boolean;
 }
 
-const SiderFooter: React.FC<Props> = ({ collapsed }) => {
+const SiderMenu: React.FC<Props> = ({ collapsed }) => {
   const navigate = useNavigate();
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['orglist']);
 
@@ -22,6 +22,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     if (key === 'orgtype') navigate('/organization/type');
     if (key === 'role') navigate('/role');
     if (key === 'user') navigate('/user');
+    if (key === 'performance-test') navigate('/performance-test');
   };
 
   const menuItems: MenuProps['items'] = [
@@ -72,6 +73,20 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         <img
           src={
             selectedKeys.includes('user')
+              ? ImageIcons.menu.userActiveIcon
+              : ImageIcons.menu.userDefaultIcon
+          }
+          className={styles.menu_icon}
+        />
+      ),
+    },
+    {
+      label: <span className={styles.menuItemLabelStyle}>Performance Test</span>,
+      key: 'performance-test',
+      icon: (
+        <img
+          src={
+            selectedKeys.includes('performance-test')
               ? ImageIcons.menu.userActiveIcon
               : ImageIcons.menu.userDefaultIcon
           }
@@ -178,4 +193,4 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   );
 };
 
-export default SiderFooter;
+export default SiderMenu;

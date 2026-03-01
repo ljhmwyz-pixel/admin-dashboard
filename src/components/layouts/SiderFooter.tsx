@@ -5,7 +5,8 @@ import { Dropdown } from 'antd';
 import { ImageIcons } from '@/assets/images/layout';
 
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
-import { useLanguage } from '@/hooks/useLanguage';
+
+import { useLanguage } from '../../shared/hooks/useLanguage';
 
 import styles from './SiderFooter.module.scss';
 
@@ -35,7 +36,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
     { key: 'ja-JP', label: t('lang.japanese') },
   ];
 
-  const languageMap = {
+  const languageMap: Record<string, string> = {
     'zh-CN': t('lang.chinese'),
     'en-US': t('lang.english'),
     'de-DE': t('lang.german'),

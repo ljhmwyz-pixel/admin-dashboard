@@ -11,7 +11,8 @@ import type { MenuProps } from 'antd';
 import { Button, Dropdown, Space } from 'antd';
 
 import type { ColorScheme } from '../../config/themes';
-import { useTheme, useThemeContext } from '../../hooks/theme';
+import { useTheme, useThemeContext } from '../../shared/hooks/theme';
+import ColorPreview from '../atoms/ColorPreview/ColorPreview';
 
 import './ThemeSwitcher.css';
 
@@ -104,7 +105,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(
           key,
           label: (
             <Space>
-              <div className="color-preview" style={{ backgroundColor: color }} />
+              <ColorPreview color={color} size={16} />
               {label}
               {colorScheme === key && <CheckOutlined />}
             </Space>

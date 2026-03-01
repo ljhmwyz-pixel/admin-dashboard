@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { Content, Layout, Sider } from '../lib';
+import Layout from '../../shared/components/layout/Layout';
+import { Content, Sider } from '../../shared/components/layout/Layout';
 import SiderFooter from './SiderFooter';
 import SiderHeader from './SiderHeader';
 import SiderMenu from './SiderMenu';
