@@ -63,7 +63,7 @@ const DefaultFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
       </div>
 
       {/* 开发环境下显示详细错误信息 */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <details style={{ marginTop: '1rem', textAlign: 'left' }}>
           <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
             🔍 错误详情 (开发环境)
@@ -127,7 +127,7 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children, fallback, onErr
     }
 
     // 开发环境下输出错误信息
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.group('🚨 React Error Boundary');
       console.error('Error:', errorObj);
       console.error('Component Stack:', info.componentStack);
