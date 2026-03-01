@@ -14,7 +14,7 @@ import type { ColorScheme } from '../../config/themes';
 import { useTheme, useThemeContext } from '../../shared/hooks/theme';
 import ColorPreview from '../atoms/ColorPreview/ColorPreview';
 
-import './ThemeSwitcher.css';
+import styles from './ThemeSwitcher.module.scss';
 
 interface ThemeSwitcherProps {
   /** 是否显示文本标签 */
@@ -160,7 +160,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(
         onOpenChange={handleOpenChange}
       >
         <Button
-          className={`theme-switcher ${className}`}
+          className={`${styles.themeSwitcher} ${className}`}
           size={size}
           icon={getDisplayIcon()}
           loading={isLoading}

@@ -13,7 +13,7 @@ import ErrorBoundary from './shared/components/ErrorBoundary';
 import modernErrorTracker from './shared/utils/ModernErrorTracker';
 import logger from './shared/utils/ModernLogger';
 
-import './App.css';
+import './App.module.scss';
 
 const App: React.FC = () => {
   // 初始化监控工具和缓存

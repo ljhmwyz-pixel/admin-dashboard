@@ -19,5 +19,17 @@ export const useThemeContext = (): ThemeContextType => {
  * 基于新的统一主题hook实现
  */
 export const useTheme = () => {
-  return useUnifiedTheme();
+  const unifiedTheme = useUnifiedTheme();
+
+  return {
+    mode: unifiedTheme.mode,
+    isDark: unifiedTheme.isDarkMode,
+    isDarkMode: unifiedTheme.isDarkMode, // 保持向后兼容
+    themeConfig: unifiedTheme.currentThemeConfig,
+    currentThemeConfig: unifiedTheme.currentThemeConfig, // 保持向后兼容
+    toggleDarkMode: unifiedTheme.toggleDark,
+    changeColorScheme: unifiedTheme.changeColorScheme,
+    isLoading: unifiedTheme.isLoading,
+    colorScheme: unifiedTheme.colorScheme,
+  };
 };

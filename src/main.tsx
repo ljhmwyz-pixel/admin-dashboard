@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 
-// 添加 process polyfill 解决浏览器环境问题
+import './index.module.scss';
 if (typeof window !== 'undefined' && !(window as any).process) {
   (window as any).process = {
     env: {
