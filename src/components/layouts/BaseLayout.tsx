@@ -9,11 +9,7 @@ import SiderMenu from './SiderMenu';
 
 import styles from './BaseLayout.module.scss';
 
-interface BaseLayoutProps {
-  children: React.ReactNode;
-}
-
-const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
+const BaseLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (

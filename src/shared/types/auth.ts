@@ -1,9 +1,9 @@
 // 认证相关类型定义
 
 export interface LoginCredentials {
-  username: string;
+  account: string;
   password: string;
-  rememberMe?: boolean;
+  agreementAccepted?: boolean;
 }
 
 export interface RegisterData {
@@ -28,12 +28,39 @@ export interface UserInfo {
   updatedAt: string;
 }
 
+export interface PersonalIdentity {
+  type: 'PERSONAL';
+  displayName: string;
+}
+
+export type OrganizationType = 'INSTALLER' | 'DEALER' | 'GUEST' | 'BD';
+
+export interface OrganizationIdentity {
+  type: 'ORGANIZATION';
+  orgId: string;
+  orgName: string;
+  orgType: OrganizationType;
+  roles: string[];
+}
+export type Identity = PersonalIdentity | OrganizationIdentity;
+export type SelectedIdentity =
+  | {
+      type: 'PERSONAL';
+    }
+  | {
+      type: 'ORGANIZATION';
+      orgId: string;
+    };
 export interface AuthResponse {
-  token: string;
-  refreshToken?: string;
-  user: UserInfo;
-  permissions: string[];
-  expiresIn?: number;
+  accessToken: string;
+  refreshToken: string;
+  tokenType: 'Bearer';
+  expiresIn: number;
+  uid: string;
+  userName: string;
+  identities: Identity[];
+  lastSelectedIdentity?: SelectedIdentity;
+  requireIdentitySelection: boolean;
 }
 
 export interface ChangePasswordData {

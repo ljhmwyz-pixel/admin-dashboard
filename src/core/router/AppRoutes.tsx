@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import BaseLayout from '@/components/layouts/BaseLayout';
 
 import Login from '../../features/login/Login';
+import Register from '../../features/register/Register';
 import { routesConfig } from './config/routes';
 import { ProtectedRoute } from './guards/AuthGuard';
 
@@ -28,6 +29,8 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* 登录页（独立） */}
         <Route path="/login" element={<Login />} />
+        {/* 注册页（独立） */}
+        <Route path="/register" element={<Register />} />
         <Route element={<BaseLayout />}>
           {routesConfig.map((route) => (
             <Route

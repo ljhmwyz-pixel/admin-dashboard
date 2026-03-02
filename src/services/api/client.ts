@@ -32,9 +32,9 @@ class ApiClient {
     this.instance.interceptors.request.use(
       (config: any) => {
         // 添加认证token
-        const token = this.getToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        const accessToken = this.getToken();
+        if (accessToken) {
+          config.headers.Authorization = `Bearer ${accessToken}`;
         }
 
         // 添加时间戳防止缓存
@@ -98,17 +98,22 @@ class ApiClient {
 
   // 获取token
   private getToken(): string | null {
-    return localStorage.getItem('auth-token');
+    return localStorage.getItem('accessToken');
   }
 
   // 清除token
   private clearToken(): void {
-    localStorage.removeItem('auth-token');
+    localStorage.removeItem('accessToken');
   }
 
   // 设置token
   public setToken(token: string): void {
-    localStorage.setItem('auth-token', token);
+    localStorage.setItem('accessToken', token);
+  }
+
+  // 设置刷新token
+  public setRefreshToken(refreshToken: string): void {
+    localStorage.setItem('refreshToken', refreshToken);
   }
 
   // GET请求
