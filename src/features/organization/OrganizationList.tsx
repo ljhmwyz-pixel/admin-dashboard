@@ -3,9 +3,9 @@ import { Splitter } from 'antd';
 
 import { AntTabs } from '@/shared/components/antd-imports';
 
-import OrganizationTree from '../../components/organisms/OrganizationTree/OrganizationTree';
 import OrganizationDetailPanel from './components/OrganizationDetailPanel';
-import { organizationDetails, organizationTreeData } from './mocks/organizationData';
+import OrganizationTree from './components/OrganizationTree';
+import { organizationDetails } from './mocks/organizationData';
 
 import styles from './OrganizationList.module.scss';
 
@@ -14,7 +14,6 @@ const OrganizationList: React.FC = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
 
   // 使用模拟数据作为默认树数据
-  const defaultTreeData = organizationTreeData;
 
   return (
     <div className={styles.organizationListPage}>
@@ -85,12 +84,9 @@ const OrganizationList: React.FC = () => {
         <Splitter.Panel defaultSize="40%" min="20%" max="70%">
           <div className={styles.organizationListPanel}>
             <OrganizationTree
-              treeData={defaultTreeData}
-              onSelect={(selectedKeys) => {
-                if (selectedKeys.length > 0) {
-                  setSelectedKey(String(selectedKeys[0]));
-                  setActiveTabKey('info');
-                }
+              onSelect={(selectedKey) => {
+                setSelectedKey(selectedKey);
+                setActiveTabKey('info');
               }}
               selectedKey={selectedKey}
             />

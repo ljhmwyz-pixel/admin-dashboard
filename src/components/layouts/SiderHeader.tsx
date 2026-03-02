@@ -1,8 +1,7 @@
 import React from 'react';
 
+// import { useTheme } from '@/shared/hooks/theme';
 import { ImageIcons } from '@/assets/images/layout';
-
-import { useTheme, useThemeContext } from '@/shared/hooks/theme';
 
 import styles from './SiderHeader.module.scss';
 
@@ -12,7 +11,7 @@ interface Props {
 }
 
 const SiderHeader: React.FC<Props> = ({ collapsed, onToggle }) => {
-  const { isDarkMode: isDark } = useTheme();
+  // const { isDarkMode } = useTheme();
 
   return (
     <div className={`${styles.siderHeader_container} ${collapsed && styles.collapsed}`}>

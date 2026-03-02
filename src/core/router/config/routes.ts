@@ -22,8 +22,6 @@ const OrganizationList = lazy(() => import('../../../features/organization/Organ
 const OrganizationType = lazy(() => import('../../../features/organization/OrganizationType'));
 const RoleManagement = lazy(() => import('../../../features/role/RoleManagement'));
 const UserManagement = lazy(() => import('../../../features/user/UserManagement'));
-const PerformanceTest = lazy(() => import('../../../features/organization/PerformanceTest'));
-
 // 路由配置
 export const routesConfig: RouteConfig[] = [
   {
@@ -87,16 +85,6 @@ export const routesConfig: RouteConfig[] = [
     meta: {
       title: '用户管理',
       icon: 'user',
-      breadcrumb: true,
-    },
-  },
-  {
-    path: '/performance-test',
-    element: PerformanceTest,
-    auth: true,
-    meta: {
-      title: '性能测试',
-      icon: 'thunderbolt',
       breadcrumb: true,
     },
   },

@@ -26,13 +26,15 @@ export interface OrganizationApi {
   getTypes: () => Promise<OrganizationType[]>;
 }
 
-// 请求参数类型
+// 请求参数类型（符合需求文档规范）
 export interface OrganizationListParams {
-  page?: number;
-  pageSize?: number;
-  keyword?: string;
-  parentId?: string | number;
-  status?: 'active' | 'inactive';
+  pageNum?: number; // 页码，默认1
+  pageSize?: number; // 每页大小，默认10，最大100
+  keyword?: string; // 组织名称关键词（模糊搜索）
+  orgType?: 'PYLONTECH' | 'BD' | 'DEALER' | 'INSTALLER' | 'OWNER' | 'GUEST'; // 组织类型过滤
+  status?: 'ACTIVE' | 'INACTIVE'; // 组织状态过滤
+  sortBy?: 'name' | 'createdAt'; // 排序字段
+  sortOrder?: 'asc' | 'desc'; // 排序顺序
 }
 
 // 响应数据类型

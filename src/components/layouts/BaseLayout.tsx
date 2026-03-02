@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
+import GlobalLoading from '../../shared/components/GlobalLoading';
 import Layout from '../../shared/components/layout/Layout';
 import { Content, Sider } from '../../shared/components/layout/Layout';
+import { useGlobalLoading } from '../../shared/hooks/useGlobalLoading';
 import SiderFooter from './SiderFooter';
 import SiderHeader from './SiderHeader';
 import SiderMenu from './SiderMenu';
@@ -11,6 +13,7 @@ import styles from './BaseLayout.module.scss';
 
 const BaseLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { isLoading: globalLoading } = useGlobalLoading();
 
   return (
     <Layout className={styles.siderLayout}>
@@ -44,6 +47,8 @@ const BaseLayout: React.FC = () => {
         {/* 内容区域 */}
         <Content className={styles.adminContent}>
           <div className={styles.contentWrapper}>
+            {/* 全局loading组件 */}
+            <GlobalLoading visible={globalLoading} tip="加载中..." />
             <Outlet />
           </div>
         </Content>
