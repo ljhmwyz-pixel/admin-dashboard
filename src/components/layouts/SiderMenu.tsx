@@ -172,7 +172,6 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
     >
       {!collapsed ? (
         <Menu
-          theme="light"
           mode="inline"
           items={menuItems}
           selectedKeys={selectedKeys}

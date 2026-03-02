@@ -42,6 +42,7 @@ export default defineConfig([
     },
 
     rules: {
+      'no-debugger': 'off',
       /* ================= Prettier 接管格式 ================= */
       'prettier/prettier': 'error',
 

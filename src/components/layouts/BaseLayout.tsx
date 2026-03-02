@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import Layout from '../../shared/components/layout/Layout';
 import { Content, Sider } from '../../shared/components/layout/Layout';
@@ -8,11 +9,7 @@ import SiderMenu from './SiderMenu';
 
 import styles from './BaseLayout.module.scss';
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
-}
-
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const BaseLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -46,11 +43,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       >
         {/* 内容区域 */}
         <Content className={styles.adminContent}>
-          <div className={styles.contentWrapper}>{children}</div>
+          <div className={styles.contentWrapper}>
+            <Outlet />
+          </div>
         </Content>
       </Layout>
     </Layout>
   );
 };
 
-export default AdminLayout;
+export default BaseLayout;
