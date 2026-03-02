@@ -2,6 +2,8 @@ import React from 'react';
 
 import { ImageIcons } from '@/assets/images/layout';
 
+import { useTheme, useThemeContext } from '@/shared/hooks/theme';
+
 import styles from './SiderHeader.module.scss';
 
 interface Props {
@@ -10,6 +12,8 @@ interface Props {
 }
 
 const SiderHeader: React.FC<Props> = ({ collapsed, onToggle }) => {
+  const { isDarkMode: isDark } = useTheme();
+
   return (
     <div className={`${styles.siderHeader_container} ${collapsed && styles.collapsed}`}>
       {/* 展开时左侧 logo */}
@@ -18,7 +22,7 @@ const SiderHeader: React.FC<Props> = ({ collapsed, onToggle }) => {
         <img src={ImageIcons.header.LogoText} className={styles.logo_text} />
       </div>
 
-      {/* 右侧 toggle 区域 */}
+      {/* toggle 区域 */}
       <div className={styles.toggle} onClick={onToggle}>
         {/* 折叠时显示的小 logo */}
         <img src={ImageIcons.header.Logo} className={styles.logo_collapsed} />

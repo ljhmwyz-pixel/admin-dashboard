@@ -6,6 +6,9 @@ import { defineConfig } from 'vite';
 import eslintPlugin from 'vite-plugin-eslint';
 
 export default defineConfig({
+  server: {
+    host: true,
+  },
   build: {
     // 启用 CSS Tree Shaking
     cssMinify: 'esbuild',

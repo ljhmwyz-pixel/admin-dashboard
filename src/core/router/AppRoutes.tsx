@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import BaseLayout from '@/components/layouts/BaseLayout';
+
+import Login from '../../features/login/Login';
 import { routesConfig } from './config/routes';
 import { ProtectedRoute } from './guards/AuthGuard';
 
@@ -23,25 +26,28 @@ const AppRoutes: React.FC = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
-        {routesConfig.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              route.auth ? (
-                <ProtectedRoute
-                  permissions={(route.permissions as any) || []}
-                  roles={(route.roles as any) || []}
-                >
+        {/* 登录页（独立） */}
+        <Route path="/login" element={<Login />} />
+        <Route element={<BaseLayout />}>
+          {routesConfig.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                route.auth ? (
+                  <ProtectedRoute
+                    permissions={(route.permissions as any) || []}
+                    roles={(route.roles as any) || []}
+                  >
+                    <route.element />
+                  </ProtectedRoute>
+                ) : (
                   <route.element />
-                </ProtectedRoute>
-              ) : (
-                <route.element />
-              )
-            }
-          />
-        ))}
-
+                )
+              }
+            />
+          ))}
+        </Route>
         {/* 404 页面 */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
