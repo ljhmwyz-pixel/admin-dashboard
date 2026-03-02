@@ -40,6 +40,7 @@ const ThemeSwitcher: React.FC<ThemeSwitcherProps> = React.memo(
     // 使用useMemo优化静态数据
     const colorOptions = useMemo<Array<{ key: ColorScheme; label: string; color: string }>>(
       () => [
+        { key: 'turquoise', label: '蓝绿色', color: '#33C2C8' },
         { key: 'blue', label: '蓝色', color: '#1677ff' },
         { key: 'green', label: '绿色', color: '#52c41a' },
         { key: 'purple', label: '紫色', color: '#722ed1' },

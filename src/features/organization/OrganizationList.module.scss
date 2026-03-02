@@ -1,0 +1,59 @@
+// OrganizationList 组件样式
+@use '../../shared/styles/variables' as *;
+@use '../../shared/styles/mixins' as *;
+
+.organizationListPage {
+  height: 100%;
+  overflow: hidden;
+}
+
+.organizationListPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 12px;
+  background-color: $color-bg-container;
+  min-height: calc(100vh - 20px);
+}
+
+.organizationDetailPanel {
+  flex: 1;
+  min-width: 300px;
+  overflow: auto;
+  transition: padding 0.2s;
+  min-height: calc(100vh - 20px);
+
+  // 滚动条样式
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $color-bg-container;
+    @include rounded(3px);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $color-border;
+    @include rounded(3px);
+
+    &:hover {
+      background: $color-border-secondary;
+    }
+  }
+
+  // 暗色主题滚动条
+  @include dark-theme {
+    &::-webkit-scrollbar-track {
+      background: $dark-color-bg-elevated;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $dark-color-border;
+
+      &:hover {
+        background: $dark-color-border-secondary;
+      }
+    }
+  }
+}

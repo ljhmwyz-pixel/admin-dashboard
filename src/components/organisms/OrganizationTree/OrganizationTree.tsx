@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, Tree } from 'antd';
 import type { DataNode } from 'antd/es/tree';
+import classNames from 'classnames';
+
+import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { TreeNodeData } from '../../../shared/types/organization';
+import TreeNodeTitle from './TreeNodeTitle/TreeNodeTitle';
+
+import styles from './OrganizationTree.module.scss';
 
 interface OrganizationTreeProps {
   /** 树形数据 */
@@ -40,6 +46,8 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(defaultExpandedKeys);
   const [searchValue, setSearchValue] = useState('');
   const [autoExpandParent, setAutoExpandParent] = useState(true);
+
+  const { t } = useLanguage();
 
   // 直接使用传入的树形数据，因为已经是 TreeNodeData 格式
   const treeDataConverted = treeData.map((node) => ({
@@ -88,15 +96,23 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     onExpand?.(keys);
   };
 
-  // 调试信息
-  console.log('原始treeData:', treeData);
-  console.log('转换后treeDataConverted:', treeDataConverted);
+  // 自定义树节点标题渲染
+  const titleRender = (nodeData: any) => {
+    const treeNodeData = nodeData as TreeNodeData;
+
+    return <TreeNodeTitle nodeData={treeNodeData} />;
+  };
+
   return (
-    <div className={`organization-tree ${className}`}>
+    <div className={classNames(styles.organizationTree, className)}>
       {showSearch && (
-        <div className="tree-search">
+        <div className={styles.treeSearch}>
           <Input
-            placeholder="搜索组织机构"
+            className={styles.treeSearchInput}
+            prefixCls={styles.treeSearchIcon}
+            name="search"
+            placeholder={t('role.placeholder.search')}
+            variant="filled"
             prefix={<SearchOutlined />}
             value={searchValue}
             onChange={onSearchChange}
@@ -105,9 +121,9 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
         </div>
       )}
 
-      <div className="tree-container">
+      <div className={styles.treeContainer}>
         <Tree
-          className="organization-tree-view"
+          className={styles.tree}
           treeData={treeDataConverted}
           selectedKeys={selectedKey ? [selectedKey] : []}
           onSelect={onSelect}
@@ -119,7 +135,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
           autoExpandParent={autoExpandParent}
           filterTreeNode={filterTreeNode}
           showLine
-          showIcon={false}
+          titleRender={titleRender}
         />
       </div>
     </div>

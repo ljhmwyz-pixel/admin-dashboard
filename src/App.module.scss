@@ -14,28 +14,28 @@ body {
   align-items: center;
 }
 
-.ant-tree-node-selected,
-.ant-tree-treenode-selected {
-  background-color: #fff !important;
-  color: #33C2C8 !important;
-}
+// .ant-tree-node-selected,
+// .ant-tree-treenode-selected {
+//   background-color: #fff !important;
+//   color: #33C2C8 !important;
+// }
 
-.ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
-  width: calc(100% - 52px);
-}
+// .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
+//   width: calc(100% - 52px);
+// }
 
 // 主题相关的全局样式
-[data-theme="dark"] {
-  .ant-tree-node-selected,
-  .ant-tree-treenode-selected {
-    background-color: $dark-color-bg-container !important;
-    color: color.adjust(#33C2C8, $lightness: 20%) !important;
-  }
-}
+// [data-theme="dark"] {
+//   .ant-tree-node-selected,
+//   .ant-tree-treenode-selected {
+//     background-color: $dark-color-bg-container !important;
+//     color: color.adjust(#33C2C8, $lightness: 20%) !important;
+//   }
+// }
 
-// 响应式设计
-@include respond-to(768px) {
-  .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
-    width: calc(100% - 40px);
-  }
-}
+// // 响应式设计
+// @include respond-to(768px) {
+//   .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
+//     width: calc(100% - 40px);
+//   }
+// }

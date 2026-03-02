@@ -12,10 +12,11 @@
   padding: 10px;
   background: #f7f7f7;
   overflow-y: auto;
+  padding-left: 0;
 
   .contentWrapper {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
   }
 }
 

@@ -2,6 +2,11 @@ import type { ThemeConfig } from 'antd';
 
 // 颜色主题配置
 export const colorSchemes = {
+  turquoise: {
+    primary: '#33C2C8',
+    primaryHover: '#33C2C8',
+    primaryActive: '#33C2C8',
+  },
   blue: {
     primary: '#1677ff',
     primaryHover: '#40a9ff',
@@ -32,7 +37,7 @@ export const colorSchemes = {
 // 基础主题配置
 const baseTheme: ThemeConfig = {
   token: {
-    colorPrimary: colorSchemes.blue.primary,
+    colorPrimary: colorSchemes.turquoise.primary,
     colorSuccess: '#52c41a',
     colorWarning: '#faad14',
     colorError: '#ff4d4f',
@@ -63,7 +68,7 @@ export const defaultTheme: ThemeConfig = {
     ...baseTheme.token,
     colorBgBase: '#ffffff',
     colorBgContainer: '#ffffff',
-    colorText: '#1d1d1d',
+    colorText: '#191B1F',
     colorTextSecondary: '#5a5a5a',
     colorBorder: '#d9d9d9',
     colorBorderSecondary: '#f0f0f0',
@@ -80,7 +85,7 @@ export const darkTheme: ThemeConfig = {
   token: {
     ...baseTheme.token,
     colorBgBase: '#141414',
-    colorBgContainer: '#1d1d1d',
+    colorBgContainer: '#191B1F',
     colorBgElevated: '#262626',
     colorText: 'rgba(255, 255, 255, 0.85)',
     colorTextSecondary: 'rgba(255, 255, 255, 0.65)',
@@ -105,7 +110,7 @@ export const compactTheme: ThemeConfig = {
 // 获取主题配置
 export const getThemeConfig = (
   algorithm: 'default' | 'dark' | 'compact',
-  colorScheme: keyof typeof colorSchemes = 'blue',
+  colorScheme: keyof typeof colorSchemes = 'turquoise',
 ): ThemeConfig => {
   let baseThemeConfig: ThemeConfig;
 

@@ -6,7 +6,7 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
 // 主题算法类型
 export type ThemeAlgorithm = 'default' | 'dark' | 'compact';
 // 颜色主题类型
-export type ColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'red';
+export type ColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'red' | 'turquoise';
 
 // 主题配置接口
 export interface ThemeState {
@@ -28,7 +28,7 @@ export interface ThemeState {
 const initialState: ThemeState = {
   mode: 'auto',
   algorithm: 'default',
-  colorScheme: 'blue',
+  colorScheme: 'turquoise',
   isLoading: false,
   systemPreference: 'light',
   isManualOverride: false,

@@ -50,7 +50,7 @@
 
 /* 暗色主题下的样式调整 */
 [data-theme='dark'] .theme-switcher {
-  background-color: var(--color-bg-container, #1d1d1d);
+  background-color: var(--color-bg-container, #191B1F);
   border-color: var(--color-border, #424242);
 }
 
