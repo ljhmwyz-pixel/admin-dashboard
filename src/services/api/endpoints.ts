@@ -8,15 +8,15 @@ export const AUTH_ENDPOINTS = {
   PROFILE: '/auth/profile',
 } as const;
 
-// 组织管理相关
+// 组织管理相关（符合需求文档规范）
 export const ORGANIZATION_ENDPOINTS = {
-  LIST: '/organizations',
-  DETAIL: (id: string | number) => `/organizations/${id}`,
-  CREATE: '/organizations',
-  UPDATE: (id: string | number) => `/organizations/${id}`,
-  DELETE: (id: string | number) => `/organizations/${id}`,
-  TREE: '/organizations/tree',
-  TYPES: '/organizations/types',
+  LIST: '/api/v1/organization/organizations',
+  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
+  CREATE: '/api/v1/organization/organizations',
+  UPDATE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
+  DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
+  TREE: '/api/v1/organization/organizations/tree',
+  TYPES: '/api/v1/organization/organizations/types',
 } as const;
 
 // 用户管理相关

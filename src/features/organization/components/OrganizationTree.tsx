@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { organizationApi } from '../../../services/modules/organization/organizationApi';
-import { AntInput, AntTree } from '../../../shared/components/antd-imports';
-import type { TreeNodeData } from '../../../shared/types/organization';
-import { generateMassiveOrganizationTreeData } from '../mocks/organizationData';
+import { AntInput, AntTree } from '@/shared/components/antd-imports';
+import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { TreeNodeData } from '@/shared/types/organization';
+
+import { loadOrganizationData } from '../services/organizationService';
 import AddOrganizationDrawer from './AddOrganizationDrawer';
-import styles from './OrganizationTree.module.less';
 import TreeNodeTitle from './TreeNodeTitle';
+
+import styles from './OrganizationTree.module.scss';
 
 interface OrganizationTreeProps {
   onSelect?: (selectedKey: string) => void;
@@ -14,39 +17,42 @@ interface OrganizationTreeProps {
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedKey = '' }) => {
+  const { withLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [currentParentNode, setCurrentParentNode] = useState<any>(null);
   const [searchValue, setSearchValue] = useState<string>('');
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+  const { t } = useLanguage();
+
+  const loadData = useCallback(
+    async (searchKeyword?: string) => {
+      await loadOrganizationData({
+        searchKeyword,
+        withLoading,
+        setData: (data) => {
+          setTreeData(data);
+          // 数据更新后折叠所有节点
+          setExpandedKeys([]);
+        },
+      });
+    },
+    [withLoading],
+  );
+
+  // 加载初始数据的函数
+  const loadInitialData = useCallback(async () => {
+    await loadData();
+  }, [loadData]);
 
   // 初始化加载顶层组织树数据
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        await organizationApi.getList();
-        const largeOrganizationData = generateMassiveOrganizationTreeData(10000);
-        setTreeData(largeOrganizationData);
-      } catch (error) {
-        console.error('Failed to load organization tree:', error);
-      }
-    };
-
     loadInitialData();
-  }, []);
+  }, [loadInitialData]);
 
   // 搜索处理 - 调用API接口
   const handleSearch = async () => {
-    // const keyword = e.target.value;
-    // setSearchValue(keyword);
-    // try {
-    //     setLoading(true);
-    //     const data = await searchOrganizations(keyword);
-    //     setTreeData(data);
-    // } catch (error) {
-    //     console.error('Search failed:', error);
-    // } finally {
-    //     setLoading(false);
-    // }
+    await loadData(searchValue);
   };
 
   // 处理树节点选择
@@ -60,21 +66,20 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   };
 
   // 处理节点添加事件
-  const handleNodeAdd = (nodeData: TreeNodeData, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleNodeAdd = (nodeData: TreeNodeData) => {
     setCurrentParentNode(nodeData);
     setAddDrawerVisible(true);
   };
 
   return (
-    <div className={styles.organizationTreeContainer} style={{ flex: 1, overflow: 'auto' }}>
-      <div className={styles.organizationTreeSearch}>
+    <div className={styles.organizationTree}>
+      <div className={styles.treeSearch}>
         <AntInput
-          prefixCls={styles.organizationTreeSearchPrefix}
+          className={styles.treeSearchInput}
+          prefixCls={styles.treeSearchIcon}
           name="search"
-          placeholder="Please enter role name"
-          value={searchValue}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
+          placeholder={t('role.placeholder.search')}
+          variant="filled"
           prefix={
             <svg
               width="15"
@@ -92,29 +97,30 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
               />
             </svg>
           }
+          value={searchValue}
+          onChange={(e: { target: { value: string } }) => setSearchValue(e.target.value)}
           onPressEnter={handleSearch}
-          className={styles.organizationTreeSearchInput}
+          allowClear
         />
       </div>
-
-      <AntTree
-        className={styles.organizationTree}
-        treeData={treeData}
-        onSelect={handleTreeSelect}
-        selectedKeys={[selectedKey]}
-        showLine
-        height={(window && window?.innerHeight - 74) || 400}
-        blockNode
-        virtual={true}
-        titleRender={(nodeData: TreeNodeData) => (
-          <TreeNodeTitle
-            nodeData={nodeData}
-            onAdd={handleNodeAdd}
-            //   onDelete={(nodeData, e) => handleNodeDelete?.(nodeData, e)}
-          />
-        )}
-      />
-
+      <div className={styles.organizationTreeSearch} />
+      <div className={styles.treeContainer}>
+        <AntTree
+          className={styles.organizationTree}
+          treeData={treeData}
+          onSelect={handleTreeSelect}
+          selectedKeys={[selectedKey]}
+          expandedKeys={expandedKeys}
+          onExpand={setExpandedKeys}
+          showLine
+          height={(window && window?.innerHeight - 74) || 400}
+          blockNode
+          virtual
+          titleRender={(nodeData: TreeNodeData) => (
+            <TreeNodeTitle nodeData={nodeData} onNodeAdd={handleNodeAdd} />
+          )}
+        />
+      </div>
       {/* 添加组织抽屉 */}
       <AddOrganizationDrawer
         visible={addDrawerVisible}

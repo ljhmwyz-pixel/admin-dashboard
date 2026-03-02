@@ -54,12 +54,19 @@ export const fetchOrganizations = createAsyncThunk(
       const { pagination, filters } = state.organization;
 
       const params = {
-        page: pagination.page,
+        pageNum: pagination.page,
         pageSize: pagination.pageSize,
         keyword: filters.keyword || undefined,
-        status: filters.status === 'all' ? undefined : filters.status,
-        parentId: filters.parentId || undefined,
-      };
+        status:
+          filters.status === 'all'
+            ? undefined
+            : filters.status === 'active'
+              ? 'ACTIVE'
+              : 'INACTIVE',
+        orgType: undefined, // 可以根据需要添加
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+      } as const;
 
       const response = await organizationApi.getList(params);
       return response;

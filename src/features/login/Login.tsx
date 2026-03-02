@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { apiClient } from '@/services/api/client';
-import { authApi } from '@/services/modules/auth/authApi';
-
 // import styles from './Login.module.scss';
 
 const Login: React.FC = () => {

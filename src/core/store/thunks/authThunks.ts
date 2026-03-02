@@ -12,7 +12,9 @@ export const loginUser = createAsyncThunk(
       const response = await authApi.login(credentials);
 
       // 存储认证信息
-      SecurityUtils.setToken(response.token);
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
+      }
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
@@ -53,7 +55,9 @@ export const refreshToken = createAsyncThunk(
       const response = await authApi.refreshToken(refreshToken);
 
       // 更新 token
-      SecurityUtils.setToken(response.token);
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
+      }
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
@@ -120,7 +124,9 @@ export const checkAuthStatus = createAsyncThunk(
         const refreshToken = SecurityUtils.getRefreshToken();
         if (refreshToken) {
           const response = await authApi.refreshToken(refreshToken);
-          SecurityUtils.setToken(response.token);
+          if (response.token) {
+            SecurityUtils.setToken(response.token);
+          }
           if (response.refreshToken) {
             SecurityUtils.setRefreshToken(response.refreshToken);
           }

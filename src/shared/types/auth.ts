@@ -61,6 +61,10 @@ export interface AuthResponse {
   identities: Identity[];
   lastSelectedIdentity?: SelectedIdentity;
   requireIdentitySelection: boolean;
+  // 兼容旧的字段名
+  token?: string;
+  user?: UserInfo;
+  permissions?: string[];
 }
 
 export interface ChangePasswordData {

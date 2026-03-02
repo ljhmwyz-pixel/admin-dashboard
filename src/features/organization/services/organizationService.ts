@@ -1,56 +1,77 @@
 // 组织服务API
-import { organizationTreeData } from '../mocks/organizationData';
+import { organizationApi } from '@/services/modules/organization/organizationApi';
 
-// 模拟API接口 - 实际项目中应替换为真实的HTTP请求
-export const searchOrganizations = async (keyword: string): Promise<any[]> => {
-  // 模拟网络延迟
-  await new Promise((resolve) => setTimeout(resolve, 300));
+import {
+  generateFallbackTreeData,
+  transformOrganizationToTreeData,
+} from '../utils/dataTransformer';
 
-  if (!keyword.trim()) {
-    return organizationTreeData;
-  }
+// 通用的组织数据加载服务
+export interface LoadOrganizationDataOptions {
+  searchKeyword?: string;
+  withLoading?: (
+    asyncFn: () => Promise<any>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<any>;
+  setData?: (data: any[]) => void;
+}
 
-  // 模拟后端搜索逻辑
-  const searchKeyword = keyword.toLowerCase();
+export const loadOrganizationData = async ({
+  searchKeyword,
+  withLoading,
+  setData,
+}: LoadOrganizationDataOptions): Promise<void> => {
+  const loadDataLogic = async () => {
+    // 构造API参数
+    const params: any = {
+      pageNum: 1,
+      pageSize: searchKeyword ? 100 : 1000, // 搜索时限制结果数量
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+    };
 
-  const filterNodes = (nodes: any[]): any[] => {
-    return nodes.reduce((acc: any[], node) => {
-      // 检查当前节点是否匹配
-      const matches = node.title.toLowerCase().includes(searchKeyword);
+    // 如果有搜索关键词，添加到参数中
+    if (searchKeyword?.trim()) {
+      params.keyword = searchKeyword.trim();
+    }
 
-      // 如果当前节点匹配，添加到结果中
-      if (matches) {
-        acc.push({
-          ...node,
-          children: node.children ? filterNodes(node.children) : undefined,
-        });
+    // 调用符合需求文档的API接口
+    const response = await organizationApi.getList(params);
 
-        return acc;
-      }
+    // 转换数据格式
+    const transformedData = transformOrganizationToTreeData(response.data);
 
-      // 如果有子节点，递归检查子节点
-      if (node.children && node.children.length > 0) {
-        const filteredChildren = filterNodes(node.children);
-        // 如果有子节点匹配，添加当前节点（带过滤后的子节点）到结果中
-        if (filteredChildren.length > 0) {
-          acc.push({
-            ...node,
-            children: filteredChildren,
-          });
-        }
-      }
+    // 设置数据
+    if (setData) {
+      setData(transformedData);
+    }
 
-      return acc;
-    }, []);
+    return transformedData;
   };
 
-  return filterNodes(organizationTreeData);
-};
-
-// 获取组织树数据
-export const getOrganizationTree = async (): Promise<any[]> => {
-  // 模拟网络延迟
-  await new Promise((resolve) => setTimeout(resolve, 200));
-
-  return organizationTreeData;
+  // 如果提供了withLoading，则使用它包装异步操作
+  if (withLoading) {
+    await withLoading(loadDataLogic, {
+      onError: (error) => {
+        console.error('Failed to load organization tree:', error);
+        // 使用兜底数据
+        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+        if (setData) {
+          setData(fallbackData);
+        }
+      },
+    });
+  } else {
+    // 如果没有提供withLoading，直接执行
+    try {
+      await loadDataLogic();
+    } catch (error) {
+      console.error('Failed to load organization tree:', error);
+      // 使用兜底数据
+      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+      if (setData) {
+        setData(fallbackData);
+      }
+    }
+  }
 };
