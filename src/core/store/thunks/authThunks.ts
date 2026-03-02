@@ -6,19 +6,15 @@ import SecurityUtils from '../../../shared/utils/SecurityUtils';
 
 // 登录 thunk
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  'api/v1/auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await authApi.login(credentials);
-
-      // 存储认证信息
-      SecurityUtils.setToken(response.token);
+      debugger;
+      // 本地缓存refreshToken
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
-      SecurityUtils.setUserInfo(response.user);
-      SecurityUtils.setPermissions(response.permissions || []);
-
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '登录失败');

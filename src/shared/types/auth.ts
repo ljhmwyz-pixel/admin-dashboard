@@ -52,8 +52,8 @@ export type SelectedIdentity =
       orgId: string;
     };
 export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
+  accessToken?: string;
+  refreshToken?: string;
   tokenType: 'Bearer';
   expiresIn: number;
   uid: string;

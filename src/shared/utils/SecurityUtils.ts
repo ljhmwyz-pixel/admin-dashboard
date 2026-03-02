@@ -1,9 +1,9 @@
 // 安全工具类
 class SecurityUtils {
-  private static readonly TOKEN_KEY = 'auth_token';
+  private static readonly TOKEN_KEY = 'accessToken';
   private static readonly USER_INFO_KEY = 'user_info';
   private static readonly PERMISSIONS_KEY = 'user_permissions';
-  private static readonly REFRESH_TOKEN_KEY = 'refresh_token';
+  private static readonly REFRESH_TOKEN_KEY = 'refreshToken';
 
   // Token 管理
   public static setToken(token: string): void {

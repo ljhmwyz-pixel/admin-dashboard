@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 
+import { useAppDispatch } from '@/core/store/hooks';
+import { loginUser } from '@/core/store/thunks/authThunks';
 import { apiClient } from '@/services/api/client';
 import { authApi } from '@/services/modules/auth/authApi';
 
@@ -8,6 +11,7 @@ import { authApi } from '@/services/modules/auth/authApi';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [form, setForm] = useState({
     account: '',
@@ -36,16 +40,17 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      // const result = await authApi.login(form);
-      // debugger;
-      // apiClient.setToken(result.accessToken);
-      // apiClient.setRefreshToken(result.refreshToken);
-      // TODO: 替换为真实接口
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      localStorage.setItem('token', 'demo-token');
-
-      navigate('/dashboard', { replace: true });
+      const resultAction = await dispatch(loginUser(form));
+      if (loginUser.fulfilled.match(resultAction)) {
+        // 登录成功
+        navigate('/dashboard', { replace: true });
+      } else {
+        // 登录失败
+        message.error(resultAction.payload as string);
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 800));
+      // localStorage.setItem('token', 'demo-token');
+      // navigate('/dashboard', { replace: true });
     } catch (err) {
       setError('登录失败，请重试');
     } finally {
