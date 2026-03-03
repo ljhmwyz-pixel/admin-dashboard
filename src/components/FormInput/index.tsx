@@ -8,40 +8,36 @@ import styles from './index.module.scss';
 
 interface CustomInputProps extends Omit<FormItemProps, 'children' | 'label'> {
   label?: React.ReactNode;
-  required?: boolean;
   prefixIcon?: React.ReactNode;
   inputProps?: InputProps;
   className?: string;
 }
 const CustomInput: React.FC<CustomInputProps> = ({
   label,
-  required,
   prefixIcon,
   inputProps,
   className,
   ...formItemProps
 }) => {
   return (
-    <Form.Item {...formItemProps} className={classNames(styles.wrapper, className)}>
-      <div className={styles.container}>
+    <Form.Item
+      label={
         <div className={styles.label}>
           {prefixIcon ? prefixIcon : null}
-          <span>
-            {label}
-            {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
-          </span>
+          <span>{label}</span>
         </div>
-        <Form.Item {...formItemProps} noStyle>
-          <Input
-            {...inputProps}
-            className={`
+      }
+      {...formItemProps}
+      className={classNames(styles.wrapper, className)}
+    >
+      <Input
+        {...inputProps}
+        className={`
               ${styles.input}
               ${inputProps?.className || ''}
               ${inputProps?.disabled ? styles.disabledStyle : ''}
             `}
-          />
-        </Form.Item>
-      </div>
+      />
     </Form.Item>
   );
 };

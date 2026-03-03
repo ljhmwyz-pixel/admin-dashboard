@@ -8,7 +8,6 @@ import styles from './index.module.scss';
 
 interface CustomTextAreaProps extends Omit<FormItemProps, 'children' | 'label'> {
   label?: React.ReactNode;
-  required?: boolean;
   prefixIcon?: React.ReactNode;
   inputProps?: TextAreaProps;
   className?: string;
@@ -16,7 +15,6 @@ interface CustomTextAreaProps extends Omit<FormItemProps, 'children' | 'label'> 
 
 const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   label,
-  required,
   prefixIcon,
   inputProps,
   className,
@@ -24,32 +22,24 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
 }) => {
   return (
     <Form.Item
+      label={
+        <div className={styles.label}>
+          {prefixIcon ? prefixIcon : null}
+          <span>{label}</span>
+        </div>
+      }
       {...formItemProps}
-      required={required}
       className={classNames(styles.wrapper, className)}
     >
-      <div className={styles.container}>
-        {label && (
-          <div className={styles.label}>
-            {prefixIcon}
-            <span>
-              {label}
-              {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
-            </span>
-          </div>
-        )}
-        <Form.Item {...formItemProps} noStyle>
-          <Input.TextArea
-            autoSize={{ minRows: 3, maxRows: 6 }}
-            {...inputProps}
-            className={`
+      <Input.TextArea
+        autoSize={{ minRows: 3, maxRows: 6 }}
+        {...inputProps}
+        className={`
               ${styles.input}
               ${inputProps?.className || ''}
               ${inputProps?.disabled ? styles.disabledStyle : ''}
             `}
-          />
-        </Form.Item>
-      </div>
+      />
     </Form.Item>
   );
 };

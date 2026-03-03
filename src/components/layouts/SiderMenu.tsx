@@ -4,6 +4,7 @@ import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
 import { ImageIcons } from '@/components';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import styles from './SiderMenu.module.scss';
 
@@ -14,6 +15,7 @@ interface Props {
 const SiderMenu: React.FC<Props> = ({ collapsed }) => {
   const navigate = useNavigate();
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['orglist']);
+  const { t } = useLanguage();
 
   const handleMenuClick = (key: string) => {
     setSelectedKeys([key]);
@@ -27,7 +29,7 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
 
   const menuItems: MenuProps['items'] = [
     {
-      label: <span className={styles.menuItemLabelStyle}>Organization Mgmt</span>,
+      label: <span className={styles.menuItemLabelStyle}>{t('org.mgmt.title')}</span>,
       key: 'org',
       icon: (
         <img
@@ -43,17 +45,17 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
       ),
       children: [
         {
-          label: 'Organization List',
+          label: t('org.list.title'),
           key: 'orglist',
         },
         {
-          label: 'Organization Type',
+          label: t('org.type.title'),
           key: 'orgtype',
         },
       ],
     },
     {
-      label: <span className={styles.menuItemLabelStyle}>Role Mgmt</span>,
+      label: <span className={styles.menuItemLabelStyle}>{t('role.mgmt.title')}</span>,
       key: 'role',
       icon: (
         <img
@@ -67,7 +69,7 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
       ),
     },
     {
-      label: <span className={styles.menuItemLabelStyle}>User Mgmt</span>,
+      label: <span className={styles.menuItemLabelStyle}>{t('user.mgmt.title')}</span>,
       key: 'user',
       icon: (
         <img

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form } from 'antd';
 
-import { FormInput, FormSelect, FormTextArea, ImageIcons } from '@/components';
+import { FormInput, FormSelect, ImageIcons } from '@/components';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import OrgInfo from './OrganizationInfo';
 
@@ -9,13 +10,14 @@ import styles from './OrganizationView.module.scss';
 
 const OrganizationView: React.FC = () => {
   const [form] = Form.useForm();
-
+  const { t } = useLanguage();
   return (
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
       <OrgInfo />
       <Form
         form={form}
+        layout="vertical"
         initialValues={{
           OrganizationAddress: 'No.300 Miaoqiao Road, Pudong, Shanghai',
           CountryRegion: 'China',
@@ -28,7 +30,7 @@ const OrganizationView: React.FC = () => {
       >
         <div className={styles.formGroups}>
           <FormInput
-            label="Organization Address"
+            label={t('org.field.address')}
             name="OrganizationAddress"
             prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
             inputProps={{
@@ -38,7 +40,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
           <FormSelect
-            label="Country / Region"
+            label={t('org.field.country_region')}
             name="CountryRegion"
             prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
             selectProps={{
@@ -48,7 +50,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
           <FormInput
-            label="Postal Code"
+            label={t('org.field.postal_code')}
             name="PostalCode"
             prefixIcon={<img src={ImageIcons.form.orgPostalCodeIcon} width={14} height={14} />}
             inputProps={{
@@ -58,7 +60,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
           <FormInput
-            label="Admin Name"
+            label={t('org.field.username')}
             name="AdminName"
             prefixIcon={<img src={ImageIcons.form.orgAdminNameIcon} width={14} height={14} />}
             inputProps={{
@@ -68,7 +70,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
           <FormInput
-            label="Email"
+            label={t('org.field.email')}
             name="Email"
             prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
             inputProps={{
@@ -78,7 +80,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
           <FormInput
-            label="Phone Number"
+            label={t('org.field.phone')}
             name="PhoneNumber"
             prefixIcon={<img src={ImageIcons.form.orgPhoneIcon} width={14} height={14} />}
             inputProps={{
@@ -87,8 +89,8 @@ const OrganizationView: React.FC = () => {
               placeholder: '',
             }}
           />
-          <FormTextArea
-            label="Comment"
+          <FormInput
+            label={t('org.field.comment')}
             name="Comment"
             prefixIcon={<img src={ImageIcons.form.orgCommentIcon} width={14} height={14} />}
             inputProps={{
