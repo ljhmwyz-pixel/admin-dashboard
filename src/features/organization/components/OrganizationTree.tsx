@@ -19,6 +19,7 @@ interface OrganizationTreeProps {
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedKey = '' }) => {
   const { withLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
+  const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
   const [searchValue, setSearchValue] = useState<string>('');
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
@@ -64,7 +65,8 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   };
 
   // 处理节点添加事件
-  const handleNodeAdd = () => {
+  const handleNodeAdd = (nodeData: TreeNodeData) => {
+    setCurrentParentNode(nodeData);
     setAddDrawerVisible(true);
   };
 
@@ -119,7 +121,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         />
       </div>
       {/* 添加组织抽屉 */}
-      <AddOrganizationDrawer visible={true} onChange={(visible) => setAddDrawerVisible(visible)} />
+      <AddOrganizationDrawer
+        currentParentNode={currentParentNode}
+        visible={true}
+        onChange={(visible) => setAddDrawerVisible(visible)}
+      />
     </div>
   );
 };
