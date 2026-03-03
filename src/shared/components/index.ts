@@ -13,7 +13,14 @@ export {
   WarningButton,
 } from './button/Button';
 export type { FormProps } from './form/Form';
-export { default as Form } from './form/Form';
+export {
+  default as Form,
+  FormItem,
+  FormList,
+  FormProvider,
+  useForm,
+  useFormInstance,
+} from './form/Form';
 export type { InputProps } from './form/Input';
 export {
   default as Input,
@@ -28,6 +35,10 @@ export { default as Select } from './form/Select';
 // 布局组件
 export type { CardProps } from './layout/Card';
 export { default as Card } from './layout/Card';
+export type { DrawerProps } from './layout/Drawer';
+export { default as Drawer } from './layout/Drawer';
+export type { SpaceProps } from './layout/Space';
+export { default as Space } from './layout/Space';
 
 // 导航组件
 export type { LayoutProps } from './layout/Layout';
@@ -52,6 +63,7 @@ export {
   AntCalendar,
   AntCard,
   AntCheckbox,
+  AntCol,
   AntCollapse,
   AntConfigProvider,
   AntDatePicker,
@@ -80,6 +92,7 @@ export {
   AntRadio,
   AntRate,
   AntResult,
+  AntRow,
   AntSelect,
   AntSkeleton,
   AntSlider,
