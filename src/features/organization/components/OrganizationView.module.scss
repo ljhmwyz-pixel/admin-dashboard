@@ -1,6 +1,9 @@
 .organizationView {
   margin-left: -30px;
-  min-height: 88px;
+  // 54(tab) + 20(padding)
+  min-height: calc(100vh - 74px);
+  display: flex;
+  flex-direction: column;
   .formGroups {
     width: 100%;
     display: flex;
@@ -15,5 +18,13 @@
   // 一行2个，2个间距30，右侧无间距
   .formGroups > * {
     flex: 0 0 calc((100% - 30px) / 2);
+  }
+  .btns {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    padding-bottom: 60px;
   }
 }

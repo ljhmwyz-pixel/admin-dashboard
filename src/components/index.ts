@@ -6,6 +6,7 @@ export { default as IconButton } from './atoms/IconButton/IconButton';
 export { default as SidebarTemplate } from './templates/SidebarTemplate/SidebarTemplate';
 
 // 布局组件导出（保持向后兼容）
+export { default as FormButton } from './FormButton';
 export { default as FormInput } from './FormInput';
 export { default as FormSelect } from './FormSelect';
 export { default as FormTextArea } from './FormTextArea';

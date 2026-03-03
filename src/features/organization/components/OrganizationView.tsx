@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form } from 'antd';
 
-import { FormInput, FormSelect, ImageIcons } from '@/components';
+import { FormButton, FormInput, FormSelect, ImageIcons } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import OrgInfo from './OrganizationInfo';
@@ -101,6 +101,10 @@ const OrganizationView: React.FC = () => {
           />
         </div>
       </Form>
+      {/* 操作按钮 */}
+      <div className={styles.btns}>
+        <FormButton>{t('common.action.modify')}</FormButton>
+      </div>
     </div>
   );
 };
