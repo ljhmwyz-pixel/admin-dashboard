@@ -3,14 +3,28 @@ import React from 'react';
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
 type OrgEmailFieldProps = FieldProps;
+// 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
+const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form }) => {
   const { t } = useLanguage();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value || '';
+
+    form.setFieldValue('orgEmail', value);
+  };
+
+  const checkInternalOrGuestUser = async () => {
+    // TODO: 实现内部用户或访客用户的检查逻辑
+    // 该判断仅限于 Dealer/Installer/Owner类型的组织
+    // 需要调用后端 API 进行查重和类型判断
+    return true; // 暂时返回 true，后续补充实际逻辑
+  };
 
   return (
     <AntCol span={12}>
@@ -35,23 +49,46 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form }) => {
             />
           </svg>
         }
+        formItemProps={{
+          rules: [
+            {
+              required: true,
+              message: t('org.placeholder.enter_email'),
+            },
+            {
+              pattern: EMAIL_PATTERN,
+              message: t('org.placeholder.enter_email'),
+            },
+          ],
+        }}
         inputProps={{
           placeholder: t('org.placeholder.enter_email'),
           maxLength: 254,
-          required: true,
+          onChange: handleInputChange,
           onBlur: () => {
             setTimeout(() => {
               const value = form.getFieldValue('orgEmail') || '';
-              if (value.trim() && !containsEmoji(value)) {
-                form.validateFields(['orgEmail']);
-              } else {
+
+              // 检查是否包含不允许的字符
+              const hasInvalidChars = /[^A-Za-z0-9._%+\-@]/.test(value);
+              // 检查邮箱格式是否正确
+              const isValidFormat = EMAIL_PATTERN.test(value);
+              if (hasInvalidChars || !isValidFormat || !value || value.trim() === '') {
                 form.setFields([
                   {
                     name: 'orgEmail',
                     errors: [t('org.placeholder.enter_email')],
                   },
                 ]);
+                return;
               }
+              // 所有校验通过，清除错误状态
+              form.setFields([
+                {
+                  name: 'orgEmail',
+                  errors: [],
+                },
+              ]);
             }, 0);
           },
         }}

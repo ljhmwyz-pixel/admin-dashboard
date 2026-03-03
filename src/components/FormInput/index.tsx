@@ -11,6 +11,7 @@ interface CustomInputProps extends Omit<FormItemProps, 'children' | 'label'> {
   prefixIcon?: React.ReactNode;
   inputProps?: InputProps;
   className?: string;
+  formItemProps?: FormItemProps;
 }
 const CustomInput: React.FC<CustomInputProps> = ({
   label,

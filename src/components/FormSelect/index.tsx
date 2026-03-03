@@ -13,6 +13,7 @@ interface CustomSelectProps extends Omit<FormItemProps, 'children' | 'label'> {
   prefixIcon?: React.ReactNode;
   selectProps?: SelectProps;
   className?: string;
+  formItemProps?: FormItemProps;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({

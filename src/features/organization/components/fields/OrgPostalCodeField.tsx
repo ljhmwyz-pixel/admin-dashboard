@@ -3,7 +3,6 @@ import React from 'react';
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
@@ -12,12 +11,23 @@ type OrgPostalCodeFieldProps = FieldProps;
 const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
   const { t } = useLanguage();
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value || '';
+    value = value.toUpperCase();
+
+    // 前端拦截超长输入（超过 12 字符不允许继续输入）
+    if (value.length > 12) {
+      value = value.slice(0, 12);
+    }
+
+    form.setFieldValue('orgPostalCode', value);
+  };
+
   return (
     <AntCol span={12}>
       <FormInput
         name="orgPostalCode"
         label={t('org.field.postal_code')}
-        required
         prefixIcon={
           <svg
             width="14"
@@ -35,23 +45,56 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
             />
           </svg>
         }
+        formItemProps={{
+          rules: [
+            {
+              required: true,
+              message: t('org.placeholder.enter_postal_code'),
+            },
+            {
+              pattern: /^[0-9A-Z\s-]+$/,
+              message: t('org.placeholder.enter_postal_code'),
+            },
+          ],
+        }}
         inputProps={{
           placeholder: t('org.placeholder.enter_postal_code'),
-          maxLength: 254,
-          required: true,
+          maxLength: 12,
+          onChange: handleInputChange,
           onBlur: () => {
             setTimeout(() => {
               const value = form.getFieldValue('orgPostalCode') || '';
-              if (value.trim() && !containsEmoji(value)) {
-                form.validateFields(['orgPostalCode']);
-              } else {
+
+              // 未输入或长度<3，显示错误
+              if (!value || value.trim() === '' || value.length < 3) {
                 form.setFields([
                   {
                     name: 'orgPostalCode',
                     errors: [t('org.placeholder.enter_postal_code')],
                   },
                 ]);
+                return;
               }
+
+              // 检查是否包含不允许的字符（只允许数字 0-9，大写字母 A-Z，空格，-）
+              const hasInvalidChars = /[^0-9A-Z\s-]/.test(value);
+              if (hasInvalidChars) {
+                form.setFields([
+                  {
+                    name: 'orgPostalCode',
+                    errors: [t('org.placeholder.enter_postal_code')],
+                  },
+                ]);
+                return;
+              }
+
+              // 所有校验通过，清除错误状态
+              form.setFields([
+                {
+                  name: 'orgPostalCode',
+                  errors: [],
+                },
+              ]);
             }, 0);
           },
         }}

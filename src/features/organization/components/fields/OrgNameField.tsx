@@ -12,6 +12,17 @@ type OrgNameFieldProps = FieldProps;
 const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
   const { t } = useLanguage();
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value || '';
+
+    // 前端拦截超长输入（超过 254 字符不允许继续输入）
+    if (value.length > 254) {
+      value = value.slice(0, 254);
+    }
+
+    form.setFieldValue('orgName', value);
+  };
+
   return (
     <AntCol span={12}>
       <FormInput
@@ -35,23 +46,47 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
             />
           </svg>
         }
+        formItemProps={{
+          rules: [{ required: true, message: t('org.placeholder.search_org') }],
+        }}
         inputProps={{
           placeholder: t('org.placeholder.search_org'),
           maxLength: 254,
-          required: true,
+          onChange: handleInputChange,
           onBlur: () => {
             setTimeout(() => {
               const value = form.getFieldValue('orgName') || '';
-              if (value.trim() && !containsEmoji(value)) {
-                form.validateFields(['orgName']);
-              } else {
+
+              // 未输入或为空，显示错误
+              if (!value || value.trim() === '') {
                 form.setFields([
                   {
                     name: 'orgName',
                     errors: [t('org.placeholder.search_org')],
                   },
                 ]);
+                return;
               }
+
+              // 检查是否包含 emoji
+              const hasEmoji = containsEmoji(value);
+              if (hasEmoji) {
+                form.setFields([
+                  {
+                    name: 'orgName',
+                    errors: [t('org.placeholder.search_org')],
+                  },
+                ]);
+                return;
+              }
+
+              // 所有校验通过，清除错误状态
+              form.setFields([
+                {
+                  name: 'orgName',
+                  errors: [],
+                },
+              ]);
             }, 0);
           },
         }}
