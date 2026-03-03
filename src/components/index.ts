@@ -7,6 +7,7 @@ export { default as SidebarTemplate } from './templates/SidebarTemplate/SidebarT
 
 // 布局组件导出（保持向后兼容）
 export { default as FormInput } from './FormInput';
+export { default as FormSelect } from './FormSelect';
 export { default as FormTextArea } from './FormTextArea';
 export { ImageIcons } from './ImageIcons';
 export { default as BaseLayout } from './layouts/BaseLayout';

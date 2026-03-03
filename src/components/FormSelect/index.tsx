@@ -1,27 +1,35 @@
 import React from 'react';
 import type { FormItemProps } from 'antd';
-import { Form, Input } from 'antd';
-import type { TextAreaProps } from 'antd/es/input';
+import type { SelectProps } from 'antd';
+import { Form, Select } from 'antd';
 import classNames from 'classnames';
+
+import { ImageIcons } from '@/components';
 
 import styles from './index.module.scss';
 
-interface CustomTextAreaProps extends Omit<FormItemProps, 'children' | 'label'> {
+interface CustomSelectProps extends Omit<FormItemProps, 'children' | 'label'> {
   label?: React.ReactNode;
   required?: boolean;
   prefixIcon?: React.ReactNode;
-  inputProps?: TextAreaProps;
+  selectProps?: SelectProps;
   className?: string;
 }
 
-const CustomTextArea: React.FC<CustomTextAreaProps> = ({
+const CustomSelect: React.FC<CustomSelectProps> = ({
   label,
   required,
   prefixIcon,
-  inputProps,
+  selectProps,
   className,
   ...formItemProps
 }) => {
+  const isRequired =
+    required ||
+    formItemProps.rules?.some(
+      (rule) => typeof rule === 'object' && 'required' in rule && rule.required,
+    );
+
   return (
     <Form.Item
       {...formItemProps}
@@ -34,19 +42,19 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
             {prefixIcon}
             <span>
               {label}
-              {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
+              {isRequired && !selectProps?.disabled && <span className={styles.required}>*</span>}
             </span>
           </div>
         )}
         <Form.Item {...formItemProps} noStyle>
-          <Input.TextArea
-            autoSize={{ minRows: 3, maxRows: 6 }}
-            {...inputProps}
+          <Select
+            {...selectProps}
             className={`
               ${styles.input}
-              ${inputProps?.className || ''}
-              ${inputProps?.disabled ? styles.disabledStyle : ''}
+              ${selectProps?.className || ''}
+              ${selectProps?.disabled ? styles.disabledStyle : ''}
             `}
+            suffixIcon={<img src={ImageIcons.form.arrowDefaultIcon} width={14} height={14} />}
           />
         </Form.Item>
       </div>
@@ -54,4 +62,4 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   );
 };
 
-export default CustomTextArea;
+export default CustomSelect;

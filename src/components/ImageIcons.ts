@@ -1,4 +1,11 @@
+import arrowDefaultIcon from '@/assets/images/form/arrow_default_icon.png';
 import emailIcon from '@/assets/images/form/email_icon.png';
+import orgAddressIcon from '@/assets/images/form/org_address_icon.png';
+import orgAdminNameIcon from '@/assets/images/form/org_adminName_icon.png';
+import orgCommentIcon from '@/assets/images/form/org_comment_icon.png';
+import orgCountryIcon from '@/assets/images/form/org_country_icon.png';
+import orgPhoneIcon from '@/assets/images/form/org_phone_icon.png';
+import orgPostalCodeIcon from '@/assets/images/form/org_postalCode_icon.png';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png';
 import collapsedClose from '@/assets/images/layout/collapsed_close.png';
 import collapsedOpen from '@/assets/images/layout/collapsed_open.png';
@@ -37,5 +44,12 @@ export const ImageIcons = {
   },
   form: {
     emailIcon,
+    arrowDefaultIcon,
+    orgAddressIcon,
+    orgAdminNameIcon,
+    orgCommentIcon,
+    orgCountryIcon,
+    orgPhoneIcon,
+    orgPostalCodeIcon,
   },
 };
