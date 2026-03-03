@@ -48,6 +48,7 @@ const baseTheme: ThemeConfig = {
   components: {
     Button: {
       borderRadius: 6,
+      defaultColor: '#191B1F66',
     },
     Input: {
       borderRadius: 6,
