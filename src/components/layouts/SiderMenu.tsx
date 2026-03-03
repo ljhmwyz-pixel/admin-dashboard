@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
-import { ImageIcons } from '@/assets/images/layout';
+import { ImageIcons } from '@/components';
 
 import styles from './SiderMenu.module.scss';
 

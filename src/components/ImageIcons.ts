@@ -1,3 +1,4 @@
+import emailIcon from '@/assets/images/form/email_icon.png';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png';
 import collapsedClose from '@/assets/images/layout/collapsed_close.png';
 import collapsedOpen from '@/assets/images/layout/collapsed_open.png';
@@ -33,5 +34,8 @@ export const ImageIcons = {
   footer: {
     avatarIcon,
     moreIcon,
+  },
+  form: {
+    emailIcon,
   },
 };

@@ -50,7 +50,11 @@ const CustomInput: React.FC<CustomInputProps> = ({
             </span>
           </div>
 
-          <Input className={styles.input} placeholder={formItemRest.placeholder} {...inputProps} />
+          <Input.TextArea
+            className={styles.input}
+            placeholder={formItemRest.placeholder}
+            {...inputProps}
+          />
         </div>
       </Form.Item>
     </ConfigProvider>

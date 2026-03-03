@@ -1,7 +1,7 @@
 import React from 'react';
 
 // import { useTheme } from '@/shared/hooks/theme';
-import { ImageIcons } from '@/assets/images/layout';
+import { ImageIcons } from '@/components';
 
 import styles from './SiderHeader.module.scss';
 
