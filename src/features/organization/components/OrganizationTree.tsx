@@ -19,7 +19,6 @@ interface OrganizationTreeProps {
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedKey = '' }) => {
   const { withLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
-  const [currentParentNode, setCurrentParentNode] = useState<any>(null);
   const [searchValue, setSearchValue] = useState<string>('');
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
@@ -32,7 +31,6 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         withLoading,
         setData: (data) => {
           setTreeData(data);
-          // 数据更新后折叠所有节点
           setExpandedKeys([]);
         },
       });
@@ -66,8 +64,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   };
 
   // 处理节点添加事件
-  const handleNodeAdd = (nodeData: TreeNodeData) => {
-    setCurrentParentNode(nodeData);
+  const handleNodeAdd = () => {
     setAddDrawerVisible(true);
   };
 
@@ -112,7 +109,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
           selectedKeys={[selectedKey]}
           expandedKeys={expandedKeys}
           onExpand={setExpandedKeys}
-          showLine
+          showIcon
           height={(window && window?.innerHeight - 74) || 400}
           blockNode
           virtual
@@ -126,15 +123,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         visible={addDrawerVisible}
         onClose={() => {
           setAddDrawerVisible(false);
-          setCurrentParentNode(null);
         }}
         onAdd={(values) => {
           console.log('添加组织:', values);
-          // 这里可以调用API添加组织
-          // onNodeAdd?.(currentParentNode, {} as any);
           setAddDrawerVisible(false);
         }}
-        parentNode={currentParentNode as any}
       />
     </div>
   );

@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { Splitter } from 'antd';
 
-import { AntTabs } from '@/shared/components/antd-imports';
-
+// import { AntTabs } from '@/shared/components/antd-imports';
 import OrganizationDetailPanel from './components/OrganizationDetailPanel';
 import OrganizationTree from './components/OrganizationTree';
-import { organizationDetails } from './mocks/organizationData';
 
+// import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
 
 const OrganizationList: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string>('');
-  const [activeTabKey, setActiveTabKey] = useState<string>('info');
 
   // 使用模拟数据作为默认树数据
 
@@ -86,7 +84,6 @@ const OrganizationList: React.FC = () => {
             <OrganizationTree
               onSelect={(selectedKey) => {
                 setSelectedKey(selectedKey);
-                setActiveTabKey('info');
               }}
               selectedKey={selectedKey}
             />
