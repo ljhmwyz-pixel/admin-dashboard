@@ -8,8 +8,7 @@ import {
 } from '@ant-design/icons';
 import { Form, Tooltip } from 'antd';
 
-import { ImageIcons } from '@/components';
-import FormInput from '@/components/FormInput';
+import { FormInput, FormTextArea, ImageIcons } from '@/components';
 
 import styles from './OrganizationView.module.scss';
 
@@ -55,11 +54,6 @@ const OrganizationView: React.FC = () => {
               className: styles.inputStyle,
               disabled: true,
             }}
-            suffix={
-              <Tooltip title="Extra information">
-                <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-              </Tooltip>
-            }
           />
           <FormInput
             label="邮箱地址"
@@ -71,6 +65,37 @@ const OrganizationView: React.FC = () => {
               { type: 'email', message: '格式不正确' },
             ]}
             placeholder="example@domain.com"
+            inputProps={{
+              className: styles.inputStyle,
+            }}
+          />
+        </div>
+        <div className={styles.formGroups}>
+          <FormTextArea
+            label="这是文本域1"
+            name="email3"
+            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            required
+            rules={[
+              { required: true, message: '111' },
+              { type: 'email', message: '2222' },
+            ]}
+            placeholder="这是文本域1"
+            inputProps={{
+              className: styles.inputStyle,
+              disabled: true,
+            }}
+          />
+          <FormTextArea
+            label="这是文本域2"
+            name="email4"
+            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            required
+            rules={[
+              { required: true, message: '3333' },
+              { type: 'email', message: '4444' },
+            ]}
+            placeholder="这是文本域2"
             inputProps={{
               className: styles.inputStyle,
             }}
