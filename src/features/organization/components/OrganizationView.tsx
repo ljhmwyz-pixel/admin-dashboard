@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { CommentOutlined, EnvironmentOutlined, MailOutlined } from '@ant-design/icons';
-import { Form } from 'antd';
+import {
+  CommentOutlined,
+  EnvironmentOutlined,
+  InfoCircleOutlined,
+  MailOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
+import { Form, Tooltip } from 'antd';
 
+import { ImageIcons } from '@/components';
 import FormInput from '@/components/FormInput';
 
 import styles from './OrganizationView.module.scss';
@@ -26,24 +33,50 @@ const OrganizationView: React.FC = () => {
 
   return (
     <div className={styles.organizationView}>
-      <div className={styles.orgInfo}>上边距还未去掉</div>
-      {/* <Form
+      {/* <div className={styles.orgInfo}>上边距还未去掉</div> */}
+      <Form
         form={form}
         initialValues={{
           address: 'No.300 Miaojiao Road, Pudong, Shanghai',
         }}
       >
-        <FormInput
-          name="address"
-          label="Organization Address"
-          icon={<EnvironmentOutlined />}
-          mode="edit"
-          rules={[
-            { required: true, message: 'Address is required' },
-            { min: 5, message: 'Address too short' },
-          ]}
-        />
-      </Form> */}
+        <div className={styles.formGroups}>
+          <FormInput
+            label="邮箱地址"
+            name="email1"
+            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            required
+            rules={[
+              { required: true, message: '请输入邮箱' },
+              { type: 'email', message: '格式不正确' },
+            ]}
+            placeholder="example@domain.com"
+            inputProps={{
+              className: styles.inputStyle,
+              disabled: true,
+            }}
+            suffix={
+              <Tooltip title="Extra information">
+                <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+              </Tooltip>
+            }
+          />
+          <FormInput
+            label="邮箱地址"
+            name="email2"
+            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            required
+            rules={[
+              { required: true, message: '请输入邮箱' },
+              { type: 'email', message: '格式不正确' },
+            ]}
+            placeholder="example@domain.com"
+            inputProps={{
+              className: styles.inputStyle,
+            }}
+          />
+        </div>
+      </Form>
     </div>
   );
 };

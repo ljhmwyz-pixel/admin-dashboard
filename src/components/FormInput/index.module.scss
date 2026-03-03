@@ -1,37 +1,45 @@
 .wrapper {
-  margin-bottom: 20px;
+  :global(.ant-form-item-explain) {
+    margin-top: -10px;
+    margin-left: 14px;
+    width: fit-content;
+    padding: 0 8px;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fff;
+  }
 }
 
-.labelRow {
+.container {
   display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-  color: #666;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.icon {
-  margin-right: 6px;
-  display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
 .label {
-  line-height: 1;
-}
-
-.valueBox {
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 14px;
-  color: #333;
-  min-height: 40px;
   display: flex;
   align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 14px;
+  color: rgba(25, 27, 31, 0.6);
+  font-weight: 500;
+  margin-bottom: 10px;
+
+  .required {
+    color: #f45858;
+    margin-left: 6px;
+  }
 }
 
 .input {
-  border-radius: 8px !important;
+  height: 54px !important;
+  width: 300px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #191b1f;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all 0.2s;
 }

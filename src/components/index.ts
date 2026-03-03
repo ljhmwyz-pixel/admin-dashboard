@@ -6,6 +6,7 @@ export { default as IconButton } from './atoms/IconButton/IconButton';
 export { default as SidebarTemplate } from './templates/SidebarTemplate/SidebarTemplate';
 
 // 布局组件导出（保持向后兼容）
+export { ImageIcons } from './ImageIcons';
 export { default as BaseLayout } from './layouts/BaseLayout';
 export { default as SiderFooter } from './layouts/SiderFooter';
 export { default as SiderHeader } from './layouts/SiderHeader';

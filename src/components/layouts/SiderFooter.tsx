@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 
-import { ImageIcons } from '@/assets/images/layout';
-
+import { ImageIcons } from '@/components';
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
 
 import { useLanguage } from '../../shared/hooks/useLanguage';
