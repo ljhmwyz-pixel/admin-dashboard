@@ -109,7 +109,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
           selectedKeys={[selectedKey]}
           expandedKeys={expandedKeys}
           onExpand={setExpandedKeys}
-          showIcon
+          showLine
           height={(window && window?.innerHeight - 74) || 400}
           blockNode
           virtual
@@ -119,16 +119,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         />
       </div>
       {/* 添加组织抽屉 */}
-      <AddOrganizationDrawer
-        visible={addDrawerVisible}
-        onClose={() => {
-          setAddDrawerVisible(false);
-        }}
-        onAdd={(values) => {
-          console.log('添加组织:', values);
-          setAddDrawerVisible(false);
-        }}
-      />
+      <AddOrganizationDrawer visible={true} onChange={(visible) => setAddDrawerVisible(visible)} />
     </div>
   );
 };

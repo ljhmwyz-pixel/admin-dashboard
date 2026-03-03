@@ -62,7 +62,7 @@ export const loadOrganizationData = async ({
       onError: (error) => {
         console.error('Failed to load organization tree:', error);
         // 使用兜底数据
-        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
         if (setData) {
           setData(fallbackData);
         }
@@ -75,7 +75,7 @@ export const loadOrganizationData = async ({
     } catch (error) {
       console.error('Failed to load organization tree:', error);
       // 使用兜底数据
-      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
       if (setData) {
         setData(fallbackData);
       }

@@ -1,90 +1,37 @@
 import React from 'react';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Drawer, Form, Input, message, Select, Space } from 'antd';
+import { Drawer, Form, Input, Select } from 'antd';
 
 interface AddOrganizationProps {
   visible: boolean;
-  onClose: () => void;
-  onAdd: (values: OrganizationFormData) => void;
-  parentNode?: TreeNodeData; // 父节点信息，用于确定添加位置
+  onChange: (visible: boolean) => void;
 }
 
-import type { OrganizationFormData, TreeNodeData } from '../../../shared/types/organization';
+import type { OrganizationFormData } from '@/shared/types/organization';
 
 const { Option } = Select;
 
-const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
-  visible,
-  onClose,
-  onAdd,
-  parentNode,
-}) => {
+const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({ visible, onChange }) => {
   const [form] = Form.useForm();
 
   const handleSubmit = async (values: OrganizationFormData) => {
-    try {
-      // 验证必填字段
-      if (!values.organizationName || !values.organizationType) {
-        message.error('请填写组织名称和组织类型');
-
-        return;
-      }
-
-      // 添加父节点信息到提交数据中
-      const submitData = {
-        ...values,
-        parentId: parentNode?.key || null,
-        parentTitle: parentNode?.title || null,
-      };
-
-      onAdd(submitData);
-      message.success('组织添加成功！');
-      form.resetFields();
-      onClose();
-    } catch (error) {
-      console.error('添加组织失败:', error);
-      message.error('添加组织失败，请重试');
-    }
+    console.log('提交表单:', values);
   };
 
   const handleCancel = () => {
     form.resetFields();
-    onClose();
+    onChange?.(false);
   };
 
   return (
     <Drawer
-      title={
-        <Space>
-          <PlusOutlined />
-          <span>新增组织</span>
-        </Space>
-      }
-      width={720}
+      title={<div>新增组织</div>}
+      size="large"
       placement="right"
-      closable={true}
+      closable={false}
       onClose={handleCancel}
       open={visible}
-      footer={
-        <div style={{ textAlign: 'right' }}>
-          <Button onClick={handleCancel} style={{ marginRight: 8 }}>
-            取消
-          </Button>
-          <Button type="primary" onClick={() => form.submit()}>
-            确认
-          </Button>
-        </div>
-      }
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        initialValues={{
-          organizationType: 'installer',
-          ...(parentNode && { parentId: parentNode.key }),
-        }}
-      >
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         {/* 组织名称 */}
         <Form.Item
           label="组织名称"
