@@ -49,7 +49,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         <Form.Item {...formItemProps} noStyle>
           <Select
             {...selectProps}
-            className={classNames(styles.input, selectProps?.className)}
+            className={`
+              ${styles.input}
+              ${selectProps?.className || ''}
+              ${selectProps?.disabled ? styles.disabledStyle : ''}
+            `}
             suffixIcon={<img src={ImageIcons.form.arrowDefaultIcon} width={14} height={14} />}
           />
         </Form.Item>

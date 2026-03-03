@@ -34,7 +34,7 @@
 
 .input {
   height: 54px !important;
-  width: 300px;
+  width: 100%;
   padding: 0 16px;
   font-size: 14px;
   font-weight: 500;
@@ -42,4 +42,9 @@
   border: 1px solid #d9d9d9;
   border-radius: 6px;
   transition: all 0.2s;
+  padding-left: 20px;
+}
+
+.disabledStyle {
+  color: #191b1f99 !important;
 }

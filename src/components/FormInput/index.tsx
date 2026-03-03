@@ -25,14 +25,21 @@ const CustomInput: React.FC<CustomInputProps> = ({
     <Form.Item {...formItemProps} className={classNames(styles.wrapper, className)}>
       <div className={styles.container}>
         <div className={styles.label}>
-          {prefixIcon && prefixIcon}
+          {prefixIcon ? prefixIcon : null}
           <span>
             {label}
             {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
           </span>
         </div>
         <Form.Item {...formItemProps} noStyle>
-          <Input className={styles.input} {...inputProps} />
+          <Input
+            {...inputProps}
+            className={`
+              ${styles.input}
+              ${inputProps?.className || ''}
+              ${inputProps?.disabled ? styles.disabledStyle : ''}
+            `}
+          />
         </Form.Item>
       </div>
     </Form.Item>

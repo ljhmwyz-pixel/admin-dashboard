@@ -42,7 +42,11 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 6 }}
             {...inputProps}
-            className={classNames(styles.input, inputProps?.className)}
+            className={`
+              ${styles.input}
+              ${inputProps?.className || ''}
+              ${inputProps?.disabled ? styles.disabledStyle : ''}
+            `}
           />
         </Form.Item>
       </div>

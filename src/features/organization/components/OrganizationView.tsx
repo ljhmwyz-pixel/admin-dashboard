@@ -3,6 +3,8 @@ import { Form } from 'antd';
 
 import { FormInput, FormSelect, FormTextArea, ImageIcons } from '@/components';
 
+import OrgInfo from './OrganizationInfo';
+
 import styles from './OrganizationView.module.scss';
 
 const OrganizationView: React.FC = () => {
@@ -10,105 +12,89 @@ const OrganizationView: React.FC = () => {
 
   return (
     <div className={styles.organizationView}>
-      <div className={styles.orgInfo}>上边距还未去掉</div>
+      {/* 组织基本信息 */}
+      <OrgInfo />
       <Form
         form={form}
         initialValues={{
-          email1: '11111111111',
-          Country: 'Australia',
-          Region: 'Australia',
+          OrganizationAddress: 'No.300 Miaoqiao Road, Pudong, Shanghai',
+          CountryRegion: 'China',
+          PostalCode: '201315',
+          AdminName: 'Mark Tong',
+          PhoneNumber: '--',
+          Comment: 'Australia',
+          Email: 'm******g@pylontech.com.cn',
         }}
       >
         <div className={styles.formGroups}>
           <FormInput
-            label="邮箱地址"
-            name="email1"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '格式不正确' },
-            ]}
+            label="Organization Address"
+            name="OrganizationAddress"
+            prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
             inputProps={{
               className: styles.inputStyle,
               disabled: true,
-              placeholder: 'example@domain.com',
+              placeholder: '',
+            }}
+          />
+          <FormSelect
+            label="Country / Region"
+            name="CountryRegion"
+            prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
+            selectProps={{
+              className: styles.inputStyle,
+              disabled: true,
+              placeholder: '',
             }}
           />
           <FormInput
-            label="邮箱地址"
-            name="email2"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '格式不正确' },
-            ]}
-            inputProps={{
-              className: styles.inputStyle,
-              placeholder: 'example@domain.com',
-            }}
-          />
-        </div>
-        <div className={styles.formGroups}>
-          <FormTextArea
-            label="这是文本域1"
-            name="email3"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '111' },
-              { type: 'email', message: '2222' },
-            ]}
+            label="Postal Code"
+            name="PostalCode"
+            prefixIcon={<img src={ImageIcons.form.orgPostalCodeIcon} width={14} height={14} />}
             inputProps={{
               className: styles.inputStyle,
               disabled: true,
-              placeholder: '这是文本域1',
+              placeholder: '',
+            }}
+          />
+          <FormInput
+            label="Admin Name"
+            name="AdminName"
+            prefixIcon={<img src={ImageIcons.form.orgAdminNameIcon} width={14} height={14} />}
+            inputProps={{
+              className: styles.inputStyle,
+              disabled: true,
+              placeholder: '',
+            }}
+          />
+          <FormInput
+            label="Email"
+            name="Email"
+            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            inputProps={{
+              className: styles.inputStyle,
+              disabled: true,
+              placeholder: '',
+            }}
+          />
+          <FormInput
+            label="Phone Number"
+            name="PhoneNumber"
+            prefixIcon={<img src={ImageIcons.form.orgPhoneIcon} width={14} height={14} />}
+            inputProps={{
+              className: styles.inputStyle,
+              disabled: true,
+              placeholder: '',
             }}
           />
           <FormTextArea
-            label="这是文本域2"
-            name="email4"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '3333' },
-              { type: 'email', message: '4444' },
-            ]}
+            label="Comment"
+            name="Comment"
+            prefixIcon={<img src={ImageIcons.form.orgCommentIcon} width={14} height={14} />}
             inputProps={{
               className: styles.inputStyle,
-              placeholder: '这是文本域2',
-            }}
-          />
-        </div>
-        <div className={styles.formGroups}>
-          <FormSelect
-            label="Country / Region"
-            name="Country"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '111' },
-              { type: 'email', message: '2222' },
-            ]}
-            selectProps={{
-              className: styles.inputStyle,
               disabled: true,
-              placeholder: 'Please select country / region',
-            }}
-          />
-          <FormSelect
-            label="Country / Region"
-            name="Region"
-            prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-            required
-            rules={[
-              { required: true, message: '3333' },
-              { type: 'email', message: '4444' },
-            ]}
-            selectProps={{
-              className: styles.inputStyle,
-              placeholder: 'Please select country / region',
+              placeholder: '',
             }}
           />
         </div>
