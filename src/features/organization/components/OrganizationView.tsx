@@ -49,10 +49,10 @@ const OrganizationView: React.FC = () => {
               { required: true, message: '请输入邮箱' },
               { type: 'email', message: '格式不正确' },
             ]}
-            placeholder="example@domain.com"
             inputProps={{
               className: styles.inputStyle,
               disabled: true,
+              placeholder: 'example@domain.com',
             }}
           />
           <FormInput
@@ -64,9 +64,9 @@ const OrganizationView: React.FC = () => {
               { required: true, message: '请输入邮箱' },
               { type: 'email', message: '格式不正确' },
             ]}
-            placeholder="example@domain.com"
             inputProps={{
               className: styles.inputStyle,
+              placeholder: 'example@domain.com',
             }}
           />
         </div>
@@ -80,10 +80,10 @@ const OrganizationView: React.FC = () => {
               { required: true, message: '111' },
               { type: 'email', message: '2222' },
             ]}
-            placeholder="这是文本域1"
             inputProps={{
               className: styles.inputStyle,
               disabled: true,
+              placeholder: '这是文本域1',
             }}
           />
           <FormTextArea
@@ -95,9 +95,9 @@ const OrganizationView: React.FC = () => {
               { required: true, message: '3333' },
               { type: 'email', message: '4444' },
             ]}
-            placeholder="这是文本域2"
             inputProps={{
               className: styles.inputStyle,
+              placeholder: '这是文本域2',
             }}
           />
         </div>

@@ -1,64 +1,52 @@
 import React from 'react';
-import { ConfigProvider, Form, Input } from 'antd';
-import type { FormItemProps } from 'antd/es/form';
-import type { InputProps } from 'antd/es/input';
+import type { FormItemProps } from 'antd';
+import { Form, Input } from 'antd';
+import type { TextAreaProps } from 'antd/es/input';
 import classNames from 'classnames';
 
 import styles from './index.module.scss';
 
-// @ts-expect-error 暂时忽略
-interface CustomInputProps extends Omit<FormItemProps, 'children' | 'label'>, InputProps {
-  label: React.ReactNode;
+interface CustomTextAreaProps extends Omit<FormItemProps, 'children' | 'label'> {
+  label?: React.ReactNode;
   required?: boolean;
   prefixIcon?: React.ReactNode;
-  inputProps?: InputProps;
+  inputProps?: TextAreaProps;
+  className?: string;
 }
-const CustomInput: React.FC<CustomInputProps> = ({
+
+const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   label,
-  required = false,
-  prefixIcon = '',
-  className,
+  required,
+  prefixIcon,
   inputProps,
-  ...formItemRest
+  className,
+  ...formItemProps
 }) => {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorError: '#F45858',
-        },
-        components: {
-          Input: {
-            colorTextPlaceholder: '#191B1F66',
-          },
-        },
-      }}
+    <Form.Item
+      {...formItemProps}
+      required={required}
+      className={classNames(styles.wrapper, className)}
     >
-      <Form.Item
-        name={formItemRest.name}
-        rules={formItemRest.rules}
-        validateFirst
-        className={classNames(styles.wrapper, className)}
-        {...formItemRest}
-      >
-        <div className={styles.container}>
+      <div className={styles.container}>
+        {label && (
           <div className={styles.label}>
-            {prefixIcon && prefixIcon}
+            {prefixIcon}
             <span>
               {label}
-              {required && <span className={styles.required}>*</span>}
+              {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
             </span>
           </div>
+        )}
 
-          <Input.TextArea
-            className={styles.input}
-            placeholder={formItemRest.placeholder}
-            {...inputProps}
-          />
-        </div>
-      </Form.Item>
-    </ConfigProvider>
+        <Input.TextArea
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          {...inputProps}
+          className={classNames(styles.input, inputProps?.className)}
+        />
+      </div>
+    </Form.Item>
   );
 };
 
-export default CustomInput;
+export default CustomTextArea;
