@@ -44,6 +44,9 @@ importers:
       i18next-http-backend:
         specifier: ^3.0.2
         version: 3.0.2
+      leaflet:
+        specifier: ^1.9.4
+        version: 1.9.4
       lucide-react:
         specifier: ^0.575.0
         version: 0.575.0(react@19.2.4)
@@ -62,6 +65,9 @@ importers:
       react-i18next:
         specifier: ^16.5.4
         version: 16.5.4(i18next@25.8.13(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+      react-leaflet:
+        specifier: ^5.0.0
+        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-redux:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1)
@@ -78,6 +84,9 @@ importers:
       '@types/convict':
         specifier: ^6.1.6
         version: 6.1.6
+      '@types/leaflet':
+        specifier: ^1.9.21
+        version: 1.9.21
       '@types/node':
         specifier: ^24.10.15
         version: 24.10.15
@@ -972,6 +981,13 @@ packages:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
 
+  '@react-leaflet/core@3.0.0':
+    resolution: {integrity: sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^19.0.0
+      react-dom: ^19.0.0
+
   '@reduxjs/toolkit@2.11.2':
     resolution: {integrity: sha512-Kd6kAHTA6/nUpp8mySPqj3en3dm0tdMIgbttnQ1xFMVpufoj+ADi8pXLBsd4xzTRHQa7t/Jv8W5UnCuW4kuWMQ==}
     peerDependencies:
@@ -1289,6 +1305,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
+
   '@types/hoist-non-react-statics@3.3.7':
     resolution: {integrity: sha512-PQTyIulDkIDro8P+IHbKCsw7U2xxBYflVzW/FgWdCAePD9xGSidgA76/GeJ6lBKoblyhf9pBY763gbrN+1dI8g==}
     peerDependencies:
@@ -1299,6 +1318,9 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/leaflet@1.9.21':
+    resolution: {integrity: sha512-TbAd9DaPGSnzp6QvtYngntMZgcRk+igFELwR2N99XZn7RXUdKgsXMR+28bUO0rPsWp8MIu/f47luLIQuSLYv/w==}
 
   '@types/mockjs@1.0.10':
     resolution: {integrity: sha512-SXgrhajHG7boLv6oU93CcmdDm0HYRiceuz6b+7z+/2lCJPTWDv0V5YiwFHT2ejE4bQqgSXQiVPQYPWv7LGsK1g==}
@@ -2496,6 +2518,9 @@ packages:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
 
+  leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
+
   less@4.5.1:
     resolution: {integrity: sha512-UKgI3/KON4u6ngSsnDADsUERqhZknsVZbnuzlRZXLQCmfC/MDld42fTydUE9B+Mla1AL6SJ/Pp6SlEFi/AVGfw==}
     engines: {node: '>=14'}
@@ -2904,6 +2929,13 @@ packages:
 
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
+
+  react-leaflet@5.0.0:
+    resolution: {integrity: sha512-CWbTpr5vcHw5bt9i4zSlPEVQdTVcML390TjeDG0cK59z1ylexpqC6M1PJFjV8jD7CF+ACBFsLIDs6DRMoLEofw==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^19.0.0
+      react-dom: ^19.0.0
 
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
@@ -4311,6 +4343,12 @@ snapshots:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
+  '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      leaflet: 1.9.4
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
   '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1))(react@19.2.4)':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -4580,6 +4618,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/geojson@7946.0.16': {}
+
   '@types/hoist-non-react-statics@3.3.7(@types/react@19.2.14)':
     dependencies:
       '@types/react': 19.2.14
@@ -4588,6 +4628,10 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/leaflet@1.9.21':
+    dependencies:
+      '@types/geojson': 7946.0.16
 
   '@types/mockjs@1.0.10': {}
 
@@ -6005,6 +6049,8 @@ snapshots:
 
   kind-of@6.0.3: {}
 
+  leaflet@1.9.4: {}
+
   less@4.5.1:
     dependencies:
       copy-anything: 2.0.6
@@ -6386,6 +6432,13 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@18.3.1: {}
+
+  react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      leaflet: 1.9.4
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   react-redux@9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1):
     dependencies:

@@ -1,5 +1,10 @@
 // 组织服务API
 import { organizationApi } from '@/services/modules/organization/organizationApi';
+import type {
+  CreateOrganizationRequest,
+  OrganizationListParams,
+  TreeNodeData,
+} from '@/shared/types/organization';
 
 import {
   generateFallbackTreeData,
@@ -12,8 +17,8 @@ export interface LoadOrganizationDataOptions {
   withLoading?: (
     asyncFn: () => Promise<any>,
     options?: { onError?: (error: unknown) => void },
-  ) => Promise<any>;
-  setData?: (data: any[]) => void;
+  ) => Promise<unknown>;
+  setData?: (data: TreeNodeData[]) => void;
 }
 
 export const loadOrganizationData = async ({
@@ -23,11 +28,9 @@ export const loadOrganizationData = async ({
 }: LoadOrganizationDataOptions): Promise<void> => {
   const loadDataLogic = async () => {
     // 构造API参数
-    const params: any = {
+    const params: OrganizationListParams = {
       pageNum: 1,
-      pageSize: searchKeyword ? 100 : 1000, // 搜索时限制结果数量
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
+      pageSize: searchKeyword ? 100 : 1000,
     };
 
     // 如果有搜索关键词，添加到参数中
@@ -35,11 +38,15 @@ export const loadOrganizationData = async ({
       params.keyword = searchKeyword.trim();
     }
 
-    // 调用符合需求文档的API接口
+    // 调用符合需求文档的 API 接口
     const response = await organizationApi.getList(params);
 
+    // 从响应中提取数据（符合需求文档规范）
+    const apiData = response.data;
+    const records = apiData.records; // 从 records 字段获取组织列表
+
     // 转换数据格式
-    const transformedData = transformOrganizationToTreeData(response.data);
+    const transformedData = transformOrganizationToTreeData(records);
 
     // 设置数据
     if (setData) {
@@ -55,7 +62,7 @@ export const loadOrganizationData = async ({
       onError: (error) => {
         console.error('Failed to load organization tree:', error);
         // 使用兜底数据
-        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
         if (setData) {
           setData(fallbackData);
         }
@@ -68,10 +75,22 @@ export const loadOrganizationData = async ({
     } catch (error) {
       console.error('Failed to load organization tree:', error);
       // 使用兜底数据
-      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 1000);
+      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
       if (setData) {
         setData(fallbackData);
       }
     }
   }
+};
+
+/**
+ * 创建组织
+ * @param params 创建组织参数
+ * @returns 创建成功的组织数据
+ */
+export const createOrganization = async (params: CreateOrganizationRequest) => {
+  // 调用 API 创建组织
+  const response = await organizationApi.create(params);
+
+  return response;
 };

@@ -15,3 +15,4 @@ export { default as BaseLayout } from './layouts/BaseLayout';
 export { default as SiderFooter } from './layouts/SiderFooter';
 export { default as SiderHeader } from './layouts/SiderHeader';
 export { default as SiderMenu } from './layouts/SiderMenu';
+export { default as LeafletLocationField } from './LeafletLocationField';

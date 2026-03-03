@@ -17,10 +17,12 @@ export { default as AntTimePicker } from 'antd/es/time-picker';
 
 // 布局组件
 export { default as AntCard } from 'antd/es/card';
+export { default as AntCol } from 'antd/es/col';
 export { default as AntCollapse } from 'antd/es/collapse';
 export { default as AntDivider } from 'antd/es/divider';
 export { default as AntGrid } from 'antd/es/grid';
 export { default as AntLayout } from 'antd/es/layout';
+export { default as AntRow } from 'antd/es/row';
 export { default as AntSpace } from 'antd/es/space';
 export { default as AntSplitter } from 'antd/es/splitter';
 

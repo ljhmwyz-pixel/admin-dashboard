@@ -81,4 +81,8 @@
   .ant-tree-treenode-selected .ant-tree-switcher {
     color: var(--ant-color-primary)
   }
+
+  .ant-tree-indent-unit::before, .ant-tree-switcher-leaf-line::before, .ant-tree-switcher-leaf-line:after {
+    display: none;
+  }
 }
