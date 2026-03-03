@@ -1,3 +1,4 @@
+import arrowDefaultIcon from '@/assets/images/form/arrow_default_icon.png';
 import emailIcon from '@/assets/images/form/email_icon.png';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png';
 import collapsedClose from '@/assets/images/layout/collapsed_close.png';
@@ -37,5 +38,6 @@ export const ImageIcons = {
   },
   form: {
     emailIcon,
+    arrowDefaultIcon,
   },
 };

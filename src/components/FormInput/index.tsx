@@ -31,7 +31,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
             {required && !inputProps?.disabled && <span className={styles.required}>*</span>}
           </span>
         </div>
-        <Input className={styles.input} {...inputProps} />
+        <Form.Item {...formItemProps} noStyle>
+          <Input className={styles.input} {...inputProps} />
+        </Form.Item>
       </div>
     </Form.Item>
   );
