@@ -3,6 +3,9 @@ import type {
   CreateOrganizationResponse,
   OrganizationListParams,
   OrganizationListResponse,
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+  VerifyResponse,
 } from '@/shared/types/organization';
 
 import { apiClient } from '../../api/client';
@@ -15,6 +18,9 @@ export interface OrganizationApi {
 
   // 创建组织
   create: (data: CreateOrganizationRequest) => Promise<CreateOrganizationResponse>;
+
+  // 验证邮箱
+  verifyEmail: (data: { email: string }) => Promise<any>;
 }
 
 // 组织管理API实现
@@ -25,6 +31,14 @@ class OrganizationApiImpl implements OrganizationApi {
 
   async create(data: CreateOrganizationRequest): Promise<CreateOrganizationResponse> {
     return apiClient.post(ORGANIZATION_ENDPOINTS.CREATE, data);
+  }
+
+  async verify(data: CreateOrganizationRequest): Promise<VerifyResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY, data);
+  }
+
+  async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_EMAIL, data);
   }
 }
 

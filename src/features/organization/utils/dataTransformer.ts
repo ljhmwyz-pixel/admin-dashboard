@@ -17,7 +17,7 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
       children: [],
       type: org.orgType,
       canAdd: org.status === 'ACTIVE',
-      canDelete: org.status === 'ACTIVE' && org.parentOrgId !== null && org.orgType !== 'Pylontech',
+      canDelete: org.status === 'ACTIVE' && org.parentOrgId !== null && org.orgType !== 'PYLONTECH',
       description: org.description,
       status: org.status, // 保持原始状态值
       createdAt: org.createdAt,
@@ -61,9 +61,9 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
 export function generateFallbackTreeData(count: number = 10): TreeNodeData[] {
   const rootNode: TreeNodeData = {
     key: 'fallback-root',
-    title: 'Pylontech',
+    title: 'PYLONTECH',
     children: [],
-    type: 'Pylontech',
+    type: 'PYLONTECH',
     canAdd: true,
     canDelete: false,
     description: '这是兜底数据，API 调用失败时显示',
@@ -75,14 +75,14 @@ export function generateFallbackTreeData(count: number = 10): TreeNodeData[] {
 
   // 生成子节点
   for (let i = 1; i <= count; i++) {
-    const nodeType = i % 3 === 0 ? 'Installer' : i % 2 === 0 ? 'Dealer' : 'Pylontech';
+    const nodeType = i % 3 === 0 ? 'INSTALLER' : i % 2 === 0 ? 'DEALER' : 'PYLONTECH';
     const childNode: TreeNodeData = {
       key: `fallback-${i}`,
       title: `组织${i}`,
       children: [],
       type: nodeType,
       canAdd: true,
-      canDelete: nodeType !== 'Pylontech', // Pylontech 类型不允许删除
+      canDelete: nodeType !== 'PYLONTECH', // PYLONTECH 类型不允许删除
       description: `这是第${i}个组织`,
       status: 'ACTIVE',
       createdAt: new Date().toISOString(),

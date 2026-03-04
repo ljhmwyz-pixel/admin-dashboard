@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
@@ -22,13 +22,14 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
     setTimeout(() => {
       const value = form.getFieldValue('orgUsername') || '';
 
-      if (userExists && existingUsername) {
-        form.setFieldValue('orgUsername', existingUsername);
-      } else {
-        form.setFieldValue('orgUsername', value);
-      }
+      form.setFieldValue('orgUsername', value);
     }, 0);
   };
+  useEffect(() => {
+    if (userExists && existingUsername) {
+      form.setFieldValue('orgUsername', existingUsername);
+    }
+  }, [userExists, existingUsername]);
 
   return (
     <AntCol span={12}>
@@ -52,6 +53,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
             />
           </svg>
         }
+        rules={[{ required: true, message: t('org.placeholder.enter_username') }]}
         inputProps={{
           placeholder: t('org.placeholder.enter_username'),
           maxLength: 100,

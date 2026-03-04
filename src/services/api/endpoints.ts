@@ -11,8 +11,11 @@ export const AUTH_ENDPOINTS = {
 // 组织管理相关（符合需求文档规范）
 export const ORGANIZATION_ENDPOINTS = {
   LIST: '/api/v1/organization/organizations',
-  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   CREATE: '/api/v1/organization/organizations',
+  VERIFY_EMAIL: '/api/v1/organization/organizations/verify-email',
+  VERIFY: '/api/v1/organization/organizations/verify',
+
+  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   UPDATE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   TREE: '/api/v1/organization/organizations/tree',

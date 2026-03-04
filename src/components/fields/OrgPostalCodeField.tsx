@@ -45,18 +45,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
             />
           </svg>
         }
-        formItemProps={{
-          rules: [
-            {
-              required: true,
-              message: t('org.placeholder.enter_postal_code'),
-            },
-            {
-              pattern: /^[0-9A-Z\s-]+$/,
-              message: t('org.placeholder.enter_postal_code'),
-            },
-          ],
-        }}
+        rules={[{ pattern: /^[0-9A-Z\s-]+$/, message: t('org.validation.postal.required') }]}
         inputProps={{
           placeholder: t('org.placeholder.enter_postal_code'),
           maxLength: 12,
@@ -70,7 +59,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
                 form.setFields([
                   {
                     name: 'orgPostalCode',
-                    errors: [t('org.placeholder.enter_postal_code')],
+                    errors: [t('org.validation.postal.required')],
                   },
                 ]);
                 return;
@@ -82,7 +71,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
                 form.setFields([
                   {
                     name: 'orgPostalCode',
-                    errors: [t('org.placeholder.enter_postal_code')],
+                    errors: [t('org.validation.postal.required')],
                   },
                 ]);
                 return;

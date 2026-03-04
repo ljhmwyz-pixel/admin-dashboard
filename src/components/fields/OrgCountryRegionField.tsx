@@ -22,6 +22,7 @@ const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({
         name="orgCountryRegion"
         label={t('org.field.country_region')}
         required
+        // rules={[{ required: true, message: t('org.validation.country.required') }]}
         selectProps={{
           disabled: true,
           options: countryOptions,

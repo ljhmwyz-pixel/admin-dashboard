@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { VerifyOrganization } from '@/shared/types/organization';
 
 import type { FieldProps } from './types';
 
 type OrgPhoneFieldProps = FieldProps & {
   userExists?: boolean;
-  existingPhone?: string;
+  existingPhone?: number;
+  verifyResult?: VerifyOrganization;
 };
 
 const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   form,
   userExists = false,
   existingPhone,
+  verifyResult = {},
 }) => {
   const { t } = useLanguage();
 
@@ -22,52 +25,47 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
     setTimeout(() => {
       const value = form.getFieldValue('orgPhone') || '';
 
-      // 如果外部传入了验证结果，直接使用
-      if (userExists && existingPhone) {
-        form.setFieldValue('orgPhone', existingPhone);
-      } else {
-        // 非必填，未输入时不显示错误
-        if (!value || value.trim() === '') {
-          form.setFields([
-            {
-              name: 'orgPhone',
-              errors: [],
-            },
-          ]);
-          return;
-        }
-
-        // 检查是否包含非数字字符（只允许 0-9）
-        const hasInvalidChars = /[^0-9]/.test(value);
-        if (hasInvalidChars) {
-          form.setFields([
-            {
-              name: 'orgPhone',
-              errors: [t('org.placeholder.enter_phone')],
-            },
-          ]);
-          return;
-        }
-
-        // 长度限制：最多 16 个字符
-        if (value.length > 16) {
-          form.setFields([
-            {
-              name: 'orgPhone',
-              errors: ['电话号码长度不能超过 16 位'],
-            },
-          ]);
-          return;
-        }
-
-        // 所有校验通过，清除错误状态
+      // 非必填，未输入时不显示错误
+      if (!value || value.trim() === '') {
         form.setFields([
           {
             name: 'orgPhone',
             errors: [],
           },
         ]);
+        return;
       }
+
+      // 检查是否包含非数字字符（只允许 0-9）
+      const hasInvalidChars = /[^0-9]/.test(value);
+      if (hasInvalidChars) {
+        form.setFields([
+          {
+            name: 'orgPhone',
+            errors: [t('org.validation.phone.invalid')],
+          },
+        ]);
+        return;
+      }
+
+      // 长度限制：最多 16 个字符
+      if (value.length > 16) {
+        form.setFields([
+          {
+            name: 'orgPhone',
+            errors: [t('org.validation.phone.invalid')],
+          },
+        ]);
+        return;
+      }
+
+      // 所有校验通过，清除错误状态
+      form.setFields([
+        {
+          name: 'orgPhone',
+          errors: [],
+        },
+      ]);
     }, 0);
   };
 
@@ -83,6 +81,23 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
       form.setFieldValue('orgPhone', onlyNumbers);
     }
   };
+
+  useEffect(() => {
+    if (userExists && existingPhone) {
+      form.setFieldValue('orgPhone', existingPhone);
+    }
+  }, [userExists, existingPhone]);
+
+  useEffect(() => {
+    if (verifyResult.isPhoneExists) {
+      form.setFields([
+        {
+          name: 'orgPhone',
+          errors: [t('org.validation.phone.invalid')],
+        },
+      ]);
+    }
+  }, [verifyResult.isPhoneExists]);
 
   return (
     <AntCol span={12}>

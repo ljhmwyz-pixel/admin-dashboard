@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { VerifyOrganization } from '@/shared/types/organization';
 
 import type { FieldProps } from './types';
 
-type OrgAddressFieldProps = FieldProps;
+type OrgAddressFieldProps = FieldProps & { verifyResult: VerifyOrganization };
 
-const OrgAddressField: React.FC<OrgAddressFieldProps> = ({ form }) => {
+const OrgAddressField: React.FC<OrgAddressFieldProps> = ({ form, verifyResult }) => {
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (verifyResult.isScope) {
+      form.setFields([
+        {
+          name: 'orgAddress',
+          errors: [t('org.validation.country.required')],
+        },
+      ]);
+    }
+  }, [verifyResult]);
 
   return (
     <AntCol span={12}>
@@ -34,6 +46,7 @@ const OrgAddressField: React.FC<OrgAddressFieldProps> = ({ form }) => {
             />
           </svg>
         }
+        rules={[{ required: true, message: t('org.validation.address.required') }]}
         inputProps={{
           placeholder: t('org.placeholder.select_org_address'),
           maxLength: 254,

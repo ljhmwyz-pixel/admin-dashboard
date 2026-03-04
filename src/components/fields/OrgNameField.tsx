@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { VerifyOrganization } from '@/shared/types/organization';
 import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
-type OrgNameFieldProps = FieldProps;
+type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization };
 
-const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
+const OrgNameField: React.FC<OrgNameFieldProps> = ({ form, verifyResult = {} }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value || '';
+    form.setFields([
+      {
+        name: 'orgName',
+        errors: [],
+      },
+    ]);
 
     // 前端拦截超长输入（超过 254 字符不允许继续输入）
     if (value.length > 254) {
@@ -22,6 +29,24 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
 
     form.setFieldValue('orgName', value);
   };
+
+  useEffect(() => {
+    if (verifyResult?.isOrganizationExists) {
+      form.setFields([
+        {
+          name: 'orgName',
+          errors: [t('org.validation.name.required')],
+        },
+      ]);
+    }
+    if (verifyResult?.isOrganizationSimilar)
+      form.setFields([
+        {
+          name: 'orgName',
+          errors: [t('org.dialog.similar_org.content')],
+        },
+      ]);
+  }, [verifyResult]);
 
   return (
     <AntCol span={12}>
@@ -46,9 +71,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
             />
           </svg>
         }
-        formItemProps={{
-          rules: [{ required: true, message: t('org.placeholder.search_org') }],
-        }}
+        rules={[{ required: true, message: t('org.validation.name.required') }]}
         inputProps={{
           placeholder: t('org.placeholder.search_org'),
           maxLength: 254,
@@ -62,7 +85,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
                 form.setFields([
                   {
                     name: 'orgName',
-                    errors: [t('org.placeholder.search_org')],
+                    errors: [t('org.validation.name.invalid_chars')],
                   },
                 ]);
                 return;
@@ -74,7 +97,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form }) => {
                 form.setFields([
                   {
                     name: 'orgName',
-                    errors: [t('org.placeholder.search_org')],
+                    errors: [t('org.validation.name.invalid_chars')],
                   },
                 ]);
                 return;

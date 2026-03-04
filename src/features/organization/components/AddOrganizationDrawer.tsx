@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormButton } from '@/components';
-import { AntRow, Button, Drawer, Form, Space, useForm } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
-import type { TreeNodeData } from '@/shared/types/organization';
-
+import { FormButton, FormModal } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -15,7 +11,13 @@ import {
   OrgPostalCodeField,
   OrgTypeField,
   OrgUsernameField,
-} from './fields';
+} from '@/components/fields';
+import { organizationApi } from '@/services/modules/organization/organizationApi';
+import { AntRow, Drawer, Form, useForm } from '@/shared/components';
+import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { TreeNodeData, VerifyOrganization } from '@/shared/types/organization';
+
 import OrganizationInfo from './OrganizationInfo';
 
 import styles from './AddOrganizationDrawer.module.scss';
@@ -33,33 +35,99 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
-  // TODO: 从 API 获取选项数据
+  const { withLoading } = useGlobalLoading();
   const [options] = useState([]);
 
-  // TODO: 实现表单提交逻辑
-  const onFinish = async (values: any) => {
-    console.log('submit:', values);
+  const [userExists, setUserExists] = useState<boolean>(false);
+  const [existingUsername, setExistingUsername] = useState<string>('');
+  const [existingPhone, setExistingPhone] = useState<number>(0);
+  const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
+    isOrganizationExists: false,
+    isOrganizationSimilar: false,
+    isPhoneExists: false,
+    isScope: false,
+    timestamp: 0,
+  });
 
-    // TODO: 调用 API 进行组织名称模糊查重（提交后）
-    // 查重范围：当前服务器
-    // 不同服务器可以存在名称一致或相似的组织
+  const verifyEmail = async (
+    email: string,
+  ): Promise<{ userExists: boolean; existingUsername: string; existingPhone: number }> => {
     try {
-      // 示例：调用查重 API
-      // const duplicateCheck = await checkOrganizationDuplicate(values.orgName);
-      // if (duplicateCheck.exists) {
-      //   form.setFields([
-      //     {
-      //       name: 'orgName',
-      //       errors: [t('org.validation.name_duplicate')],
-      //     },
-      //   ]);
-      //   return;
-      // }
-
-      // 查重通过后继续提交
-      console.log('查重通过，准备提交数据');
+      const response = await organizationApi.verifyEmail({ email: email || '' });
+      const result = {
+        userExists: response.data.userExists || false,
+        existingUsername: response.data.existingUsername || '',
+        existingPhone: response.data.existingPhone || 0,
+      };
+      setUserExists(result.userExists);
+      setExistingUsername(result.existingUsername);
+      setExistingPhone(result.existingPhone);
+      return result;
     } catch (error) {
-      console.error('查重失败:', error);
+      const emptyResult = { userExists: false, existingUsername: '', existingPhone: 0 };
+      setUserExists(false);
+      setExistingUsername('');
+      setExistingPhone(0);
+      return emptyResult;
+    }
+  };
+
+  const verify = async (values: any) => {
+    try {
+      const response = await organizationApi.verify(values);
+      setVerifyResult({ ...response.data, timestamp: Date.now() });
+      return response.data;
+    } catch (error) {
+      const result = {
+        isOrganizationExists: false,
+        isOrganizationSimilar: false,
+        isPhoneExists: false,
+        isScope: false,
+        timestamp: Date.now(),
+      };
+      setVerifyResult(result);
+      return result;
+    }
+  };
+
+  const onFinish = async (values: any) => {
+    const { isOrganizationExists, isOrganizationSimilar, isPhoneExists, isScope } =
+      await verify(values);
+    if (isOrganizationExists || isOrganizationSimilar || isPhoneExists || isScope) return;
+    const { userExists, existingUsername, existingPhone } = await verifyEmail(values.orgEmail);
+
+    if (userExists) {
+      handleConfirm({ values, username: existingUsername, phone: existingPhone });
+    } else {
+      handleConfirm(values);
+    }
+  };
+
+  const handleConfirm = async (values: any) => {
+    try {
+      const requestData = {
+        orgName: values.orgName,
+        orgType: values.orgType,
+        parentOrgId: currentParentNode?.key || undefined,
+        address: values.orgAddress,
+        countryRegion: values.orgCountryRegion,
+        postalCode: values.orgPostalCode,
+        email: values.orgEmail,
+        username: values.orgUsername,
+        phone: values.orgPhone,
+        description: values.orgDescription,
+      };
+
+      await withLoading(async () => {
+        const response = await organizationApi.create(requestData);
+
+        console.log('创建成功:', response);
+
+        form.resetFields();
+        onChange?.(false);
+      });
+    } catch (error: any) {
+      console.error('提交失败:', error);
     }
   };
 
@@ -70,7 +138,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   return (
     <Drawer
-      bodyStyle={{ padding: '0 15px', backgroundColor: '#fff' }}
+      bodyStyle={{ padding: '0 30px', backgroundColor: '#fff' }}
       headerStyle={{
         backgroundColor: '#F1F1F2',
         borderBottom: 'none',
@@ -95,7 +163,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
           <FormButton color="default" onClick={handleCancel}>
             {t('common.action.cancel')}
           </FormButton>
-          <FormButton color="primary" variant="solid" form="organization-form">
+          <FormButton color="primary" variant="solid" onClick={() => form.submit()}>
             {t('common.action.confirm')}
           </FormButton>
         </div>
@@ -107,7 +175,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
         <AntRow gutter={30}>
           {/* 组织名称字段 */}
-          <OrgNameField form={form} />
+          <OrgNameField form={form} verifyResult={verifyResult} />
 
           {/* 组织类型字段 */}
           <OrgTypeField form={form} parentOrgType={currentParentNode?.type} />
@@ -115,7 +183,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
         <AntRow gutter={30}>
           {/* 组织地址字段 */}
-          <OrgAddressField form={form} />
+          <OrgAddressField form={form} verifyResult={verifyResult} />
 
           {/* 国家地区字段 */}
           <OrgCountryRegionField form={form} countryOptions={options} />
@@ -124,17 +192,27 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         <AntRow gutter={30}>
           {/* 邮政编码字段 */}
           <OrgPostalCodeField form={form} />
-
-          {/* 邮箱字段 */}
-          <OrgEmailField form={form} />
         </AntRow>
 
         <AntRow gutter={30}>
+          {/* 邮箱字段 */}
+          <OrgEmailField form={form} onCheckEmailExists={verifyEmail} userExists={userExists} />
+        </AntRow>
+        <AntRow gutter={30}>
           {/* 用户名字段 */}
-          <OrgUsernameField form={form} />
+          <OrgUsernameField
+            form={form}
+            userExists={userExists}
+            existingUsername={existingUsername}
+          />
 
           {/* 电话字段 */}
-          <OrgPhoneField form={form} />
+          <OrgPhoneField
+            form={form}
+            userExists={userExists}
+            existingPhone={existingPhone}
+            verifyResult={verifyResult}
+          />
         </AntRow>
 
         <AntRow gutter={30}>

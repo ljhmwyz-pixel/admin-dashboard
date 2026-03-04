@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
@@ -8,24 +8,18 @@ import type { FieldProps } from './types';
 
 type OrgEmailFieldProps = FieldProps & {
   onCheckEmailExists?: (email: string) => void;
+  userExists?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists }) => {
+const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists, userExists }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value || '';
 
     form.setFieldValue('orgEmail', value);
-  };
-
-  const checkInternalOrGuestUser = async () => {
-    // TODO: 实现内部用户或访客用户的检查逻辑
-    // 该判断仅限于 Dealer/Installer/Owner类型的组织
-    // 需要调用后端 API 进行查重和类型判断
-    return true; // 暂时返回 true，后续补充实际逻辑
   };
 
   const handleCheckEmailExists = (e: React.MouseEvent) => {
@@ -52,6 +46,17 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists 
     }
   };
 
+  useEffect(() => {
+    if (userExists) {
+      form.setFields([
+        {
+          name: 'orgEmail',
+          errors: [t('org.validation.email.exists')],
+        },
+      ]);
+    }
+  }, [userExists]);
+
   return (
     <AntCol span={12}>
       <FormInput
@@ -75,18 +80,10 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists 
             />
           </svg>
         }
-        formItemProps={{
-          rules: [
-            {
-              required: true,
-              message: t('org.placeholder.enter_email'),
-            },
-            {
-              pattern: EMAIL_PATTERN,
-              message: t('org.placeholder.enter_email'),
-            },
-          ],
-        }}
+        rules={[
+          { required: true, message: t('org.validation.email.required') },
+          { pattern: EMAIL_PATTERN, message: t('org.validation.email.required') },
+        ]}
         inputProps={{
           suffix: (
             <span onClick={handleCheckEmailExists}>

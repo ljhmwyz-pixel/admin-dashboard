@@ -1,12 +1,6 @@
 // 组织树相关类型定义
 
-export type OrganizationType =
-  | 'Pylontech'
-  | 'Pylontech_BD'
-  | 'Dealer'
-  | 'Installer'
-  | 'Owner'
-  | 'Guest';
+export type OrganizationType = 'PYLONTECH' | 'BD' | 'DEALER' | 'INSTALLER' | 'OWNER' | 'GUEST';
 
 export interface TreeNodeData {
   key: string;
@@ -94,4 +88,31 @@ export interface CreateOrganizationResponse {
   code: number;
   msg: string;
   data: ApiOrganization;
+}
+
+export interface VerifyOrganization {
+  isOrganizationExists?: boolean;
+  isOrganizationSimilar?: boolean;
+  isPhoneExists?: boolean;
+  isScope?: boolean;
+  timestamp?: number;
+}
+export interface VerifyResponse {
+  code: number;
+  msg: string;
+  data: VerifyOrganization;
+}
+
+export interface VerifyEmailRequest {
+  email: string;
+}
+
+export interface VerifyEmailResponse {
+  code: number;
+  msg: string;
+  data: {
+    userExists: boolean;
+    existingUsername: string;
+    existingPhone: number;
+  };
 }

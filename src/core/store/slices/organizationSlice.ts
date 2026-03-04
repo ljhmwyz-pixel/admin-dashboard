@@ -76,9 +76,9 @@ const organizationSlice = createSlice({
       .addCase(createOrganization.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(createOrganization.rejected, (state, action) => {
+      .addCase(createOrganization.rejected, (state) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = null;
       });
   },
 });

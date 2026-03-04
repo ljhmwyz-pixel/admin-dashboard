@@ -46,9 +46,7 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
       <FormSelect
         name="orgType"
         label={t('org.field.type')}
-        formItemProps={{
-          rules: [{ required: true, message: t('org.placeholder.select_org_type') }],
-        }}
+        rules={[{ required: true, message: t('org.validation.type.required') }]}
         selectProps={{
           options: availableOptions,
           placeholder: t('org.placeholder.select_org_type'),
