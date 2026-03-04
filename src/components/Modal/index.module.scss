@@ -1,0 +1,133 @@
+.modal {
+  row-gap: 0;
+  :global(.ant-modal-container) {
+    border-radius: 12px;
+    width: 420px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  :global(.ant-modal-confirm-paragraph) {
+    row-gap: 0;
+  }
+  :global(.ant-modal-confirm-btns) {
+    display: flex;
+    justify-content: center !important;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    gap: 30px;
+  }
+
+  :global(.ant-modal-close:hover) {
+    background: none !important;
+  }
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .imageWrapper {
+      height: 82px;
+    }
+    .title {
+      font-size: 18px;
+      line-height: 18px;
+      font-weight: 600;
+      color: #191b1f;
+      margin-top: 40px;
+    }
+  }
+  .content {
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 500;
+    color: #191b1f99;
+    margin-top: 20px;
+    text-align: center;
+  }
+}
+
+.okSuccess {
+  width: 180px;
+  height: 42px;
+  border-radius: 6px;
+  background: #31c47f;
+  border-color: #31c47f;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.okSuccess:hover {
+  background: #31c47f !important;
+  border-color: #31c47f !important;
+}
+
+.okError {
+  width: 180px;
+  height: 42px;
+  border-radius: 6px;
+  background: #f45858;
+  border-color: #f45858;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.okError:hover {
+  background: #f45858 !important;
+  border-color: #f45858 !important;
+}
+
+.okWarning {
+  width: 180px;
+  height: 42px;
+  border-radius: 6px;
+  background: #f4aa58;
+  border-color: #f4aa58;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.okWarning:hover {
+  background: #f4aa58 !important;
+  border-color: #f4aa58 !important;
+}
+
+.okConfirm {
+  width: 90px;
+  height: 42px;
+  border-radius: 6px;
+  background: #f45858;
+  border-color: #f45858;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.okConfirm:hover {
+  background: #f45858 !important;
+  border-color: #f45858 !important;
+}
+
+.cancelConfirm {
+  width: 90px;
+  height: 42px;
+  border-radius: 6px;
+  background: #fff;
+  border-color: #fff;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #a3a4a5;
+  border: 2px solid #a3a4a5;
+}
+.cancelConfirm:hover {
+  background: #fff !important;
+  border-color: #fff !important;
+  border: 2px solid #a3a4a5 !important;
+  color: #a3a4a5 !important;
+}

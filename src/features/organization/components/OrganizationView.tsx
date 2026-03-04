@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form } from 'antd';
 
-import { FormButton, FormInput, FormSelect, ImageIcons } from '@/components';
+import { FormButton, FormInput, FormModal, FormSelect, ImageIcons } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import OrgInfo from './OrganizationInfo';
@@ -23,14 +23,30 @@ const OrganizationView: React.FC = () => {
   };
   const { t } = useLanguage();
   const onEdit = () => {
-    setIsEdit(true);
-    form.setFieldsValue(detail);
+    // setIsEdit(true);
+    // form.setFieldsValue(detail);
+    // FormModal.success({
+    //   title: 'Success !',
+    //   content:
+    //     'The organization has been successfully created. An email containing intial login password has been sent to the administrator’s email address.',
+    //   onOk: onCancel,
+    // });
+    FormModal.confirm({
+      title: 'Sub-Organizations Exists !',
+      content:
+        'This organization cannot be deleted while it has sub-organizations.Please remove or reassign the sub-organizations first.',
+      onOk: onCancel,
+    });
   };
   const onCancel = () => {
     setIsEdit(false);
+    form.setFieldsValue(detail);
   };
   const onSave = () => {
-    setIsEdit(false);
+    form.validateFields().then((values) => {
+      console.log(values);
+      setIsEdit(false);
+    });
   };
   return (
     <div className={styles.organizationView}>
@@ -45,7 +61,7 @@ const OrganizationView: React.FC = () => {
             inputProps={{
               className: styles.inputStyle,
               disabled: true,
-              placeholder: '',
+              placeholder: t('org.placeholder.select_org_address'),
             }}
           />
           <FormSelect
@@ -55,7 +71,7 @@ const OrganizationView: React.FC = () => {
             selectProps={{
               className: styles.inputStyle,
               disabled: true,
-              placeholder: '',
+              placeholder: t('org.placeholder.select_country_region'),
             }}
           />
           <FormInput
@@ -65,7 +81,7 @@ const OrganizationView: React.FC = () => {
             inputProps={{
               className: styles.inputStyle,
               disabled: !isEdit,
-              placeholder: '',
+              placeholder: t('org.placeholder.enter_postal_code'),
             }}
           />
           <FormInput
@@ -75,17 +91,18 @@ const OrganizationView: React.FC = () => {
             inputProps={{
               className: styles.inputStyle,
               disabled: !isEdit,
-              placeholder: '',
+              placeholder: t('org.placeholder.enter_username'),
             }}
           />
           <FormInput
             label={t('org.field.email')}
             name="Email"
             prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
+            rules={[{ required: true, message: t('org.validation.email.required') }]}
             inputProps={{
               className: styles.inputStyle,
               disabled: !isEdit,
-              placeholder: '',
+              placeholder: t('guest.placeholder.email'),
             }}
           />
           <FormInput
@@ -95,7 +112,7 @@ const OrganizationView: React.FC = () => {
             inputProps={{
               className: styles.inputStyle,
               disabled: !isEdit,
-              placeholder: '',
+              placeholder: t('org.placeholder.enter_phone'),
             }}
           />
           <FormInput
@@ -105,7 +122,7 @@ const OrganizationView: React.FC = () => {
             inputProps={{
               className: styles.inputStyle,
               disabled: !isEdit,
-              placeholder: '',
+              placeholder: t('org.placeholder.enter_comment'),
             }}
           />
         </div>
