@@ -1,0 +1,26 @@
+:global(.ant-drawer-content-wrapper) {
+  border-radius: 12px 0 0 12px;
+}
+.drawer {
+  border-radius: 12px 0 0 12px;
+  .header {
+    .title {
+      font-size: 18px;
+      line-height: 18px;
+      font-weight: 600;
+      color: #191b1f;
+    }
+  }
+  :global(.ant-drawer-close) {
+    position: absolute;
+    right: 30px;
+    top: 15px;
+    margin-inline-end: 0 !important;
+  }
+  :global(.ant-drawer-close:hover) {
+    background: none;
+  }
+  :global(.ant-drawer-header) {
+    padding: 18px 30px;
+  }
+}

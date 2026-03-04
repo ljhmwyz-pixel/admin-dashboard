@@ -1,7 +1,7 @@
 .wrapper {
   margin-bottom: 30px;
   :global(.ant-form-item-explain) {
-    margin-top: -10px;
+    margin-top: -12px;
     margin-left: 14px;
     width: fit-content;
     padding: 0 8px;
@@ -36,10 +36,11 @@
   font-size: 14px;
   font-weight: 500;
   color: #191b1f;
-  border: 1px solid #d9d9d9;
+  // border: 1px solid #d9d9d9;
   border-radius: 6px;
   transition: all 0.2s;
-  padding: 20px;
+  padding: 0 20px;
+  line-height: 40px;
 }
 
 .disabledStyle {

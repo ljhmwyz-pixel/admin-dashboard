@@ -5,6 +5,12 @@
 .organizationListPage {
   height: 100%;
   overflow: hidden;
+  .splitterStyle {
+    gap: 3px;
+    :global(.ant-splitter-bar-dragger::before) {
+      width: 0 !important;
+    }
+  }
 }
 
 .organizationListPanel {
