@@ -3,6 +3,7 @@
 // 方便后期统一替换或扩展
 
 // 基础组件
+export type { ButtonProps } from 'antd/es/button';
 export { default as AntButton } from 'antd/es/button';
 export { default as AntCheckbox } from 'antd/es/checkbox';
 export { default as AntDatePicker } from 'antd/es/date-picker';
