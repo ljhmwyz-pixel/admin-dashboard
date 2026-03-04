@@ -3,21 +3,38 @@ import React from 'react';
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
-type OrgUsernameFieldProps = FieldProps;
+type OrgUsernameFieldProps = FieldProps & {
+  userExists?: boolean;
+  existingUsername?: string;
+};
 
-const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({ form }) => {
+const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
+  form,
+  userExists = false,
+  existingUsername,
+}) => {
   const { t } = useLanguage();
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      const value = form.getFieldValue('orgUsername') || '';
+
+      if (userExists && existingUsername) {
+        form.setFieldValue('orgUsername', existingUsername);
+      } else {
+        form.setFieldValue('orgUsername', value);
+      }
+    }, 0);
+  };
 
   return (
     <AntCol span={12}>
       <FormInput
         name="orgUsername"
         label={t('org.field.username')}
-        required
         prefixIcon={
           <svg
             width="15"
@@ -37,24 +54,9 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({ form }) => {
         }
         inputProps={{
           placeholder: t('org.placeholder.enter_username'),
-          maxLength: 254,
-          required: true,
-          disabled: true,
-          onBlur: () => {
-            setTimeout(() => {
-              const value = form.getFieldValue('orgUsername') || '';
-              if (value.trim() && !containsEmoji(value)) {
-                form.validateFields(['orgUsername']);
-              } else {
-                form.setFields([
-                  {
-                    name: 'orgUsername',
-                    errors: [t('org.placeholder.enter_username')],
-                  },
-                ]);
-              }
-            }, 0);
-          },
+          maxLength: 100,
+          disabled: userExists,
+          onBlur: handleBlur,
         }}
       />
     </AntCol>

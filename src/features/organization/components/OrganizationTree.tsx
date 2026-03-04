@@ -123,7 +123,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
       {/* 添加组织抽屉 */}
       <AddOrganizationDrawer
         currentParentNode={currentParentNode}
-        visible={false}
+        visible={addDrawerVisible}
         onChange={(visible) => setAddDrawerVisible(visible)}
       />
     </div>

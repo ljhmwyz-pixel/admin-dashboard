@@ -1,0 +1,13 @@
+.drawer {
+    background-color: transparent !important;
+    .info {
+        margin: 0 -15px 30px;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+    }
+}
