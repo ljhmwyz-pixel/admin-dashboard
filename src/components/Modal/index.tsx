@@ -10,13 +10,14 @@ import warningIcon from '@/assets/images/form/warning_status.png';
 
 import styles from './index.module.scss';
 
-type ModalType = 'success' | 'error' | 'warning' | 'confirm';
+type ModalType = 'success' | 'error' | 'warning' | 'confirm' | 'warningConfirm';
 
 const typeIcons = {
   success: <img src={successIcon} width={82} height={82} />,
   error: <img src={errorIcon} width={82} height={82} />,
   warning: <img src={warningIcon} width={82} height={82} />,
   confirm: <img src={confirmIcon} width={82} height={82} />,
+  warningConfirm: <img src={warningIcon} width={82} height={82} />,
 };
 
 const okClassMap = {
@@ -24,10 +25,12 @@ const okClassMap = {
   error: styles.okError,
   warning: styles.okWarning,
   confirm: styles.okConfirm,
+  warningConfirm: styles.okWarningConfirm,
 };
 
 const cancelClassMap: Partial<Record<ModalType, string>> = {
   confirm: styles.cancelConfirm,
+  warningConfirm: styles.cancelConfirm,
 };
 
 type AppModalProps = Omit<ModalFuncProps, 'title' | 'content' | 'icon'> & {
@@ -83,6 +86,10 @@ const AppModal = {
 
   warning(config: AppModalProps) {
     return Modal.warning(renderConfig(config, 'warning'));
+  },
+
+  warningConfirm(config: AppModalProps) {
+    return Modal.confirm(renderConfig(config, 'warningConfirm'));
   },
 };
 export default AppModal;

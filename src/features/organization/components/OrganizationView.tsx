@@ -31,11 +31,17 @@ const OrganizationView: React.FC = () => {
     //     'The organization has been successfully created. An email containing intial login password has been sent to the administrator’s email address.',
     //   onOk: onCancel,
     // });
-    FormModal.confirm({
+    FormModal.warningConfirm({
       title: 'Sub-Organizations Exists !',
       content:
         'This organization cannot be deleted while it has sub-organizations.Please remove or reassign the sub-organizations first.',
       onOk: onCancel,
+      // okButtonProps: {
+      //   disabled: true,
+      // },
+      // cancelButtonProps: {
+      //   disabled: true,
+      // },
     });
   };
   const onCancel = () => {
