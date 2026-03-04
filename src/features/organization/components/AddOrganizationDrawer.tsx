@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { FormButton } from '@/components';
 import { AntRow, Button, Drawer, Form, Space, useForm } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -15,6 +16,9 @@ import {
   OrgTypeField,
   OrgUsernameField,
 } from './fields';
+import OrganizationInfo from './OrganizationInfo';
+
+import styles from './AddOrganizationDrawer.module.scss';
 
 interface AddOrganizationProps {
   visible: boolean;
@@ -66,30 +70,40 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   return (
     <Drawer
-      size="large"
+      bodyStyle={{ padding: '0 15px', backgroundColor: '#fff' }}
+      headerStyle={{
+        backgroundColor: '#F1F1F2',
+        borderBottom: 'none',
+        borderTopLeftRadius: '12px',
+        color: '#191B1F',
+        fontWeight: '600',
+      }}
+      footerStyle={{
+        backgroundColor: '#fff',
+        borderTop: 'none',
+        padding: '0 0 60px',
+      }}
+      className={styles.drawer}
+      size="60%"
       placement="right"
-      closable={false}
+      closable={{ placement: 'end' }}
       onClose={handleCancel}
       open={visible}
+      title={t('org.add.title')}
       footer={
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: '12px',
-            borderTop: '1px solid #f0f0f0',
-            paddingTop: '16px',
-          }}
-        >
-          <Space>
-            <Button onClick={handleCancel}>{t('common.action.cancel')}</Button>
-            <Button type="primary" onClick={() => form.submit()}>
-              {t('common.action.confirm')}
-            </Button>
-          </Space>
+        <div className={styles.footer}>
+          <FormButton color="default" onClick={handleCancel}>
+            {t('common.action.cancel')}
+          </FormButton>
+          <FormButton color="primary" variant="solid" form="organization-form">
+            {t('common.action.confirm')}
+          </FormButton>
         </div>
       }
     >
+      <div className={styles.info}>
+        <OrganizationInfo />
+      </div>
       <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
         <AntRow gutter={30}>
           {/* 组织名称字段 */}

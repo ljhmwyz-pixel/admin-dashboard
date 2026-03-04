@@ -3,21 +3,92 @@ import React from 'react';
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
-type OrgPhoneFieldProps = FieldProps;
+type OrgPhoneFieldProps = FieldProps & {
+  userExists?: boolean;
+  existingPhone?: string;
+};
 
-const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({ form }) => {
+const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
+  form,
+  userExists = false,
+  existingPhone,
+}) => {
   const { t } = useLanguage();
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      const value = form.getFieldValue('orgPhone') || '';
+
+      // 如果外部传入了验证结果，直接使用
+      if (userExists && existingPhone) {
+        form.setFieldValue('orgPhone', existingPhone);
+      } else {
+        // 非必填，未输入时不显示错误
+        if (!value || value.trim() === '') {
+          form.setFields([
+            {
+              name: 'orgPhone',
+              errors: [],
+            },
+          ]);
+          return;
+        }
+
+        // 检查是否包含非数字字符（只允许 0-9）
+        const hasInvalidChars = /[^0-9]/.test(value);
+        if (hasInvalidChars) {
+          form.setFields([
+            {
+              name: 'orgPhone',
+              errors: [t('org.placeholder.enter_phone')],
+            },
+          ]);
+          return;
+        }
+
+        // 长度限制：最多 16 个字符
+        if (value.length > 16) {
+          form.setFields([
+            {
+              name: 'orgPhone',
+              errors: ['电话号码长度不能超过 16 位'],
+            },
+          ]);
+          return;
+        }
+
+        // 所有校验通过，清除错误状态
+        form.setFields([
+          {
+            name: 'orgPhone',
+            errors: [],
+          },
+        ]);
+      }
+    }, 0);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value || '';
+
+    // type="number" 可能允许输入 e、+、- 等字符，需要额外过滤
+    // 只保留数字 0-9
+    const onlyNumbers = value.replace(/[^0-9]/g, '');
+
+    // 长度不超过 16 位
+    if (onlyNumbers.length <= 16) {
+      form.setFieldValue('orgPhone', onlyNumbers);
+    }
+  };
 
   return (
     <AntCol span={12}>
       <FormInput
         name="orgPhone"
         label={t('org.field.phone')}
-        required
         prefixIcon={
           <svg
             width="14"
@@ -36,25 +107,13 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({ form }) => {
           </svg>
         }
         inputProps={{
+          type: 'text',
+          inputMode: 'numeric',
           placeholder: t('org.placeholder.enter_phone'),
-          maxLength: 254,
-          required: true,
-          disabled: true,
-          onBlur: () => {
-            setTimeout(() => {
-              const value = form.getFieldValue('orgPhone') || '';
-              if (value.trim() && !containsEmoji(value)) {
-                form.validateFields(['orgPhone']);
-              } else {
-                form.setFields([
-                  {
-                    name: 'orgPhone',
-                    errors: [t('org.placeholder.enter_phone')],
-                  },
-                ]);
-              }
-            }, 0);
-          },
+          maxLength: 16,
+          disabled: userExists,
+          onChange: handleChange,
+          onBlur: handleBlur,
         }}
       />
     </AntCol>
