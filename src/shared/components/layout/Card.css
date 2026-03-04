@@ -1,0 +1,48 @@
+/* 自定义卡片样式 */
+
+.custom-card {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.custom-card--shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card--shadow:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.custom-card--bordered {
+  border: 1px solid #f0f0f0;
+}
+
+.custom-card--gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.custom-card--gradient .ant-card-head {
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.custom-card--gradient .ant-card-head-title {
+  color: white;
+}
+
+.custom-card--hoverable {
+  cursor: pointer;
+}
+
+.custom-card--hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .custom-card {
+    border-radius: 4px;
+  }
+}

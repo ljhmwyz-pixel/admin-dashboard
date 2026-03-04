@@ -1,0 +1,68 @@
+// SCSS Modules变量和混合宏
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
+
+.container {
+  @include card-style;
+  padding: $spacing-lg;
+  margin: $spacing-md;
+
+  // 嵌套样式
+  .header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+
+    h2 {
+      color: $color-text-primary;
+      font-size: $font-size-xl;
+
+      @include dark-theme {
+        color: $dark-color-text-primary;
+      }
+    }
+  }
+
+  .content {
+    @include text-truncate;
+    line-height: $line-height-normal;
+    color: $color-text-secondary;
+
+    @include dark-theme {
+      color: $dark-color-text-secondary;
+    }
+  }
+
+  .actions {
+    @include flex-center;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+
+    .button {
+      @include btn-base;
+
+      &.primary {
+        background: $color-primary;
+        color: white;
+        border-color: $color-primary;
+
+        &:hover {
+          background: color.adjust($color-primary, $lightness: -10%);
+          border-color: color.adjust($color-primary, $lightness: -10%);
+        }
+      }
+    }
+  }
+}
+
+// 响应式设计
+@include respond-to(768px) {
+  .container {
+    padding: $spacing-md;
+    margin: $spacing-sm;
+
+    .header h2 {
+      font-size: $font-size-lg;
+    }
+  }
+}

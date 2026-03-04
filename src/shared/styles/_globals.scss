@@ -1,0 +1,149 @@
+// 全局SCSS样式文件
+@use './variables' as *;
+@use './mixins' as *;
+
+/* 全局样式 */
+:root {
+  /* 基础颜色 */
+  --color-primary: $color-primary;
+  --color-success: $color-success;
+  --color-warning: $color-warning;
+  --color-error: $color-error;
+  --color-info: $color-info;
+  
+  /* 中性色 */
+  --color-text-primary: $color-text-primary;
+  --color-text-secondary: $color-text-secondary;
+  --color-text-tertiary: $color-text-tertiary;
+  --color-text-quaternary: $color-text-quaternary;
+  
+  /* 背景色 */
+  --color-bg-base: $color-bg-base;
+  --color-bg-container: $color-bg-container;
+  --color-bg-elevated: $color-bg-elevated;
+  --color-bg-spotlight: $color-bg-spotlight;
+  
+  /* 边框色 */
+  --color-border: $color-border;
+  --color-border-secondary: $color-border-secondary;
+  
+  /* 阴影 */
+  --box-shadow: $box-shadow;
+  --box-shadow-secondary: $box-shadow-secondary;
+  
+  /* 圆角 */
+  --border-radius: $border-radius;
+  --border-radius-sm: $border-radius-sm;
+  --border-radius-lg: $border-radius-lg;
+  
+  /* 间距 */
+  --spacing-xs: $spacing-xs;
+  --spacing-sm: $spacing-sm;
+  --spacing-md: $spacing-md;
+  --spacing-lg: $spacing-lg;
+  --spacing-xl: $spacing-xl;
+  --spacing-xxl: $spacing-xxl;
+  
+  /* 字体大小 */
+  --font-size-xs: $font-size-xs;
+  --font-size-sm: $font-size-sm;
+  --font-size-md: $font-size-md;
+  --font-size-lg: $font-size-lg;
+  --font-size-xl: $font-size-xl;
+  --font-size-xxl: $font-size-xxl;
+  
+  /* 行高 */
+  --line-height-tight: $line-height-tight;
+  --line-height-normal: $line-height-normal;
+  --line-height-relaxed: $line-height-relaxed;
+}
+
+/* 暗色主题变量 */
+[data-theme="dark"] {
+  --color-text-primary: $dark-color-text-primary;
+  --color-text-secondary: $dark-color-text-secondary;
+  --color-text-tertiary: $dark-color-text-tertiary;
+  --color-text-quaternary: $dark-color-text-quaternary;
+  
+  --color-bg-base: $dark-color-bg-base;
+  --color-bg-container: $dark-color-bg-container;
+  --color-bg-elevated: $dark-color-bg-elevated;
+  
+  --color-border: $dark-color-border;
+  --color-border-secondary: $dark-color-border-secondary;
+}
+
+/* 主题切换动画 */
+.theme-transition * {
+  @include theme-transition;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-container);
+  @include rounded(3px);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  @include rounded(3px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-secondary);
+}
+
+/* 焦点样式 */
+.focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 工具类 */
+.text-truncate {
+  @include text-truncate;
+}
+
+.text-break {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+.card-shadow {
+  @include shadow(1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card-shadow:hover {
+  @include shadow(2);
+}
+
+/* 响应式断点 */
+@include respond-to(768px) {
+  :root {
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    --spacing-xxl: 2rem;
+  }
+}
+
+@include respond-to(480px) {
+  :root {
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.25rem;
+  }
+}

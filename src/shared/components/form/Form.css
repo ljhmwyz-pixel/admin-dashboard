@@ -1,0 +1,108 @@
+/* 自定义表单样式 */
+
+/* Form 样式 */
+.custom-form {
+  transition: all 0.3s ease;
+}
+
+.custom-form--animated .ant-form-item {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+.custom-form--compact .ant-form-item {
+  margin-bottom: 12px;
+}
+
+.custom-form--card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input 样式 */
+.custom-input {
+  transition: all 0.3s ease;
+}
+
+.custom-input--underlined {
+  border: none;
+  border-bottom: 2px solid #d9d9d9;
+  border-radius: 0;
+  background: transparent;
+}
+
+.custom-input--underlined:focus,
+.custom-input--underlined:hover {
+  border-bottom-color: #1890ff;
+  box-shadow: none;
+}
+
+.custom-input--filled {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+}
+
+.custom-input--filled:hover,
+.custom-input--filled:focus {
+  background: #e6f7ff;
+  border-color: #1890ff;
+}
+
+.custom-input--no-border {
+  border: none;
+  box-shadow: none;
+}
+
+.custom-input--no-border:hover,
+.custom-input--no-border:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* Select 样式 */
+.custom-select {
+  transition: all 0.3s ease;
+}
+
+.custom-select--borderless .ant-select-selector {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.custom-select--borderless:hover .ant-select-selector {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.custom-select--filled .ant-select-selector {
+  background: #f5f5f5;
+  border-color: #f5f5f5;
+}
+
+.custom-select--filled:hover .ant-select-selector {
+  background: #e6f7ff;
+  border-color: #1890ff;
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .custom-form--card {
+    padding: 16px;
+  }
+  
+  .custom-form--compact .ant-form-item {
+    margin-bottom: 8px;
+  }
+}
