@@ -22,27 +22,29 @@ const OrganizationView: React.FC = () => {
     Email: 'm******g@pylontech.com.cn',
   };
   const { t } = useLanguage();
+  const { success } = FormModal();
+
   const onEdit = () => {
     // setIsEdit(true);
     // form.setFieldsValue(detail);
-    // FormModal.success({
-    //   title: 'Success !',
-    //   content:
-    //     'The organization has been successfully created. An email containing intial login password has been sent to the administrator’s email address.',
-    //   onOk: onCancel,
-    // });
-    FormModal.warningConfirm({
-      title: 'Sub-Organizations Exists !',
+    success({
+      title: 'Success !',
       content:
-        'This organization cannot be deleted while it has sub-organizations.Please remove or reassign the sub-organizations first.',
+        'The organization has been successfully created. An email containing intial login password has been sent to the administrator’s email address.',
       onOk: onCancel,
-      // okButtonProps: {
-      //   disabled: true,
-      // },
-      // cancelButtonProps: {
-      //   disabled: true,
-      // },
     });
+    // warningConfirm({
+    //   title: 'Sub-Organizations Exists !',
+    //   content:
+    //     'This organization cannot be deleted while it has sub-organizations.Please remove or reassign the sub-organizations first.',
+    //   onOk: onCancel,
+    //   okButtonProps: {
+    //     disabled: true,
+    //   },
+    //   cancelButtonProps: {
+    //     disabled: true,
+    //   },
+    // });
   };
   const onCancel = () => {
     setIsEdit(false);
