@@ -22,9 +22,9 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const userMenuItems: MenuProps['items'] = [
-    { key: '6', label: '6666' },
-    { key: '7', label: '777' },
-    { key: '8', label: '8888' },
+    // { key: '6', label: '6666' },
+    // { key: '7', label: '777' },
+    // { key: '8', label: '8888' },
   ];
 
   const languageItems: MenuProps['items'] = [

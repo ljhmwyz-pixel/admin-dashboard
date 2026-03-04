@@ -107,10 +107,48 @@
   line-height: 14px;
   font-weight: 600;
   color: #fff;
+  margin-left: 0 !important;
+  &:hover {
+    background: #f45858 !important;
+    border-color: #f45858 !important;
+    color: #fff !important;
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    background: #f45858 !important;
+    border-color: #f45858 !important;
+    color: #fff !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
-.okConfirm:hover {
-  background: #f45858 !important;
-  border-color: #f45858 !important;
+
+.okWarningConfirm {
+  width: 90px;
+  height: 42px;
+  border-radius: 6px;
+  background: #f4aa58;
+  border-color: #f4aa58;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-left: 0 !important;
+  &:hover {
+    background: #f4aa58 !important;
+    border-color: #f4aa58 !important;
+    color: #fff !important;
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    background: #f4aa58 !important;
+    border-color: #f4aa58 !important;
+    color: #fff !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .cancelConfirm {
@@ -124,10 +162,20 @@
   font-weight: 600;
   color: #a3a4a5;
   border: 2px solid #a3a4a5;
-}
-.cancelConfirm:hover {
-  background: #fff !important;
-  border-color: #fff !important;
-  border: 2px solid #a3a4a5 !important;
-  color: #a3a4a5 !important;
+  &:hover {
+    background: #fff !important;
+    border-color: #fff !important;
+    border: 2px solid #a3a4a5 !important;
+    color: #a3a4a5 !important;
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    background: #fff !important;
+    border-color: #fff !important;
+    border: 2px solid #a3a4a5 !important;
+    color: #a3a4a5 !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

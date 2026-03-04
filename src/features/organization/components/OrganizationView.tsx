@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Form } from 'antd';
 
 import { FormButton, FormInput, FormModal, FormSelect, ImageIcons } from '@/components';
+import { AntForm } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import OrgInfo from './OrganizationInfo';
@@ -9,7 +9,7 @@ import OrgInfo from './OrganizationInfo';
 import styles from './OrganizationView.module.scss';
 
 const OrganizationView: React.FC = () => {
-  const [form] = Form.useForm();
+  const [form] = AntForm.useForm();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const detail = {
     id: '1',
@@ -22,21 +22,10 @@ const OrganizationView: React.FC = () => {
     Email: 'm******g@pylontech.com.cn',
   };
   const { t } = useLanguage();
+
   const onEdit = () => {
-    // setIsEdit(true);
-    // form.setFieldsValue(detail);
-    // FormModal.success({
-    //   title: 'Success !',
-    //   content:
-    //     'The organization has been successfully created. An email containing intial login password has been sent to the administrator’s email address.',
-    //   onOk: onCancel,
-    // });
-    FormModal.confirm({
-      title: 'Sub-Organizations Exists !',
-      content:
-        'This organization cannot be deleted while it has sub-organizations.Please remove or reassign the sub-organizations first.',
-      onOk: onCancel,
-    });
+    setIsEdit(true);
+    form.setFieldsValue(detail);
   };
   const onCancel = () => {
     setIsEdit(false);
@@ -52,7 +41,7 @@ const OrganizationView: React.FC = () => {
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
       <OrgInfo />
-      <Form form={form} layout="vertical" initialValues={detail}>
+      <AntForm form={form} layout="vertical" initialValues={detail}>
         <div className={styles.formGroups}>
           <FormInput
             label={t('org.field.address')}
@@ -60,7 +49,7 @@ const OrganizationView: React.FC = () => {
             prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
             inputProps={{
               className: styles.inputStyle,
-              disabled: true,
+              disabled: !isEdit,
               placeholder: t('org.placeholder.select_org_address'),
             }}
           />
@@ -70,7 +59,7 @@ const OrganizationView: React.FC = () => {
             prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
             selectProps={{
               className: styles.inputStyle,
-              disabled: true,
+              disabled: !isEdit,
               placeholder: t('org.placeholder.select_country_region'),
             }}
           />
@@ -126,7 +115,7 @@ const OrganizationView: React.FC = () => {
             }}
           />
         </div>
-      </Form>
+      </AntForm>
       {/* 操作按钮 */}
       <div className={styles.btns}>
         {isEdit ? (

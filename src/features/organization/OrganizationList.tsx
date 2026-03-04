@@ -16,6 +16,7 @@ const OrganizationList: React.FC = () => {
   return (
     <div className={styles.organizationListPage}>
       <Splitter
+        className={styles.splitterStyle}
         draggerIcon={
           <svg
             width="15"
