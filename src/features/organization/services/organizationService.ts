@@ -1,10 +1,6 @@
 // 组织服务API
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import type {
-  CreateOrganizationRequest,
-  OrganizationListParams,
-  TreeNodeData,
-} from '@/shared/types/organization';
+import type { OrganizationListParams, TreeNodeData } from '@/shared/types/organization';
 
 import {
   generateFallbackTreeData,
@@ -81,35 +77,4 @@ export const loadOrganizationData = async ({
       }
     }
   }
-};
-
-/**
- * 创建组织
- * @param params 创建组织参数
- * @returns 创建成功的组织数据
- */
-export const createOrganization = async (params: CreateOrganizationRequest) => {
-  // 调用 API 创建组织
-  const response = await organizationApi.create(params);
-
-  return response;
-};
-
-/**
- * 创建组织
- * @param params 邮箱验证参数
- * @returns
- */
-export const verifyEmail = async (params: { email: string }) => {
-  // 调用 API 邮箱验证
-  const response = await organizationApi.verifyEmail(params);
-
-  return response;
-};
-
-export const verify = async (params: CreateOrganizationRequest) => {
-  // 调用 API 验证组织名称
-  const response = await organizationApi.verify(params);
-
-  return response;
 };

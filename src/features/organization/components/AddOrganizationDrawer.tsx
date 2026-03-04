@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormButton } from '@/components';
+import { FormButton, FormModal } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -12,11 +12,10 @@ import {
   OrgTypeField,
   OrgUsernameField,
 } from '@/components/fields';
-import { organizationApi } from '@/services/modules/organization/organizationApi';
 import { AntRow, Drawer, Form, useForm } from '@/shared/components';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import type { TreeNodeData, VerifyOrganization } from '@/shared/types/organization';
+import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
+import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrganizationInfo from './OrganizationInfo';
 
@@ -35,116 +34,36 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
-  const { showLoading, hideLoading } = useGlobalLoading();
+
+  // 使用组织表单 Hook
+  const {
+    userExists,
+    existingUsername,
+    existingPhone,
+    verifyResult,
+    verifyEmail,
+    handleSubmit,
+    refreshOrganizationList,
+  } = useOrganizationForm(currentParentNode);
+
   const [options] = useState([]);
 
-  const [userExists, setUserExists] = useState<boolean>(false);
-  const [existingUsername, setExistingUsername] = useState<string>('');
-  const [existingPhone, setExistingPhone] = useState<number>(0);
-  const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
-    isOrganizationExists: false,
-    isOrganizationSimilar: false,
-    isPhoneExists: false,
-    isScope: false,
-    timestamp: 0,
-  });
-
-  const verifyEmail = async (
-    email: string,
-  ): Promise<{ userExists: boolean; existingUsername: string; existingPhone: number }> => {
-    const defaultResult = { userExists: false, existingUsername: '', existingPhone: 0 };
-
-    try {
-      const response = await organizationApi.verifyEmail({ email: email || '' });
-      const result = {
-        userExists: response.data.userExists || false,
-        existingUsername: response.data.existingUsername || '',
-        existingPhone: response.data.existingPhone || 0,
-      };
-
-      setUserExists(result.userExists);
-      setExistingUsername(result.existingUsername);
-      setExistingPhone(result.existingPhone);
-      return result;
-    } catch (error) {
-      setUserExists(false);
-      setExistingUsername('');
-      setExistingPhone(0);
-      return defaultResult;
-    }
-  };
-
-  const verify = async (values: any) => {
-    const defaultResult = {
-      isOrganizationExists: false,
-      isOrganizationSimilar: false,
-      isPhoneExists: false,
-      isScope: false,
-      timestamp: Date.now(),
-    };
-
-    try {
-      const response = await organizationApi.verify(values);
-      setVerifyResult({ ...response.data, timestamp: Date.now() });
-      return response.data;
-    } catch (error) {
-      setVerifyResult(defaultResult);
-      return defaultResult;
-    }
-  };
-
+  /**
+   * 处理表单提交
+   */
   const onFinish = async (values: any) => {
-    // 开始全局loading
-    showLoading();
+    const result = await handleSubmit(values, () => {
+      console.log('[onRefresh 回调] 被调用');
+      form.resetFields();
+      onChange?.(false);
+      refreshOrganizationList();
+    });
 
-    try {
-      // 第一个请求：验证组织信息
-      const verifyData = await verify(values);
-      console.log('验证组织信息:', verifyData);
-      if (
-        verifyData?.isOrganizationExists ||
-        verifyData?.isOrganizationSimilar ||
-        verifyData?.isPhoneExists ||
-        verifyData?.isScope
-      ) {
-        return;
-      }
-
-      // 第二个请求：验证邮箱
-      const emailResult = await verifyEmail(values.orgEmail);
-      if (emailResult?.userExists) {
-        await handleConfirm({
-          values,
-          username: emailResult.existingUsername,
-          phone: emailResult.existingPhone,
-        });
-      } else {
-        await handleConfirm(values);
-      }
-    } finally {
-      // 所有请求结束后关闭 loading
-      hideLoading();
+    if (!result.success) {
+      console.warn('❌ 表单提交失败:', result.reason);
+    } else {
+      console.log('✅ 表单提交成功');
     }
-  };
-
-  const handleConfirm = async (values: any) => {
-    const requestData = {
-      orgName: values.orgName,
-      orgType: values.orgType,
-      parentOrgId: currentParentNode?.key || undefined,
-      address: values.orgAddress,
-      countryRegion: values.orgCountryRegion,
-      postalCode: values.orgPostalCode,
-      email: values.orgEmail,
-      username: values.orgUsername,
-      phone: values.orgPhone,
-      description: values.orgDescription,
-    };
-
-    const response = await organizationApi.create(requestData);
-    console.log('创建成功:', response);
-    form.resetFields();
-    onChange?.(false);
   };
 
   const handleCancel = () => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { AntInput, AntTree } from '@/shared/components/antd-imports';
 import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
@@ -23,6 +23,8 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   const [searchValue, setSearchValue] = useState<string>('');
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+  const initializedRef = useRef(false);
+  const loadingRef = useRef(false);
   const { t } = useLanguage();
 
   const loadData = useCallback(
@@ -39,15 +41,24 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     [withLoading],
   );
 
-  // 加载初始数据的函数
-  const loadInitialData = useCallback(async () => {
-    await loadData();
-  }, [loadData]);
-
-  // 初始化加载顶层组织树数据
   useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
+    if (initializedRef.current || loadingRef.current) {
+      return;
+    }
+    loadingRef.current = true;
+
+    loadOrganizationData({
+      withLoading,
+      setData: (data) => {
+        setTreeData(data);
+        setExpandedKeys([]);
+        initializedRef.current = true;
+        loadingRef.current = false;
+      },
+    }).catch(() => {
+      loadingRef.current = false;
+    });
+  }, []);
 
   // 搜索处理 - 调用API接口
   const handleSearch = async () => {
