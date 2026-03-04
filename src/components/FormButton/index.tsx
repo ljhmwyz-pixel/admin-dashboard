@@ -1,7 +1,8 @@
 import React from 'react';
-import type { ButtonProps } from 'antd';
-import { Button } from 'antd';
 import classNames from 'classnames';
+
+import type { ButtonProps } from '@/shared/components/antd-imports';
+import { AntButton } from '@/shared/components/antd-imports';
 
 import styles from './index.module.scss';
 
@@ -11,7 +12,7 @@ interface CustomButtonProps extends ButtonProps {
 
 const CustomButton: React.FC<CustomButtonProps> = ({ className, ...rest }) => {
   return (
-    <Button
+    <AntButton
       color="primary"
       variant="outlined"
       {...rest}
