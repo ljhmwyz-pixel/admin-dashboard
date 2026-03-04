@@ -11,7 +11,7 @@ import styles from './OrganizationView.module.scss';
 const OrganizationView: React.FC = () => {
   const [form] = Form.useForm();
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [detail, setDetail] = useState({
+  const detail = {
     id: '1',
     OrganizationAddress: 'No.300 Miaoqiao Road, Pudong, Shanghai',
     CountryRegion: 'China',
@@ -20,14 +20,18 @@ const OrganizationView: React.FC = () => {
     PhoneNumber: '--',
     Comment: 'Australia',
     Email: 'm******g@pylontech.com.cn',
-  });
+  };
   const { t } = useLanguage();
   const onEdit = () => {
     setIsEdit(true);
     form.setFieldsValue(detail);
   };
-  const onCancel = () => {};
-  const onSave = () => {};
+  const onCancel = () => {
+    setIsEdit(false);
+  };
+  const onSave = () => {
+    setIsEdit(false);
+  };
   return (
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
@@ -108,13 +112,25 @@ const OrganizationView: React.FC = () => {
       </Form>
       {/* 操作按钮 */}
       <div className={styles.btns}>
-        <FormButton color="default" onClick={onEdit}>
-          {t('common.action.modify')}
-        </FormButton>
-        <FormButton onClick={onCancel}>{t('common.action.cancel')}</FormButton>
-        <FormButton color="primary" variant="solid" onClick={onSave}>
-          {t('common.action.save')}
-        </FormButton>
+        {isEdit ? (
+          [
+            <FormButton key="org_common.action.cancel" onClick={onCancel}>
+              {t('common.action.cancel')}
+            </FormButton>,
+            <FormButton
+              key="org_common.action.save"
+              color="primary"
+              variant="solid"
+              onClick={onSave}
+            >
+              {t('common.action.save')}
+            </FormButton>,
+          ]
+        ) : (
+          <FormButton key="org_common.action.modify" color="default" onClick={onEdit}>
+            {t('common.action.modify')}
+          </FormButton>
+        )}
       </div>
     </div>
   );
