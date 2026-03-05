@@ -11,14 +11,14 @@ interface TreeNodeTitleProps {
   /** 节点添加回调 */
   onNodeAdd?: (nodeData: TreeNodeData) => void;
   /** 节点编辑回调 */
-  onNodeEdit?: (nodeData: TreeNodeData) => void;
+  onNodeDelete?: (nodeData: TreeNodeData) => void;
 }
 
 /**
  * 树节点标题组件
  * 负责渲染树节点的自定义标题，包含操作图标
  */
-const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNodeEdit }) => {
+const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNodeDelete }) => {
   return (
     <div className={styles.treeNodeTitle}>
       <span className={styles.nodeTitle} id="tree-title">
@@ -30,7 +30,7 @@ const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNo
             className={styles.actionIcon}
             onClick={(e) => {
               e.stopPropagation();
-              onNodeEdit?.(nodeData);
+              onNodeDelete?.(nodeData);
             }}
           >
             <svg

@@ -7,7 +7,7 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { FieldProps } from './types';
 
 type OrgEmailFieldProps = FieldProps & {
-  onCheckEmailExists?: (email: string) => void;
+  onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
   userExists?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
@@ -42,7 +42,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
 
     // 格式校验通过后才调用外部验证
     if (onCheckEmailExists) {
-      onCheckEmailExists(value);
+      onCheckEmailExists(value, true);
     }
   };
 
@@ -86,27 +86,8 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
         ]}
         inputProps={{
           suffix: (
-            <span onClick={handleCheckEmailExists}>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.610666 0.734272C0.605442 0.667412 0.666216 0.614461 0.731731 0.628793L2.72625 1.06509C5.54224 1.68109 8.4581 1.68109 11.2741 1.06509L13.2686 0.628793C13.3341 0.614461 13.3949 0.667411 13.3897 0.734272L12.8208 8.01642C12.5834 11.0552 10.0482 13.4 7.00018 13.4C3.95212 13.4 1.41698 11.0552 1.17958 8.0164L0.610666 0.734272Z"
-                  stroke="#191B1F"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M8 5.5L9.42929 6.92929C9.46834 6.96834 9.46834 7.03166 9.42929 7.07071L8 8.5M5 5.5L6.42929 6.92929C6.46834 6.96834 6.46834 7.03166 6.42929 7.07071L5 8.5"
-                  stroke="#33C2C8"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                />
-              </svg>
+            <span onClick={handleCheckEmailExists} style={{ color: '#33C2C8', fontSize: '14px' }}>
+              Check Email
             </span>
           ),
           placeholder: t('org.placeholder.enter_email'),
