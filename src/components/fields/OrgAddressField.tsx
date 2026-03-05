@@ -11,27 +11,25 @@ type OrgAddressFieldProps = FieldProps & { verifyResult: VerifyOrganization };
 export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
   return (
     <Col span={12}>
-      <Form.Item label="地址">
-        <AddressPickerAutoComplete
-          form={form}
-          fieldMap={{
-            address: 'address',
-            lat: 'lat',
-            lng: 'lng',
-            country: 'country',
-            countryCode: 'countryCode',
-            province: 'province',
-            city: 'city',
-            district: 'district',
-            postalCode: 'postalCode',
-            route: 'route',
-            streetNumber: 'streetNumber',
-          }}
-          onResolved={(loc) => {
-            console.log('resolved location:', loc);
-          }}
-        />
-      </Form.Item>
+      <AddressPickerAutoComplete
+        form={form}
+        fieldMap={{
+          address: 'address',
+          lat: 'lat',
+          lng: 'lng',
+          country: 'country',
+          countryCode: 'countryCode',
+          province: 'province',
+          city: 'city',
+          district: 'district',
+          postalCode: 'postalCode',
+          route: 'route',
+          streetNumber: 'streetNumber',
+        }}
+        onResolved={(loc) => {
+          console.log('resolved location:', loc);
+        }}
+      />
 
       {/* 隐藏字段：按需保留 */}
       <Form.Item name="address" hidden>

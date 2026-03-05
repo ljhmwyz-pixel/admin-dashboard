@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { EnvironmentOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, type FormInstance, Input, Modal, Space, Spin } from 'antd';
+import { Button, type FormInstance, Input, Modal, Space, Spin } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
+
+import { FormAutoComplete, FormInput, ImageIcons } from '@/components';
 
 import { ensureGoogleMaps } from './googleMaps';
 
@@ -499,32 +501,11 @@ export default function AddressPickerAutoComplete({
 
   return (
     <>
-      <AutoComplete
-        value={mainValue}
-        options={mainOptions}
-        style={{ width: '100%' }}
-        onSearch={(value) => {
-          void fetchSuggestions(value, 'main');
-        }}
-        onChange={(value) => {
-          setMainValue(value);
-
-          if (fieldMap.address) {
-            form.setFieldValue(fieldMap.address, value || undefined);
-          }
-
-          if (!value) {
-            setMainOptions([]);
-            clearLocationFields();
-          }
-        }}
-        onSelect={(_, option) => {
-          void resolveSuggestion(option as GoogleOption, 'main');
-        }}
-      >
-        <Input
-          placeholder={placeholder}
-          suffix={
+      <FormAutoComplete
+        prefixIcon={<img src={ImageIcons.form.orgPostalCodeIcon} width={14} height={14} />}
+        label="地址"
+        autoCompleteProps={{
+          suffixIcon: (
             <EnvironmentOutlined
               style={{ cursor: 'pointer' }}
               onClick={() => {
@@ -532,9 +513,30 @@ export default function AddressPickerAutoComplete({
                 setOpen(true);
               }}
             />
-          }
-        />
-      </AutoComplete>
+          ),
+          value: mainValue,
+          options: mainOptions,
+          style: { width: '100%' },
+          onSearch: (value) => {
+            void fetchSuggestions(value, 'main');
+          },
+          onSelect: (_, option) => {
+            void resolveSuggestion(option as GoogleOption, 'main');
+          },
+          onChange: (value) => {
+            setMainValue(value);
+
+            if (fieldMap.address) {
+              form.setFieldValue(fieldMap.address, value || undefined);
+            }
+
+            if (!value) {
+              setMainOptions([]);
+              clearLocationFields();
+            }
+          },
+        }}
+      />
 
       <Modal
         title={popupTitle}
@@ -561,26 +563,27 @@ export default function AddressPickerAutoComplete({
       >
         <Spin spinning={booting}>
           <div style={{ marginBottom: 12 }}>
-            <AutoComplete
-              value={popupValue}
-              options={popupOptions}
-              allowClear
-              style={{ width: '100%' }}
-              onSearch={(value) => {
-                void fetchSuggestions(value, 'popup');
+            <FormAutoComplete
+              autoCompleteProps={{
+                value: popupValue,
+                options: popupOptions,
+                allowClear: true,
+                style: { width: '100%' },
+                onSearch: (value) => {
+                  void fetchSuggestions(value, 'popup');
+                },
+                onChange: (value) => {
+                  setPopupValue(value);
+                  if (!value) {
+                    setPopupOptions([]);
+                  }
+                },
+                onSelect: (_, option) => {
+                  void resolveSuggestion(option as GoogleOption, 'popup');
+                },
+                placeholder: '搜索地址或地标',
               }}
-              onChange={(value) => {
-                setPopupValue(value);
-                if (!value) {
-                  setPopupOptions([]);
-                }
-              }}
-              onSelect={(_, option) => {
-                void resolveSuggestion(option as GoogleOption, 'popup');
-              }}
-            >
-              <Input placeholder="搜索地址或地标" />
-            </AutoComplete>
+            />
           </div>
 
           <div
