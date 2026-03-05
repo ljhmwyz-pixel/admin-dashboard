@@ -51,7 +51,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
-      console.log('[onRefresh 回调] 被调用');
       form.resetFields();
       onChange?.(false);
       refreshOrganizationList();
@@ -120,7 +119,11 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       }
     >
       <div className={styles.info}>
-        <OrganizationInfo showExtra={false} />
+        <OrganizationInfo
+          showExtra={false}
+          orgName={currentParentNode?.title || ''}
+          orgCode={currentParentNode?.key || ''}
+        />
       </div>
       <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
         <AntRow gutter={30}>

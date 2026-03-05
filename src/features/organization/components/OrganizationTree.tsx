@@ -60,8 +60,12 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     });
   }, []);
 
-  // 搜索处理 - 调用API接口
+  // 搜索处理 - 调用 API 接口
   const handleSearch = async () => {
+    setCurrentParentNode({} as TreeNodeData);
+    if (onSelect) {
+      onSelect('');
+    }
     await loadData(searchValue);
   };
 

@@ -16,7 +16,7 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
   const availableOptions = useMemo(() => {
     let options: { value: string; label: string }[] = [];
     switch (parentOrgType) {
-      case 'Pylontech':
+      case 'PYLONTECH':
         options = [
           { value: 'Dealer', label: 'Dealer' },
           { value: 'Installer', label: 'Installer' },
@@ -25,14 +25,14 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
           { value: 'BD', label: 'BD' },
         ];
         break;
-      case 'Dealer':
-      case 'Installer':
+      case 'DEALER':
+      case 'INSTALLER':
         options = [
           { value: 'Dealer', label: 'Dealer' },
           { value: 'Installer', label: 'Installer' },
         ];
         break;
-      case 'Owner':
+      case 'OWNER':
         options = [{ value: 'Owner', label: 'Owner' }];
         break;
       default:

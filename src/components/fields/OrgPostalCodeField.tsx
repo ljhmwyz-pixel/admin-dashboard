@@ -45,7 +45,12 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
             />
           </svg>
         }
-        rules={[{ pattern: /^[0-9A-Z\s-]+$/, message: t('org.validation.postal.required') }]}
+        rules={[
+          {
+            pattern: /^[0-9A-Z\s-]{3,12}$/,
+            message: t('org.validation.postal.required'),
+          },
+        ]}
         inputProps={{
           placeholder: t('org.placeholder.enter_postal_code'),
           maxLength: 12,
