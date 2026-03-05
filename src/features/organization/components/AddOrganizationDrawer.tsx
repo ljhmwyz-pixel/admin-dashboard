@@ -13,7 +13,7 @@ import {
   OrgTypeField,
   OrgUsernameField,
 } from '@/components/fields';
-import { AntRow, Drawer, Form, useForm } from '@/shared/components';
+import { AntRow, Drawer, Form, useForm, useWatch } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -46,8 +46,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
     handleSubmit,
     refreshOrganizationList,
   } = useOrganizationForm(currentParentNode);
-
-  const [options] = useState([]);
 
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
@@ -136,10 +134,14 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
         <AntRow gutter={30}>
           {/* 组织地址字段 */}
-          <OrgAddressField form={form} verifyResult={verifyResult} />
+          <OrgAddressField
+            form={form}
+            verifyResult={verifyResult}
+            // onChange={(values) => setAddressValues(values)}
+          />
 
           {/* 国家地区字段 */}
-          <OrgCountryRegionField form={form} countryOptions={options} />
+          <OrgCountryRegionField form={form} useWatch={useWatch} />
         </AntRow>
 
         <AntRow gutter={30}>
@@ -169,7 +171,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         </AntRow>
         <AntRow gutter={30}>
           {/* BD国家地区字段 */}
-          <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
+          {/* <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} /> */}
         </AntRow>
 
         <AntRow gutter={30}>

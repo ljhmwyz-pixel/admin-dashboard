@@ -20,6 +20,7 @@ export {
   FormProvider,
   useForm,
   useFormInstance,
+  useWatch,
 } from './form/Form';
 export type { InputProps } from './form/Input';
 export {

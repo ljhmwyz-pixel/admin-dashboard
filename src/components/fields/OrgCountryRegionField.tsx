@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Form } from 'antd';
 
 import { FormSelect } from '@/components';
 import { AntCol } from '@/shared/components';
@@ -6,21 +7,20 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { FieldProps } from './types';
 
-type OrgCountryRegionFieldProps = FieldProps & {
-  countryOptions?: Array<{ value: string; label: string }>;
-};
+type OrgCountryRegionFieldProps = FieldProps;
 
-const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({
-  form,
-  countryOptions = [],
-}) => {
+const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) => {
   const { t } = useLanguage();
 
+  // 使用 Form.useWatch 监听字段变化
+  const country = Form.useWatch('country', form);
+  const city = Form.useWatch('city', form);
+
   useEffect(() => {
-    if (countryOptions.length > 0) {
-      form.setFieldValue('orgCountryRegion', countryOptions[0].value);
+    if (country && city) {
+      form.setFieldValue('orgCountryRegion', `${country}/${city}`);
     }
-  }, []);
+  }, [country, city, form]);
 
   return (
     <AntCol span={12}>
@@ -45,10 +45,8 @@ const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({
           </svg>
         }
         required
-        // rules={[{ required: true, message: t('org.validation.country.required') }]}
         selectProps={{
           disabled: true,
-          options: countryOptions,
           placeholder: t('org.placeholder.select_country_region'),
         }}
       />
