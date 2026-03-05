@@ -14,12 +14,8 @@ export const ORGANIZATION_ENDPOINTS = {
   CREATE: '/api/v1/organization/organizations',
   VERIFY_EMAIL: '/api/v1/organization/organizations/verify-email',
   VERIFY: '/api/v1/organization/organizations/verify',
-
-  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
-  UPDATE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
-  TREE: '/api/v1/organization/organizations/tree',
-  TYPES: '/api/v1/organization/organizations/types',
+  VERIFY_DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}/verify-delete`,
 } as const;
 
 // 用户管理相关

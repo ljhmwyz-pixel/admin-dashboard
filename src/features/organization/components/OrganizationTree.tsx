@@ -1,11 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { AntInput, AntTree } from '@/shared/components/antd-imports';
+import { FormModal } from '@/components';
+import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
 import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { TreeNodeData } from '@/shared/types/organization';
 
-import { loadOrganizationData } from '../services/organizationService';
+import {
+  deleteOrganization,
+  loadOrganizationData,
+  validateDeleteOrganization,
+} from '../services/organizationService';
 import AddOrganizationDrawer from './AddOrganizationDrawer';
 import TreeNodeTitle from './TreeNodeTitle';
 
@@ -17,7 +22,7 @@ interface OrganizationTreeProps {
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedKey = '' }) => {
-  const { withLoading } = useGlobalLoading();
+  const { withLoading, showLoading, hideLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -26,6 +31,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   const initializedRef = useRef(false);
   const loadingRef = useRef(false);
   const { t } = useLanguage();
+  const { warning, confirm } = FormModal();
 
   const loadData = useCallback(
     async (searchKeyword?: string) => {
@@ -35,7 +41,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         setData: (data) => {
           setTreeData(data);
           setExpandedKeys([]);
+          initializedRef.current = true;
+          loadingRef.current = false;
         },
+      }).catch(() => {
+        loadingRef.current = false;
       });
     },
     [withLoading],
@@ -47,17 +57,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     }
     loadingRef.current = true;
 
-    loadOrganizationData({
-      withLoading,
-      setData: (data) => {
-        setTreeData(data);
-        setExpandedKeys([]);
-        initializedRef.current = true;
-        loadingRef.current = false;
-      },
-    }).catch(() => {
-      loadingRef.current = false;
-    });
+    loadData();
   }, []);
 
   // 搜索处理 - 调用 API 接口
@@ -85,9 +85,66 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     setAddDrawerVisible(true);
   };
 
-  const handleNodeDelete = (nodeData: TreeNodeData) => {
-    setCurrentParentNode(nodeData);
-    console.log('handleNodeDelete', nodeData);
+  const handleNodeDelete = async (nodeData: TreeNodeData) => {
+    try {
+      // 步骤 1：先进行删除验证
+      const validationResult = await validateDeleteOrganization(nodeData.key, withLoading);
+
+      if (!validationResult.canDelete) {
+        warning({
+          title: 'Sub-Organizations Exists !',
+          content: t('org.error.sub_org_exists.content'),
+        });
+        return;
+      }
+
+      // 步骤 2：验证通过，显示确认对话框
+      let confirmValue = '';
+
+      const modalInstance = confirm({
+        title: 'Confirm Deletion !',
+        content: (
+          <DeleteConfirmInput
+            placeholder="Please enter organization code"
+            onChange={(value) => {
+              confirmValue = value;
+              if (modalInstance) {
+                modalInstance.update({
+                  okButtonProps: {
+                    danger: true,
+                    disabled: value !== nodeData.key,
+                    className: styles.okConfirm,
+                  },
+                });
+              }
+            }}
+            confirmText="Are you sure delete this organization? This action cannot be undone."
+            nodeData={nodeData}
+          />
+        ),
+        okText: t('common.action.delete'),
+        cancelText: t('common.action.cancel'),
+        okButtonProps: {
+          danger: true,
+          disabled: true,
+        },
+        onOk: async () => {
+          try {
+            if (confirmValue === nodeData.key) {
+              showLoading();
+              await deleteOrganization(nodeData.key);
+              await loadData(searchValue);
+            }
+          } catch (error) {
+            console.error('Delete operation failed:', error);
+          } finally {
+            hideLoading();
+          }
+        },
+      });
+    } catch (error) {
+      console.error('Delete validation failed:', error);
+    }
   };
 
   return (

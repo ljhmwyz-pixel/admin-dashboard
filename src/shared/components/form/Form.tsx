@@ -29,21 +29,7 @@ const Form: React.FC<FormProps> = ({
   children,
   ...restProps
 }) => {
-  // 构建自定义类名
-  const customClassName = [
-    'custom-form',
-    `custom-form--${theme}`,
-    animated ? 'custom-form--animated' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return (
-    <AntForm className={customClassName} {...restProps}>
-      {children}
-    </AntForm>
-  );
+  return <AntForm {...restProps}>{children}</AntForm>;
 };
 
 // 导出 Form 的子组件和 hooks

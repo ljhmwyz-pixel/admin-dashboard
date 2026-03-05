@@ -133,3 +133,5 @@ export const defaultComponentConfig: ComponentLibraryConfig = {
   animationsEnabled: true,
   prefixCls: 'custom',
 };
+
+export { default as DeleteConfirmInput } from './DeleteConfirmInput';

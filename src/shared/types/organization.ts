@@ -58,8 +58,7 @@ export interface OrganizationListResponse {
     current: number;
     pages: number;
   };
-  timestamp: string;
-  traceId: string;
+  [key: string]: any; // 允许扩展其他字段
 }
 
 // API返回的组织数据结构（符合需求文档规范）
@@ -72,6 +71,7 @@ export interface ApiOrganization {
   description?: string;
   createdAt: string;
   updatedAt: string;
+  [key: string]: any; // 允许扩展其他字段
 }
 
 // API 请求参数类型（符合需求文档规范）
@@ -108,11 +108,19 @@ export interface VerifyOrganization {
   isPhoneExists?: boolean;
   isScope?: boolean;
   timestamp?: number;
+  [key: string]: any; // 允许扩展其他字段
 }
 export interface VerifyResponse {
   code: number;
   msg: string;
   data: VerifyOrganization;
+}
+
+export interface VerifyDeleteResponse {
+  code: number;
+  msg: string;
+  data: null;
+  [key: string]: any; // 允许扩展其他字段
 }
 
 export interface VerifyEmailRequest {
@@ -124,10 +132,32 @@ export interface VerifyEmail {
   username: string;
   phone: string;
   userType: string;
+  [key: string]: any; // 允许扩展其他字段
 }
 
 export interface VerifyEmailResponse {
   code: number;
   msg: string;
   data: VerifyEmail;
+}
+
+// 地图地址相关类型
+export interface LocationPoint {
+  lat: number;
+  lng: number;
+}
+
+export interface AddressData {
+  displayText: string;
+  lat: number | null;
+  lng: number | null;
+  country: string;
+  countryCode: string;
+  state: string;
+  city: string;
+  district: string;
+  street: string;
+  streetNumber: string;
+  postalCode: string;
+  rawMeta: any | null;
 }
