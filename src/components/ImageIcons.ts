@@ -8,6 +8,7 @@ import orgCountryIcon from '@/assets/images/form/org_country_icon.png';
 import orgPhoneIcon from '@/assets/images/form/org_phone_icon.png';
 import orgPostalCodeIcon from '@/assets/images/form/org_postalCode_icon.png';
 import recordIcon from '@/assets/images/form/record_icon.png';
+import tagRemoveIcon from '@/assets/images/form/tag_remove_icon.png';
 import avatarIcon from '@/assets/images/layout/avatar_icon.png';
 import collapsedClose from '@/assets/images/layout/collapsed_close.png';
 import collapsedOpen from '@/assets/images/layout/collapsed_open.png';
@@ -55,5 +56,6 @@ export const ImageIcons = {
     orgPostalCodeIcon,
     drawerCloseIcon,
     recordIcon,
+    tagRemoveIcon,
   },
 };

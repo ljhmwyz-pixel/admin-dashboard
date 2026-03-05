@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormButton, FormInput, FormModal, FormSelect, ImageIcons } from '@/components';
+import { FormButton, FormInput, FormSelect, ImageIcons } from '@/components';
 import { AntForm } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
@@ -14,7 +14,7 @@ const OrganizationView: React.FC = () => {
   const detail = {
     id: '1',
     OrganizationAddress: 'No.300 Miaoqiao Road, Pudong, Shanghai',
-    CountryRegion: 'China',
+    CountryRegion: [2, 3, 4, 1],
     PostalCode: '201315',
     AdminName: 'Mark Tong',
     PhoneNumber: '--',
@@ -59,8 +59,27 @@ const OrganizationView: React.FC = () => {
             prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
             selectProps={{
               className: styles.inputStyle,
-              disabled: !isEdit,
+              // disabled: !isEdit,
               placeholder: t('org.placeholder.select_country_region'),
+              mode: 'multiple',
+              options: [
+                { label: 'China', value: 1 },
+                { label: 'Australia', value: 2 },
+                { label: 'United States', value: 3 },
+                { label: 'United Kingdom', value: 4 },
+                // { label: 'Canada', value: 5 },
+                // { label: 'Germany', value: 6 },
+                // { label: 'France', value: 7 },
+                // { label: 'Japan', value: 8 },
+                // { label: 'South Korea', value: 9 },
+                // { label: 'Singapore', value: 10 },
+                // { label: 'India', value: 11 },
+                // { label: 'Brazil', value: 12 },
+                // { label: 'Italy', value: 13 },
+                // { label: 'Spain', value: 14 },
+                // { label: 'Netherlands', value: 15 },
+                // { label: 'New Zealand', value: 16 },
+              ],
             }}
           />
           <FormInput

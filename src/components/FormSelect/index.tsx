@@ -35,6 +35,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       className={classNames(styles.wrapper, className)}
     >
       <Select
+        maxTagCount="responsive"
+        getPopupContainer={(triggerNode) => triggerNode.parentElement}
         {...selectProps}
         className={`
               ${styles.input}
@@ -42,6 +44,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               ${selectProps?.disabled ? styles.disabledStyle : ''}
             `}
         suffixIcon={<img src={ImageIcons.form.arrowDefaultIcon} width={14} height={14} />}
+        removeIcon={<img src={ImageIcons.form.tagRemoveIcon} width={12} height={12} />}
       />
     </Form.Item>
   );

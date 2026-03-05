@@ -71,7 +71,7 @@ export const defaultTheme: ThemeConfig = {
     colorBgContainer: '#ffffff',
     colorText: '#191B1F',
     colorTextSecondary: '#191B1F66',
-    colorBorder: '#d9d9d9',
+    colorBorder: '#191B1F0F',
     colorBorderSecondary: '#f0f0f0',
     colorError: '#F45858',
   },
