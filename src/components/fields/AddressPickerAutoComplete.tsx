@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AutoComplete, Button, type FormInstance, Input, Modal, Space, Spin } from 'antd';
+import { Button, Form, type FormInstance, Modal, Space, Spin } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
 
+import { FormAutoComplete } from '@/components';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 import { ensureGoogleMaps } from '@/shared/types/googleMaps';
 
 type LocationInfo = {
@@ -133,9 +135,11 @@ export default function AddressPickerAutoComplete({
   const [booting, setBooting] = useState(false);
   const [error, setError] = useState<string | undefined>();
 
-  const [mainValue, setMainValue] = useState<string>(
-    (fieldMap.address ? form.getFieldValue(fieldMap.address) : '') || '',
-  );
+  const [mainValue, setMainValue] = useState<string>('');
+
+  // 使用 Form.useWatch 监听字段变化，直接获取表单中的值
+  const watchedAddressValue = Form.useWatch(fieldMap.address, form);
+
   const [mainOptions, setMainOptions] = useState<GoogleOption[]>([]);
 
   const [popupValue, setPopupValue] = useState('');
@@ -156,6 +160,8 @@ export default function AddressPickerAutoComplete({
   const reverseSeqRef = useRef(0);
 
   const skipNextIdleReverseRef = useRef(false);
+
+  const { t } = useLanguage();
 
   const clearLocationFields = useCallback(() => {
     const patch: Record<string, unknown> = {};
@@ -500,6 +506,15 @@ export default function AddressPickerAutoComplete({
     return () => window.clearTimeout(timer);
   }, [debounceMs, geocodeFreeText, minSearchLength, open, popupValue]);
 
+  useEffect(() => {
+    // 当表单字段被重置时，同步更新 mainValue
+    if (watchedAddressValue === undefined || watchedAddressValue === null) {
+      setMainValue('');
+    } else {
+      setMainValue(watchedAddressValue);
+    }
+  }, [watchedAddressValue]);
+
   const handleBlur = useCallback(() => {
     // 失去焦点时触发校验
     if (fieldMap.address) {
@@ -518,38 +533,61 @@ export default function AddressPickerAutoComplete({
 
   return (
     <>
-      <AutoComplete
-        value={mainValue}
-        options={mainOptions}
-        style={{ width: '100%' }}
-        status={error ? 'error' : undefined}
-        onBlur={handleBlur}
-        onSearch={(value) => {
-          void fetchSuggestions(value, 'main');
-          // 清空错误状态
-          if (fieldMap.address) {
-            form.setFields([{ name: fieldMap.address, errors: [] }]);
-          }
-        }}
-        onChange={(value) => {
-          setMainValue(value);
+      <FormAutoComplete
+        label={t('org.field.address')}
+        prefixIcon={
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.49963 6.99997H3.49951C2.39494 6.99997 1.49951 7.8954 1.49951 8.99997V13.4H5.49963M7.99963 4.49997H10.4995M0.599609 13.4H13.3995M12.4995 13.4V2.59998C12.4995 1.49541 11.6041 0.599976 10.4995 0.599976H7.99963C6.89506 0.599976 5.99963 1.49541 5.99963 2.59998V13.4H12.4995Z"
+              stroke="#191B1F"
+              strokeOpacity="0.6"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+          </svg>
+        }
+        required
+        name="orgAddress"
+        rules={[
+          {
+            required: true,
+            message: '请输入地址',
+          },
+        ]}
+        autoCompleteProps={{
+          value: watchedAddressValue || mainValue,
+          options: mainOptions,
+          status: error ? 'error' : undefined,
+          onBlur: handleBlur,
+          onSearch: (value) => {
+            void fetchSuggestions(value, 'main');
+            // 清空错误状态
+            if (fieldMap.address) {
+              form.setFields([{ name: fieldMap.address, errors: [] }]);
+            }
+          },
+          onChange: (value) => {
+            setMainValue(value);
 
-          if (fieldMap.address) {
-            form.setFieldValue(fieldMap.address, value || undefined);
-          }
+            if (fieldMap.address) {
+              form.setFieldValue(fieldMap.address, value || undefined);
+            }
 
-          if (!value) {
-            setMainOptions([]);
-            clearLocationFields();
-          }
-        }}
-        onSelect={(_, option) => {
-          void resolveSuggestion(option as GoogleOption, 'main');
-        }}
-      >
-        <Input
-          placeholder={placeholder}
-          suffix={
+            if (!value) {
+              setMainOptions([]);
+              clearLocationFields();
+            }
+          },
+          onSelect: (_, option) => {
+            void resolveSuggestion(option as GoogleOption, 'main');
+          },
+          suffix: (
             <span
               style={{ cursor: 'pointer' }}
               onClick={() => {
@@ -584,9 +622,10 @@ export default function AddressPickerAutoComplete({
                 />
               </svg>
             </span>
-          }
-        />
-      </AutoComplete>
+          ),
+          placeholder: placeholder,
+        }}
+      />
 
       <Modal
         title={popupTitle}
@@ -613,26 +652,26 @@ export default function AddressPickerAutoComplete({
       >
         <Spin spinning={booting}>
           <div style={{ marginBottom: 12 }}>
-            <AutoComplete
-              value={popupValue}
-              options={popupOptions}
-              allowClear
-              style={{ width: '100%' }}
-              onSearch={(value) => {
-                void fetchSuggestions(value, 'popup');
+            <FormAutoComplete
+              autoCompleteProps={{
+                placeholder: '搜索地址或地标',
+                value: popupValue,
+                options: popupOptions,
+                allowClear: true,
+                onSearch: (value) => {
+                  void fetchSuggestions(value, 'popup');
+                },
+                onChange: (value) => {
+                  setPopupValue(value);
+                  if (!value) {
+                    setPopupOptions([]);
+                  }
+                },
+                onSelect: (_, option) => {
+                  void resolveSuggestion(option as GoogleOption, 'popup');
+                },
               }}
-              onChange={(value) => {
-                setPopupValue(value);
-                if (!value) {
-                  setPopupOptions([]);
-                }
-              }}
-              onSelect={(_, option) => {
-                void resolveSuggestion(option as GoogleOption, 'popup');
-              }}
-            >
-              <Input placeholder="搜索地址或地标" />
-            </AutoComplete>
+            />
           </div>
 
           <div

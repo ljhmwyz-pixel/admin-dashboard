@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Form } from 'antd';
+import React, { useEffect } from 'react';
 
 import { FormSelect } from '@/components';
+import { useWatch } from '@/shared/components';
 import { AntCol } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
@@ -12,13 +12,14 @@ type OrgCountryRegionFieldProps = FieldProps;
 const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) => {
   const { t } = useLanguage();
 
-  // 使用 Form.useWatch 监听字段变化
-  const country = Form.useWatch('country', form);
-  const city = Form.useWatch('city', form);
+  const country = useWatch('country', form);
+  const city = useWatch('city', form);
 
   useEffect(() => {
     if (country && city) {
       form.setFieldValue('orgCountryRegion', `${country}/${city}`);
+    } else {
+      form.setFieldValue('orgCountryRegion', undefined);
     }
   }, [country, city, form]);
 
