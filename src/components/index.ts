@@ -10,6 +10,7 @@ export { default as FormButton } from './FormButton';
 export { default as FormDrawer } from './FormDrawer';
 export { default as FormInput } from './FormInput';
 export { default as FormSelect } from './FormSelect';
+export { default as FormTabs } from './FormTabs';
 export { default as FormTextArea } from './FormTextArea';
 export { ImageIcons } from './ImageIcons';
 export { default as BaseLayout } from './layouts/BaseLayout';

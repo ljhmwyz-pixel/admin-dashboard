@@ -42,6 +42,8 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               ${styles.input}
               ${selectProps?.className || ''}
               ${selectProps?.disabled ? styles.disabledStyle : ''}
+              ${selectProps?.mode === 'multiple' ? styles.multiSelect : ''}
+              ${selectProps?.mode === 'multiple' && selectProps?.disabled ? styles.multiSelectDisabledStyle : ''}
             `}
         suffixIcon={<img src={ImageIcons.form.arrowDefaultIcon} width={14} height={14} />}
         removeIcon={<img src={ImageIcons.form.tagRemoveIcon} width={12} height={12} />}

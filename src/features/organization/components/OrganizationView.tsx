@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormButton, FormInput, FormSelect, ImageIcons } from '@/components';
+import { FormButton, FormInput, FormSelect, FormTextArea, ImageIcons } from '@/components';
 import { AntForm } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
@@ -59,7 +59,7 @@ const OrganizationView: React.FC = () => {
             prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
             selectProps={{
               className: styles.inputStyle,
-              // disabled: !isEdit,
+              disabled: !isEdit,
               placeholder: t('org.placeholder.select_country_region'),
               mode: 'multiple',
               options: [

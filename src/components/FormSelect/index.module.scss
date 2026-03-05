@@ -44,7 +44,7 @@
   color: #191b1f;
   border-radius: 6px;
   transition: all 0.2s;
-  padding: 10px;
+  padding: 20px;
   max-width: 100%;
 }
 
@@ -52,130 +52,66 @@
   color: #191b1f99 !important;
 }
 
+// 多选的样式控制
+.multiSelect {
+  padding: 10px;
 
-// :global(.ant-select-content-item) {
-//   border: 1px solid $color-border;
-//   // padding: 0 !important;
-//   // margin: 0 !important;
-//   background-color: #fff;
-//   height: 34px;
-//   border-radius: 3px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-right: 10px !important;
-// }
+  /* selector 本身 */
+  :global(.ant-select-selector) {
+    height: 54px !important;
+    background: #fff !important;
+    border: 1px solid $color-border !important;
+    border-radius: 6px !important;
+    overflow: hidden;
 
-// :global(.ant-select-content-item-prefix) {
-//   border: none;
-//   // padding: 0 !important;
-//   // margin: 0 !important;
-//   background-color: #fff;
-//   height: 34px;
-//   border-radius: none;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// }
+    background-color: red !important;
+  }
 
-// :global(.ant-select-content-item-suffix) {
-//   background-color: red;
-//   border: none;
-//   // padding: 0 !important;
-//   // margin: 0 !important;
-//   height: 34px;
-//   border-radius: initial;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-left: 0 !important;
-// }
+  :global(.ant-select-selection-overflow) {
+    flex-wrap: nowrap !important;
+    overflow: hidden;
+    min-width: 0;
+    background-color: blue !important;
+  }
 
+  /* 每个 tag */
+  :global(.ant-select-selection-item) {
+    background: #fff !important;
+    border: 1px solid $color-border !important;
+    border-radius: 6px !important;
+    height: 34px;
+    padding: 0 12px !important;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    max-width: 160px;
+    /* 防止撑爆 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
+  /* 右侧 +N 不压缩 */
+  :global(.ant-select-selection-overflow-item-rest) {
+    flex-shrink: 0;
+  }
 
-// :global(.ant-select-selection-item) {
-//   background-color: #fff !important;
-//   margin: 0 !important;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   border: none !important;
-//   padding: 0 10px !important;
-// }
+  :global(.ant-select-content) {
+    height: 34px;
+  }
 
-// :global(.ant-select-selection-item-content) {
-//   padding: 0 !important;
-//   font-size: 14px;
-//   font-weight: 500;
-//   color: #191b1f;
-//   background-color: #fff;
-//   margin-right: 6px;
-// }
+  :global(.ant-select-content-item) {
+    transform: translateY(-2px) !important;
+  }
 
-
-// 222
-// :global(.ant-select-selector) {
-//   height: 54px !important;
-//   overflow: hidden;
-//   display: flex;
-//   align-items: center;
-// }
-
-// :global(.ant-select-selection-overflow) {
-//   flex-wrap: nowrap !important;
-//   overflow: hidden;
-//   min-width: 0;
-// }
-// :global(.ant-select-selection-item) {
-//   background: #f3f4f6 !important;
-//   border: 1px solid #e5e7eb !important;
-//   border-radius: 6px !important;
-//   height: 32px;
-//   padding: 0 12px !important;
-//   display: flex;
-//   align-items: center;
-//   white-space: nowrap;
-// }
-// :global(.ant-select-selection-item) {
-//   max-width: 160px;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
-// 、、 3333
-/* selector 本身 */
-:global(.ant-select-selector) {
-  height: 54px !important;
-  background: #fff !important;
-  border: 1px solid $color-border !important;
-  border-radius: 6px !important;
-  overflow: hidden;
+  :global(.ant-select-content-item-suffix) {
+    top: 4px !important;
+  }
 }
 
-:global(.ant-select-selection-overflow) {
-  flex-wrap: nowrap !important;
-  overflow: hidden;
-  min-width: 0;
-}
-
-/* 每个 tag */
-:global(.ant-select-selection-item) {
-  background: #fff !important;
-  border: 1px solid $color-border !important;
-  border-radius: 6px !important;
-
-  height: 32px;
-  padding: 0 12px !important;
-
-  display: flex;
-  align-items: center;
-
-  white-space: nowrap;
-  max-width: 160px;   /* 防止撑爆 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 右侧 +N 不压缩 */
-:global(.ant-select-selection-overflow-item-rest) {
-  flex-shrink: 0;
+.multiSelectDisabledStyle {
+  :global(.ant-select-selection-item-content) {
+    font-size: 14px;
+    font-weight: 500;
+    color: #191b1f99 !important;
+  }
 }
