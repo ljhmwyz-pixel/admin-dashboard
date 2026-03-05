@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FormButton, FormModal } from '@/components';
 import {
   OrgAddressField,
+  OrgBDCountryRegionField,
   OrgCountryRegionField,
   OrgDescriptionField,
   OrgEmailField,
@@ -34,8 +35,8 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
+  const { warningConfirm } = FormModal();
 
-  // 使用组织表单 Hook
   const {
     userExists,
     existingUsername,
@@ -48,9 +49,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   const [options] = useState([]);
 
-  /**
-   * 处理表单提交
-   */
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
       console.log('[onRefresh 回调] 被调用');
@@ -67,8 +65,25 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   };
 
   const handleCancel = () => {
-    form.resetFields();
-    onChange?.(false);
+    const formValues = form.getFieldsValue(true);
+    const hasValues = Object.values(formValues).some((value) => {
+      return value !== undefined && value !== null && value !== '';
+    });
+
+    if (hasValues) {
+      warningConfirm({
+        title: t('org.dialog.unsaved.title'),
+        content: t('org.dialog.unsaved.content'),
+        okText: 'Exit',
+        onOk: () => {
+          form.resetFields();
+          onChange?.(false);
+        },
+      });
+    } else {
+      form.resetFields();
+      onChange?.(false);
+    }
   };
 
   return (
@@ -105,7 +120,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       }
     >
       <div className={styles.info}>
-        <OrganizationInfo />
+        <OrganizationInfo showExtra={false} />
       </div>
       <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
         <AntRow gutter={30}>
@@ -148,6 +163,10 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
             existingPhone={existingPhone}
             verifyResult={verifyResult}
           />
+        </AntRow>
+        <AntRow gutter={30}>
+          {/* BD国家地区字段 */}
+          <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
         </AntRow>
 
         <AntRow gutter={30}>

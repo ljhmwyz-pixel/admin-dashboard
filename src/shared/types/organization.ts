@@ -76,12 +76,24 @@ export interface ApiOrganization {
 
 // API 请求参数类型（符合需求文档规范）
 export interface CreateOrganizationRequest {
-  orgName: string; // 组织名称
-  orgType: OrganizationType; // 组织类型
-  parentOrgId?: string; // 父组织ID（创建子组织时必填）
-  description?: string; // 组织描述
-  countryCode?: string; // 国家代码（仅 BD 类型组织必填）
-  regionCode?: string; // 地区代码（仅 BD 类型组织必填）
+  orgName: string;
+  orgType: OrganizationType;
+  parentOrgId?: string;
+  remark?: string;
+  description?: string;
+  countryCode?: string;
+  regionCode?: string;
+  zipCode?: string;
+  ownerEmail?: string;
+  ownerUserName?: string;
+  ownerPhone?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  bdCountryScopes?: string;
+  contactPerson?: string;
+  contactPhone?: string;
+  contactEmail?: string;
 }
 
 export interface CreateOrganizationResponse {
@@ -107,12 +119,15 @@ export interface VerifyEmailRequest {
   email: string;
 }
 
+export interface VerifyEmail {
+  exists: boolean;
+  username: string;
+  phone: string;
+  userType: string;
+}
+
 export interface VerifyEmailResponse {
   code: number;
   msg: string;
-  data: {
-    userExists: boolean;
-    existingUsername: string;
-    existingPhone: number;
-  };
+  data: VerifyEmail;
 }

@@ -81,6 +81,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     setAddDrawerVisible(true);
   };
 
+  const handleNodeDelete = (nodeData: TreeNodeData) => {
+    setCurrentParentNode(nodeData);
+    console.log('handleNodeDelete', nodeData);
+  };
+
   return (
     <div className={styles.organizationTree}>
       <div className={styles.treeSearch}>
@@ -127,7 +132,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
           blockNode
           virtual
           titleRender={(nodeData: TreeNodeData) => (
-            <TreeNodeTitle nodeData={nodeData} onNodeAdd={handleNodeAdd} />
+            <TreeNodeTitle
+              nodeData={nodeData}
+              onNodeAdd={handleNodeAdd}
+              onNodeDelete={handleNodeDelete}
+            />
           )}
         />
       </div>

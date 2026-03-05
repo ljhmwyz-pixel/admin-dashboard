@@ -9,7 +9,7 @@ import type { FieldProps } from './types';
 
 type OrgPhoneFieldProps = FieldProps & {
   userExists?: boolean;
-  existingPhone?: number;
+  existingPhone?: string;
   verifyResult?: VerifyOrganization;
 };
 
