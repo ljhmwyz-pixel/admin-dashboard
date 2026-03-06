@@ -1,6 +1,7 @@
 import type {
   CreateOrganizationRequest,
   CreateOrganizationResponse,
+  DeleteResponse,
   OrganizationListParams,
   OrganizationListResponse,
   VerifyDeleteResponse,
@@ -45,15 +46,19 @@ class OrganizationApiImpl implements OrganizationApi {
   }
 
   async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
-    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_EMAIL, data);
+    return apiClient.get(ORGANIZATION_ENDPOINTS.VERIFY_EMAIL, { params: data });
   }
 
-  async delete(data: { orgId: string | number }): Promise<VerifyDeleteResponse> {
-    return apiClient.post(ORGANIZATION_ENDPOINTS.DELETE(data.orgId), { orgId: data.orgId });
+  async delete(data: { orgId: string | number }): Promise<DeleteResponse> {
+    return apiClient.delete(ORGANIZATION_ENDPOINTS.DELETE(data.orgId), {
+      params: { orgId: data.orgId },
+    });
   }
 
   async verifyDelete(data: { orgId: string | number }): Promise<VerifyDeleteResponse> {
-    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_DELETE(data.orgId), { orgId: data.orgId });
+    return apiClient.get(ORGANIZATION_ENDPOINTS.VERIFY_DELETE(data.orgId), {
+      params: { orgId: data.orgId },
+    });
   }
 }
 

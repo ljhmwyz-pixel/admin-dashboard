@@ -71,6 +71,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
 
   // 处理树节点选择
   const handleTreeSelect = (selectedKeys: React.Key[]) => {
+    console.log('Selected Keys:', selectedKeys);
     if (selectedKeys.length > 0) {
       const key = selectedKeys[0] as string;
       if (onSelect) {
@@ -133,7 +134,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
             if (confirmValue === nodeData.key) {
               showLoading();
               await deleteOrganization(nodeData.key);
-              await loadData(searchValue);
+              await loadData();
             }
           } catch (error) {
             console.error('Delete operation failed:', error);
@@ -206,6 +207,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
         currentParentNode={currentParentNode}
         visible={addDrawerVisible}
         onChange={(visible) => setAddDrawerVisible(visible)}
+        loadData={loadData}
       />
     </div>
   );

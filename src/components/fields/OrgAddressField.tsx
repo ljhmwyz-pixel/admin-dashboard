@@ -14,7 +14,7 @@ type OrgAddressFieldProps = FieldProps & {
 export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
   // const { t } = useLanguage();
   useEffect(() => {
-    if (verifyResult?.isScope) {
+    if (!verifyResult?.isCountryInScope) {
       form.setFields([
         {
           name: 'orgAddress',

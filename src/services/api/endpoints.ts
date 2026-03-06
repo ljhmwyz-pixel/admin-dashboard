@@ -12,10 +12,11 @@ export const AUTH_ENDPOINTS = {
 export const ORGANIZATION_ENDPOINTS = {
   LIST: '/api/v1/organization/organizations',
   CREATE: '/api/v1/organization/organizations',
-  VERIFY_EMAIL: '/api/v1/organization/organizations/verify-email',
-  VERIFY: '/api/v1/organization/organizations/verify',
+  VERIFY_EMAIL: ' /api/v1/organization/users/lookup-by-email',
+  VERIFY: '/api/v1/organization/organizations/validate',
   DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
-  VERIFY_DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}/verify-delete`,
+  VERIFY_DELETE: (id: string | number) =>
+    `/api/v1/organization/organizations/${id}/validate-delete`,
 } as const;
 
 // 用户管理相关
