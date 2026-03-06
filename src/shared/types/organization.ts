@@ -14,6 +14,7 @@ export interface TreeNodeData {
   createdAt?: string;
   updatedAt?: string;
   parentOrgId?: string | null;
+  permissions?: string[];
   [key: string]: any; // 允许扩展其他字段
 }
 
@@ -71,6 +72,7 @@ export interface ApiOrganization {
   description?: string;
   createdAt: string;
   updatedAt: string;
+  permissions?: string[];
   [key: string]: any; // 允许扩展其他字段
 }
 

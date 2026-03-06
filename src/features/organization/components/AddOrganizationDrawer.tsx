@@ -170,10 +170,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
             verifyResult={verifyResult}
           />
         </AntRow>
-        <AntRow gutter={30}>
-          {/* BD国家地区字段 */}
+        {/* <AntRow gutter={30}>
           <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
-        </AntRow>
+        </AntRow> */}
 
         <AntRow gutter={30}>
           {/* 描述字段 */}
