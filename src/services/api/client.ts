@@ -1,6 +1,8 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 
+import useAppModal from '@/components/Modal';
+
 // API配置接口
 export interface ApiConfig {
   baseURL: string;
@@ -57,8 +59,12 @@ class ApiClient {
       (response: AxiosResponse) => {
         // 统一处理响应数据
         const res = response.data;
+        const { error } = useAppModal();
         // 统一业务错误处理
         if (res.code && res.code !== 200) {
+          error({
+            content: res.message,
+          });
           return Promise.reject(res);
         }
         return res;

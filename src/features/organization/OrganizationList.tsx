@@ -93,7 +93,7 @@ const OrganizationList: React.FC = () => {
 
         {/* 右侧面板 - 组织详情 */}
         <Splitter.Panel>
-          <OrganizationDetailPanel />
+          <OrganizationDetailPanel selectedKey={selectedKey} />
         </Splitter.Panel>
       </Splitter>
     </div>

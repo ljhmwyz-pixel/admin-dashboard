@@ -11,6 +11,7 @@ interface OrganizationInfoProps {
   orgCode?: string;
   extra?: React.ReactNode; // 支持自定义 extra 内容
   showExtra?: boolean; // 控制是否显示 extra
+  orgDetail?: any;
 }
 
 const OrganizationInfo: React.FC<OrganizationInfoProps> = ({
@@ -24,16 +25,17 @@ const OrganizationInfo: React.FC<OrganizationInfoProps> = ({
       <img src={ImageIcons.form.recordIcon} width={14} height={14} />
     </>
   ),
-  showExtra = true,
+  showExtra = false,
+  orgDetail,
 }) => {
   return (
     <div className={styles.orgInfo}>
       <div className={styles.orgBase}>
-        <div className={styles.orgName}>{orgName}</div>
-        <div className={styles.tag}>{tag}</div>
-        <div className={styles.label}>{label}</div>
+        <div className={styles.orgName}>{orgDetail?.orgName}</div>
+        <div className={styles.tag}>{orgDetail?.parentOrgId}</div>
+        <div className={styles.label}>{orgDetail?.orgType}</div>
       </div>
-      <div className={styles.orgCode}>{orgCode}</div>
+      <div className={styles.orgCode}>{orgDetail?.parentOrgId}</div>
       {showExtra && <div className={styles.extraStyle}>{extra}</div>}
     </div>
   );

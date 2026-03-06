@@ -7,7 +7,13 @@ import OrganizationView from './OrganizationView';
 
 import styles from './OrganizationDetailPanel.module.scss';
 
-const OrganizationDetailPanel: React.FC = () => {
+interface OrganizationDetailPanelIProps {
+  selectedKey: string;
+}
+
+const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
+  selectedKey: orgId,
+}) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
 
@@ -16,7 +22,7 @@ const OrganizationDetailPanel: React.FC = () => {
     {
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
-      children: <OrganizationView />,
+      children: <OrganizationView orgId={orgId} />,
     },
     {
       key: 'role-list',
