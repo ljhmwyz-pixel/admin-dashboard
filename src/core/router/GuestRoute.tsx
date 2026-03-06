@@ -7,7 +7,6 @@ interface Props {
   children: React.ReactNode;
 }
 
-// eslint-disable-next-line react/prop-types
 const GuestRoute: React.FC<Props> = ({ children }) => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   // 已登录不允许访问 login/register

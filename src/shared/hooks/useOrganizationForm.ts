@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 
 import { FormModal } from '@/components';
-import { loadOrganizationData } from '@/features/organization/services/organizationService';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';

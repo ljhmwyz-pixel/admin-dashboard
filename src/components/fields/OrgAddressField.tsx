@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Col, Form, Input } from 'antd';
 
 import { useLanguage } from '@/shared/hooks/useLanguage';

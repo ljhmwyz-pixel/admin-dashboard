@@ -1,4 +1,4 @@
-# Admin Dashboard
+# Pylon Cloud Web
 
 现代化的企业级管理后台系统，基于 React 19 + TypeScript 5 + Vite 7 + Ant Design 6 构建。
 
@@ -11,13 +11,13 @@
 ## 🌟 特性概览
 
 - 🚀 **现代化技术栈** - React 19, TypeScript 5, Vite 7
-- 🎨 **企业级UI** - Ant Design 6 组件库
+- 🎨 **企业级 UI** - Ant Design 6 组件库
 - 🛠️ **完整架构** - 模块化设计，清晰的目录结构
-- 🔧 **专业工具链** - Winston日志，Sentry错误追踪，Convict配置管理
-- 🌐 **国际化支持** - 多语言(i18n)支持 (中文、英文、德语、意大利语、日语)
+- 🔧 **专业工具链** - Winston 日志，Sentry 错误追踪，Convict 配置管理
+- 🌐 **国际化支持** - 多语言 (i18n) 支持 (中文、英文、德语、意大利语、日语)
 - 📊 **性能监控** - 完整的性能和错误监控体系
-- 🛡️ **安全保障** - 完善的安全机制和RBAC权限控制
-- 🐳 **容器化部署** - Docker支持和CI/CD配置
+- 🛡️ **安全保障** - 完善的安全机制和 RBAC 权限控制
+- 🐳 **容器化部署** - Docker 支持和 CI/CD 配置
 - 🎯 **主题定制** - 深色/浅色模式，多种配色方案
 - ⚡ **高性能** - 代码分割，懒加载，性能优化
 
@@ -45,7 +45,7 @@
 ```bash
 # 克隆项目
 git clone <repository-url>
-cd admin-dashboard
+cd pylon_cloud_web
 
 # 安装依赖
 pnpm install
@@ -125,7 +125,7 @@ pnpm clean
 | React | 19.2.0 | 前端框架 |
 | TypeScript | 5.9.3 | 类型安全 |
 | Vite | 7.3.1 | 构建工具 |
-| Ant Design | 6.3.1 | UI组件库 |
+| Ant Design | 6.3.1 | UI 组件库 |
 | Redux Toolkit | 2.11.2 | 状态管理 |
 | React Router | 7.13.1 | 路由管理 |
 | i18next | 25.8.13 | 国际化 |
@@ -138,7 +138,7 @@ pnpm clean
 src/
 ├── core/                 # 核心模块
 │   ├── router/          # 路由配置和守卫
-│   ├── store/           # Redux状态管理
+│   ├── store/           # Redux 状态管理
 │   └── providers/       # 全局提供者
 ├── features/            # 功能模块
 │   ├── dashboard/       # 仪表板
@@ -147,11 +147,11 @@ src/
 │   └── role/           # 角色管理
 ├── shared/              # 共享资源
 │   ├── components/      # 共享组件
-│   ├── hooks/          # 自定义Hooks
+│   ├── hooks/          # 自定义 Hooks
 │   ├── utils/          # 工具函数
 │   └── types/          # 共享类型定义
 ├── config/             # 配置文件
-├── services/           # API服务层
+├── services/           # API 服务层
 ├── i18n/               # 国际化配置
 └── assets/             # 静态资源
 ```
@@ -160,8 +160,8 @@ src/
 
 ### 🔐 认证与授权
 
-- **RBAC权限控制**：基于角色的访问控制
-- **JWT Token管理**：安全的认证令牌处理
+- **RBAC 权限控制**：基于角色的访问控制
+- **JWT Token 管理**：安全的认证令牌处理
 - **权限路由守卫**：页面级别的权限验证
 - **细粒度权限控制**：组件和功能级别的权限管理
 
@@ -174,7 +174,7 @@ src/
 
 ### 🌐 国际化支持
 
-支持5种语言：
+支持 5 种语言：
 - 🇨🇳 简体中文 (zh-CN)
 - 🇺🇸 English (en-US)
 - 🇩🇪 Deutsch (de-DE)
@@ -185,21 +185,21 @@ src/
 - 语言包缓存机制
 - 云端语言包支持
 - 实时语言切换
-- RTL语言支持规划中
+- RTL 语言支持规划中
 
 ### 📊 性能监控
 
 - **前端性能监控**：页面加载、组件渲染性能
-- **错误追踪**：JavaScript错误自动捕获
+- **错误追踪**：JavaScript 错误自动捕获
 - **用户体验监控**：用户行为分析
 - **资源加载监控**：网络请求性能分析
 
 ### 🛡️ 安全机制
 
-- **XSS防护**：输入验证和输出编码
-- **CSRF保护**：跨站请求伪造防护
-- **内容安全策略**：CSP头部配置
-- **安全头设置**：HTTP安全响应头
+- **XSS 防护**：输入验证和输出编码
+- **CSRF 保护**：跨站请求伪造防护
+- **内容安全策略**：CSP 头部配置
+- **安全头设置**：HTTP 安全响应头
 
 ## 💻 开发指南
 
@@ -216,7 +216,7 @@ src/
 features/
 └── moduleName/
     ├── components/        # 模块特定组件
-    ├── services/          # 模块API服务
+    ├── services/          # 模块 API 服务
     ├── mocks/             # 模拟数据
     ├── utils/             # 模块工具函数
     └── *.tsx             # 主要页面组件
@@ -240,7 +240,7 @@ features/
 - React DevTools 浏览器扩展
 - Redux DevTools 浏览器扩展
 - 浏览器开发者工具
-- 网络面板监控API请求
+- 网络面板监控 API 请求
 
 ### 环境变量
 
@@ -262,7 +262,7 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
 
 #### 缓存策略
 - HTTP缓存头配置
-- Service Worker缓存
+- Service Worker 缓存
 - 本地存储优化
 - 内存缓存机制
 
@@ -272,10 +272,10 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
 
 ```bash
 # 构建镜像
-docker build -t admin-dashboard .
+docker build -t pylon_cloud_web .
 
 # 运行容器
-docker run -d -p 80:80 --name admin-dashboard admin-dashboard
+docker run -d -p 80:80 --name pylon_cloud_web pylon_cloud_web
 ```
 
 ### 云平台部署
@@ -345,12 +345,12 @@ src/
 │   │   ├── guards/AuthGuard.tsx  # 路由守卫
 │   │   └── AppRoutes.tsx     # 路由组件
 │   ├── store/                # 状态管理
-│   │   ├── slices/           # Redux切片
+│   │   ├── slices/           # Redux 切片
 │   │   ├── thunks/           # 异步操作
 │   │   └── hooks/            # Store Hooks
 │   └── providers/            # 全局提供者
 │       ├── ThemeContext.tsx  # 主题上下文
-│       └── AntdThemeProvider.tsx  # Ant Design主题
+│       └── AntdThemeProvider.tsx  # Ant Design 主题
 ├── features/                 # 功能模块
 │   ├── dashboard/            # 仪表板
 │   ├── organization/         # 组织管理
@@ -358,7 +358,7 @@ src/
 │   └── role/                 # 角色管理
 ├── shared/                   # 共享资源
 │   ├── components/           # 共享组件库
-│   ├── hooks/                # 自定义Hooks
+│   ├── hooks/                # 自定义 Hooks
 │   ├── utils/                # 工具函数
 │   ├── types/                # 类型定义
 │   └── styles/               # 全局样式
@@ -366,12 +366,12 @@ src/
 │   ├── theme.ts             # 主题配置
 │   ├── schema.ts            # 配置模式
 │   └── errorTracking.ts     # 错误追踪配置
-├── services/                 # API服务层
-│   ├── api/                 # API客户端
-│   └── modules/             # 模块化API
+├── services/                 # API 服务层
+│   ├── api/                 # API 客户端
+│   └── modules/             # 模块化 API
 ├── i18n/                     # 国际化
 │   ├── locales/             # 语言包
-│   └── i18n.ts              # i18n配置
+│   └── i18n.ts              # i18n 配置
 └── assets/                   # 静态资源
     └── images/              # 图片资源
 ```
@@ -401,7 +401,7 @@ src/
 使用 conventional commits 格式：
 ```
 feat: 新功能
-fix: 修复bug
+fix: 修复 bug
 docs: 文档更新
 style: 代码格式调整
 refactor: 代码重构
@@ -412,7 +412,7 @@ chore: 构建过程或辅助工具的变动
 #### 分支命名规范
 ```
 feature/功能名称      # 新功能开发
-fix/问题描述        # Bug修复
+fix/问题描述        # Bug 修复
 hotfix/紧急修复      # 紧急修复
 docs/文档更新       # 文档修改
 ```
@@ -421,7 +421,7 @@ docs/文档更新       # 文档修改
 
 - 新增功能必须包含相应的单元测试
 - 修改现有功能需要确保测试通过
-- PR合并前必须通过所有自动化检查
+- PR 合并前必须通过所有自动化检查
 
 ## 📄 许可证
 
