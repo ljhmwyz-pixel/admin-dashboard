@@ -47,9 +47,8 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
     refreshOrganizationList,
   } = useOrganizationForm(currentParentNode);
 
-  const [options] = useState([]);
-
   const onFinish = async (values: any) => {
+    console.log('提交数据:', values);
     const result = await handleSubmit(values, () => {
       form.resetFields();
       onChange?.(false);
@@ -136,10 +135,14 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
         <AntRow gutter={30}>
           {/* 组织地址字段 */}
-          <OrgAddressField form={form} verifyResult={verifyResult} />
+          <OrgAddressField
+            form={form}
+            verifyResult={verifyResult}
+            // onChange={(values) => setAddressValues(values)}
+          />
 
           {/* 国家地区字段 */}
-          <OrgCountryRegionField form={form} countryOptions={options} />
+          <OrgCountryRegionField form={form} />
         </AntRow>
 
         <AntRow gutter={30}>

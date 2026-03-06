@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { EnvironmentOutlined } from '@ant-design/icons';
-import { Button, type FormInstance, Input, Modal, Space, Spin } from 'antd';
+import { Button, Form, type FormInstance, Modal, Space, Spin } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
 
-import { FormAutoComplete, FormInput, ImageIcons } from '@/components';
-
-import { ensureGoogleMaps } from './googleMaps';
+import { FormAutoComplete } from '@/components';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { ensureGoogleMaps } from '@/shared/types/googleMaps';
 
 type LocationInfo = {
   formattedAddress: string;
@@ -49,6 +48,7 @@ type Props = {
   minSearchLength?: number;
   popupTitle?: string;
   onResolved?: (location: LocationInfo) => void;
+  formatAddress?: (location: LocationInfo) => string; // 自定义格式化地址
 };
 
 function findGeocoderComp(
@@ -129,13 +129,17 @@ export default function AddressPickerAutoComplete({
   minSearchLength = 3,
   popupTitle = '选择地址',
   onResolved,
+  formatAddress,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [booting, setBooting] = useState(false);
+  const [error, setError] = useState<string | undefined>();
 
-  const [mainValue, setMainValue] = useState<string>(
-    (fieldMap.address ? form.getFieldValue(fieldMap.address) : '') || '',
-  );
+  const [mainValue, setMainValue] = useState<string>('');
+
+  // 使用 Form.useWatch 监听字段变化，直接获取表单中的值
+  const watchedAddressValue = Form.useWatch(fieldMap.address, form);
+
   const [mainOptions, setMainOptions] = useState<GoogleOption[]>([]);
 
   const [popupValue, setPopupValue] = useState('');
@@ -157,6 +161,8 @@ export default function AddressPickerAutoComplete({
 
   const skipNextIdleReverseRef = useRef(false);
 
+  const { t } = useLanguage();
+
   const clearLocationFields = useCallback(() => {
     const patch: Record<string, unknown> = {};
 
@@ -174,13 +180,17 @@ export default function AddressPickerAutoComplete({
 
     form.setFieldsValue(patch);
     setDraftLocation(null);
+    setError(undefined);
   }, [fieldMap, form]);
 
   const patchForm = useCallback(
     (loc: LocationInfo, writeAddress: boolean) => {
       const patch: Record<string, unknown> = {};
 
-      if (writeAddress && fieldMap.address) patch[fieldMap.address] = loc.formattedAddress;
+      if (writeAddress && fieldMap.address) {
+        // 如果提供了自定义格式化函数，使用它；否则使用默认格式
+        patch[fieldMap.address] = formatAddress ? formatAddress(loc) : loc.formattedAddress;
+      }
       if (fieldMap.lat) patch[fieldMap.lat] = loc.lat;
       if (fieldMap.lng) patch[fieldMap.lng] = loc.lng;
       if (fieldMap.country) patch[fieldMap.country] = loc.country;
@@ -195,12 +205,17 @@ export default function AddressPickerAutoComplete({
       form.setFieldsValue(patch);
 
       if (writeAddress) {
-        setMainValue(loc.formattedAddress);
+        setMainValue(formatAddress ? formatAddress(loc) : loc.formattedAddress);
+        setError(undefined);
+
+        if (fieldMap.address) {
+          form.validateFields([fieldMap.address]);
+        }
       }
 
       onResolved?.(loc);
     },
-    [fieldMap, form, onResolved],
+    [fieldMap, form, formatAddress, onResolved],
   );
 
   const getGeocoder = useCallback(async () => {
@@ -491,6 +506,23 @@ export default function AddressPickerAutoComplete({
     return () => window.clearTimeout(timer);
   }, [debounceMs, geocodeFreeText, minSearchLength, open, popupValue]);
 
+  useEffect(() => {
+    // 当表单字段被重置时，同步更新 mainValue
+    if (watchedAddressValue === undefined || watchedAddressValue === null) {
+      setMainValue('');
+    } else {
+      setMainValue(watchedAddressValue);
+    }
+  }, [watchedAddressValue]);
+
+  const handleBlur = useCallback(() => {
+    // 失去焦点时触发校验
+    if (fieldMap.address) {
+      console.log('fieldMap.address:', fieldMap.address);
+      form.validateFields([fieldMap.address]);
+    }
+  }, [fieldMap.address, form]);
+
   const handleAfterOpenChange = (visible: boolean) => {
     if (!visible) return;
 
@@ -502,26 +534,43 @@ export default function AddressPickerAutoComplete({
   return (
     <>
       <FormAutoComplete
-        prefixIcon={<img src={ImageIcons.form.orgPostalCodeIcon} width={14} height={14} />}
-        label="地址"
-        autoCompleteProps={{
-          suffixIcon: (
-            <EnvironmentOutlined
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                setPopupValue(mainValue);
-                setOpen(true);
-              }}
+        label={t('org.field.address')}
+        prefixIcon={
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5.49963 6.99997H3.49951C2.39494 6.99997 1.49951 7.8954 1.49951 8.99997V13.4H5.49963M7.99963 4.49997H10.4995M0.599609 13.4H13.3995M12.4995 13.4V2.59998C12.4995 1.49541 11.6041 0.599976 10.4995 0.599976H7.99963C6.89506 0.599976 5.99963 1.49541 5.99963 2.59998V13.4H12.4995Z"
+              stroke="#191B1F"
+              strokeOpacity="0.6"
+              strokeWidth="1.2"
+              strokeLinecap="round"
             />
-          ),
-          value: mainValue,
+          </svg>
+        }
+        required
+        name="orgAddress"
+        rules={[
+          {
+            required: true,
+            message: '请输入地址',
+          },
+        ]}
+        autoCompleteProps={{
+          value: watchedAddressValue || mainValue,
           options: mainOptions,
-          style: { width: '100%' },
+          status: error ? 'error' : undefined,
+          onBlur: handleBlur,
           onSearch: (value) => {
             void fetchSuggestions(value, 'main');
-          },
-          onSelect: (_, option) => {
-            void resolveSuggestion(option as GoogleOption, 'main');
+            // 清空错误状态
+            if (fieldMap.address) {
+              form.setFields([{ name: fieldMap.address, errors: [] }]);
+            }
           },
           onChange: (value) => {
             setMainValue(value);
@@ -535,6 +584,46 @@ export default function AddressPickerAutoComplete({
               clearLocationFields();
             }
           },
+          onSelect: (_, option) => {
+            void resolveSuggestion(option as GoogleOption, 'main');
+          },
+          suffix: (
+            <span
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                setPopupValue(mainValue);
+                setOpen(true);
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.99951 9.33945C1.12347 9.76716 0.599609 10.3097 0.599609 10.9001C0.599609 12.2808 3.46499 13.4001 6.99961 13.4001C10.5342 13.4001 13.3996 12.2808 13.3996 10.9001C13.3996 10.3097 12.8757 9.76708 11.9995 9.33936"
+                  stroke="#33C2C8"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M11 4.59998C11 6.80911 7 11 7 11C7 11 3 6.80911 3 4.59998C3 2.39084 4.79086 0.599976 7 0.599976C9.20914 0.599976 11 2.39084 11 4.59998Z"
+                  stroke="#191B1F"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M7.39961 4.4C7.39961 4.62091 7.22052 4.8 6.99961 4.8C6.7787 4.8 6.59961 4.62091 6.59961 4.4C6.59961 4.17909 6.7787 4 6.99961 4C7.22052 4 7.39961 4.17909 7.39961 4.4Z"
+                  stroke="#191B1F"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+          ),
+          placeholder: placeholder,
         }}
       />
 
@@ -565,10 +654,10 @@ export default function AddressPickerAutoComplete({
           <div style={{ marginBottom: 12 }}>
             <FormAutoComplete
               autoCompleteProps={{
+                placeholder: '搜索地址或地标',
                 value: popupValue,
                 options: popupOptions,
                 allowClear: true,
-                style: { width: '100%' },
                 onSearch: (value) => {
                   void fetchSuggestions(value, 'popup');
                 },
@@ -581,7 +670,6 @@ export default function AddressPickerAutoComplete({
                 onSelect: (_, option) => {
                   void resolveSuggestion(option as GoogleOption, 'popup');
                 },
-                placeholder: '搜索地址或地标',
               }}
             />
           </div>
@@ -613,57 +701,6 @@ export default function AddressPickerAutoComplete({
             >
               📍
             </div>
-          </div>
-
-          <div
-            style={{
-              marginTop: 12,
-              padding: 12,
-              background: '#fafafa',
-              borderRadius: 8,
-              fontSize: 13,
-              lineHeight: 1.8,
-            }}
-          >
-            <div>操作方式：输入地址搜索，或拖动地图，让中心图钉对准目标位置。</div>
-
-            {draftLocation ? (
-              <>
-                <div>
-                  <b>地址：</b>
-                  {draftLocation.formattedAddress}
-                </div>
-                <div>
-                  <b>经纬度：</b>
-                  {draftLocation.lat}, {draftLocation.lng}
-                </div>
-                <div>
-                  <b>国家 / 省市区：</b>
-                  {[
-                    draftLocation.country,
-                    draftLocation.province,
-                    draftLocation.city,
-                    draftLocation.district,
-                  ]
-                    .filter(Boolean)
-                    .join(' / ')}
-                </div>
-                <div>
-                  <b>邮编：</b>
-                  {draftLocation.postalCode || '-'}
-                </div>
-                <div>
-                  <b>街道：</b>
-                  {draftLocation.route || '-'}
-                </div>
-                <div>
-                  <b>门牌号：</b>
-                  {draftLocation.streetNumber || '-'}
-                </div>
-              </>
-            ) : (
-              <div>当前还没有解析到可用位置。</div>
-            )}
           </div>
         </Spin>
       </Modal>

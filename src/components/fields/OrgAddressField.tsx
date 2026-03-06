@@ -4,17 +4,31 @@ import { Col, Form, Input } from 'antd';
 import type { VerifyOrganization } from '@/shared/types/organization';
 
 import AddressPickerAutoComplete from './AddressPickerAutoComplete';
+// import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { FieldProps } from './types';
 
-type OrgAddressFieldProps = FieldProps & { verifyResult: VerifyOrganization };
+type OrgAddressFieldProps = FieldProps & {
+  verifyResult: VerifyOrganization;
+};
 
 export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
+  // const { t } = useLanguage();
+  useEffect(() => {
+    if (verifyResult?.isScope) {
+      form.setFields([
+        {
+          name: 'orgAddress',
+          errors: ['Please select correct country/region to create organization.'],
+        },
+      ]);
+    }
+  }, [verifyResult]);
   return (
     <Col span={12}>
       <AddressPickerAutoComplete
         form={form}
         fieldMap={{
-          address: 'address',
+          address: 'orgAddress',
           lat: 'lat',
           lng: 'lng',
           country: 'country',
@@ -28,13 +42,56 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
         }}
         onResolved={(loc) => {
           console.log('resolved location:', loc);
+          form.setFields([
+            {
+              name: 'orgAddress',
+              value: loc.formattedAddress,
+            },
+            {
+              name: 'lat',
+              value: loc.lat,
+            },
+            {
+              name: 'lng',
+              value: loc.lng,
+            },
+            {
+              name: 'country',
+              value: loc.country,
+            },
+            {
+              name: 'countryCode',
+              value: loc.countryCode,
+            },
+            {
+              name: 'province',
+              value: loc.province,
+            },
+            {
+              name: 'city',
+              value: loc.city,
+            },
+            {
+              name: 'district',
+              value: loc.district,
+            },
+            {
+              name: 'postalCode',
+              value: loc.postalCode,
+            },
+            {
+              name: 'route',
+              value: loc.route,
+            },
+            {
+              name: 'streetNumber',
+              value: loc.streetNumber,
+            },
+          ]);
         }}
       />
 
       {/* 隐藏字段：按需保留 */}
-      <Form.Item name="address" hidden>
-        <Input />
-      </Form.Item>
       <Form.Item name="lat" hidden>
         <Input />
       </Form.Item>

@@ -39,6 +39,8 @@ export const FormProvider = AntForm.Provider;
 // eslint-disable-next-line react-refresh/only-export-components
 export const useForm = AntForm.useForm;
 // eslint-disable-next-line react-refresh/only-export-components
+export const useWatch = AntForm.useWatch;
+// eslint-disable-next-line react-refresh/only-export-components
 export const useFormInstance = AntForm.useFormInstance;
 
 export default Form;

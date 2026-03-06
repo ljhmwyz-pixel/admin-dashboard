@@ -25,6 +25,9 @@ export interface OrganizationFormData {
   orgUsername?: string;
   orgPhone?: string;
   orgDescription?: string;
+  countryCode?: string;
+  lat?: number;
+  lng?: number;
 }
 
 /**
@@ -70,15 +73,14 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       parentOrgId: currentParentNode?.key || '',
       description: values.orgDescription,
       remark: values.orgDescription,
-      countryCode: values.orgCountryRegion || '',
-      regionCode: values.orgCountryRegion || '',
+      countryCode: values.countryCode || '',
       zipCode: values.orgPostalCode || '',
       ownerEmail: values.orgEmail || '',
       ownerUserName: values.orgUsername || '',
       ownerPhone: values.orgPhone || '',
       address: values.orgAddress || '',
-      latitude: values.orgAddress ? 0 : undefined,
-      longitude: values.orgAddress ? 0 : undefined,
+      latitude: values.lat ? 0 : undefined,
+      longitude: values.lng ? 0 : undefined,
       bdCountryScopes: values.orgCountryRegion,
     };
   }, []);
