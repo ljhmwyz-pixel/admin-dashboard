@@ -10,8 +10,8 @@ export interface ApiConfig {
 
 // 默认配置
 const DEFAULT_CONFIG: ApiConfig = {
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -33,7 +33,15 @@ class ApiClient {
       (config: any) => {
         // 添加认证token
         const accessToken = this.getToken();
+        // X-User-Id: 当前用户UID（由Gateway注入）
+        // X-Org-Id: 当前用户所属组织ID（由Gateway注入）
+        // X-Tenant-Id: 租户ID（由Gateway注入）
+        // X-Request-Id: 请求ID（由Gateway生成）
+        // Authorization: JWT Token（由Gateway验证）
         if (accessToken) {
+          // todo
+          const loginInfo = JSON.parse(localStorage.getItem('loginInfo') || '{}');
+
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
 
@@ -56,7 +64,7 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         // 统一处理响应数据
-        return response.data;
+        return response.data.data;
       },
       (error: any) => {
         // 统一错误处理

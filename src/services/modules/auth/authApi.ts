@@ -11,7 +11,10 @@ import { apiClient } from '../../api/client';
 class AuthApi {
   // 登录
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/api/v1/auth/login', credentials);
+    const response: any = await apiClient.post<AuthResponse>('/api/v1/auth/login', credentials);
+    if (response.code === 500) {
+      throw new Error(response.message);
+    }
     // return Promise.resolve({
     //   accessToken: 'eyJhbGciOiJIUzI1NiIs...',
     //   refreshToken: 'refresh-token-xxx',
@@ -56,7 +59,40 @@ class AuthApi {
 
   // 刷新令牌
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/refresh', { refreshToken });
+    const response = await apiClient.post<AuthResponse>('/api/v1/auth/refresh', { refreshToken });
+    // return Promise.resolve({
+    //   accessToken: 'eyJhbGciOiJIUzI1NiIs...',
+    //   refreshToken: 'refresh-token-xxx',
+    //   tokenType: 'Bearer',
+    //   expiresIn: 7200,
+    //   uid: 'USR-H6Q8-T9W3',
+    //   userName: 'admin_user',
+    //   identities: [
+    //     {
+    //       type: 'PERSONAL',
+    //       displayName: '个人用户',
+    //     },
+    //     {
+    //       type: 'ORGANIZATION',
+    //       orgId: 'org-uuid-1',
+    //       orgName: 'My Installer Company',
+    //       orgType: 'INSTALLER',
+    //       roles: ['Organization Owner'],
+    //     },
+    //     {
+    //       type: 'ORGANIZATION',
+    //       orgId: 'org-uuid-2',
+    //       orgName: 'Another Company',
+    //       orgType: 'DEALER',
+    //       roles: ['Electrician'],
+    //     },
+    //   ],
+    //   lastSelectedIdentity: {
+    //     type: 'ORGANIZATION',
+    //     orgId: 'org-uuid-1',
+    //   },
+    //   requireIdentitySelection: true,
+    // });
     return response;
   }
 

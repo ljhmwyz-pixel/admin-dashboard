@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { authApi } from '../../../services/modules/auth/authApi';
-import type { LoginCredentials, RegisterData } from '../../../shared/types/auth';
-import SecurityUtils from '../../../shared/utils/SecurityUtils';
+import { authApi } from '@/services/modules/auth/authApi';
+import type { LoginCredentials, RegisterData } from '@/shared/types/auth';
+import SecurityUtils from '@/shared/utils/SecurityUtils';
 
 // 登录 thunk
 export const loginUser = createAsyncThunk(
@@ -10,11 +10,23 @@ export const loginUser = createAsyncThunk(
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await authApi.login(credentials);
-      debugger;
+      // todo
+      localStorage.setItem('loginInfo', JSON.stringify(response));
       // 本地缓存refreshToken
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
+      // accessToken
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
+      }
+      debugger;
+      // 返回是闪屏问题
+      // {
+      //   500;
+      //   ('代理转发失败: 500 : "{"code":500,"message":"系统内部错误，请联系管理员","timestamp":"2026-03-06T09:55:39.6980488"}"');
+      //   false;
+      // }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '登录失败');
@@ -40,20 +52,21 @@ export const refreshToken = createAsyncThunk(
   'auth/refresh',
   async (_, { getState: _getState, rejectWithValue }) => {
     try {
-      const refreshToken = SecurityUtils.getRefreshToken();
-
-      if (!refreshToken) {
+      const refreshTokenValue = SecurityUtils.getRefreshToken();
+      if (!refreshTokenValue) {
         throw new Error('无刷新令牌');
       }
 
-      const response = await authApi.refreshToken(refreshToken);
+      const response = await authApi.refreshToken(refreshTokenValue);
 
-      // 更新 token
-      if (response.token) {
-        SecurityUtils.setToken(response.token);
-      }
+      // 更新 refreshToken
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
+      }
+
+      // accessToken
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
       }
 
       return response;
