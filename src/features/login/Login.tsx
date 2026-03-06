@@ -3,20 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 
 import { useAppDispatch } from '@/core/store/hooks';
-import { loginUser } from '@/core/store/thunks/authThunks';
-import { apiClient } from '@/services/api/client';
-import { authApi } from '@/services/modules/auth/authApi';
-
-// import styles from './Login.module.scss';
+import { fetchPermissions, loginUser } from '@/core/store/thunks/authThunks';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const [form, setForm] = useState({
-    account: '',
-    password: '',
-    agreementAccepted: true,
+    account: 'superadmin@pylontech.com',
+    password: 'SuperAdmin@123',
+    // agreementAccepted: true,
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,15 +38,14 @@ const Login: React.FC = () => {
       setLoading(true);
       const resultAction = await dispatch(loginUser(form));
       if (loginUser.fulfilled.match(resultAction)) {
+        // 获取权限列表
+        await dispatch(fetchPermissions());
         // 登录成功
         navigate('/dashboard', { replace: true });
       } else {
         // 登录失败
         message.error(resultAction.payload as string);
       }
-      // await new Promise((resolve) => setTimeout(resolve, 800));
-      // localStorage.setItem('token', 'demo-token');
-      // navigate('/dashboard', { replace: true });
     } catch (err) {
       setError('登录失败，请重试');
     } finally {

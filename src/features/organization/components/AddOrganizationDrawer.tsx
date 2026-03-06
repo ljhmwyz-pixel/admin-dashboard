@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { FormButton, FormModal } from '@/components';
 import {
   OrgAddressField,
-  OrgBDCountryRegionField,
   OrgCountryRegionField,
   OrgDescriptionField,
   OrgEmailField,
@@ -26,33 +25,27 @@ interface AddOrganizationProps {
   visible: boolean;
   onChange: (visible: boolean) => void;
   currentParentNode?: TreeNodeData;
+  loadData?: () => void;
 }
 
 const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   visible,
   onChange,
   currentParentNode,
+  loadData,
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
   const { warningConfirm } = FormModal();
 
-  const {
-    userExists,
-    existingUsername,
-    existingPhone,
-    verifyResult,
-    verifyEmail,
-    handleSubmit,
-    refreshOrganizationList,
-  } = useOrganizationForm(currentParentNode);
+  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit } =
+    useOrganizationForm(currentParentNode);
 
   const onFinish = async (values: any) => {
-    console.log('提交数据:', values);
     const result = await handleSubmit(values, () => {
       form.resetFields();
       onChange?.(false);
-      refreshOrganizationList();
+      loadData?.();
     });
 
     if (!result.success) {
@@ -86,18 +79,20 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   return (
     <Drawer
-      bodyStyle={{ padding: '0 30px', backgroundColor: '#fff' }}
-      headerStyle={{
-        backgroundColor: '#F1F1F2',
-        borderBottom: 'none',
-        borderTopLeftRadius: '12px',
-        color: '#191B1F',
-        fontWeight: '600',
-      }}
-      footerStyle={{
-        backgroundColor: '#fff',
-        borderTop: 'none',
-        padding: '0 0 60px',
+      styles={{
+        body: { padding: '0 30px', backgroundColor: '#fff' },
+        header: {
+          backgroundColor: '#F1F1F2',
+          borderBottom: 'none',
+          borderTopLeftRadius: '12px',
+          color: '#191B1F',
+          fontWeight: '600',
+        },
+        footer: {
+          backgroundColor: '#fff',
+          borderTop: 'none',
+          padding: '0 0 60px',
+        },
       }}
       className={styles.drawer}
       size="60%"
@@ -135,11 +130,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
         <AntRow gutter={30}>
           {/* 组织地址字段 */}
-          <OrgAddressField
-            form={form}
-            verifyResult={verifyResult}
-            // onChange={(values) => setAddressValues(values)}
-          />
+          <OrgAddressField form={form} verifyResult={verifyResult} />
 
           {/* 国家地区字段 */}
           <OrgCountryRegionField form={form} />
@@ -170,10 +161,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
             verifyResult={verifyResult}
           />
         </AntRow>
-        <AntRow gutter={30}>
-          {/* BD国家地区字段 */}
+        {/* <AntRow gutter={30}>
           <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
-        </AntRow>
+        </AntRow> */}
 
         <AntRow gutter={30}>
           {/* 描述字段 */}

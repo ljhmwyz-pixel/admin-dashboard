@@ -1,23 +1,50 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { authApi } from '../../../services/modules/auth/authApi';
-import type { LoginCredentials, RegisterData } from '../../../shared/types/auth';
-import SecurityUtils from '../../../shared/utils/SecurityUtils';
+import { authApi } from '@/services/modules/auth/authApi';
+import type { LoginCredentials, RegisterData } from '@/shared/types/auth';
+import SecurityUtils from '@/shared/utils/SecurityUtils';
 
 // 登录 thunk
 export const loginUser = createAsyncThunk(
   'api/v1/auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(credentials);
-      debugger;
+      const res: any = await authApi.login(credentials);
+      const { data: response } = res;
       // 本地缓存refreshToken
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
+      // 本地缓存token
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
+      }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '登录失败');
+    }
+  },
+);
+
+// 获取权限清单
+export const fetchPermissions = createAsyncThunk(
+  'fetch/dictionary',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res: any = await authApi.getPermissionSource();
+      debugger;
+      const { data: response } = res;
+      // // 本地缓存refreshToken
+      // if (response.refreshToken) {
+      //   SecurityUtils.setRefreshToken(response.refreshToken);
+      // }
+      // // 本地缓存token
+      // if (response.token) {
+      //   SecurityUtils.setToken(response.token);
+      // }
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || '获取资源失败');
     }
   },
 );
@@ -40,22 +67,20 @@ export const refreshToken = createAsyncThunk(
   'auth/refresh',
   async (_, { getState: _getState, rejectWithValue }) => {
     try {
-      const refreshToken = SecurityUtils.getRefreshToken();
-
-      if (!refreshToken) {
+      const refreshTokenValue = SecurityUtils.getRefreshToken();
+      if (!refreshTokenValue) {
         throw new Error('无刷新令牌');
       }
-
-      const response = await authApi.refreshToken(refreshToken);
-
-      // 更新 token
-      if (response.token) {
-        SecurityUtils.setToken(response.token);
-      }
+      const res: any = await authApi.refreshToken(refreshTokenValue);
+      const { data: response } = res;
+      // 更新 refreshToken
       if (response.refreshToken) {
         SecurityUtils.setRefreshToken(response.refreshToken);
       }
-
+      // 本地缓存token
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
+      }
       return response;
     } catch (error: any) {
       // 刷新失败，清除认证信息
@@ -70,12 +95,8 @@ export const fetchUserInfo = createAsyncThunk(
   'auth/fetchUserInfo',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authApi.getUserInfo();
-
-      // 更新用户信息
-      SecurityUtils.setUserInfo(response.user);
-      SecurityUtils.setPermissions(response.permissions || []);
-
+      const res: any = await authApi.getUserInfo();
+      const { data: response } = res;
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '获取用户信息失败');

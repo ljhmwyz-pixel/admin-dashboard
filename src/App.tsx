@@ -3,6 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 
+import AuthProvider from '@/core/providers/AuthProvider';
+
 import AntdThemeProvider from './core/providers/AntdThemeProvider';
 import { ThemeProvider } from './core/providers/ThemeContext';
 import AppRoutes from './core/router/AppRoutes';
@@ -47,7 +49,9 @@ const App: React.FC = () => {
           <AntdThemeProvider>
             <I18nextProvider i18n={i18n}>
               <BrowserRouter>
-                <AppRoutes />
+                <AuthProvider>
+                  <AppRoutes />
+                </AuthProvider>
               </BrowserRouter>
             </I18nextProvider>
           </AntdThemeProvider>

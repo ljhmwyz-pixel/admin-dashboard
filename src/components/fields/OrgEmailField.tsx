@@ -86,7 +86,10 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
         ]}
         inputProps={{
           suffix: (
-            <span onClick={handleCheckEmailExists} style={{ color: '#33C2C8', fontSize: '14px' }}>
+            <span
+              onClick={handleCheckEmailExists}
+              style={{ color: '#33C2C8', fontSize: '14px', cursor: 'pointer' }}
+            >
               Check Email
             </span>
           ),

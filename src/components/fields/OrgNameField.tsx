@@ -10,7 +10,10 @@ import type { FieldProps } from './types';
 
 type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization };
 
-const OrgNameField: React.FC<OrgNameFieldProps> = ({ form, verifyResult = {} }) => {
+const OrgNameField: React.FC<OrgNameFieldProps> = ({
+  form,
+  verifyResult = {} as VerifyOrganization,
+}) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +38,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({ form, verifyResult = {} }) 
       form.setFields([
         {
           name: 'orgName',
-          errors: [t('org.validation.name.required')],
+          errors: [t('org.dialog.exists_org.title')],
         },
       ]);
     }

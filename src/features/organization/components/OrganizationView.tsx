@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { FormButton, FormInput, FormSelect, FormTextArea, ImageIcons } from '@/components';
+import { FormButton, FormInput, FormSelect, ImageIcons } from '@/components';
 import { AntForm } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 

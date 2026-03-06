@@ -10,8 +10,8 @@ export interface ApiConfig {
 
 // 默认配置
 const DEFAULT_CONFIG: ApiConfig = {
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  timeout: 10000,
+  baseURL: '',
+  timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,12 +38,12 @@ class ApiClient {
         }
 
         // 添加时间戳防止缓存
-        if (config.method === 'get') {
-          config.params = {
-            ...config.params,
-            _t: Date.now(),
-          };
-        }
+        // if (config.method === 'get') {
+        //   config.params = {
+        //     ...config.params,
+        //     _t: Date.now(),
+        //   };
+        // }
 
         return config;
       },
@@ -56,7 +56,12 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         // 统一处理响应数据
-        return response.data;
+        const res = response.data;
+        // 统一业务错误处理
+        if (res.code && res.code !== 200) {
+          return Promise.reject(res);
+        }
+        return res;
       },
       (error: any) => {
         // 统一错误处理

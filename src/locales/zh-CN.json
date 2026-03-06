@@ -64,6 +64,7 @@
   "org.toast.create_success": "组织已成功创建。包含初始登录密码的邮件已发送至管理员邮箱。",
   "org.toast.update_success": "组织信息已成功修改。",
   "org.dialog.similar_org.title": "相似组织",
+  "org.dialog.exists_org.title": "组织名称已存在！",
   "org.dialog.similar_org.content": "已存在相似的组织名称，请确认。",
   "org.dialog.unsaved.title": "未保存的更改",
   "org.dialog.unsaved.content": "你有未保存的更改，确定不保存退出吗？",

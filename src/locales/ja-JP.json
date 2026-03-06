@@ -64,6 +64,7 @@
   "org.toast.create_success": "組織が正常に作成されました。初期ログインパスワードを含むメールが管理者のメールアドレスに送信されました。",
   "org.toast.update_success": "組織情報が正常に更新されました。",
   "org.dialog.similar_org.title": "類似組織",
+  "org.dialog.exists_org.title": "組織名がすでに存在します！",
   "org.dialog.similar_org.content": "類似する組織名がすでに存在します。確認してください。",
   "org.dialog.unsaved.title": "未保存の変更",
   "org.dialog.unsaved.content": "未保存の変更があります。保存せずに終了してもよろしいですか？",

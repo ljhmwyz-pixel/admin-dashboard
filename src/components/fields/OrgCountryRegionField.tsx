@@ -13,15 +13,24 @@ const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) =
   const { t } = useLanguage();
 
   const country = useWatch('country', form);
+  const province = useWatch('province', form);
   const city = useWatch('city', form);
 
   useEffect(() => {
-    if (country && city) {
-      form.setFieldValue('orgCountryRegion', `${country}/${city}`);
+    let orgCountryRegionValue = '';
+    if (country) {
+      orgCountryRegionValue = country;
+      if (province) {
+        orgCountryRegionValue = `${country}/${province}`;
+      }
+      if (city) {
+        orgCountryRegionValue = `${orgCountryRegionValue}/${city}`;
+      }
+      form.setFieldValue('orgCountryRegion', orgCountryRegionValue);
     } else {
       form.setFieldValue('orgCountryRegion', undefined);
     }
-  }, [country, city, form]);
+  }, [country, province, city, form]);
 
   return (
     <AntCol span={12}>

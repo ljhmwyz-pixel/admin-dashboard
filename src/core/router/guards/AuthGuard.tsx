@@ -59,6 +59,8 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   return <>{children}</>;
 };
 
+import SecurityUtils from '@/shared/utils/SecurityUtils';
+
 import type { UserRole } from '../../store/slices/userSlice';
 
 interface RoleGuardProps {
@@ -108,9 +110,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const userPermissions = useAppSelector(selectUserPermissions);
   const userRoles = useAppSelector(selectUserRoles);
+  const refreshToken = SecurityUtils.getRefreshToken();
 
   // 使用 useMemo 优化权限检查，避免不必要的重新计算
   const authCheckResult = useMemo(() => {
+    // 没有 refreshToken → 直接认为未登录
+    if (requireAuth && !refreshToken) {
+      return { authenticated: false, authorized: false, reason: 'no_refresh_token' };
+    }
     // 检查认证状态
     if (requireAuth && !isAuthenticated) {
       return { authenticated: false, authorized: false, reason: 'unauthenticated' };
@@ -135,7 +142,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     return { authenticated: true, authorized: true, reason: null };
-  }, [requireAuth, isAuthenticated, permissions, userPermissions, roles, userRoles]);
+  }, [requireAuth, isAuthenticated, permissions, userPermissions, roles, userRoles, refreshToken]);
 
   // 根据检查结果决定渲染什么
   if (!authCheckResult.authenticated) {
