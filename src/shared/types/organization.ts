@@ -105,10 +105,14 @@ export interface CreateOrganizationResponse {
 }
 
 export interface VerifyOrganization {
+  valid: boolean;
   isOrganizationExists?: boolean;
   isOrganizationSimilar?: boolean;
   isPhoneExists?: boolean;
-  isScope?: boolean;
+  isCountryInScope: boolean;
+  isOwnerTypeValid: boolean;
+  isOrgTypeAllowed: boolean;
+  isBdScopesAvailable: boolean;
   timestamp?: number;
   [key: string]: any; // 允许扩展其他字段
 }
@@ -118,10 +122,24 @@ export interface VerifyResponse {
   data: VerifyOrganization;
 }
 
+export interface DeleteResponse {
+  code: number;
+  msg: string;
+  timestamp: string;
+  [key: string]: any; // 允许扩展其他字段
+}
+
+export interface VerifyDelete {
+  organizationNotFound: boolean;
+  childOrganizationsExist: boolean;
+  childOrganizationCount: number;
+  valid: boolean;
+}
+
 export interface VerifyDeleteResponse {
   code: number;
   msg: string;
-  data: null;
+  data: VerifyDelete;
   [key: string]: any; // 允许扩展其他字段
 }
 

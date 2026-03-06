@@ -44,7 +44,7 @@ export interface EmailVerifyResult {
  * 组织创建 Hook - 封装组织创建相关的所有业务逻辑
  */
 export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
-  const { showLoading, hideLoading, withLoading } = useGlobalLoading();
+  const { showLoading, hideLoading } = useGlobalLoading();
 
   const { t } = useLanguage();
 
@@ -58,32 +58,38 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
   // 组织验证状态
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
+    valid: false,
+    isCountryInScope: false,
+    isOwnerTypeValid: false,
+    isOrgTypeAllowed: false,
+    isBdScopesAvailable: false,
     isOrganizationExists: false,
     isOrganizationSimilar: false,
     isPhoneExists: false,
-    isScope: false,
     timestamp: 0,
   });
 
   // TODO 参数需要重新处理
-  const requestParams = useCallback((values: OrganizationFormData) => {
-    return {
-      orgName: values.orgName,
-      orgType: values.orgType,
-      parentOrgId: currentParentNode?.key || '',
-      description: values.orgDescription,
-      remark: values.orgDescription,
-      countryCode: values.countryCode || '',
-      zipCode: values.orgPostalCode || '',
-      ownerEmail: values.orgEmail || '',
-      ownerUserName: values.orgUsername || '',
-      ownerPhone: values.orgPhone || '',
-      address: values.orgAddress || '',
-      latitude: values.lat ? 0 : undefined,
-      longitude: values.lng ? 0 : undefined,
-      bdCountryScopes: values.orgCountryRegion,
-    };
-  }, []);
+  const requestParams = useCallback(
+    (values: OrganizationFormData) => {
+      return {
+        orgName: values.orgName,
+        orgType: values.orgType,
+        parentOrgId: currentParentNode?.key || '',
+        description: values.orgDescription,
+        remark: values.orgDescription,
+        countryCode: values.countryCode || '',
+        zipCode: values.orgPostalCode || '',
+        ownerEmail: values.orgEmail || '',
+        ownerUserName: values.orgUsername || '',
+        ownerPhone: values.orgPhone || '',
+        address: values.orgAddress || '',
+        latitude: values.lat,
+        longitude: values.lng,
+      };
+    },
+    [currentParentNode],
+  );
 
   /**
    * 验证邮箱
@@ -139,10 +145,14 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const verifyOrganization = useCallback(
     async (values: OrganizationFormData) => {
       const defaultResult: VerifyOrganization = {
+        valid: false,
+        isCountryInScope: false,
+        isOwnerTypeValid: false,
+        isOrgTypeAllowed: false,
+        isBdScopesAvailable: false,
         isOrganizationExists: false,
         isOrganizationSimilar: false,
         isPhoneExists: false,
-        isScope: false,
         timestamp: Date.now(),
       };
 
@@ -209,7 +219,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
           verifyData?.isOrganizationExists ||
           verifyData?.isOrganizationSimilar ||
           verifyData?.isPhoneExists ||
-          verifyData?.isScope
+          !verifyData?.isCountryInScope
         ) {
           return { success: false, reason: 'validation_failed', verifyData };
         }
@@ -272,15 +282,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   );
 
   /**
-   * 刷新组织列表
-   */
-  const refreshOrganizationList = useCallback(async () => {
-    await loadOrganizationData({
-      withLoading,
-    });
-  }, [withLoading]);
-
-  /**
    * 重置验证状态
    */
   const resetVerifyStatus = useCallback(() => {
@@ -288,10 +289,14 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     setExistingUsername('');
     setExistingPhone('');
     setVerifyResult({
+      valid: false,
+      isCountryInScope: false,
+      isOwnerTypeValid: false,
+      isOrgTypeAllowed: false,
+      isBdScopesAvailable: false,
       isOrganizationExists: false,
       isOrganizationSimilar: false,
       isPhoneExists: false,
-      isScope: false,
       timestamp: 0,
     });
   }, []);
@@ -308,7 +313,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     verifyEmail,
     verifyOrganization,
     handleSubmit,
-    refreshOrganizationList,
     resetVerifyStatus,
   };
 };

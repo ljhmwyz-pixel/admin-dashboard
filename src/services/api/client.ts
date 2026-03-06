@@ -10,7 +10,7 @@ export interface ApiConfig {
 
 // 默认配置
 const DEFAULT_CONFIG: ApiConfig = {
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: '',
   timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
