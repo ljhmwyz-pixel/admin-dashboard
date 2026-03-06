@@ -9,25 +9,25 @@ export const loginUser = createAsyncThunk(
   'api/v1/auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(credentials);
+      const response: any = await authApi.login(credentials);
+      const { data } = response;
       // todo
-      localStorage.setItem('loginInfo', JSON.stringify(response));
+      localStorage.setItem('loginInfo', JSON.stringify(data));
       // 本地缓存refreshToken
-      if (response.refreshToken) {
-        SecurityUtils.setRefreshToken(response.refreshToken);
+      if (data.refreshToken) {
+        SecurityUtils.setRefreshToken(data.refreshToken);
       }
       // accessToken
-      if (response.token) {
-        SecurityUtils.setToken(response.token);
+      if (data.token) {
+        SecurityUtils.setToken(data.token);
       }
-      debugger;
       // 返回是闪屏问题
       // {
       //   500;
       //   ('代理转发失败: 500 : "{"code":500,"message":"系统内部错误，请联系管理员","timestamp":"2026-03-06T09:55:39.6980488"}"');
       //   false;
       // }
-      return response;
+      return data;
     } catch (error: any) {
       return rejectWithValue(error.message || '登录失败');
     }
@@ -57,19 +57,21 @@ export const refreshToken = createAsyncThunk(
         throw new Error('无刷新令牌');
       }
 
-      const response = await authApi.refreshToken(refreshTokenValue);
+      const {
+        response: { data },
+      }: any = await authApi.refreshToken(refreshTokenValue);
 
       // 更新 refreshToken
-      if (response.refreshToken) {
-        SecurityUtils.setRefreshToken(response.refreshToken);
+      if (data.refreshToken) {
+        SecurityUtils.setRefreshToken(data.refreshToken);
       }
 
       // accessToken
-      if (response.token) {
-        SecurityUtils.setToken(response.token);
+      if (data.token) {
+        SecurityUtils.setToken(data.token);
       }
 
-      return response;
+      return data;
     } catch (error: any) {
       // 刷新失败，清除认证信息
       SecurityUtils.clearAuth();

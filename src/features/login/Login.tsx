@@ -37,7 +37,6 @@ const Login: React.FC = () => {
     try {
       setLoading(true);
       const resultAction = await dispatch(loginUser(form));
-      debugger;
       if (loginUser.fulfilled.match(resultAction)) {
         // 登录成功
         navigate('/dashboard', { replace: true });

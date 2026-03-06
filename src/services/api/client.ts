@@ -64,7 +64,7 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         // 统一处理响应数据
-        return response.data.data;
+        return response.data;
       },
       (error: any) => {
         // 统一错误处理
