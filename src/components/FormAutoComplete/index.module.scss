@@ -36,6 +36,7 @@ $requireIcon: '@/assets/images/form/require_icon.png';
 
 .label {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
   font-size: 14px;

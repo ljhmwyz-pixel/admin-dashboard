@@ -20,6 +20,7 @@ export {
   FormProvider,
   useForm,
   useFormInstance,
+  useWatch,
 } from './form/Form';
 export type { InputProps } from './form/Input';
 export {
@@ -133,3 +134,5 @@ export const defaultComponentConfig: ComponentLibraryConfig = {
   animationsEnabled: true,
   prefixCls: 'custom',
 };
+
+export { default as DeleteConfirmInput } from './DeleteConfirmInput';

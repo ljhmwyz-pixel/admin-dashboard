@@ -74,4 +74,5 @@ export { default as AntTransfer } from 'antd/es/transfer';
 export { default as AntUpload } from 'antd/es/upload';
 
 // 图标
+export { default as DeleteConfirmInput } from './DeleteConfirmInput';
 export { default as AntIcon } from '@ant-design/icons';

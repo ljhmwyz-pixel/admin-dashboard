@@ -3,6 +3,7 @@ import type {
   CreateOrganizationResponse,
   OrganizationListParams,
   OrganizationListResponse,
+  VerifyDeleteResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
   VerifyResponse,
@@ -20,7 +21,13 @@ export interface OrganizationApi {
   create: (data: CreateOrganizationRequest) => Promise<CreateOrganizationResponse>;
 
   // 验证邮箱
-  verifyEmail: (data: { email: string }) => Promise<any>;
+  verifyEmail: (data: { email: string }) => Promise<VerifyEmailResponse>;
+
+  // 删除校验
+  verifyDelete: (data: { orgId: string | number }) => Promise<VerifyDeleteResponse>;
+
+  // 删除组织
+  delete: (data: { orgId: string | number }) => Promise<any>;
 }
 
 // 组织管理API实现
@@ -39,6 +46,14 @@ class OrganizationApiImpl implements OrganizationApi {
 
   async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
     return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_EMAIL, data);
+  }
+
+  async delete(data: { orgId: string | number }): Promise<VerifyDeleteResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.DELETE(data.orgId), { orgId: data.orgId });
+  }
+
+  async verifyDelete(data: { orgId: string | number }): Promise<VerifyDeleteResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_DELETE(data.orgId), { orgId: data.orgId });
   }
 }
 

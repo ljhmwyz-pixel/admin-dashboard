@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { AntTabs } from '@/shared/components';
+import { FormTabs } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import OrganizationView from './OrganizationView';
@@ -10,9 +10,6 @@ import styles from './OrganizationDetailPanel.module.scss';
 const OrganizationDetailPanel: React.FC = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
-
-  // 获取当前选中的组织详情
-  // const currentDetail = organizationDetails[selectedKey] || organizationDetails['p001'];
 
   // Tab内容配置
   const tabItems = [
@@ -43,14 +40,11 @@ const OrganizationDetailPanel: React.FC = () => {
 
   return (
     <div className={styles.organizationDetailPanel}>
-      <AntTabs
+      <FormTabs
         activeKey={activeTabKey}
         onChange={setActiveTabKey}
         items={tabItems}
         className={styles.antTabs}
-        classNames={{
-          indicator: styles.indicator,
-        }}
       />
     </div>
   );

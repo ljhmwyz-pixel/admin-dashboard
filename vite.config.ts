@@ -24,7 +24,6 @@ export default defineConfig({
           router: ['react-router-dom'],
           redux: ['@reduxjs/toolkit', 'react-redux'],
           i18n: ['i18next', 'react-i18next'],
-          charts: ['recharts'],
           utils: ['axios'],
         },
       },

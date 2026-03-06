@@ -1,4 +1,5 @@
 export { default as OrgAddressField } from './OrgAddressField';
+export { default as OrgBDCountryRegionField } from './OrgBDCountryRegionField';
 export { default as OrgCountryRegionField } from './OrgCountryRegionField';
 export { default as OrgDescriptionField } from './OrgDescriptionField';
 export { default as OrgEmailField } from './OrgEmailField';
