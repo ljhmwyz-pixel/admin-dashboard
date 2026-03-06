@@ -6,7 +6,7 @@
     .treeSearchInput {
         border-radius: 6px;
         background: rgba(25, 27, 31, 0.06);
-        padding: 10px;
+        padding: 0 10px;
         height: 34px;
         font-size: 14px;
         font-family: Montserrat;
@@ -19,8 +19,7 @@
 
     .treeSearchIcon {
         margin-left: 6px;
-        height: 14px;
-        line-height: 14px;
+        font-size: 14px;
         vertical-align: middle;
 
         &::placeholder {
@@ -31,6 +30,62 @@
     .treeContainer {
         border-top: 1px solid rgba(25, 27, 31, 0.06);
         padding-left: 10px;
+
+
+        :global {
+            .ant-tree-treenode {
+                height: 34px;
+                margin: 0 !important;
+                display: flex;
+                align-items: center;
+
+                &::before {
+                    display: none;
+                }
+
+                .ant-tree-switcher {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 6px;
+
+                    &::before {
+                        top: 5px;
+                    }
+                }
+
+                .ant-tree-node-content-wrapper {
+                    margin-right: 4px;
+                    padding: 0px 4px !important;
+                    border-top-right-radius: 2px;
+                    border-bottom-right-radius: 2px;
+                    border-right: 2px solid transparent;
+                }
+
+                .ant-tree-node-selected #tree-title {
+                    color: var(--ant-color-primary);
+                }
+
+                .ant-tree-node-selected {
+                    background-color: #33C2C80F !important;
+                    border-right: 2px solid var(--ant-color-primary);
+                }
+            }
+
+            .ant-splitter-panel {
+                padding: 0;
+            }
+
+            .ant-tree-treenode-selected .ant-tree-switcher {
+                color: var(--ant-color-primary)
+            }
+
+            .ant-tree-indent-unit::before,
+            .ant-tree-switcher-leaf-line::before,
+            .ant-tree-switcher-leaf-line:after {
+                display: none;
+            }
+        }
     }
 
 }

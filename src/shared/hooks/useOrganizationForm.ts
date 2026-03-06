@@ -59,7 +59,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   // 组织验证状态
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
     valid: false,
-    isCountryInScope: false,
+    isCountryInScope: true,
     isOwnerTypeValid: false,
     isOrgTypeAllowed: false,
     isBdScopesAvailable: false,
@@ -146,7 +146,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     async (values: OrganizationFormData) => {
       const defaultResult: VerifyOrganization = {
         valid: false,
-        isCountryInScope: false,
+        isCountryInScope: true,
         isOwnerTypeValid: false,
         isOrgTypeAllowed: false,
         isBdScopesAvailable: false,
@@ -290,7 +290,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     setExistingPhone('');
     setVerifyResult({
       valid: false,
-      isCountryInScope: false,
+      isCountryInScope: true,
       isOwnerTypeValid: false,
       isOrgTypeAllowed: false,
       isBdScopesAvailable: false,

@@ -64,6 +64,7 @@
   "org.toast.create_success": "L'organizzazione è stata creata con successo. Un'email contenente la password iniziale di accesso è stata inviata all'indirizzo email dell'amministratore.",
   "org.toast.update_success": "Le informazioni dell'organizzazione sono state modificate con successo.",
   "org.dialog.similar_org.title": "Organizzazione simile",
+  "org.dialog.exists_org.title": "Questo nome di organizzazione già esiste!",
   "org.dialog.similar_org.content": "Esiste già un nome di organizzazione simile. Conferma.",
   "org.dialog.unsaved.title": "Modifiche non salvate",
   "org.dialog.unsaved.content": "Hai modifiche non salvate. Sei sicuro di voler uscire senza salvare?",

@@ -22,7 +22,6 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
           { value: 'Installer', label: 'Installer' },
           { value: 'Owner', label: 'Owner' },
           { value: 'Guest', label: 'Guest' },
-          // { value: 'BD', label: 'BD' },
         ];
         break;
       case 'DEALER':
