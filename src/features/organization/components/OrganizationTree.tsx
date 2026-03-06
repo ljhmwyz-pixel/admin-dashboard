@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { debounce } from 'lodash-es';
 
 import { FormModal } from '@/components';
 import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
@@ -51,6 +52,18 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     [withLoading],
   );
 
+  // 防抖搜索函数
+  const debouncedSearch = useCallback(
+    debounce(async (value: string) => {
+      setCurrentParentNode({} as TreeNodeData);
+      if (onSelect) {
+        onSelect('');
+      }
+      await loadData(value);
+    }, 1000),
+    [loadData, onSelect],
+  );
+
   useEffect(() => {
     if (initializedRef.current || loadingRef.current) {
       return;
@@ -60,13 +73,12 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
     loadData();
   }, []);
 
-  // 搜索处理 - 调用 API 接口
-  const handleSearch = async () => {
-    setCurrentParentNode({} as TreeNodeData);
-    if (onSelect) {
-      onSelect('');
-    }
-    await loadData(searchValue);
+  // 处理搜索框变化（带防抖）
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    // 使用防抖函数进行搜索
+    debouncedSearch(value);
   };
 
   // 处理树节点选择
@@ -175,8 +187,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
             </svg>
           }
           value={searchValue}
-          onChange={(e: { target: { value: string } }) => setSearchValue(e.target.value)}
-          onPressEnter={handleSearch}
+          onChange={handleInputChange}
           allowClear
         />
       </div>

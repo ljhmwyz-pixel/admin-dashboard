@@ -19,6 +19,7 @@ export const ORGANIZATION_ENDPOINTS = {
   DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
   VERIFY_DELETE: (id: string | number) =>
     `/api/v1/organization/organizations/${id}/validate-delete`,
+  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
 } as const;
 
 // 用户管理相关

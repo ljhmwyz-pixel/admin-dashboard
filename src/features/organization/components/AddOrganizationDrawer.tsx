@@ -79,18 +79,20 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   return (
     <Drawer
-      bodyStyle={{ padding: '0 30px', backgroundColor: '#fff' }}
-      headerStyle={{
-        backgroundColor: '#F1F1F2',
-        borderBottom: 'none',
-        borderTopLeftRadius: '12px',
-        color: '#191B1F',
-        fontWeight: '600',
-      }}
-      footerStyle={{
-        backgroundColor: '#fff',
-        borderTop: 'none',
-        padding: '0 0 60px',
+      styles={{
+        body: { padding: '0 30px', backgroundColor: '#fff' },
+        header: {
+          backgroundColor: '#F1F1F2',
+          borderBottom: 'none',
+          borderTopLeftRadius: '12px',
+          color: '#191B1F',
+          fontWeight: '600',
+        },
+        footer: {
+          backgroundColor: '#fff',
+          borderTop: 'none',
+          padding: '0 0 60px',
+        },
       }}
       className={styles.drawer}
       size="60%"

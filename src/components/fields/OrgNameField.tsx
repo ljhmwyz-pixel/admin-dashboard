@@ -38,7 +38,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({
       form.setFields([
         {
           name: 'orgName',
-          errors: [t('org.validation.name.required')],
+          errors: [t('org.dialog.exists_org.title')],
         },
       ]);
     }

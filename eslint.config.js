@@ -53,6 +53,10 @@ export default defineConfig([
         { argsIgnorePattern: '^_', varsIgnorePattern: '^React$' },
       ],
 
+      /* ================= React prop-types ================= */
+      // 使用 TypeScript 时不需要 prop-types
+      'react/prop-types': 'off',
+
       /* ================= import 排序 ================= */
       'simple-import-sort/imports': [
         'error',

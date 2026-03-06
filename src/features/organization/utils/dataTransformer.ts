@@ -1,4 +1,3 @@
-import { OrganizationPermissions } from '@/shared/constants/permissions';
 import type { ApiOrganization, TreeNodeData } from '@/shared/types/organization';
 
 /**
@@ -17,8 +16,6 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
       title: org.orgName, // 使用 orgName 作为 title
       children: [],
       type: org.orgType,
-      // canAdd: org.permissions?.includes(OrganizationPermissions.ORG_CREATE_SUB),
-      // canDelete: org.permissions?.includes(OrganizationPermissions.ORG_DELETE_SUB),
       canAdd: true,
       canDelete: true,
       description: org.description,

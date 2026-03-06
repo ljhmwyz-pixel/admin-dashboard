@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form, type FormInstance, Modal, Space, Spin } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
+import { debounce } from 'lodash-es';
 
 import { FormAutoComplete } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
@@ -124,7 +125,7 @@ function normalizePlace(place: any): LocationInfo {
 export default function AddressPickerAutoComplete({
   form,
   fieldMap,
-  placeholder = '请输入地址',
+  placeholder = '',
   debounceMs = 500,
   minSearchLength = 3,
   popupTitle = '选择地址',
@@ -137,7 +138,6 @@ export default function AddressPickerAutoComplete({
 
   const [mainValue, setMainValue] = useState<string>('');
 
-  // 使用 Form.useWatch 监听字段变化，直接获取表单中的值
   const watchedAddressValue = Form.useWatch(fieldMap.address, form);
 
   const [mainOptions, setMainOptions] = useState<GoogleOption[]>([]);
@@ -354,14 +354,7 @@ export default function AddressPickerAutoComplete({
 
             return {
               value: prediction?.text?.text || mainText,
-              label: (
-                <div style={{ lineHeight: 1.4 }}>
-                  <div>{mainText}</div>
-                  {secondaryText ? (
-                    <div style={{ fontSize: 12, color: '#999' }}>{secondaryText}</div>
-                  ) : null}
-                </div>
-              ),
+              label: secondaryText ? `${mainText} (${secondaryText})` : mainText,
               rawSuggestion: item,
             };
           });
@@ -372,8 +365,6 @@ export default function AddressPickerAutoComplete({
           setPopupOptions(nextOptions);
         }
       } catch (error) {
-        console.error('fetchSuggestions failed:', error);
-
         if (isMain) setMainOptions([]);
         else setPopupOptions([]);
 
@@ -384,6 +375,14 @@ export default function AddressPickerAutoComplete({
       }
     },
     [geocodeFreeText, getSessionToken, minSearchLength],
+  );
+
+  // 防抖的搜索函数
+  const debouncedFetchSuggestions = useCallback(
+    debounce((keyword: string, scope: 'main' | 'popup') => {
+      void fetchSuggestions(keyword, scope);
+    }, debounceMs),
+    [fetchSuggestions, debounceMs],
   );
 
   const resolveSuggestion = useCallback(
@@ -518,7 +517,6 @@ export default function AddressPickerAutoComplete({
   const handleBlur = useCallback(() => {
     // 失去焦点时触发校验
     if (fieldMap.address) {
-      console.log('fieldMap.address:', fieldMap.address);
       form.validateFields([fieldMap.address]);
     }
   }, [fieldMap.address, form]);
@@ -557,7 +555,7 @@ export default function AddressPickerAutoComplete({
         rules={[
           {
             required: true,
-            message: '请输入地址',
+            message: placeholder,
           },
         ]}
         autoCompleteProps={{
@@ -565,8 +563,24 @@ export default function AddressPickerAutoComplete({
           options: mainOptions,
           status: error ? 'error' : undefined,
           onBlur: handleBlur,
+          optionRender: (option) => {
+            const data = option.data as GoogleOption;
+            const labelText = typeof data.label === 'string' ? data.label : '';
+            const mainText = labelText.split(' (')[0] || '';
+            const secondaryText = labelText.match(/\((.*)\)/)?.[1] || '';
+
+            return (
+              <div style={{ lineHeight: 1.4 }}>
+                <div>{mainText}</div>
+                {secondaryText ? (
+                  <div style={{ fontSize: 12, color: '#999' }}>{secondaryText}</div>
+                ) : null}
+              </div>
+            );
+          },
           onSearch: (value) => {
-            void fetchSuggestions(value, 'main');
+            // 使用防抖函数进行搜索
+            debouncedFetchSuggestions(value, 'main');
             // 清空错误状态
             if (fieldMap.address) {
               form.setFields([{ name: fieldMap.address, errors: [] }]);
@@ -659,7 +673,8 @@ export default function AddressPickerAutoComplete({
                 options: popupOptions,
                 allowClear: true,
                 onSearch: (value) => {
-                  void fetchSuggestions(value, 'popup');
+                  // 使用防抖函数进行搜索
+                  debouncedFetchSuggestions(value, 'popup');
                 },
                 onChange: (value) => {
                   setPopupValue(value);
@@ -687,7 +702,6 @@ export default function AddressPickerAutoComplete({
           >
             <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
 
-            {/* 固定中心图钉：拖动地图即选点 */}
             <div
               style={{
                 position: 'absolute',

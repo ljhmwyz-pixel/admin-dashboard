@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Col, Form, Input } from 'antd';
 
+import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { VerifyOrganization } from '@/shared/types/organization';
 
 import AddressPickerAutoComplete from './AddressPickerAutoComplete';
-// import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { FieldProps } from './types';
 
 type OrgAddressFieldProps = FieldProps & {
@@ -12,7 +12,7 @@ type OrgAddressFieldProps = FieldProps & {
 };
 
 export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
-  // const { t } = useLanguage();
+  const { t } = useLanguage();
   useEffect(() => {
     if (!verifyResult?.isCountryInScope) {
       form.setFields([
@@ -27,6 +27,7 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
     <Col span={12}>
       <AddressPickerAutoComplete
         form={form}
+        placeholder={t('org.placeholder.select_org_address')}
         fieldMap={{
           address: 'orgAddress',
           lat: 'lat',
@@ -41,7 +42,6 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
           streetNumber: 'streetNumber',
         }}
         onResolved={(loc) => {
-          console.log('resolved location:', loc);
           form.setFields([
             {
               name: 'orgAddress',
