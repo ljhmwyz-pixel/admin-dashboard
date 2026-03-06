@@ -33,11 +33,6 @@ class ApiClient {
       (config: any) => {
         // 添加认证token
         const accessToken = this.getToken();
-        // X-User-Id: 当前用户UID（由Gateway注入）
-        // X-Org-Id: 当前用户所属组织ID（由Gateway注入）
-        // X-Tenant-Id: 租户ID（由Gateway注入）
-        // X-Request-Id: 请求ID（由Gateway生成）
-        // Authorization: JWT Token（由Gateway验证）
         if (accessToken) {
           // todo
           const loginInfo = JSON.parse(localStorage.getItem('loginInfo') || '{}');
@@ -64,7 +59,12 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response: AxiosResponse) => {
         // 统一处理响应数据
-        return response.data;
+        const res = response.data;
+        // 统一业务错误处理
+        if (res.code && res.code !== 200) {
+          return Promise.reject(res);
+        }
+        return res;
       },
       (error: any) => {
         // 统一错误处理

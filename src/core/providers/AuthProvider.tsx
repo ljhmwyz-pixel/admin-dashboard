@@ -7,13 +7,13 @@ import SecurityUtils from '@/shared/utils/SecurityUtils';
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    const token = SecurityUtils.getRefreshToken();
+  // useEffect(() => {
+  //   const token = SecurityUtils.getRefreshToken();
 
-    if (token) {
-      dispatch(refreshToken());
-    }
-  }, [dispatch]);
+  //   if (token) {
+  //     dispatch(refreshToken());
+  //   }
+  // }, [dispatch]);
 
   return <>{children}</>;
 };

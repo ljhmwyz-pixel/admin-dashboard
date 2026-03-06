@@ -38,6 +38,8 @@ const Login: React.FC = () => {
       setLoading(true);
       const resultAction = await dispatch(loginUser(form));
       if (loginUser.fulfilled.match(resultAction)) {
+        // 获取权限列表
+        // await dispatch(getPermissionDictionary);
         // 登录成功
         navigate('/dashboard', { replace: true });
       } else {
