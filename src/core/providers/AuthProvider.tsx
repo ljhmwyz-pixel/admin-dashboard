@@ -1,19 +1,25 @@
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import type { ReactNode } from 'react';
 
-import { useAppDispatch } from '@/core/store/hooks';
-import { refreshToken } from '@/core/store/thunks/authThunks';
+import { fetchUserInfo } from '@/core/store/thunks/authThunks';
 import SecurityUtils from '@/shared/utils/SecurityUtils';
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const dispatch = useAppDispatch();
+import type { AppDispatch } from '../store';
 
-  // useEffect(() => {
-  //   const token = SecurityUtils.getRefreshToken();
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  //   if (token) {
-  //     dispatch(refreshToken());
-  //   }
-  // }, [dispatch]);
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const token = SecurityUtils.getToken();
+    if (!token) return;
+    // 获取用户信息
+    dispatch(fetchUserInfo());
+  }, [dispatch]);
 
   return <>{children}</>;
 };

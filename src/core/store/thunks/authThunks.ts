@@ -9,27 +9,42 @@ export const loginUser = createAsyncThunk(
   'api/v1/auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response: any = await authApi.login(credentials);
-      const { data } = response;
-      // todo
-      localStorage.setItem('loginInfo', JSON.stringify(data));
+      const res: any = await authApi.login(credentials);
+      const { data: response } = res;
       // 本地缓存refreshToken
-      if (data.refreshToken) {
-        SecurityUtils.setRefreshToken(data.refreshToken);
+      if (response.refreshToken) {
+        SecurityUtils.setRefreshToken(response.refreshToken);
       }
-      // accessToken
-      if (data.token) {
-        SecurityUtils.setToken(data.token);
+      // 本地缓存token
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
       }
-      // 返回是闪屏问题
-      // {
-      //   500;
-      //   ('代理转发失败: 500 : "{"code":500,"message":"系统内部错误，请联系管理员","timestamp":"2026-03-06T09:55:39.6980488"}"');
-      //   false;
-      // }
-      return data;
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '登录失败');
+    }
+  },
+);
+
+// 获取权限清单
+export const fetchPermissions = createAsyncThunk(
+  'fetch/dictionary',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res: any = await authApi.getPermissionSource();
+      debugger;
+      const { data: response } = res;
+      // // 本地缓存refreshToken
+      // if (response.refreshToken) {
+      //   SecurityUtils.setRefreshToken(response.refreshToken);
+      // }
+      // // 本地缓存token
+      // if (response.token) {
+      //   SecurityUtils.setToken(response.token);
+      // }
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || '获取资源失败');
     }
   },
 );
@@ -56,22 +71,17 @@ export const refreshToken = createAsyncThunk(
       if (!refreshTokenValue) {
         throw new Error('无刷新令牌');
       }
-
-      const {
-        response: { data },
-      }: any = await authApi.refreshToken(refreshTokenValue);
-
+      const res: any = await authApi.refreshToken(refreshTokenValue);
+      const { data: response } = res;
       // 更新 refreshToken
-      if (data.refreshToken) {
-        SecurityUtils.setRefreshToken(data.refreshToken);
+      if (response.refreshToken) {
+        SecurityUtils.setRefreshToken(response.refreshToken);
       }
-
-      // accessToken
-      if (data.token) {
-        SecurityUtils.setToken(data.token);
+      // 本地缓存token
+      if (response.token) {
+        SecurityUtils.setToken(response.token);
       }
-
-      return data;
+      return response;
     } catch (error: any) {
       // 刷新失败，清除认证信息
       SecurityUtils.clearAuth();
@@ -85,12 +95,8 @@ export const fetchUserInfo = createAsyncThunk(
   'auth/fetchUserInfo',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authApi.getUserInfo();
-
-      // 更新用户信息
-      SecurityUtils.setUserInfo(response.user);
-      SecurityUtils.setPermissions(response.permissions || []);
-
+      const res: any = await authApi.getUserInfo();
+      const { data: response } = res;
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '获取用户信息失败');

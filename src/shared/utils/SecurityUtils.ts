@@ -13,7 +13,7 @@ class SecurityUtils {
   }
 
   public static getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY) || sessionStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   public static removeToken(): void {

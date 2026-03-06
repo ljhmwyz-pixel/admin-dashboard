@@ -6,6 +6,7 @@ import type { RootState } from '../index';
 import {
   changePassword,
   checkAuthStatus,
+  fetchPermissions,
   fetchUserInfo,
   loginUser,
   logoutUser,
@@ -89,13 +90,32 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user || null;
-        state.token = action.payload.token || null;
-        state.refreshToken = action.payload.refreshToken || null;
-        state.permissions = action.payload.permissions || [];
-        state.roles = action.payload.user?.roles || [];
+        // state.token = action.payload.token || null;
+        // state.refreshToken = action.payload.refreshToken || null;
+        // state.permissions = action.payload.permissions || [];
+        // state.roles = action.payload.user?.roles || [];
         state.lastLoginAt = new Date().toISOString();
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.isAuthenticated = false;
+      });
+
+    // 获取资源权限
+    builder
+      .addCase(fetchPermissions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPermissions.fulfilled, (state, action) => {
+        debugger;
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.permissions = action.payload.permissions || [];
+        state.lastLoginAt = new Date().toISOString();
+      })
+      .addCase(fetchPermissions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
@@ -111,8 +131,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user || null;
-        state.token = action.payload.token || null;
-        state.refreshToken = action.payload.refreshToken || null;
+        // state.token = action.payload.token || null;
+        // state.refreshToken = action.payload.refreshToken || null;
         state.permissions = action.payload.permissions || [];
         state.roles = action.payload.user?.roles || [];
         state.lastLoginAt = new Date().toISOString();
@@ -129,9 +149,9 @@ const authSlice = createSlice({
       })
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.token || null;
-        state.refreshToken = action.payload.refreshToken || null;
-        state.user = action.payload.user || null;
+        // state.token = action.payload.token || null;
+        // state.refreshToken = action.payload.refreshToken || null;
+        // state.user = action.payload.user || null;
       })
       .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
@@ -146,9 +166,10 @@ const authSlice = createSlice({
     // 获取用户信息
     builder
       .addCase(fetchUserInfo.fulfilled, (state, action) => {
-        state.user = action.payload.user;
-        state.permissions = action.payload.permissions || [];
-        state.roles = action.payload.user.roles || [];
+        state.user = action.payload;
+        state.isAuthenticated = true;
+        // state.permissions = action.payload.permissions || [];
+        // state.roles = action.payload.user.roles || [];
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         state.error = action.payload as string;

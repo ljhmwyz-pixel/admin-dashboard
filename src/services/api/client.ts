@@ -10,7 +10,7 @@ export interface ApiConfig {
 
 // 默认配置
 const DEFAULT_CONFIG: ApiConfig = {
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: '',
   timeout: 600000,
   headers: {
     'Content-Type': 'application/json',
@@ -34,19 +34,16 @@ class ApiClient {
         // 添加认证token
         const accessToken = this.getToken();
         if (accessToken) {
-          // todo
-          const loginInfo = JSON.parse(localStorage.getItem('loginInfo') || '{}');
-
           config.headers.Authorization = `Bearer ${accessToken}`;
         }
 
         // 添加时间戳防止缓存
-        if (config.method === 'get') {
-          config.params = {
-            ...config.params,
-            _t: Date.now(),
-          };
-        }
+        // if (config.method === 'get') {
+        //   config.params = {
+        //     ...config.params,
+        //     _t: Date.now(),
+        //   };
+        // }
 
         return config;
       },

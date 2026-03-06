@@ -15,6 +15,12 @@ class AuthApi {
     return response;
   }
 
+  // 获取用户信息
+  async getUserInfo(): Promise<{ user: any; permissions: string[] }> {
+    const response = await apiClient.get('/api/v1/auth/current-user');
+    return response;
+  }
+
   // 注册
   async register(userData: RegisterData): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>('/auth/register', userData);
@@ -32,9 +38,9 @@ class AuthApi {
     await apiClient.post('/auth/logout', { refreshToken });
   }
 
-  // 获取用户信息
-  async getUserInfo(): Promise<{ user: any; permissions: string[] }> {
-    const response = await apiClient.get('/auth/user-info');
+  // 获取权限资源
+  async getPermissionSource(): Promise<void> {
+    const response = await apiClient.get('/api/v1/auth/xxx-xxx');
     return response;
   }
 
