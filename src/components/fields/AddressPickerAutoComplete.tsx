@@ -8,7 +8,8 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 import { ensureGoogleMaps } from '@/shared/utils/googleMaps';
 
 type LocationInfo = {
-  formattedAddress: string;
+  rawAddress: string;
+  displayAddress: string;
   lat: number;
   lng: number;
   country?: string;
@@ -79,7 +80,121 @@ type Props = {
 
 type SearchScope = 'main' | 'popup';
 
+type BaseLocationInfo = Omit<LocationInfo, 'displayAddress'>;
+
 const DEFAULT_CENTER = { lat: 31.2304, lng: 121.4737 };
+
+function getCurrentI18nLang() {
+  if (typeof window === 'undefined') return 'en-US';
+  return localStorage.getItem('i18nextLng') || 'en-US';
+}
+
+function normalizeI18nLang(raw?: string) {
+  if (!raw) return 'en-US';
+  const value = raw.replace('_', '-');
+  if (value.startsWith('zh')) return 'zh-CN';
+  if (value.startsWith('de')) return 'de-DE';
+  if (value.startsWith('it')) return 'it-IT';
+  if (value.startsWith('ja')) return 'ja-JP';
+  if (value.startsWith('en')) return 'en-US';
+  return 'en-US';
+}
+
+function stripPostalCodeText(text?: string) {
+  if (!text) return '';
+
+  return text
+    .replace(/[，,]?\s*邮政编码[:：]?\s*\d{4,10}/gi, '')
+    .replace(/[，,]?\s*邮编[:：]?\s*\d{4,10}/gi, '')
+    .replace(/[，,]?\s*邮便番号[:：]?\s*〒?\s*\d{3}-?\d{4}/gi, '')
+    .replace(/[\s,]*Postal Code[:：]?\s*[A-Z0-9\- ]+/gi, '')
+    .replace(/[\s,]*ZIP Code[:：]?\s*[A-Z0-9\- ]+/gi, '')
+    .replace(/[\s,]*ZIP[:：]?\s*[A-Z0-9\- ]+/gi, '')
+    .replace(/[\s,]*Postleitzahl[:：]?\s*[A-Z0-9\- ]+/gi, '')
+    .replace(/[\s,]*Codice postale[:：]?\s*[A-Z0-9\- ]+/gi, '')
+    .replace(/[，,]?\s*〒\s*\d{3}-?\d{4}/gi, '')
+    .replace(/\s+,/g, ',')
+    .replace(/,+/g, ',')
+    .replace(/^,\s*|\s*,\s*$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function buildStreetDisplay(route?: string, streetNumber?: string, rawLang?: string) {
+  const lang = normalizeI18nLang(rawLang);
+  const normalizedRoute = route?.trim() || '';
+  const normalizedStreetNumber = streetNumber?.trim() || '';
+
+  if (!normalizedRoute && !normalizedStreetNumber) return '';
+  if (!normalizedStreetNumber) return normalizedRoute;
+
+  const routeAlreadyContainsNumber = normalizedRoute.includes(normalizedStreetNumber);
+
+  if (!normalizedRoute) {
+    if (lang.startsWith('zh')) {
+      return /号$/.test(normalizedStreetNumber)
+        ? normalizedStreetNumber
+        : `${normalizedStreetNumber}号`;
+    }
+    return normalizedStreetNumber;
+  }
+
+  if (routeAlreadyContainsNumber) {
+    return normalizedRoute;
+  }
+
+  if (lang.startsWith('zh')) {
+    const suffixStreetNumber = /号$/.test(normalizedStreetNumber)
+      ? normalizedStreetNumber
+      : `${normalizedStreetNumber}号`;
+    return `${normalizedRoute}${suffixStreetNumber}`;
+  }
+
+  if (lang.startsWith('ja')) {
+    return `${normalizedRoute}${normalizedStreetNumber}`;
+  }
+
+  if (lang.startsWith('de') || lang.startsWith('it')) {
+    return `${normalizedRoute} ${normalizedStreetNumber}`;
+  }
+
+  return `${normalizedStreetNumber} ${normalizedRoute}`;
+}
+
+function buildDefaultDisplayAddress(loc: BaseLocationInfo, rawLang?: string) {
+  const lang = normalizeI18nLang(rawLang);
+
+  const province = loc.province?.trim();
+  const city = loc.city?.trim();
+  const district = loc.district?.trim();
+  const street = buildStreetDisplay(loc.route, loc.streetNumber, lang);
+
+  if (lang.startsWith('zh') || lang.startsWith('ja')) {
+    return [province, city, district, street].filter(Boolean).join('');
+  }
+
+  return [street, district, city, province].filter(Boolean).join(', ');
+}
+
+function finalizeLocation(
+  base: BaseLocationInfo,
+  rawLang?: string,
+  formatAddress?: (location: LocationInfo) => string,
+): LocationInfo {
+  const draft: LocationInfo = {
+    ...base,
+    displayAddress: '',
+  };
+
+  const displayAddress = stripPostalCodeText(
+    formatAddress?.(draft) || buildDefaultDisplayAddress(base, rawLang) || base.rawAddress,
+  );
+
+  return {
+    ...draft,
+    displayAddress,
+  };
+}
 
 function getCurrentPosition(): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
@@ -98,8 +213,8 @@ function getCurrentPosition(): Promise<{ lat: number; lng: number }> {
       (error) => reject(error),
       {
         enableHighAccuracy: true,
-        timeout: 8000,
-        maximumAge: 60000,
+        timeout: 10000,
+        maximumAge: 0,
       },
     );
   });
@@ -125,12 +240,12 @@ function findPlaceComp(
   return short ? item.shortText || '' : item.longText || '';
 }
 
-function normalizeGeocoderResult(result: google.maps.GeocoderResult): LocationInfo {
+function normalizeGeocoderBase(result: google.maps.GeocoderResult): BaseLocationInfo {
   const comps = result.address_components ?? [];
   const location = result.geometry.location;
 
   return {
-    formattedAddress: result.formatted_address ?? '',
+    rawAddress: result.formatted_address ?? '',
     lat: location.lat(),
     lng: location.lng(),
     country: findGeocoderComp(comps, 'country'),
@@ -152,12 +267,12 @@ function normalizeGeocoderResult(result: google.maps.GeocoderResult): LocationIn
   };
 }
 
-function normalizePlace(place: {
+function normalizePlaceBase(place: {
   formattedAddress?: string;
   addressComponents?: GooglePlaceAddressComponent[];
   location?: google.maps.LatLng | google.maps.LatLngLiteral;
   id?: string;
-}): LocationInfo {
+}): BaseLocationInfo {
   const comps = place.addressComponents ?? [];
   const location = place.location;
 
@@ -172,7 +287,7 @@ function normalizePlace(place: {
       : ((location as google.maps.LatLngLiteral | undefined)?.lng ?? 0);
 
   return {
-    formattedAddress: place.formattedAddress ?? '',
+    rawAddress: place.formattedAddress ?? '',
     lat,
     lng,
     country: findPlaceComp(comps, 'country'),
@@ -205,6 +320,11 @@ export default function AddressPickerAutoComplete({
   formatAddress,
 }: Props) {
   const { t } = useLanguage();
+  const langRef = useRef(getCurrentI18nLang());
+
+  useEffect(() => {
+    langRef.current = getCurrentI18nLang();
+  });
 
   const [open, setOpen] = useState(false);
   const [booting, setBooting] = useState(false);
@@ -234,6 +354,22 @@ export default function AddressPickerAutoComplete({
   const reverseSeqRef = useRef(0);
   const skipNextIdleReverseRef = useRef(false);
 
+  const makeLocationFromGeocoder = useCallback(
+    (result: google.maps.GeocoderResult) =>
+      finalizeLocation(normalizeGeocoderBase(result), langRef.current, formatAddress),
+    [formatAddress],
+  );
+
+  const makeLocationFromPlace = useCallback(
+    (place: {
+      formattedAddress?: string;
+      addressComponents?: GooglePlaceAddressComponent[];
+      location?: google.maps.LatLng | google.maps.LatLngLiteral;
+      id?: string;
+    }) => finalizeLocation(normalizePlaceBase(place), langRef.current, formatAddress),
+    [formatAddress],
+  );
+
   const clearDerivedFields = useCallback(() => {
     const patch: Record<string, unknown> = {};
 
@@ -254,12 +390,13 @@ export default function AddressPickerAutoComplete({
   }, [fieldMap, form]);
 
   const writeLocationToForm = useCallback(
-    (loc: LocationInfo, options?: { writeAddress?: boolean }) => {
+    (loc: LocationInfo, options?: { writeAddress?: boolean; syncPopupText?: boolean }) => {
       const shouldWriteAddress = options?.writeAddress ?? false;
+      const shouldSyncPopupText = options?.syncPopupText ?? false;
       const patch: Record<string, unknown> = {};
 
       if (shouldWriteAddress) {
-        patch[fieldMap.address] = formatAddress ? formatAddress(loc) : loc.formattedAddress;
+        patch[fieldMap.address] = loc.displayAddress;
       }
       if (fieldMap.lat) patch[fieldMap.lat] = loc.lat;
       if (fieldMap.lng) patch[fieldMap.lng] = loc.lng;
@@ -273,6 +410,10 @@ export default function AddressPickerAutoComplete({
       if (fieldMap.streetNumber) patch[fieldMap.streetNumber] = loc.streetNumber;
 
       form.setFieldsValue(patch);
+      setDraftLocation(loc);
+      if (shouldSyncPopupText) {
+        setPopupValue(loc.displayAddress);
+      }
       setError(undefined);
 
       if (shouldWriteAddress) {
@@ -281,7 +422,7 @@ export default function AddressPickerAutoComplete({
 
       onResolved?.(loc);
     },
-    [fieldMap, form, formatAddress, onResolved],
+    [fieldMap, form, onResolved],
   );
 
   const getGeocoder = useCallback(async () => {
@@ -301,15 +442,11 @@ export default function AddressPickerAutoComplete({
     }
 
     if (scope === 'main') {
-      if (!mainTokenRef.current) {
-        mainTokenRef.current = new TokenCtor();
-      }
+      if (!mainTokenRef.current) mainTokenRef.current = new TokenCtor();
       return mainTokenRef.current;
     }
 
-    if (!popupTokenRef.current) {
-      popupTokenRef.current = new TokenCtor();
-    }
+    if (!popupTokenRef.current) popupTokenRef.current = new TokenCtor();
     return popupTokenRef.current;
   }, []);
 
@@ -318,16 +455,12 @@ export default function AddressPickerAutoComplete({
       mainTokenRef.current = null;
       return;
     }
-
     popupTokenRef.current = null;
   }, []);
 
   const setOptionsByScope = useCallback((scope: SearchScope, options: GoogleOption[]) => {
-    if (scope === 'main') {
-      setMainOptions(options);
-    } else {
-      setPopupOptions(options);
-    }
+    if (scope === 'main') setMainOptions(options);
+    else setPopupOptions(options);
   }, []);
 
   const moveMapTo = useCallback((lat: number, lng: number, zoom = 17) => {
@@ -351,22 +484,17 @@ export default function AddressPickerAutoComplete({
         const { results } = await geocoder.geocode({ location: { lat, lng } });
         if (seq !== reverseSeqRef.current || !results?.length) return null;
 
-        const loc = normalizeGeocoderResult(results[0]);
-        setDraftLocation(loc);
-
-        if (options?.syncPopupText !== false) {
-          setPopupValue(loc.formattedAddress);
-        }
-
-        writeLocationToForm(loc, { writeAddress: options?.syncAddress ?? false });
+        const loc = makeLocationFromGeocoder(results[0]);
+        writeLocationToForm(loc, {
+          writeAddress: options?.syncAddress ?? false,
+          syncPopupText: options?.syncPopupText ?? true,
+        });
         return loc;
       } finally {
-        if (seq === reverseSeqRef.current) {
-          setResolvingCenter(false);
-        }
+        if (seq === reverseSeqRef.current) setResolvingCenter(false);
       }
     },
-    [getGeocoder, writeLocationToForm],
+    [getGeocoder, makeLocationFromGeocoder, writeLocationToForm],
   );
 
   const geocodeText = useCallback(
@@ -387,13 +515,12 @@ export default function AddressPickerAutoComplete({
 
       if (seq !== geocodeSeqRef.current || !results?.length) return null;
 
-      const loc = normalizeGeocoderResult(results[0]);
-      setDraftLocation(loc);
-      writeLocationToForm(loc, { writeAddress: options?.writeAddress });
+      const loc = makeLocationFromGeocoder(results[0]);
 
-      if (options?.syncPopupText) {
-        setPopupValue(loc.formattedAddress);
-      }
+      writeLocationToForm(loc, {
+        writeAddress: options?.writeAddress ?? false,
+        syncPopupText: options?.syncPopupText ?? false,
+      });
 
       if (options?.syncMap) {
         moveMapTo(loc.lat, loc.lng);
@@ -401,7 +528,7 @@ export default function AddressPickerAutoComplete({
 
       return loc;
     },
-    [getGeocoder, minSearchLength, moveMapTo, writeLocationToForm],
+    [getGeocoder, makeLocationFromGeocoder, minSearchLength, moveMapTo, writeLocationToForm],
   );
 
   const fetchSuggestions = useCallback(
@@ -465,9 +592,10 @@ export default function AddressPickerAutoComplete({
 
   const debouncedFetchSuggestions = useMemo(
     () =>
-      debounce((keyword: string, scope: SearchScope) => {
-        void fetchSuggestions(keyword, scope);
-      }, debounceMs),
+      debounce(
+        (keyword: string, scope: SearchScope) => void fetchSuggestions(keyword, scope),
+        debounceMs,
+      ),
     [fetchSuggestions, debounceMs],
   );
 
@@ -496,122 +624,118 @@ export default function AddressPickerAutoComplete({
         if (!prediction?.toPlace) return;
 
         const place = prediction.toPlace();
+
         await place.fetchFields({
           fields: ['formattedAddress', 'location', 'addressComponents', 'id'],
         });
 
-        const loc = normalizePlace(place);
-        setDraftLocation(loc);
+        const loc = makeLocationFromPlace(place);
 
         if (scope === 'main') {
-          writeLocationToForm(loc, { writeAddress: true });
+          writeLocationToForm(loc, { writeAddress: true, syncPopupText: false });
           setMainOptions([]);
+          resetSessionToken('main');
         } else {
-          setPopupValue(loc.formattedAddress);
-          writeLocationToForm(loc, { writeAddress: true });
+          writeLocationToForm(loc, { writeAddress: false, syncPopupText: true });
           moveMapTo(loc.lat, loc.lng);
           setPopupOptions([]);
+          resetSessionToken('popup');
         }
-
-        resetSessionToken(scope);
       } catch (resolveError) {
         console.error('resolveSuggestion failed:', resolveError);
       }
     },
-    [moveMapTo, resetSessionToken, writeLocationToForm],
+    [makeLocationFromPlace, moveMapTo, resetSessionToken, writeLocationToForm],
   );
 
   const resolveCurrentCenter = useCallback(async () => {
     const center = mapRef.current?.getCenter();
     if (!center) return null;
-    return reverseGeocode(center.lat(), center.lng(), { syncPopupText: true, syncAddress: true });
+    return reverseGeocode(center.lat(), center.lng(), {
+      syncPopupText: true,
+      syncAddress: true,
+    });
   }, [reverseGeocode]);
 
-  const locateCurrentPosition = useCallback(
-    async (options?: { syncAddress?: boolean }) => {
-      setLocating(true);
-
-      try {
-        const pos = await getCurrentPosition();
-
-        if (mapRef.current) {
-          skipNextIdleReverseRef.current = true;
-          mapRef.current.setCenter(pos);
-          mapRef.current.setZoom(16);
-        }
-
-        return await reverseGeocode(pos.lat, pos.lng, {
-          syncPopupText: true,
-          syncAddress: options?.syncAddress ?? true,
-        });
-      } catch (locateError) {
-        console.error('locateCurrentPosition failed:', locateError);
-        setError('无法获取当前位置，请检查浏览器定位权限');
-        return null;
-      } finally {
-        setLocating(false);
-      }
-    },
-    [reverseGeocode],
-  );
+  const locateCurrentPosition = useCallback(async () => {
+    setLocating(true);
+    try {
+      const current = await getCurrentPosition();
+      moveMapTo(current.lat, current.lng, 17);
+      await reverseGeocode(current.lat, current.lng, {
+        syncPopupText: true,
+        syncAddress: true,
+      });
+    } catch (locateError) {
+      console.error('locateCurrentPosition failed:', locateError);
+      setError('无法获取当前位置，请检查浏览器定位权限。');
+    } finally {
+      setLocating(false);
+    }
+  }, [moveMapTo, reverseGeocode]);
 
   const initOrRefreshMap = useCallback(
     async (options?: { preferCurrentLocation?: boolean }) => {
       if (!mapContainerRef.current) return;
-
       setBooting(true);
+      setError(undefined);
 
       try {
         const { mapsLib } = await ensureGoogleMaps();
-        const MapClass = mapsLib.Map;
 
-        const currentLat = Number(fieldMap.lat ? form.getFieldValue(fieldMap.lat) : undefined);
-        const currentLng = Number(fieldMap.lng ? form.getFieldValue(fieldMap.lng) : undefined);
-        const hasCurrentPoint = Number.isFinite(currentLat) && Number.isFinite(currentLng);
+        const formLat = form.getFieldValue(fieldMap.lat);
+        const formLng = form.getFieldValue(fieldMap.lng);
+        const hasCurrentPoint = Number.isFinite(formLat) && Number.isFinite(formLng);
 
-        let center = draftLocation
-          ? { lat: draftLocation.lat, lng: draftLocation.lng }
-          : hasCurrentPoint
-            ? { lat: currentLat, lng: currentLng }
+        let center = hasCurrentPoint
+          ? { lat: Number(formLat), lng: Number(formLng) }
+          : draftLocation
+            ? { lat: draftLocation.lat, lng: draftLocation.lng }
             : DEFAULT_CENTER;
 
-        if (!draftLocation && !hasCurrentPoint && options?.preferCurrentLocation) {
+        if (!hasCurrentPoint && options?.preferCurrentLocation) {
           try {
             center = await getCurrentPosition();
           } catch (locateError) {
-            console.warn('getCurrentPosition failed, fallback to default center:', locateError);
+            console.warn('getCurrentPosition failed, fallback to default center', locateError);
           }
         }
 
-        const zoom = draftLocation || hasCurrentPoint || options?.preferCurrentLocation ? 16 : 12;
+        const zoom = hasCurrentPoint || draftLocation ? 17 : 13;
 
         if (!mapRef.current) {
-          mapRef.current = new MapClass(mapContainerRef.current, {
+          mapRef.current = new mapsLib.Map(mapContainerRef.current, {
             center,
             zoom,
-            streetViewControl: false,
             mapTypeControl: false,
             fullscreenControl: false,
+            streetViewControl: false,
+            clickableIcons: false,
             gestureHandling: 'greedy',
           });
 
           clickListenerRef.current?.remove();
-          idleListenerRef.current?.remove();
-          dragStartListenerRef.current?.remove();
+          clickListenerRef.current = mapRef.current.addListener(
+            'click',
+            (event: google.maps.MapMouseEvent) => {
+              const latLng = event.latLng;
+              if (!latLng || !mapRef.current) return;
 
+              skipNextIdleReverseRef.current = true;
+              mapRef.current.panTo(latLng);
+              void reverseGeocode(latLng.lat(), latLng.lng(), {
+                syncPopupText: true,
+                syncAddress: true,
+              });
+            },
+          );
+
+          dragStartListenerRef.current?.remove();
           dragStartListenerRef.current = mapRef.current.addListener('dragstart', () => {
             setDragging(true);
           });
 
-          clickListenerRef.current = mapRef.current.addListener(
-            'click',
-            (e: google.maps.MapMouseEvent) => {
-              if (!e.latLng || !mapRef.current) return;
-              setDragging(true);
-              mapRef.current.panTo(e.latLng);
-            },
-          );
-
+          idleListenerRef.current?.remove();
           idleListenerRef.current = mapRef.current.addListener('idle', () => {
             setDragging(false);
 
@@ -622,7 +746,6 @@ export default function AddressPickerAutoComplete({
 
             const mapCenter = mapRef.current?.getCenter();
             if (!mapCenter) return;
-
             debouncedReverseGeocode(mapCenter.lat(), mapCenter.lng());
           });
         } else {
@@ -656,7 +779,6 @@ export default function AddressPickerAutoComplete({
   const handleMainChange = useCallback(
     (value: string) => {
       form.setFieldValue(fieldMap.address, value || undefined);
-
       if (!value) {
         setMainOptions([]);
         clearDerivedFields();
@@ -671,11 +793,12 @@ export default function AddressPickerAutoComplete({
 
     const text = String(form.getFieldValue(fieldMap.address) ?? '').trim();
     if (text.length < minSearchLength) return;
-    if (draftLocation?.formattedAddress === text) return;
+
+    if (draftLocation?.displayAddress === text) return;
 
     await geocodeText(text, { writeAddress: true });
   }, [
-    draftLocation?.formattedAddress,
+    draftLocation?.displayAddress,
     fieldMap.address,
     form,
     geocodeText,
@@ -704,17 +827,19 @@ export default function AddressPickerAutoComplete({
   const handlePopupBlur = useCallback(async () => {
     const text = popupValue.trim();
     if (text.length < minSearchLength) return;
-    if (draftLocation?.formattedAddress === text) return;
+
+    if (draftLocation?.displayAddress === text) return;
 
     await geocodeText(text, {
       syncMap: true,
       syncPopupText: true,
       writeAddress: true,
     });
-  }, [draftLocation?.formattedAddress, geocodeText, minSearchLength, popupValue]);
+  }, [draftLocation?.displayAddress, geocodeText, minSearchLength, popupValue]);
 
   const handleOpenModal = useCallback(() => {
-    setPopupValue(String(form.getFieldValue(fieldMap.address) ?? ''));
+    const currentAddress = String(form.getFieldValue(fieldMap.address) ?? '');
+    setPopupValue(stripPostalCodeText(currentAddress));
     setOpen(true);
   }, [fieldMap.address, form]);
 
@@ -727,6 +852,8 @@ export default function AddressPickerAutoComplete({
     },
     [initOrRefreshMap],
   );
+
+  const currentDisplayAddress = draftLocation?.displayAddress || '';
 
   return (
     <>
@@ -838,7 +965,7 @@ export default function AddressPickerAutoComplete({
               onClick={async () => {
                 const loc = draftLocation ?? (await resolveCurrentCenter());
                 if (!loc) return;
-                writeLocationToForm(loc, { writeAddress: true });
+                writeLocationToForm(loc, { writeAddress: true, syncPopupText: true });
                 setOpen(false);
               }}
             >
@@ -906,23 +1033,29 @@ export default function AddressPickerAutoComplete({
               📍
             </div>
 
-            {resolvingCenter || locating ? (
+            {(resolvingCenter || locating) && (
               <div
                 style={{
                   position: 'absolute',
                   right: 12,
                   top: 12,
-                  background: 'rgba(255,255,255,0.92)',
+                  background: 'rgba(255,255,255,0.95)',
+                  border: '1px solid #f0f0f0',
+                  borderRadius: 8,
                   padding: '6px 10px',
-                  borderRadius: 6,
                   fontSize: 12,
-                  color: '#595959',
                 }}
               >
-                正在解析中心点...
+                {locating ? '正在定位当前位置…' : '正在解析中心点…'}
               </div>
-            ) : null}
+            )}
           </div>
+
+          {error ? (
+            <Typography.Text type="danger" style={{ display: 'block', marginTop: 12 }}>
+              {error}
+            </Typography.Text>
+          ) : null}
         </Spin>
       </Modal>
     </>
