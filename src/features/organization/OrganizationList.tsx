@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Splitter } from 'antd';
 
 // import { AntTabs } from '@/shared/components/antd-imports';
-import OrganizationDetailPanel from './components/OrganizationDetailPanel';
-import OrganizationTree from './components/OrganizationTree';
+import OrganizationDetailPanel from './components/organization-info/OrganizationDetailPanel';
+import OrganizationTree from './components/organization-info/OrganizationTree';
 
 // import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
@@ -80,7 +80,7 @@ const OrganizationList: React.FC = () => {
         }
       >
         {/* 左侧面板 - 组织树 */}
-        <Splitter.Panel defaultSize="40%" min="20%" max="70%">
+        <Splitter.Panel defaultSize="20%" min="20%" max="70%">
           <div className={styles.organizationListPanel}>
             <OrganizationTree
               onSelect={(selectedKey) => {

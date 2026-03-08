@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { Alert, Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 'antd';
+import { Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 'antd';
+import cls from 'classnames';
 
 import { FormAutoComplete } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
@@ -7,6 +8,8 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useAddressPickerMap } from './hooks/useAddressPickerMap';
 import type { FieldMap, GoogleOption, LocationInfo } from './types/addressPickerTypes';
 import { stripPostalCodeText } from './utils/addressUtils';
+
+import styles from './AddressPickerAutoComplete.module.scss';
 
 type Props = {
   form: FormInstance;
@@ -182,10 +185,10 @@ export default function AddressPickerAutoComplete({
             const secondaryText = labelText.match(/\((.*)\)/)?.[1] || '';
 
             return (
-              <div style={{ lineHeight: 1.4 }}>
+              <div className={styles.addressOption}>
                 <div>{mainText}</div>
                 {secondaryText ? (
-                  <div style={{ fontSize: 12, color: '#999' }}>{secondaryText}</div>
+                  <div className={styles.addressOptionSecondary}>{secondaryText}</div>
                 ) : null}
               </div>
             );
@@ -196,7 +199,7 @@ export default function AddressPickerAutoComplete({
             void resolveSuggestion(option as GoogleOption, 'main');
           },
           suffix: (
-            <span style={{ cursor: 'pointer' }} onClick={handleOpenModal}>
+            <span className={styles.addressSuffix} onClick={handleOpenModal}>
               <svg
                 width="14"
                 height="14"
@@ -261,84 +264,36 @@ export default function AddressPickerAutoComplete({
         }
       >
         <Spin spinning={booting}>
-          <div style={{ marginBottom: 12 }}>
-            <FormAutoComplete
-              autoCompleteProps={{
-                placeholder: '搜索地址或地标',
-                value: popupValue,
-                options: popupOptions,
-                allowClear: true,
-                onSearch: handlePopupSearch,
-                onChange: handlePopupChange,
-                onBlur: handlePopupBlur,
-                onSelect: (_, option) => {
-                  void resolveSuggestion(option as GoogleOption, 'popup');
-                },
-              }}
-            />
-          </div>
-
-          <Alert
-            style={{ marginBottom: 12 }}
-            type="info"
-            showIcon
-            message={
-              dragging
-                ? '拖拽中，松手后会自动回填当前位置。'
-                : '拖动地图，使中心图钉对准目标位置；停止后会自动回填，也可手动点击"取地图中心点"。'
-            }
+          <FormAutoComplete
+            className={styles.popupAutoComplete}
+            autoCompleteProps={{
+              placeholder: '搜索地址或地标',
+              value: popupValue,
+              options: popupOptions,
+              allowClear: true,
+              onSearch: handlePopupSearch,
+              onChange: handlePopupChange,
+              onBlur: handlePopupBlur,
+              onSelect: (_, option) => {
+                void resolveSuggestion(option as GoogleOption, 'popup');
+              },
+            }}
           />
 
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: 500,
-              border: '1px solid #f0f0f0',
-              borderRadius: 8,
-              overflow: 'hidden',
-              background: '#f7f7f7',
-            }}
-          >
-            <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
+          <div className={styles.mapContainer}>
+            <div ref={mapContainerRef} className={styles.map} />
 
-            <div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
-                transform: dragging
-                  ? 'translate(-50%, -105%) scale(1.08)'
-                  : 'translate(-50%, -100%)',
-                pointerEvents: 'none',
-                fontSize: 34,
-                lineHeight: 1,
-                transition: 'transform 120ms ease',
-              }}
-            >
-              📍
-            </div>
+            <div className={cls(styles.locator, { [styles.dragging]: dragging })}>📍</div>
 
             {(resolvingCenter || locating) && (
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 12,
-                  top: 12,
-                  background: 'rgba(255,255,255,0.95)',
-                  border: '1px solid #f0f0f0',
-                  borderRadius: 8,
-                  padding: '6px 10px',
-                  fontSize: 12,
-                }}
-              >
+              <div className={styles.loadingText}>
                 {locating ? '正在定位当前位置…' : '正在解析中心点…'}
               </div>
             )}
           </div>
 
           {error ? (
-            <Typography.Text type="danger" style={{ display: 'block', marginTop: 12 }}>
+            <Typography.Text type="danger" className={styles.errorText}>
               {map.error}
             </Typography.Text>
           ) : null}

@@ -11,7 +11,7 @@ import {
   deleteOrganization,
   loadOrganizationData,
   validateDeleteOrganization,
-} from '../services/organizationService';
+} from '../../services/organizationService';
 import AddOrganizationDrawer from './AddOrganizationDrawer';
 import TreeNodeTitle from './TreeNodeTitle';
 

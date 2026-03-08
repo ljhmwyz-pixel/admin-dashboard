@@ -8,12 +8,12 @@ import eslintPlugin from 'vite-plugin-eslint';
 export default defineConfig({
   server: {
     host: true,
-    proxy: {
-      '/api': {
-        target: 'http://172.21.102.31:8098',
-        changeOrigin: true,
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://172.21.102.31:8098',
+    //     changeOrigin: true,
+    //   },
+    // },
   },
   build: {
     // 启用 CSS Tree Shaking
