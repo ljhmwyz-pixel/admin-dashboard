@@ -116,6 +116,7 @@ const OrganizationList: React.FC = () => {
             currentParentNode={currentParentNode}
             treeData={treeData}
             loadData={loadTreeData}
+            setLoading={setLoading}
           />
         </Splitter.Panel>
       </Splitter>

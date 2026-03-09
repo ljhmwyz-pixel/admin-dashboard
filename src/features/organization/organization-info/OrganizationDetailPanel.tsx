@@ -13,6 +13,7 @@ interface OrganizationDetailPanelIProps {
   currentParentNode: TreeNodeData;
   treeData: TreeNodeData[];
   loadData: () => void;
+  setLoading: (loading: boolean) => void;
 }
 
 const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
@@ -20,6 +21,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
   currentParentNode,
   treeData,
   loadData,
+  setLoading,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
@@ -35,6 +37,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
           currentParentNode={currentParentNode}
           treeData={treeData}
           loadData={loadData}
+          setLoading={setLoading}
         />
       ) : (
         '空态页设计中...'

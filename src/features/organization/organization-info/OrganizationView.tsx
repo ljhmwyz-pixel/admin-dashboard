@@ -29,12 +29,14 @@ interface OrganizationViewIProps {
   currentParentNode: TreeNodeData;
   treeData: TreeNodeData[];
   loadData: () => void;
+  setLoading: (loading: boolean) => void;
 }
 const OrganizationView: React.FC<OrganizationViewIProps> = ({
   orgId,
   currentParentNode,
   treeData,
   loadData,
+  setLoading,
 }) => {
   const [form] = AntForm.useForm();
   const [spinning, setSpinning] = useState<boolean>(false);
@@ -132,6 +134,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
     async (values: OrganizationFormData) => {
       try {
         setSpinning(true);
+        setLoading(true);
         const verifyData = await verifyOrganizationByUpdate({ ...values, orgId });
         if (!verifyData.valid) {
           return { success: false, reason: 'validation_failed', verifyData };
@@ -154,10 +157,11 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
       } catch (error) {
         return { success: false, reason: 'error', error };
       } finally {
+        setLoading(false);
         setSpinning(false);
       }
     },
-    [orgId, verifyOrganizationByUpdate, handleUpdateOrganization],
+    [setLoading, verifyOrganizationByUpdate, orgId, handleUpdateOrganization],
   );
 
   const onSave = () => {
