@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import { FormModal } from '@/components';
 import {
   loadOrganizationData as loadOrganizationDataService,
   validateDeleteOrganization,
 } from '@/features/organization/services/organizationService';
 import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
-import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { TreeNodeData } from '@/shared/types/organization';
+import { getNodeByKey } from '@/shared/utils/dataTransformer';
 
 /**
  * 组织树自定义 Hook
@@ -22,22 +21,27 @@ export function useOrganizationTree() {
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
 
   const { withLoading } = useGlobalLoading();
-  const { t } = useLanguage();
-  const { warning, confirm } = FormModal();
 
   // 加载组织树数据
-  const loadTreeData = useCallback(async (searchKeyword?: string) => {
-    await loadOrganizationDataService({
-      searchKeyword,
-      withLoading,
-      setData: setTreeData,
-    });
-  }, []);
+  const loadTreeData = useCallback(
+    async (searchKeyword?: string) => {
+      await loadOrganizationDataService({
+        searchKeyword,
+        withLoading,
+        setData: setTreeData,
+      });
+    },
+    [withLoading],
+  );
 
   // 处理节点选择
-  const handleSelect = useCallback((key: string) => {
-    setSelectedKey(key);
-  }, []);
+  const handleSelect = useCallback(
+    (key: string) => {
+      setSelectedKey(key);
+      setCurrentParentNode(getNodeByKey(treeData, key) as TreeNodeData);
+    },
+    [treeData],
+  );
 
   // 处理添加组织
   const handleAdd = useCallback((parentNode: TreeNodeData) => {
@@ -61,7 +65,7 @@ export function useOrganizationTree() {
         console.error('Delete validation failed:', error);
       }
     },
-    [loadTreeData, withLoading, t, warning, confirm],
+    [withLoading],
   );
 
   // 关闭添加抽屉

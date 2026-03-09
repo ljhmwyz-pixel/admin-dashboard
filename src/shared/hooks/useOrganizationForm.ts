@@ -224,7 +224,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         }
 
         // ===== 第二步：验证邮箱 =====
-        const emailResult = await verifyEmail(values.orgEmail);
+        const emailResult = await verifyEmail(values.orgEmail || '');
 
         // ===== 第三步：创建组织 =====
         let response;

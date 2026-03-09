@@ -18,8 +18,8 @@ import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
+import { getParentNode } from '@/shared/utils/dataTransformer';
 
-import { getParentNode } from '../utils/dataTransformer';
 import OrgInfo from './OrganizationInfo';
 
 import styles from './OrganizationView.module.scss';
@@ -163,7 +163,9 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   return (
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
-      <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
+      {parentNode && (
+        <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
+      )}
       {/* 组织信息编辑 */}
       <div className={styles.editContainer}>
         <AntForm form={form} layout="vertical" initialValues={detail}>

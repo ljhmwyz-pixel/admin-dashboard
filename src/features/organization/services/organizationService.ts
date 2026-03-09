@@ -1,11 +1,7 @@
 // 组织服务API
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 import type { OrganizationListParams, TreeNodeData } from '@/shared/types/organization';
-
-import {
-  generateFallbackTreeData,
-  transformOrganizationToTreeData,
-} from '../utils/dataTransformer';
+import { transformOrganizationToTreeData } from '@/shared/utils/dataTransformer';
 
 // 删除验证结果类型
 export interface DeleteValidationResult {
@@ -65,27 +61,13 @@ export const loadOrganizationData = async ({
 
   // 如果提供了withLoading，则使用它包装异步操作
   if (withLoading) {
-    await withLoading(loadDataLogic, {
-      onError: (error) => {
-        console.error('Failed to load organization tree:', error);
-        // 使用兜底数据
-        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
-        if (setData) {
-          setData(fallbackData);
-        }
-      },
-    });
+    await withLoading(loadDataLogic);
   } else {
     // 如果没有提供withLoading，直接执行
     try {
       await loadDataLogic();
     } catch (error) {
       console.error('Failed to load organization tree:', error);
-      // 使用兜底数据
-      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
-      if (setData) {
-        setData(fallbackData);
-      }
     }
   }
 };

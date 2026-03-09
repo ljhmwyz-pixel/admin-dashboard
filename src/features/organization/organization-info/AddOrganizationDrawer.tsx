@@ -16,8 +16,8 @@ import { AntRow, Form, useForm } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
+import { getParentNode } from '@/shared/utils/dataTransformer';
 
-import { getParentNode } from '../utils/dataTransformer';
 import OrganizationInfo from './OrganizationInfo';
 
 import styles from './AddOrganizationDrawer.module.scss';

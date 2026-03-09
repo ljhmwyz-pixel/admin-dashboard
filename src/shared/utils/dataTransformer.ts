@@ -54,62 +54,6 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
 }
 
 /**
- * 生成兜底的组织树数据（当 API 调用失败时使用）
- * @param count 生成的节点数量
- * @returns 兜底的树形数据
- */
-export function generateFallbackTreeData(count: number = 10): TreeNodeData[] {
-  const rootNode: TreeNodeData = {
-    key: 'fallback-root',
-    title: 'PYLONTECH',
-    children: [],
-    type: 'PYLONTECH',
-    canAdd: true,
-    canDelete: false,
-    description: '这是兜底数据，API 调用失败时显示',
-    status: 'ACTIVE',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    parentOrgId: null,
-  };
-
-  // 生成子节点
-  for (let i = 1; i <= count; i++) {
-    const nodeType = i % 3 === 0 ? 'INSTALLER' : i % 2 === 0 ? 'DEALER' : 'PYLONTECH';
-    const childNode: TreeNodeData = {
-      key: `fallback-${i}`,
-      title: `组织${i}`,
-      children: [],
-      type: nodeType,
-      canAdd: true,
-      canDelete: nodeType !== 'PYLONTECH', // PYLONTECH 类型不允许删除
-      description: `这是第${i}个组织`,
-      status: 'ACTIVE',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      parentOrgId: i <= 3 ? 'fallback-root' : `fallback-${i % 3 || 3}`,
-    };
-
-    if (i <= 3) {
-      // 前 3 个组织作为一级子组织
-      rootNode.children?.push(childNode);
-    } else {
-      // 其他组织随机分配给前三级组织
-      const parentIndex = i % 3;
-      const parent = rootNode.children?.[parentIndex];
-      if (parent) {
-        if (!parent.children) {
-          parent.children = [];
-        }
-        parent.children.push(childNode);
-      }
-    }
-  }
-
-  return [rootNode];
-}
-
-/**
  * 获取指定节点的父节点信息
  * @param treeData 树形结构数据
  * @param nodeId 目标节点 ID
@@ -168,6 +112,66 @@ export function getParentNodesBatch(
   // O(m) 批量查找
   for (const nodeId of nodeIds) {
     result.set(nodeId, parentMap.get(nodeId) || null);
+  }
+
+  return result;
+}
+
+/**
+ * 根据节点 key获取节点完整信息（性能最优）
+ * @param treeData 树形结构数据
+ * @param key 目标节点 key
+ * @returns 节点完整信息，如果未找到则返回 null
+ */
+export function getNodeByKey(treeData: TreeNodeData[], key: string): TreeNodeData | null {
+  // 方法：使用 Map 缓存所有节点 - O(n) 构建，O(1) 查询
+  const nodeMap = new Map<string, TreeNodeData>();
+
+  // 构建节点映射表 - O(n)
+  function buildNodeMap(nodes: TreeNodeData[]) {
+    for (const node of nodes) {
+      nodeMap.set(node.key, node);
+      if (node.children && node.children.length > 0) {
+        buildNodeMap(node.children);
+      }
+    }
+  }
+
+  buildNodeMap(treeData);
+
+  // O(1) 查找
+  return nodeMap.get(key) || null;
+}
+
+/**
+ * 批量获取多个节点的完整信息（性能最优）
+ * @param treeData 树形结构数据
+ * @param keys 目标节点 key 数组
+ * @returns Map<节点 key, 节点信息>
+ */
+export function getNodesByKeysBatch(
+  treeData: TreeNodeData[],
+  keys: string[],
+): Map<string, TreeNodeData | null> {
+  // 方法：使用 Map 缓存所有节点 - O(n) 构建，O(m) 批量查询
+  const nodeMap = new Map<string, TreeNodeData>();
+  const result = new Map<string, TreeNodeData | null>();
+
+  // 构建节点映射表 - O(n)
+  function buildNodeMap(nodes: TreeNodeData[]) {
+    for (const node of nodes) {
+      nodeMap.set(node.key, node);
+      if (node.children && node.children.length > 0) {
+        buildNodeMap(node.children);
+      }
+    }
+  }
+
+  buildNodeMap(treeData);
+
+  // O(m) 批量查找
+  for (const key of keys) {
+    result.set(key, nodeMap.get(key) || null);
   }
 
   return result;
