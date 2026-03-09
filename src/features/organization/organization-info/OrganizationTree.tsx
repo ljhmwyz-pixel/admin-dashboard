@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Spin } from 'antd';
 import { debounce } from 'lodash-es';
 
 import { FormModal } from '@/components';
 import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
-import { useGlobalLoading, useLanguage } from '@/shared/hooks';
+import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import { deleteOrganization } from '../services/organizationService';
@@ -20,6 +21,8 @@ interface OrganizationTreeProps {
   expandedKeys?: React.Key[];
   treeData: TreeNodeData[];
   loadData: (searchKeyword?: string) => Promise<void>;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
@@ -31,30 +34,19 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   expandedKeys = [],
   treeData,
   loadData,
+  loading,
+  setLoading,
 }) => {
-  const { showLoading, hideLoading } = useGlobalLoading();
   const [searchValue, setSearchValue] = useState<string>('');
-  const initializedRef = useRef(false);
-  const loadingRef = useRef(false);
   const { t } = useLanguage();
   const { warning, confirm } = FormModal();
 
   // 初始化加载数据
   useEffect(() => {
-    if (initializedRef.current || loadingRef.current) {
-      return;
-    }
-    loadingRef.current = true;
-
-    loadData()
-      .then(() => {
-        initializedRef.current = true;
-        loadingRef.current = false;
-      })
-      .catch(() => {
-        loadingRef.current = false;
-      });
-  }, [loadData]);
+    loadData().then(() => {
+      setLoading(false);
+    });
+  }, [loadData, setLoading]);
 
   // 处理展开/收起（使用外部传入的回调）
   const handleExpand = useCallback(
@@ -70,7 +62,9 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
       if (onSelect) {
         onSelect('');
       }
+      setLoading(true);
       await loadData(value);
+      setLoading(false);
     }, 1000),
     [],
   );
@@ -138,11 +132,10 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
           onOk: async () => {
             if (confirmValue === nodeData.key) {
               try {
-                showLoading();
                 await deleteOrganization(nodeData.key);
                 await loadData();
-              } finally {
-                hideLoading();
+              } catch (err) {
+                console.error('Delete organization failed:', err);
               }
             }
           },
@@ -152,60 +145,62 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   };
 
   return (
-    <div className={styles.organizationTree}>
-      <div className={styles.treeSearch}>
-        <AntInput
-          className={styles.treeSearchInput}
-          prefixCls={styles.treeSearchIcon}
-          name="search"
-          placeholder={t('role.placeholder.search')}
-          variant="filled"
-          prefix={
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M13.6001 13.6L10.1001 10.1M11.6001 6.1C11.6001 9.13757 9.13766 11.6 6.1001 11.6C3.06253 11.6 0.600098 9.13757 0.600098 6.1C0.600098 3.06243 3.06253 0.6 6.1001 0.6C9.13766 0.6 11.6001 3.06243 11.6001 6.1Z"
-                stroke="#191B1F"
-                strokeOpacity="0.4"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          }
-          value={searchValue}
-          onChange={handleInputChange}
-          allowClear
-        />
-      </div>
-      <div className={styles.organizationTreeSearch}>
-        <div className={styles.treeContainer}>
-          <AntTree
-            className={styles.organizationTree}
-            treeData={treeData}
-            onSelect={handleTreeSelect}
-            selectedKeys={[selectedKey]}
-            expandedKeys={expandedKeys}
-            onExpand={handleExpand}
-            showLine
-            height={(window && window?.innerHeight - 74) || 400}
-            blockNode
-            virtual
-            titleRender={(nodeData: TreeNodeData) => (
-              <TreeNodeTitle
-                nodeData={nodeData}
-                onNodeAdd={handleNodeAdd}
-                onNodeDelete={handleNodeDelete}
-              />
-            )}
+    <Spin spinning={loading} className={styles.organizationTreeLoading}>
+      <div className={styles.organizationTree}>
+        <div className={styles.treeSearch}>
+          <AntInput
+            className={styles.treeSearchInput}
+            prefixCls={styles.treeSearchIcon}
+            name="search"
+            placeholder={t('role.placeholder.search')}
+            variant="filled"
+            prefix={
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.6001 13.6L10.1001 10.1M11.6001 6.1C11.6001 9.13757 9.13766 11.6 6.1001 11.6C3.06253 11.6 0.600098 9.13757 0.600098 6.1C0.600098 3.06243 3.06253 0.6 6.1001 0.6C9.13766 0.6 11.6001 3.06243 11.6001 6.1Z"
+                  stroke="#191B1F"
+                  strokeOpacity="0.4"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            }
+            value={searchValue}
+            onChange={handleInputChange}
+            allowClear
           />
         </div>
+        <div className={styles.organizationTreeSearch}>
+          <div className={styles.treeContainer}>
+            <AntTree
+              className={styles.organizationTree}
+              treeData={treeData}
+              onSelect={handleTreeSelect}
+              selectedKeys={[selectedKey]}
+              expandedKeys={expandedKeys}
+              onExpand={handleExpand}
+              showLine
+              height={(window && window?.innerHeight - 74) || 400}
+              blockNode
+              virtual
+              titleRender={(nodeData: TreeNodeData) => (
+                <TreeNodeTitle
+                  nodeData={nodeData}
+                  onNodeAdd={handleNodeAdd}
+                  onNodeDelete={handleNodeDelete}
+                />
+              )}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    </Spin>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spin } from 'antd';
 
 import { FormButton, FormDrawer, FormModal } from '@/components';
 import {
@@ -40,8 +41,15 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   const { t } = useLanguage();
   const { warningConfirm } = FormModal();
 
-  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit } =
-    useOrganizationForm(currentParentNode);
+  const {
+    userExists,
+    existingUsername,
+    existingPhone,
+    verifyResult,
+    verifyEmail,
+    handleSubmit,
+    loading,
+  } = useOrganizationForm(currentParentNode);
 
   // 获取父节点信息
   const parentNode =
@@ -106,64 +114,66 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         </div>
       }
     >
-      {parentNode && (
-        <div className={styles.info}>
-          <OrganizationInfo orgName={parentNode?.title} orgId={parentNode?.key} />
-        </div>
-      )}
-      <div className={styles.form}>
-        <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
-          <AntRow gutter={30}>
-            {/* 组织名称字段 */}
-            <OrgNameField form={form} verifyResult={verifyResult} />
+      <Spin spinning={loading}>
+        {parentNode && (
+          <div className={styles.info}>
+            <OrganizationInfo orgName={parentNode?.title} orgId={parentNode?.key} />
+          </div>
+        )}
+        <div className={styles.form}>
+          <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
+            <AntRow gutter={30}>
+              {/* 组织名称字段 */}
+              <OrgNameField form={form} verifyResult={verifyResult} />
 
-            {/* 组织类型字段 */}
-            <OrgTypeField form={form} parentOrgType={currentParentNode?.type} />
-          </AntRow>
+              {/* 组织类型字段 */}
+              <OrgTypeField form={form} parentOrgType={currentParentNode?.type} />
+            </AntRow>
 
-          <AntRow gutter={30}>
-            {/* 组织地址字段 */}
-            <OrgAddressField form={form} verifyResult={verifyResult} />
+            <AntRow gutter={30}>
+              {/* 组织地址字段 */}
+              <OrgAddressField form={form} verifyResult={verifyResult} />
 
-            {/* 国家地区字段 */}
-            <OrgCountryRegionField form={form} canEdit={false} />
-          </AntRow>
+              {/* 国家地区字段 */}
+              <OrgCountryRegionField form={form} canEdit={false} />
+            </AntRow>
 
-          <AntRow gutter={30}>
-            {/* 邮政编码字段 */}
-            <OrgPostalCodeField form={form} />
-          </AntRow>
+            <AntRow gutter={30}>
+              {/* 邮政编码字段 */}
+              <OrgPostalCodeField form={form} />
+            </AntRow>
 
-          <AntRow gutter={30}>
-            {/* 邮箱字段 */}
-            <OrgEmailField form={form} onCheckEmailExists={verifyEmail} />
-          </AntRow>
-          <AntRow gutter={30}>
-            {/* 用户名字段 */}
-            <OrgUsernameField
-              form={form}
-              userExists={userExists}
-              existingUsername={existingUsername}
-            />
+            <AntRow gutter={30}>
+              {/* 邮箱字段 */}
+              <OrgEmailField form={form} onCheckEmailExists={verifyEmail} />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 用户名字段 */}
+              <OrgUsernameField
+                form={form}
+                userExists={userExists}
+                existingUsername={existingUsername}
+              />
 
-            {/* 电话字段 */}
-            <OrgPhoneField
-              form={form}
-              userExists={userExists}
-              existingPhone={existingPhone}
-              verifyResult={verifyResult}
-            />
-          </AntRow>
-          {/* <AntRow gutter={30}>
+              {/* 电话字段 */}
+              <OrgPhoneField
+                form={form}
+                userExists={userExists}
+                existingPhone={existingPhone}
+                verifyResult={verifyResult}
+              />
+            </AntRow>
+            {/* <AntRow gutter={30}>
           <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
         </AntRow> */}
 
-          <AntRow gutter={30}>
-            {/* 描述字段 */}
-            <OrgDescriptionField form={form} />
-          </AntRow>
-        </Form>
-      </div>
+            <AntRow gutter={30}>
+              {/* 描述字段 */}
+              <OrgDescriptionField form={form} />
+            </AntRow>
+          </Form>
+        </div>
+      </Spin>
     </FormDrawer>
   );
 };
