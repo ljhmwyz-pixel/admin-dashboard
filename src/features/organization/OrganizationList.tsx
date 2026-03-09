@@ -4,8 +4,8 @@ import { Splitter } from 'antd';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 // import { AntTabs } from '@/shared/components/antd-imports';
-import OrganizationDetailPanel from './components/OrganizationDetailPanel';
-import OrganizationTree from './components/OrganizationTree';
+import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
+import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
 
 // import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
