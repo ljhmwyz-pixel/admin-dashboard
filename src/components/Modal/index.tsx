@@ -1,6 +1,5 @@
 import React from 'react';
 import type { ModalFuncProps } from 'antd';
-import { Modal } from 'antd';
 
 import closeIcon from '@/assets/images/form/close_icon.png';
 import confirmIcon from '@/assets/images/form/confirm_status.png';
@@ -9,6 +8,7 @@ import successIcon from '@/assets/images/form/success_status.png';
 import warningIcon from '@/assets/images/form/warning_status.png';
 
 import { i18n } from '@/i18n';
+import { AntModal } from '@/shared/components/antd-imports';
 
 import styles from './index.module.scss';
 
@@ -73,15 +73,16 @@ const renderConfig = (config: AppModalProps, modalType: ModalType) => {
 };
 
 const appModal = {
-  success: (config: AppModalProps) => Modal.success(renderConfig(config, 'success')),
+  success: (config: AppModalProps) => AntModal.success(renderConfig(config, 'success')),
 
-  confirm: (config: AppModalProps) => Modal.confirm(renderConfig(config, 'confirm')),
+  confirm: (config: AppModalProps) => AntModal.confirm(renderConfig(config, 'confirm')),
 
-  error: (config: AppModalProps) => Modal.error(renderConfig(config, 'error')),
+  error: (config: AppModalProps) => AntModal.error(renderConfig(config, 'error')),
 
-  warning: (config: AppModalProps) => Modal.warning(renderConfig(config, 'warning')),
+  warning: (config: AppModalProps) => AntModal.warning(renderConfig(config, 'warning')),
 
-  warningConfirm: (config: AppModalProps) => Modal.confirm(renderConfig(config, 'warningConfirm')),
+  warningConfirm: (config: AppModalProps) =>
+    AntModal.confirm(renderConfig(config, 'warningConfirm')),
 };
 
 // 保持原来的调用方式

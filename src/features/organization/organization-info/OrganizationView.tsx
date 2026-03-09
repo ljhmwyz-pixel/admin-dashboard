@@ -98,7 +98,6 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   };
   const handleEdit = () => {
     setCanEdit(true);
-    form.setFieldsValue({ res: detail });
   };
   const handleCancel = () => {
     const formValues = form.getFieldsValue();
@@ -116,7 +115,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
     );
     if (isSame) {
       setCanEdit(false);
-      form.setFieldsValue({ res: detail });
+      setValue({ data: detail });
     } else {
       warningConfirm({
         title: t('org.dialog.unsaved.title'),
@@ -124,7 +123,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
         okText: 'Exit',
         onOk: () => {
           setCanEdit(false);
-          form.setFieldsValue({ res: detail });
+          setValue({ data: detail });
         },
       });
     }
