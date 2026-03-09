@@ -4,7 +4,6 @@ import {
   loadOrganizationData as loadOrganizationDataService,
   validateDeleteOrganization,
 } from '@/features/organization/services/organizationService';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import type { TreeNodeData } from '@/shared/types/organization';
 import { getNodeByKey } from '@/shared/utils/dataTransformer';
 
@@ -19,20 +18,20 @@ export function useOrganizationTree() {
   const [selectedKey, setSelectedKey] = useState<string>('');
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
-
-  const { withLoading } = useGlobalLoading();
+  const [loading, setLoading] = useState<boolean>(true);
 
   // 加载组织树数据
-  const loadTreeData = useCallback(
-    async (searchKeyword?: string) => {
+  const loadTreeData = useCallback(async (searchKeyword?: string) => {
+    try {
+      setLoading(true);
       await loadOrganizationDataService({
         searchKeyword,
-        withLoading,
         setData: setTreeData,
       });
-    },
-    [withLoading],
-  );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // 处理节点选择
   const handleSelect = useCallback(
@@ -53,19 +52,20 @@ export function useOrganizationTree() {
   const handleDelete = useCallback(
     async (nodeData: TreeNodeData, onFail?: () => void, onSuccess?: () => void) => {
       try {
-        const validationResult = await validateDeleteOrganization(nodeData.key, withLoading);
-
+        setLoading(true);
+        const validationResult = await validateDeleteOrganization(nodeData.key);
+        setLoading(false);
         if (!validationResult.canDelete) {
           onFail?.();
           return;
         }
 
         onSuccess?.();
-      } catch (error) {
-        console.error('Delete validation failed:', error);
+      } finally {
+        setLoading(false);
       }
     },
-    [withLoading],
+    [],
   );
 
   // 关闭添加抽屉
@@ -86,8 +86,10 @@ export function useOrganizationTree() {
     selectedKey,
     addDrawerVisible,
     expandedKeys,
+    loading,
 
     // 方法
+    setLoading,
     loadTreeData,
     handleSelect,
     handleAdd,

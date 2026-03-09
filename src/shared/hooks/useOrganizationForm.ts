@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { FormModal } from '@/components';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import { useGlobalLoading, useLanguage } from '@/shared/hooks';
+import { useLanguage } from '@/shared/hooks';
 import type { OrganizationType } from '@/shared/types/organization';
 import type {
   CreateOrganizationRequest,
@@ -47,8 +47,6 @@ export interface EmailVerifyResult {
  * 组织创建 Hook - 封装组织创建相关的所有业务逻辑
  */
 export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
-  const { showLoading, hideLoading } = useGlobalLoading();
-
   const { t } = useLanguage();
 
   const { success } = FormModal();
@@ -58,6 +56,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const [existingUsername, setExistingUsername] = useState<string>('');
   const [existingPhone, setExistingPhone] = useState<string>('');
   const [userType, setUserType] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   // 组织验证状态(创建)
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
@@ -122,9 +121,8 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
       // 根据参数决定是否显示 loading
       if (withGlobalLoading) {
-        showLoading();
+        setLoading(true);
       }
-
       try {
         const response = await organizationApi.verifyEmail({ email: email || '' });
         const result: EmailVerifyResult = {
@@ -147,11 +145,11 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       } finally {
         // 只在开启了 loading 的情况下关闭
         if (withGlobalLoading) {
-          hideLoading();
+          setLoading(false);
         }
       }
     },
-    [showLoading, hideLoading],
+    [setLoading],
   );
 
   /**
@@ -255,7 +253,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const handleSubmit = useCallback(
     async (values: OrganizationFormData, onRefresh?: () => void) => {
       // 开始全局 loading
-      showLoading();
+      setLoading(true);
 
       try {
         // ===== 第一步：验证组织信息 =====
@@ -307,12 +305,11 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         return { success: false, reason: 'error', error };
       } finally {
         // 所有请求结束后关闭 loading
-        hideLoading();
+        setLoading(false);
       }
     },
     [
-      showLoading,
-      hideLoading,
+      setLoading,
       verifyOrganization,
       verifyEmail,
       handleConfirmWithExistingUser,
@@ -344,6 +341,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
   return {
     // 状态
+    loading,
     userExists,
     existingUsername,
     existingPhone,
@@ -352,6 +350,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     verifyResultByUpdate,
 
     // 方法
+    setLoading,
     verifyEmail,
     verifyOrganization,
     handleSubmit,
