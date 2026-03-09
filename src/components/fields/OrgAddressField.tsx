@@ -45,7 +45,7 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
           form.setFields([
             {
               name: 'orgAddress',
-              value: loc.formattedAddress,
+              value: loc.displayAddress,
             },
             {
               name: 'lat',
