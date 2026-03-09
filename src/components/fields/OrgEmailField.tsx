@@ -9,11 +9,17 @@ import type { FieldProps } from './types';
 type OrgEmailFieldProps = FieldProps & {
   onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
   userExists?: boolean;
+  canEdit?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists, userExists }) => {
+const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
+  form,
+  onCheckEmailExists,
+  userExists,
+  canEdit = true,
+}) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +91,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
           { pattern: EMAIL_PATTERN, message: t('org.validation.email.required') },
         ]}
         inputProps={{
+          disabled: !canEdit,
           suffix: (
             <span
               onClick={handleCheckEmailExists}

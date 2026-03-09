@@ -7,21 +7,30 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { FieldProps } from './types';
 
-type OrgCountryRegionFieldProps = FieldProps;
+type OrgCountryRegionFieldProps = FieldProps & { canEdit?: boolean };
 
-const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) => {
+const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const country = useWatch('country', form);
+  const province = useWatch('province', form);
   const city = useWatch('city', form);
 
   useEffect(() => {
-    if (country && city) {
-      form.setFieldValue('orgCountryRegion', `${country}/${city}`);
+    let orgCountryRegionValue = '';
+    if (country) {
+      orgCountryRegionValue = country;
+      if (province) {
+        orgCountryRegionValue = `${country}/${province}`;
+      }
+      if (city) {
+        orgCountryRegionValue = `${orgCountryRegionValue}/${city}`;
+      }
+      form.setFieldValue('orgCountryRegion', orgCountryRegionValue);
     } else {
       form.setFieldValue('orgCountryRegion', undefined);
     }
-  }, [country, city, form]);
+  }, [country, province, city, form]);
 
   return (
     <AntCol span={12}>
@@ -47,7 +56,7 @@ const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) =
         }
         required
         selectProps={{
-          disabled: true,
+          disabled: !canEdit,
           placeholder: t('org.placeholder.select_country_region'),
         }}
       />

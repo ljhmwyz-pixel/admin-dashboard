@@ -9,12 +9,14 @@ import type { FieldProps } from './types';
 type OrgUsernameFieldProps = FieldProps & {
   userExists?: boolean;
   existingUsername?: string;
+  canEdit?: boolean;
 };
 
 const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   form,
   userExists = false,
   existingUsername,
+  canEdit = true,
 }) => {
   const { t } = useLanguage();
 
@@ -57,7 +59,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
         inputProps={{
           placeholder: t('org.placeholder.enter_username'),
           maxLength: 100,
-          disabled: userExists,
+          disabled: userExists || !canEdit,
           onBlur: handleBlur,
         }}
       />

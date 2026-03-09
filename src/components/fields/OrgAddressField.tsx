@@ -9,9 +9,14 @@ import type { FieldProps } from './types';
 
 type OrgAddressFieldProps = FieldProps & {
   verifyResult: VerifyOrganization;
+  canEdit?: boolean;
 };
 
-export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
+export default function OrgAddressField({
+  form,
+  verifyResult,
+  canEdit = true,
+}: OrgAddressFieldProps) {
   const { t } = useLanguage();
   useEffect(() => {
     if (!verifyResult?.isCountryInScope) {
@@ -41,11 +46,12 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
           route: 'route',
           streetNumber: 'streetNumber',
         }}
+        canEdit={canEdit}
         onResolved={(loc) => {
           form.setFields([
             {
               name: 'orgAddress',
-              value: loc.formattedAddress,
+              value: loc.displayAddress,
             },
             {
               name: 'lat',

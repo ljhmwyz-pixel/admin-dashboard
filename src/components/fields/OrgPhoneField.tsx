@@ -11,6 +11,7 @@ type OrgPhoneFieldProps = FieldProps & {
   userExists?: boolean;
   existingPhone?: string;
   verifyResult?: VerifyOrganization;
+  canEdit?: boolean;
 };
 
 const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
@@ -18,6 +19,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   userExists = false,
   existingPhone,
   verifyResult = {},
+  canEdit = true,
 }) => {
   const { t } = useLanguage();
 
@@ -126,7 +128,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
           inputMode: 'numeric',
           placeholder: t('org.placeholder.enter_phone'),
           maxLength: 16,
-          disabled: userExists,
+          disabled: userExists || !canEdit,
           onChange: handleChange,
           onBlur: handleBlur,
         }}

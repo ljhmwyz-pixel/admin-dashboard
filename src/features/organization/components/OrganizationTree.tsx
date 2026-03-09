@@ -20,9 +20,14 @@ import styles from './OrganizationTree.module.scss';
 interface OrganizationTreeProps {
   onSelect?: (selectedKey: string) => void;
   selectedKey?: string;
+  setCurParentNode?: (node: TreeNodeData) => void;
 }
 
-const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedKey = '' }) => {
+const OrganizationTree: React.FC<OrganizationTreeProps> = ({
+  onSelect,
+  selectedKey = '',
+  setCurParentNode = (node: TreeNodeData) => {},
+}) => {
   const { withLoading, showLoading, hideLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
@@ -56,6 +61,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   const debouncedSearch = useCallback(
     debounce(async (value: string) => {
       setCurrentParentNode({} as TreeNodeData);
+      setCurParentNode({} as TreeNodeData);
       if (onSelect) {
         onSelect('');
       }
@@ -95,6 +101,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({ onSelect, selectedK
   // 处理节点添加事件
   const handleNodeAdd = (nodeData: TreeNodeData) => {
     setCurrentParentNode(nodeData);
+    setCurParentNode(nodeData);
     setAddDrawerVisible(true);
   };
 

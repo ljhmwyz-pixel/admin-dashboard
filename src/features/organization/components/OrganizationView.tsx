@@ -8,9 +8,22 @@ import {
   FormTextArea,
   ImageIcons,
 } from '@/components';
+import {
+  OrgAddressField,
+  OrgCountryRegionField,
+  OrgDescriptionField,
+  OrgEmailField,
+  OrgNameField,
+  OrgPhoneField,
+  OrgPostalCodeField,
+  OrgTypeField,
+  OrgUsernameField,
+} from '@/components/fields';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntCol, AntForm, AntRow } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
+import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrgInfo from './OrganizationInfo';
 
@@ -18,13 +31,17 @@ import styles from './OrganizationView.module.scss';
 
 interface OrganizationViewIProps {
   orgId: string;
+  currentParentNode: TreeNodeData;
 }
-const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId }) => {
+const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentParentNode }) => {
   const [form] = AntForm.useForm();
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
   const [detail, setDetail] = useState({});
   const { t } = useLanguage();
   const { success } = FormModal();
+
+  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit } =
+    useOrganizationForm(currentParentNode);
 
   useEffect(() => {
     if (!orgId) return;
@@ -46,31 +63,31 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId }) => {
   }, [orgId, form]);
 
   const onEdit = () => {
-    setIsEdit(true);
+    setCanEdit(true);
     form.setFieldsValue(detail);
   };
   const onCancel = () => {
-    setIsEdit(false);
+    setCanEdit(false);
     form.setFieldsValue(detail);
   };
   const onSave = () => {
     form.validateFields().then(async (values) => {
       try {
-        const requestParams = {
-          orgName: 'Updated Dealer Name',
-          description: '更新后的描述',
-          contactPerson: '李四',
-          contactPhone: '0755-87654321',
-          contactEmail: 'new-contact@example.com',
-          address: '广东省深圳市福田区',
-        };
-        const res = await organizationApi.update(requestParams);
-        if (res.code === 200) {
-          setIsEdit(false);
-          success({
-            title: t('org.toast.update_success'),
-          });
-        }
+        // const requestParams = {
+        //   orgName: 'Updated Dealer Name',
+        //   description: '更新后的描述',
+        //   contactPerson: '李四',
+        //   contactPhone: '0755-87654321',
+        //   contactEmail: 'new-contact@example.com',
+        //   address: '广东省深圳市福田区',
+        // };
+        // const res = await organizationApi.update(requestParams);
+        // if (res.code === 200) {
+        //   setIsEdit(false);
+        //   success({
+        //     title: t('org.toast.update_success'),
+        //   });
+        // }
       } catch (error) {
         console.error('Get org detail failed:', error);
       }
@@ -84,130 +101,59 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId }) => {
       <div className={styles.editContainer}>
         <AntForm form={form} layout="vertical" initialValues={detail}>
           <AntRow gutter={30}>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.name')}
-                name="orgName"
-                prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
-                rules={[{ required: true, message: t('org.validation.name.required') }]}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: !isEdit,
-                  placeholder: t('org.placeholder.search_org'),
-                }}
-              />
-            </AntCol>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.type')}
-                name="orgType"
-                prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
-                rules={[{ required: true, message: t('org.validation.type.required') }]}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: !isEdit,
-                  placeholder: t('org.placeholder.select_org_type'),
-                }}
-              />
-            </AntCol>
+            {/* 组织名称字段 */}
+            <OrgNameField form={form} verifyResult={verifyResult} canEdit={canEdit} />
+
+            {/* 组织类型字段 */}
+            <OrgTypeField form={form} parentOrgType={currentParentNode?.type} canEdit={canEdit} />
           </AntRow>
           <AntRow gutter={30}>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.address')}
-                name="address"
-                rules={[{ required: true, message: t('org.validation.address.required') }]}
-                prefixIcon={<img src={ImageIcons.form.orgAddressIcon} width={14} height={14} />}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: !isEdit,
-                  placeholder: t('org.placeholder.select_org_address'),
-                }}
-              />
-            </AntCol>
-            <AntCol span={12}>
-              <FormSelect
-                label={t('org.field.country_region')}
-                name="countryCode"
-                rules={[{ required: true, message: t('org.validation.country.required') }]}
-                prefixIcon={<img src={ImageIcons.form.orgCountryIcon} width={14} height={14} />}
-                selectProps={{
-                  className: styles.inputStyle,
-                  disabled: !isEdit,
-                  placeholder: t('org.placeholder.select_country_region'),
-                }}
-              />
-            </AntCol>
+            {/* 组织地址字段 */}
+            <OrgAddressField form={form} verifyResult={verifyResult} canEdit={canEdit} />
+
+            {/* 国家地区字段 */}
+            <OrgCountryRegionField form={form} canEdit={canEdit} />
           </AntRow>
           <AntRow gutter={30}>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.postal_code')}
-                name="zipCode"
-                prefixIcon={<img src={ImageIcons.form.orgPostalCodeIcon} width={14} height={14} />}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: !isEdit,
-                  placeholder: t('org.placeholder.enter_postal_code'),
-                }}
-              />
-            </AntCol>
+            {/* 邮政编码字段 */}
+            <OrgPostalCodeField form={form} canEdit={canEdit} />
           </AntRow>
           <AntRow gutter={30}>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.email')}
-                name="contactEmail"
-                prefixIcon={<img src={ImageIcons.form.emailIcon} width={14} height={14} />}
-                rules={[{ required: true, message: t('org.validation.email.required') }]}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: true,
-                  placeholder: t('guest.placeholder.email'),
-                }}
-              />
-            </AntCol>
+            {/* 邮箱字段 */}
+            <OrgEmailField
+              form={form}
+              onCheckEmailExists={verifyEmail}
+              userExists={userExists}
+              canEdit={canEdit}
+            />
           </AntRow>
           <AntRow gutter={30}>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.username')}
-                name="contactPerson"
-                prefixIcon={<img src={ImageIcons.form.orgAdminNameIcon} width={14} height={14} />}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: true,
-                  placeholder: t('org.placeholder.enter_username'),
-                }}
-              />
-            </AntCol>
-            <AntCol span={12}>
-              <FormInput
-                label={t('org.field.phone')}
-                name="contactPhone"
-                prefixIcon={<img src={ImageIcons.form.orgPhoneIcon} width={14} height={14} />}
-                inputProps={{
-                  className: styles.inputStyle,
-                  disabled: true,
-                  placeholder: t('org.placeholder.enter_phone'),
-                }}
-              />
-            </AntCol>
+            {/* 用户名字段 */}
+            <OrgUsernameField
+              form={form}
+              userExists={userExists}
+              existingUsername={existingUsername}
+              canEdit={canEdit}
+            />
+
+            {/* 电话字段 */}
+            <OrgPhoneField
+              form={form}
+              userExists={userExists}
+              existingPhone={existingPhone}
+              verifyResult={verifyResult}
+              canEdit={canEdit}
+            />
           </AntRow>
-          <FormTextArea
-            label={t('org.field.comment')}
-            name="description"
-            prefixIcon={<img src={ImageIcons.form.orgCommentIcon} width={14} height={14} />}
-            inputProps={{
-              className: styles.inputStyle,
-              disabled: true,
-              placeholder: t('org.placeholder.enter_comment'),
-            }}
-          />
+          <AntRow gutter={30}>
+            {/* 描述字段 */}
+            <OrgDescriptionField form={form} canEdit={canEdit} />
+          </AntRow>
+          {/* 描述字段 */}
         </AntForm>
         {/* 操作按钮 */}
         <div className={styles.btns}>
-          {isEdit ? (
+          {canEdit ? (
             [
               <FormButton key="org_common.action.cancel" onClick={onCancel}>
                 {t('common.action.cancel')}

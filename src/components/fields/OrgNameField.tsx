@@ -8,11 +8,12 @@ import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
-type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization };
+type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization; canEdit?: boolean };
 
 const OrgNameField: React.FC<OrgNameFieldProps> = ({
   form,
   verifyResult = {} as VerifyOrganization,
+  canEdit = true,
 }) => {
   const { t } = useLanguage();
 
@@ -79,6 +80,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({
           placeholder: t('org.placeholder.search_org'),
           maxLength: 254,
           onChange: handleInputChange,
+          disabled: !canEdit,
           onBlur: () => {
             setTimeout(() => {
               const value = form.getFieldValue('orgName') || '';

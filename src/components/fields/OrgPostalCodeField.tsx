@@ -6,9 +6,9 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { FieldProps } from './types';
 
-type OrgPostalCodeFieldProps = FieldProps;
+type OrgPostalCodeFieldProps = FieldProps & { canEdit: boolean };
 
-const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
+const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +52,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
           },
         ]}
         inputProps={{
+          disabled: !canEdit,
           placeholder: t('org.placeholder.enter_postal_code'),
           maxLength: 12,
           onChange: handleInputChange,

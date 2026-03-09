@@ -1,533 +1,148 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Form, type FormInstance, Modal, Space, Spin } from 'antd';
-import type { DefaultOptionType } from 'antd/es/select';
-import { debounce } from 'lodash-es';
+import { useCallback, useState } from 'react';
+import { Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 'antd';
+import cls from 'classnames';
 
 import { FormAutoComplete } from '@/components';
+import { useAddressPickerMap } from '@/shared/hooks/useAddressPickerMap';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { ensureGoogleMaps } from '@/shared/types/googleMaps';
+import type { FieldMap, GoogleOption, LocationInfo } from '@/shared/types/addressPickerTypes';
+import { stripPostalCodeText } from '@/shared/utils/addressUtils';
 
-type LocationInfo = {
-  formattedAddress: string;
-  lat: number;
-  lng: number;
-  country?: string;
-  countryCode?: string;
-  province?: string;
-  city?: string;
-  district?: string;
-  postalCode?: string;
-  route?: string;
-  streetNumber?: string;
-  placeId?: string;
-  raw?: unknown;
-};
-
-type FieldMap = {
-  address?: string;
-  lat?: string;
-  lng?: string;
-  country?: string;
-  countryCode?: string;
-  province?: string;
-  city?: string;
-  district?: string;
-  postalCode?: string;
-  route?: string;
-  streetNumber?: string;
-};
-
-type GoogleOption = DefaultOptionType & {
-  rawSuggestion?: any;
-};
+import styles from './AddressPickerAutoComplete.module.scss';
 
 type Props = {
   form: FormInstance;
   fieldMap: FieldMap;
   placeholder?: string;
-  debounceMs?: number;
   minSearchLength?: number;
   popupTitle?: string;
   onResolved?: (location: LocationInfo) => void;
-  formatAddress?: (location: LocationInfo) => string; // 自定义格式化地址
+  formatAddress?: (location: LocationInfo) => string;
 };
-
-function findGeocoderComp(
-  components: google.maps.GeocoderAddressComponent[] = [],
-  type: string,
-  short = false,
-) {
-  const item = components.find((c) => c.types?.includes(type));
-  if (!item) return '';
-  return short ? item.short_name : item.long_name;
-}
-
-function findPlaceComp(components: any[] = [], type: string, short = false) {
-  const item = components.find((c) => c.types?.includes(type));
-  if (!item) return '';
-  return short ? item.shortText : item.longText;
-}
-
-function normalizeGeocoderResult(result: google.maps.GeocoderResult): LocationInfo {
-  const comps = result.address_components ?? [];
-  const location = result.geometry.location;
-
-  return {
-    formattedAddress: result.formatted_address ?? '',
-    lat: location.lat(),
-    lng: location.lng(),
-    country: findGeocoderComp(comps, 'country'),
-    countryCode: findGeocoderComp(comps, 'country', true),
-    province: findGeocoderComp(comps, 'administrative_area_level_1'),
-    city:
-      findGeocoderComp(comps, 'locality') ||
-      findGeocoderComp(comps, 'postal_town') ||
-      findGeocoderComp(comps, 'administrative_area_level_2'),
-    district:
-      findGeocoderComp(comps, 'sublocality') ||
-      findGeocoderComp(comps, 'sublocality_level_1') ||
-      findGeocoderComp(comps, 'administrative_area_level_3'),
-    postalCode: findGeocoderComp(comps, 'postal_code'),
-    route: findGeocoderComp(comps, 'route'),
-    streetNumber: findGeocoderComp(comps, 'street_number'),
-    placeId: result.place_id,
-    raw: result,
-  };
-}
-
-function normalizePlace(place: any): LocationInfo {
-  const comps = place.addressComponents ?? [];
-  const location = place.location;
-
-  return {
-    formattedAddress: place.formattedAddress ?? '',
-    lat: typeof location?.lat === 'function' ? location.lat() : (location?.lat ?? 0),
-    lng: typeof location?.lng === 'function' ? location.lng() : (location?.lng ?? 0),
-    country: findPlaceComp(comps, 'country'),
-    countryCode: findPlaceComp(comps, 'country', true),
-    province: findPlaceComp(comps, 'administrative_area_level_1'),
-    city:
-      findPlaceComp(comps, 'locality') ||
-      findPlaceComp(comps, 'postal_town') ||
-      findPlaceComp(comps, 'administrative_area_level_2'),
-    district:
-      findPlaceComp(comps, 'sublocality') ||
-      findPlaceComp(comps, 'sublocality_level_1') ||
-      findPlaceComp(comps, 'administrative_area_level_3'),
-    postalCode: findPlaceComp(comps, 'postal_code'),
-    route: findPlaceComp(comps, 'route'),
-    streetNumber: findPlaceComp(comps, 'street_number'),
-    placeId: place.id,
-    raw: place,
-  };
-}
 
 export default function AddressPickerAutoComplete({
   form,
   fieldMap,
   placeholder = '',
-  debounceMs = 500,
   minSearchLength = 3,
   popupTitle = '选择地址',
   onResolved,
   formatAddress,
+  canEdit = true,
 }: Props) {
-  const [open, setOpen] = useState(false);
-  const [booting, setBooting] = useState(false);
-  const [error, setError] = useState<string | undefined>();
-
-  const [mainValue, setMainValue] = useState<string>('');
-
-  const watchedAddressValue = Form.useWatch(fieldMap.address, form);
-
-  const [mainOptions, setMainOptions] = useState<GoogleOption[]>([]);
-
-  const [popupValue, setPopupValue] = useState('');
-  const [popupOptions, setPopupOptions] = useState<GoogleOption[]>([]);
-
-  const [draftLocation, setDraftLocation] = useState<LocationInfo | null>(null);
-
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
-
-  const mainTokenRef = useRef<any>(null);
-  const popupTokenRef = useRef<any>(null);
-
-  const mainSuggestSeqRef = useRef(0);
-  const popupSuggestSeqRef = useRef(0);
-  const geocodeSeqRef = useRef(0);
-  const reverseSeqRef = useRef(0);
-
-  const skipNextIdleReverseRef = useRef(false);
-
   const { t } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const [popupValue, setPopupValue] = useState('');
 
-  const clearLocationFields = useCallback(() => {
-    const patch: Record<string, unknown> = {};
+  const addressValue = Form.useWatch(fieldMap.address, form) ?? '';
 
-    if (fieldMap.address) patch[fieldMap.address] = undefined;
-    if (fieldMap.lat) patch[fieldMap.lat] = undefined;
-    if (fieldMap.lng) patch[fieldMap.lng] = undefined;
-    if (fieldMap.country) patch[fieldMap.country] = undefined;
-    if (fieldMap.countryCode) patch[fieldMap.countryCode] = undefined;
-    if (fieldMap.province) patch[fieldMap.province] = undefined;
-    if (fieldMap.city) patch[fieldMap.city] = undefined;
-    if (fieldMap.district) patch[fieldMap.district] = undefined;
-    if (fieldMap.postalCode) patch[fieldMap.postalCode] = undefined;
-    if (fieldMap.route) patch[fieldMap.route] = undefined;
-    if (fieldMap.streetNumber) patch[fieldMap.streetNumber] = undefined;
+  const map = useAddressPickerMap({
+    fieldMap,
+    form,
+    minSearchLength,
+    onResolved,
+    formatAddress,
+  });
 
-    form.setFieldsValue(patch);
-    setDraftLocation(null);
-    setError(undefined);
-  }, [fieldMap, form]);
+  // 提取所有需要的值，避免在 render 中直接访问 map 对象
+  const {
+    booting,
+    dragging,
+    error,
+    locating,
+    mainOptions,
+    popupOptions,
+    resolvingCenter,
+    draftLocation,
+    mapContainerRef,
+    clearDerivedFields,
+    debouncedFetchSuggestions,
+    geocodeText,
+    initOrRefreshMap,
+    locateCurrentPosition,
+    resetSessionToken,
+    resolveCurrentCenter,
+    resolveSuggestion,
+    setMainOptions,
+    setPopupOptions,
+    writeLocationToForm,
+  } = map;
 
-  const patchForm = useCallback(
-    (loc: LocationInfo, writeAddress: boolean) => {
-      const patch: Record<string, unknown> = {};
-
-      if (writeAddress && fieldMap.address) {
-        // 如果提供了自定义格式化函数，使用它；否则使用默认格式
-        patch[fieldMap.address] = formatAddress ? formatAddress(loc) : loc.formattedAddress;
-      }
-      if (fieldMap.lat) patch[fieldMap.lat] = loc.lat;
-      if (fieldMap.lng) patch[fieldMap.lng] = loc.lng;
-      if (fieldMap.country) patch[fieldMap.country] = loc.country;
-      if (fieldMap.countryCode) patch[fieldMap.countryCode] = loc.countryCode;
-      if (fieldMap.province) patch[fieldMap.province] = loc.province;
-      if (fieldMap.city) patch[fieldMap.city] = loc.city;
-      if (fieldMap.district) patch[fieldMap.district] = loc.district;
-      if (fieldMap.postalCode) patch[fieldMap.postalCode] = loc.postalCode;
-      if (fieldMap.route) patch[fieldMap.route] = loc.route;
-      if (fieldMap.streetNumber) patch[fieldMap.streetNumber] = loc.streetNumber;
-
-      form.setFieldsValue(patch);
-
-      if (writeAddress) {
-        setMainValue(formatAddress ? formatAddress(loc) : loc.formattedAddress);
-        setError(undefined);
-
-        if (fieldMap.address) {
-          form.validateFields([fieldMap.address]);
-        }
-      }
-
-      onResolved?.(loc);
+  const handleMainSearch = useCallback(
+    (value: string) => {
+      debouncedFetchSuggestions(value, 'main');
+      form.setFields([{ name: fieldMap.address, errors: [] }]);
     },
-    [fieldMap, form, formatAddress, onResolved],
+    [debouncedFetchSuggestions, fieldMap.address, form],
   );
 
-  const getGeocoder = useCallback(async () => {
-    if (geocoderRef.current) return geocoderRef.current;
-    const { geocodingLib } = await ensureGoogleMaps();
-    geocoderRef.current = new geocodingLib.Geocoder();
-    return geocoderRef.current;
-  }, []);
-
-  const getSessionToken = useCallback(async (scope: 'main' | 'popup') => {
-    const { placesLib } = await ensureGoogleMaps();
-    const TokenCtor = (placesLib as any).AutocompleteSessionToken;
-
-    if (!TokenCtor) {
-      throw new Error('AutocompleteSessionToken 不可用，请确认 Places API (New) 已启用');
-    }
-
-    if (scope === 'main') {
-      if (!mainTokenRef.current) {
-        mainTokenRef.current = new TokenCtor();
-      }
-      return mainTokenRef.current;
-    }
-
-    if (!popupTokenRef.current) {
-      popupTokenRef.current = new TokenCtor();
-    }
-    return popupTokenRef.current;
-  }, []);
-
-  const resetSessionToken = useCallback((scope: 'main' | 'popup') => {
-    if (scope === 'main') {
-      mainTokenRef.current = null;
-      return;
-    }
-    popupTokenRef.current = null;
-  }, []);
-
-  const moveMapTo = useCallback((lat: number, lng: number, zoom = 17) => {
-    if (!mapRef.current) return;
-    skipNextIdleReverseRef.current = true;
-    mapRef.current.setCenter({ lat, lng });
-    mapRef.current.setZoom(zoom);
-  }, []);
-
-  const reverseGeocode = useCallback(
-    async (lat: number, lng: number) => {
-      const seq = ++reverseSeqRef.current;
-      const geocoder = await getGeocoder();
-
-      const { results } = await geocoder.geocode({
-        location: { lat, lng },
-      });
-
-      if (seq !== reverseSeqRef.current) return null;
-      if (!results?.length) return null;
-
-      const loc = normalizeGeocoderResult(results[0]);
-      setDraftLocation(loc);
-      setPopupValue(loc.formattedAddress);
-      patchForm(loc, false);
-      return loc;
-    },
-    [getGeocoder, patchForm],
-  );
-
-  const geocodeFreeText = useCallback(
-    async (text: string, syncMap: boolean, syncPopupText: boolean) => {
-      const keyword = text.trim();
-      if (!keyword || keyword.length < minSearchLength) return null;
-
-      const seq = ++geocodeSeqRef.current;
-      const geocoder = await getGeocoder();
-
-      const { results } = await geocoder.geocode({
-        address: keyword,
-      });
-
-      if (seq !== geocodeSeqRef.current) return null;
-      if (!results?.length) return null;
-
-      const loc = normalizeGeocoderResult(results[0]);
-      setDraftLocation(loc);
-      patchForm(loc, false);
-
-      if (syncPopupText) {
-        setPopupValue(loc.formattedAddress);
-      }
-
-      if (syncMap) {
-        moveMapTo(loc.lat, loc.lng);
-      }
-
-      return loc;
-    },
-    [getGeocoder, minSearchLength, moveMapTo, patchForm],
-  );
-
-  const fetchSuggestions = useCallback(
-    async (keyword: string, scope: 'main' | 'popup') => {
-      const text = keyword.trim();
-      const isMain = scope === 'main';
-
-      if (text.length < 2) {
-        if (isMain) setMainOptions([]);
-        else setPopupOptions([]);
-        return;
-      }
-
-      const seqRef = isMain ? mainSuggestSeqRef : popupSuggestSeqRef;
-      const currentSeq = ++seqRef.current;
-
-      try {
-        const { placesLib } = await ensureGoogleMaps();
-        const AutocompleteSuggestion = (placesLib as any).AutocompleteSuggestion;
-
-        if (!AutocompleteSuggestion?.fetchAutocompleteSuggestions) {
-          throw new Error('AutocompleteSuggestion 不可用');
-        }
-
-        const sessionToken = await getSessionToken(scope);
-
-        const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
-          input: text,
-          sessionToken,
-        });
-
-        if (currentSeq !== seqRef.current) return;
-
-        const nextOptions: GoogleOption[] = (suggestions || [])
-          .filter((item: any) => item?.placePrediction)
-          .map((item: any) => {
-            const prediction = item.placePrediction;
-            const mainText = prediction?.mainText?.text || prediction?.text?.text || '';
-            const secondaryText = prediction?.secondaryText?.text || '';
-
-            return {
-              value: prediction?.text?.text || mainText,
-              label: secondaryText ? `${mainText} (${secondaryText})` : mainText,
-              rawSuggestion: item,
-            };
-          });
-
-        if (isMain) {
-          setMainOptions(nextOptions);
-        } else {
-          setPopupOptions(nextOptions);
-        }
-      } catch (error) {
-        if (isMain) setMainOptions([]);
-        else setPopupOptions([]);
-
-        // 降级：即使联想失败，也保留自由输入解析
-        if (text.length >= minSearchLength) {
-          void geocodeFreeText(text, !isMain, !isMain);
-        }
+  const handleMainChange = useCallback(
+    (value: string) => {
+      form.setFieldValue(fieldMap.address, value || undefined);
+      if (!value) {
+        setMainOptions([]);
+        clearDerivedFields();
+        resetSessionToken('main');
       }
     },
-    [geocodeFreeText, getSessionToken, minSearchLength],
+    [clearDerivedFields, fieldMap.address, form, resetSessionToken, setMainOptions],
   );
 
-  // 防抖的搜索函数
-  const debouncedFetchSuggestions = useCallback(
-    debounce((keyword: string, scope: 'main' | 'popup') => {
-      void fetchSuggestions(keyword, scope);
-    }, debounceMs),
-    [fetchSuggestions, debounceMs],
-  );
-
-  const resolveSuggestion = useCallback(
-    async (option: GoogleOption, scope: 'main' | 'popup') => {
-      try {
-        const prediction = option.rawSuggestion?.placePrediction;
-        if (!prediction?.toPlace) return;
-
-        const place = prediction.toPlace();
-
-        await place.fetchFields({
-          fields: ['formattedAddress', 'location', 'addressComponents', 'id'],
-        });
-
-        const loc = normalizePlace(place);
-        setDraftLocation(loc);
-
-        if (scope === 'main') {
-          patchForm(loc, true);
-          setMainOptions([]);
-          resetSessionToken('main');
-        } else {
-          setPopupValue(loc.formattedAddress);
-          patchForm(loc, false);
-          moveMapTo(loc.lat, loc.lng);
-          setPopupOptions([]);
-          resetSessionToken('popup');
-        }
-      } catch (error) {
-        console.error('resolveSuggestion failed:', error);
-      }
-    },
-    [moveMapTo, patchForm, resetSessionToken],
-  );
-
-  const initOrRefreshMap = useCallback(async () => {
-    if (!mapContainerRef.current) return;
-
-    setBooting(true);
-
-    try {
-      const { mapsLib } = await ensureGoogleMaps();
-      const MapClass = mapsLib.Map;
-
-      const currentLat = Number(fieldMap.lat ? form.getFieldValue(fieldMap.lat) : undefined);
-      const currentLng = Number(fieldMap.lng ? form.getFieldValue(fieldMap.lng) : undefined);
-      const hasCurrentPoint = Number.isFinite(currentLat) && Number.isFinite(currentLng);
-
-      const center = draftLocation
-        ? { lat: draftLocation.lat, lng: draftLocation.lng }
-        : hasCurrentPoint
-          ? { lat: currentLat, lng: currentLng }
-          : { lat: 31.2304, lng: 121.4737 };
-
-      const zoom = draftLocation || hasCurrentPoint ? 16 : 12;
-
-      if (!mapRef.current) {
-        mapRef.current = new MapClass(mapContainerRef.current, {
-          center,
-          zoom,
-          streetViewControl: false,
-          mapTypeControl: false,
-          fullscreenControl: false,
-          gestureHandling: 'greedy',
-        });
-
-        mapRef.current.addListener('click', (e: google.maps.MapMouseEvent) => {
-          if (!e.latLng || !mapRef.current) return;
-          mapRef.current.panTo(e.latLng);
-        });
-
-        mapRef.current.addListener('idle', async () => {
-          if (skipNextIdleReverseRef.current) {
-            skipNextIdleReverseRef.current = false;
-            return;
-          }
-
-          const mapCenter = mapRef.current?.getCenter();
-          if (!mapCenter) return;
-
-          await reverseGeocode(mapCenter.lat(), mapCenter.lng());
-        });
-      } else {
-        mapRef.current.setCenter(center);
-        mapRef.current.setZoom(zoom);
-      }
-    } finally {
-      setBooting(false);
-    }
-  }, [draftLocation, fieldMap.lat, fieldMap.lng, form, reverseGeocode]);
-
-  useEffect(() => {
-    const text = mainValue.trim();
-
-    if (!text) {
-      setMainOptions([]);
-      clearLocationFields();
-      return;
-    }
-
+  const handleMainBlur = useCallback(async () => {
+    const text = String(form.getFieldValue(fieldMap.address) ?? '').trim();
     if (text.length < minSearchLength) return;
 
-    const timer = window.setTimeout(() => {
-      void geocodeFreeText(text, false, false);
-    }, debounceMs);
+    if (draftLocation?.displayAddress === text) return;
 
-    return () => window.clearTimeout(timer);
-  }, [clearLocationFields, debounceMs, geocodeFreeText, mainValue, minSearchLength]);
+    await geocodeText(text, { writeAddress: true });
+  }, [draftLocation?.displayAddress, fieldMap.address, form, geocodeText, minSearchLength]);
 
-  useEffect(() => {
-    if (!open) return;
+  const handlePopupSearch = useCallback(
+    (value: string) => {
+      debouncedFetchSuggestions(value, 'popup');
+    },
+    [debouncedFetchSuggestions],
+  );
 
+  const handlePopupChange = useCallback(
+    (value: string) => {
+      setPopupValue(value);
+      if (!value) {
+        setPopupOptions([]);
+        resetSessionToken('popup');
+      }
+    },
+    [resetSessionToken, setPopupOptions],
+  );
+
+  const handlePopupBlur = useCallback(async () => {
     const text = popupValue.trim();
-    if (!text || text.length < minSearchLength) return;
+    if (text.length < minSearchLength) return;
 
-    const timer = window.setTimeout(() => {
-      void geocodeFreeText(text, true, false);
-    }, debounceMs);
+    if (draftLocation?.displayAddress === text) return;
 
-    return () => window.clearTimeout(timer);
-  }, [debounceMs, geocodeFreeText, minSearchLength, open, popupValue]);
+    await geocodeText(text, {
+      syncMap: true,
+      syncPopupText: true,
+      writeAddress: true,
+    });
+  }, [draftLocation?.displayAddress, geocodeText, minSearchLength, popupValue]);
 
-  useEffect(() => {
-    // 当表单字段被重置时，同步更新 mainValue
-    if (watchedAddressValue === undefined || watchedAddressValue === null) {
-      setMainValue('');
-    } else {
-      setMainValue(watchedAddressValue);
-    }
-  }, [watchedAddressValue]);
-
-  const handleBlur = useCallback(() => {
-    // 失去焦点时触发校验
-    if (fieldMap.address) {
-      form.validateFields([fieldMap.address]);
-    }
+  const handleOpenModal = useCallback(() => {
+    const currentAddress = String(form.getFieldValue(fieldMap.address) ?? '');
+    setPopupValue(stripPostalCodeText(currentAddress));
+    setOpen(true);
   }, [fieldMap.address, form]);
 
-  const handleAfterOpenChange = (visible: boolean) => {
-    if (!visible) return;
-
-    requestAnimationFrame(() => {
-      void initOrRefreshMap();
-    });
-  };
+  const handleAfterOpenChange = useCallback(
+    (visible: boolean) => {
+      if (!visible) return;
+      requestAnimationFrame(() => {
+        void initOrRefreshMap({ preferCurrentLocation: true });
+      });
+    },
+    [initOrRefreshMap],
+  );
 
   return (
     <>
@@ -551,7 +166,7 @@ export default function AddressPickerAutoComplete({
           </svg>
         }
         required
-        name="orgAddress"
+        name={fieldMap.address}
         rules={[
           {
             required: true,
@@ -559,10 +174,11 @@ export default function AddressPickerAutoComplete({
           },
         ]}
         autoCompleteProps={{
-          value: watchedAddressValue || mainValue,
+          disabled: !canEdit,
+          value: addressValue,
           options: mainOptions,
           status: error ? 'error' : undefined,
-          onBlur: handleBlur,
+          onBlur: handleMainBlur,
           optionRender: (option) => {
             const data = option.data as GoogleOption;
             const labelText = typeof data.label === 'string' ? data.label : '';
@@ -570,45 +186,21 @@ export default function AddressPickerAutoComplete({
             const secondaryText = labelText.match(/\((.*)\)/)?.[1] || '';
 
             return (
-              <div style={{ lineHeight: 1.4 }}>
+              <div className={styles.addressOption}>
                 <div>{mainText}</div>
                 {secondaryText ? (
-                  <div style={{ fontSize: 12, color: '#999' }}>{secondaryText}</div>
+                  <div className={styles.addressOptionSecondary}>{secondaryText}</div>
                 ) : null}
               </div>
             );
           },
-          onSearch: (value) => {
-            // 使用防抖函数进行搜索
-            debouncedFetchSuggestions(value, 'main');
-            // 清空错误状态
-            if (fieldMap.address) {
-              form.setFields([{ name: fieldMap.address, errors: [] }]);
-            }
-          },
-          onChange: (value) => {
-            setMainValue(value);
-
-            if (fieldMap.address) {
-              form.setFieldValue(fieldMap.address, value || undefined);
-            }
-
-            if (!value) {
-              setMainOptions([]);
-              clearLocationFields();
-            }
-          },
+          onSearch: handleMainSearch,
+          onChange: handleMainChange,
           onSelect: (_, option) => {
             void resolveSuggestion(option as GoogleOption, 'main');
           },
           suffix: (
-            <span
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                setPopupValue(mainValue);
-                setOpen(true);
-              }}
-            >
+            <span className={styles.addressSuffix} onClick={handleOpenModal}>
               <svg
                 width="14"
                 height="14"
@@ -637,7 +229,7 @@ export default function AddressPickerAutoComplete({
               </svg>
             </span>
           ),
-          placeholder: placeholder,
+          placeholder,
         }}
       />
 
@@ -651,71 +243,61 @@ export default function AddressPickerAutoComplete({
         footer={
           <Space>
             <Button onClick={() => setOpen(false)}>取消</Button>
+            <Button onClick={() => void locateCurrentPosition()} loading={locating}>
+              定位到当前位置
+            </Button>
+            <Button onClick={() => void resolveCurrentCenter()} loading={resolvingCenter}>
+              取地图中心点
+            </Button>
             <Button
               type="primary"
-              onClick={() => {
-                if (!draftLocation) return;
-                patchForm(draftLocation, true);
+              loading={resolvingCenter || locating}
+              onClick={async () => {
+                const loc = draftLocation ?? (await resolveCurrentCenter());
+                if (!loc) return;
+                writeLocationToForm(loc, { writeAddress: true, syncPopupText: true });
                 setOpen(false);
               }}
             >
-              确认
+              确认此位置
             </Button>
           </Space>
         }
       >
         <Spin spinning={booting}>
-          <div style={{ marginBottom: 12 }}>
-            <FormAutoComplete
-              autoCompleteProps={{
-                placeholder: '搜索地址或地标',
-                value: popupValue,
-                options: popupOptions,
-                allowClear: true,
-                onSearch: (value) => {
-                  // 使用防抖函数进行搜索
-                  debouncedFetchSuggestions(value, 'popup');
-                },
-                onChange: (value) => {
-                  setPopupValue(value);
-                  if (!value) {
-                    setPopupOptions([]);
-                  }
-                },
-                onSelect: (_, option) => {
-                  void resolveSuggestion(option as GoogleOption, 'popup');
-                },
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: 500,
-              border: '1px solid #f0f0f0',
-              borderRadius: 8,
-              overflow: 'hidden',
-              background: '#f7f7f7',
+          <FormAutoComplete
+            className={styles.popupAutoComplete}
+            autoCompleteProps={{
+              placeholder: '搜索地址或地标',
+              value: popupValue,
+              options: popupOptions,
+              allowClear: true,
+              onSearch: handlePopupSearch,
+              onChange: handlePopupChange,
+              onBlur: handlePopupBlur,
+              onSelect: (_, option) => {
+                void resolveSuggestion(option as GoogleOption, 'popup');
+              },
             }}
-          >
-            <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
+          />
 
-            <div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -100%)',
-                pointerEvents: 'none',
-                fontSize: 34,
-                lineHeight: 1,
-              }}
-            >
-              📍
-            </div>
+          <div className={styles.mapContainer}>
+            <div ref={mapContainerRef} className={styles.map} />
+
+            <div className={cls(styles.locator, { [styles.dragging]: dragging })}>📍</div>
+
+            {(resolvingCenter || locating) && (
+              <div className={styles.loadingText}>
+                {locating ? '正在定位当前位置…' : '正在解析中心点…'}
+              </div>
+            )}
           </div>
+
+          {error ? (
+            <Typography.Text type="danger" className={styles.errorText}>
+              {map.error}
+            </Typography.Text>
+          ) : null}
         </Spin>
       </Modal>
     </>

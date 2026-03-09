@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { FormTabs } from '@/components';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrganizationView from './OrganizationView';
 
@@ -9,10 +10,12 @@ import styles from './OrganizationDetailPanel.module.scss';
 
 interface OrganizationDetailPanelIProps {
   selectedKey: string;
+  currentParentNode: TreeNodeData;
 }
 
 const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
   selectedKey: orgId,
+  currentParentNode,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
@@ -22,7 +25,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
     {
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
-      children: <OrganizationView orgId={orgId} />,
+      children: <OrganizationView orgId={orgId} currentParentNode={currentParentNode} />,
     },
     {
       key: 'role-list',
