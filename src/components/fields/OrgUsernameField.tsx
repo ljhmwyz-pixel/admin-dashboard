@@ -31,7 +31,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
     if (userExists && existingUsername) {
       form.setFieldValue('orgUsername', existingUsername);
     }
-  }, [userExists, existingUsername]);
+  }, [userExists, existingUsername, form]);
 
   return (
     <AntCol span={12}>

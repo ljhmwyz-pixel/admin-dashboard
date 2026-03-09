@@ -18,7 +18,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   form,
   userExists = false,
   existingPhone,
-  verifyResult = {},
+  verifyResult = {} as VerifyOrganization,
   canEdit = true,
 }) => {
   const { t } = useLanguage();
@@ -88,7 +88,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
     if (userExists && existingPhone) {
       form.setFieldValue('orgPhone', existingPhone);
     }
-  }, [userExists, existingPhone]);
+  }, [userExists, existingPhone, form]);
 
   useEffect(() => {
     if (verifyResult.isPhoneExists) {
@@ -99,7 +99,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
         },
       ]);
     }
-  }, [verifyResult.isPhoneExists]);
+  }, [verifyResult.isPhoneExists, form, t]);
 
   return (
     <AntCol span={12}>

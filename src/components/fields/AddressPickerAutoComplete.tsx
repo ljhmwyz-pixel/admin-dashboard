@@ -130,10 +130,11 @@ export default function AddressPickerAutoComplete({
   }, [draftLocation?.displayAddress, geocodeText, minSearchLength, popupValue]);
 
   const handleOpenModal = useCallback(() => {
+    if (!canEdit) return;
     const currentAddress = String(form.getFieldValue(fieldMap.address) ?? '');
     setPopupValue(stripPostalCodeText(currentAddress));
     setOpen(true);
-  }, [fieldMap.address, form]);
+  }, [fieldMap.address, form, canEdit]);
 
   const handleAfterOpenChange = useCallback(
     (visible: boolean) => {

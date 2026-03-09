@@ -15,10 +15,10 @@ interface OrganizationInfoProps {
 }
 
 const OrganizationInfo: React.FC<OrganizationInfoProps> = ({
-  orgName = 'Pylontech',
-  tag = 'Parent',
-  label = 'Pylontech',
-  orgCode = 'ROOT-PYL5-T9W3',
+  orgName: _orgName = 'Pylontech',
+  tag: _tag = 'Parent',
+  label: _label = 'Pylontech',
+  orgCode: _orgCode = 'ROOT-PYL5-T9W3',
   extra = (
     <>
       <div className={styles.actionLabel}>Update Record</div>
