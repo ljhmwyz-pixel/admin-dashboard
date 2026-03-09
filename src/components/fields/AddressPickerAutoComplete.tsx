@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 'antd';
 import cls from 'classnames';
 
@@ -144,6 +144,14 @@ export default function AddressPickerAutoComplete({
     },
     [initOrRefreshMap],
   );
+
+  useEffect(() => {
+    if (open && draftLocation?.displayAddress) {
+      Promise.resolve().then(() => {
+        setPopupValue(stripPostalCodeText(draftLocation.displayAddress));
+      });
+    }
+  }, [open, draftLocation?.displayAddress]);
 
   return (
     <>

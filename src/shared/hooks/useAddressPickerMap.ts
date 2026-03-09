@@ -411,46 +411,47 @@ export function useAddressPickerMap({
             clickableIcons: false,
             gestureHandling: 'greedy',
           });
-
-          clickListenerRef.current?.remove();
-          clickListenerRef.current = mapRef.current.addListener(
-            'click',
-            (event: google.maps.MapMouseEvent) => {
-              const latLng = event.latLng;
-              if (!latLng || !mapRef.current) return;
-
-              skipNextIdleReverseRef.current = true;
-              mapRef.current.panTo(latLng);
-              void reverseGeocode(latLng.lat(), latLng.lng(), {
-                syncPopupText: true,
-                syncAddress: true,
-              });
-            },
-          );
-
-          dragStartListenerRef.current?.remove();
-          dragStartListenerRef.current = mapRef.current.addListener('dragstart', () => {
-            setDragging(true);
-          });
-
-          idleListenerRef.current?.remove();
-          idleListenerRef.current = mapRef.current.addListener('idle', () => {
-            setDragging(false);
-
-            if (skipNextIdleReverseRef.current) {
-              skipNextIdleReverseRef.current = false;
-              return;
-            }
-
-            const mapCenter = mapRef.current?.getCenter();
-            if (!mapCenter) return;
-            debouncedReverseGeocode(mapCenter.lat(), mapCenter.lng());
-          });
         } else {
           skipNextIdleReverseRef.current = true;
           mapRef.current.setCenter(center);
           mapRef.current.setZoom(zoom);
         }
+
+        // 重新添加事件监听器，确保引用最新的函数
+        clickListenerRef.current?.remove();
+        clickListenerRef.current = mapRef.current.addListener(
+          'click',
+          (event: google.maps.MapMouseEvent) => {
+            const latLng = event.latLng;
+            if (!latLng || !mapRef.current) return;
+
+            skipNextIdleReverseRef.current = true;
+            mapRef.current.panTo(latLng);
+            void reverseGeocode(latLng.lat(), latLng.lng(), {
+              syncPopupText: true,
+              syncAddress: true,
+            });
+          },
+        );
+
+        dragStartListenerRef.current?.remove();
+        dragStartListenerRef.current = mapRef.current.addListener('dragstart', () => {
+          setDragging(true);
+        });
+
+        idleListenerRef.current?.remove();
+        idleListenerRef.current = mapRef.current.addListener('idle', () => {
+          setDragging(false);
+
+          if (skipNextIdleReverseRef.current) {
+            skipNextIdleReverseRef.current = false;
+            return;
+          }
+
+          const mapCenter = mapRef.current?.getCenter();
+          if (!mapCenter) return;
+          debouncedReverseGeocode(mapCenter.lat(), mapCenter.lng());
+        });
 
         if (!hasCurrentPoint && options?.preferCurrentLocation) {
           await reverseGeocode(center.lat, center.lng, { syncPopupText: true, syncAddress: true });
