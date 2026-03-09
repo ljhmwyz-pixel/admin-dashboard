@@ -91,6 +91,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       placement="right"
       closable={{ placement: 'end' }}
       onClose={handleCancel}
+      styles={{
+        body: { padding: '0 30px' },
+      }}
       open={visible}
       title={t('org.add.title')}
       footer={
@@ -106,11 +109,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
     >
       {parentNode && (
         <div className={styles.info}>
-          <OrganizationInfo
-            orgName={parentNode?.title}
-            orgType={parentNode?.type}
-            orgId={parentNode?.key}
-          />
+          <OrganizationInfo orgName={parentNode?.title} orgId={parentNode?.key} />
         </div>
       )}
       <div className={styles.form}>
@@ -138,7 +137,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
           <AntRow gutter={30}>
             {/* 邮箱字段 */}
-            <OrgEmailField form={form} onCheckEmailExists={verifyEmail} userExists={userExists} />
+            <OrgEmailField form={form} onCheckEmailExists={verifyEmail} />
           </AntRow>
           <AntRow gutter={30}>
             {/* 用户名字段 */}
