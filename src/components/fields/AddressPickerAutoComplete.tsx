@@ -241,7 +241,7 @@ export default function AddressPickerAutoComplete({
         onCancel={() => setOpen(false)}
         afterOpenChange={handleAfterOpenChange}
         width={920}
-        destroyOnClose={false}
+        destroyOnHidden={false}
         footer={
           <Space>
             <Button onClick={() => setOpen(false)}>取消</Button>

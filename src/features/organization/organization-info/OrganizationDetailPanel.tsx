@@ -11,11 +11,13 @@ import styles from './OrganizationDetailPanel.module.scss';
 interface OrganizationDetailPanelIProps {
   selectedKey: string;
   currentParentNode: TreeNodeData;
+  treeData: TreeNodeData[];
 }
 
 const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
   selectedKey: orgId,
   currentParentNode,
+  treeData,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
@@ -26,7 +28,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
       children: orgId ? (
-        <OrganizationView orgId={orgId} currentParentNode={currentParentNode} />
+        <OrganizationView orgId={orgId} currentParentNode={currentParentNode} treeData={treeData} />
       ) : null,
     },
     {

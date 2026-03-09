@@ -84,6 +84,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         address: values.orgAddress || '',
         latitude: values.lat,
         longitude: values.lng,
+        regionCode: values.orgCountryRegion || '',
       };
     },
     [currentParentNode],

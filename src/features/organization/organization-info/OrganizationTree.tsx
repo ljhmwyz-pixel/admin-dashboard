@@ -21,18 +21,21 @@ interface OrganizationTreeProps {
   onSelect?: (selectedKey: string) => void;
   selectedKey?: string;
   setCurParentNode?: (node: TreeNodeData) => void;
+  setTreeData: (data: TreeNodeData[]) => void;
+  treeData: TreeNodeData[];
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   onSelect,
   selectedKey = '',
   setCurParentNode,
+  setTreeData,
+  treeData,
 }) => {
   const { withLoading, showLoading, hideLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
   const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
   const [searchValue, setSearchValue] = useState<string>('');
-  const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const initializedRef = useRef(false);
   const loadingRef = useRef(false);
@@ -226,6 +229,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
         visible={addDrawerVisible}
         onChange={(visible) => setAddDrawerVisible(visible)}
         loadData={loadData}
+        treeData={treeData}
       />
     </div>
   );

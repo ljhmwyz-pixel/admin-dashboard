@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Splitter } from 'antd';
 
-// import { AntTabs } from '@/shared/components/antd-imports';
 import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
 import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
 import type { TreeNodeData } from '@/shared/types/organization';
 
-// import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
 
 const OrganizationList: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string>('');
   const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
+  const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
 
   // 使用模拟数据作为默认树数据
 
@@ -90,6 +89,8 @@ const OrganizationList: React.FC = () => {
               }}
               setCurParentNode={(parentNode: any) => setCurrentParentNode(parentNode)}
               selectedKey={selectedKey}
+              setTreeData={(data) => setTreeData(data)}
+              treeData={treeData}
             />
           </div>
         </Splitter.Panel>
@@ -99,6 +100,7 @@ const OrganizationList: React.FC = () => {
           <OrganizationDetailPanel
             selectedKey={selectedKey}
             currentParentNode={currentParentNode}
+            treeData={treeData}
           />
         </Splitter.Panel>
       </Splitter>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormButton } from '@/components';
 import {
@@ -14,10 +14,12 @@ import {
 } from '@/components/fields';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
+import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
-import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
+import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
 
+import { getParentNode } from '../utils/dataTransformer';
 import OrgInfo from './OrganizationInfo';
 
 import styles from './OrganizationView.module.scss';
@@ -25,15 +27,24 @@ import styles from './OrganizationView.module.scss';
 interface OrganizationViewIProps {
   orgId: string;
   currentParentNode: TreeNodeData;
+  treeData: TreeNodeData[];
 }
-const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentParentNode }) => {
+const OrganizationView: React.FC<OrganizationViewIProps> = ({
+  orgId,
+  currentParentNode,
+  treeData,
+}) => {
   const [form] = AntForm.useForm();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [detail, setDetail] = useState({});
   const { t } = useLanguage();
-
+  const { withLoading, showLoading, hideLoading } = useGlobalLoading();
   const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail } =
     useOrganizationForm(currentParentNode);
+
+  // 获取父节点信息
+  const parentNode =
+    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
 
   useEffect(() => {
     if (!orgId) return;
@@ -72,33 +83,86 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
     setCanEdit(false);
     form.setFieldsValue(detail);
   };
+  const handleSubmit = useCallback(async (values: OrganizationFormData, onRefresh?: () => void) => {
+    // 开始全局 loading
+    showLoading();
+
+    try {
+      // ===== 第一步：验证组织信息 =====
+      // const verifyData = await verifyOrganization(values);
+      // // 如果验证失败，直接返回
+      // if (!verifyData.valid) {
+      //   return { success: false, reason: 'validation_failed', verifyData };
+      // }
+      // // ===== 第二步：验证邮箱 =====
+      // const emailResult = await verifyEmail(values.orgEmail);
+      // // ===== 第三步：创建组织 =====
+      // let response;
+      // // 关键判断：只有当 userExists 为 true 时才使用已存在用户
+      // if (emailResult?.userExists) {
+      //   // 用户已存在，使用现有用户信息创建组织
+      //   response = await handleConfirmWithExistingUser(
+      //     values,
+      //     emailResult.existingUsername || '',
+      //     emailResult.existingPhone || '',
+      //   );
+      // } else {
+      //   // 用户不存在，创建新组织和用户
+      //   response = await handleCreateOrganization(values);
+      // }
+      // // ===== 第四步：检查创建结果 =====
+      // if (response.code === 200) {
+      //   // 显示成功提示（在回调中刷新列表）
+      //   success({
+      //     title: 'Success !',
+      //     content: t('org.toast.create_success'),
+      //     onOk: () => {
+      //       onRefresh?.();
+      //     },
+      //   });
+      //   return { success: true, data: response };
+      // } else {
+      //   // 创建失败时不刷新列表，直接返回错误
+      //   return { success: false, reason: 'create_failed', response };
+      // }
+    } catch (error) {
+      // 发生异常时不刷新列表，直接返回错误
+      return { success: false, reason: 'error', error };
+    } finally {
+      // 所有请求结束后关闭 loading
+      hideLoading();
+    }
+  }, []);
   const onSave = () => {
-    form.validateFields().then(async (_values) => {
+    form.validateFields().then(async (values) => {
       try {
-        // const requestParams = {
-        //   orgName: 'Updated Dealer Name',
-        //   description: '更新后的描述',
-        //   contactPerson: '李四',
-        //   contactPhone: '0755-87654321',
-        //   contactEmail: 'new-contact@example.com',
-        //   address: '广东省深圳市福田区',
-        // };
+        const result = await handleSubmit(values, () => {
+          setCanEdit(false);
+          // loadData?.();
+        });
+
+        // if (!result.success) {
+        //   console.warn('❌ 表单提交失败:', result.reason);
+        // } else {
+        //   console.log('✅ 表单提交成功');
+        // }
         // const res = await organizationApi.update(requestParams);
         // if (res.code === 200) {
-        //   setIsEdit(false);
-        //   success({
-        //     title: t('org.toast.update_success'),
-        //   });
+        //   setCanEdit(false);
+        //   // Moda({
+        //   //   title: t('org.toast.update_success'),
+        //   // });
         // }
       } catch (error) {
         console.error('Get org detail failed:', error);
       }
     });
   };
+
   return (
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
-      <OrgInfo orgDetail={detail} />
+      <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
       {/* 组织信息编辑 */}
       <div className={styles.editContainer}>
         <AntForm form={form} layout="vertical" initialValues={detail}>

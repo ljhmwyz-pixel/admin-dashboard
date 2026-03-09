@@ -84,7 +84,7 @@ class ApiClient {
             case 403:
               // 权限不足
               ModalError({
-                content: data.msg,
+                content: data.msg || '权限不足',
               });
               break;
             case 404:
