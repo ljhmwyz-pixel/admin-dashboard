@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { FormSelect } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 

@@ -3,8 +3,7 @@ import { debounce } from 'lodash-es';
 
 import { FormModal } from '@/components';
 import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useGlobalLoading, useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import { deleteOrganization } from '../services/organizationService';

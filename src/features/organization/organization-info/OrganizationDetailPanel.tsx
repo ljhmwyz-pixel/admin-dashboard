@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { FormTabs } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrganizationView from './OrganizationView';
@@ -36,7 +36,9 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
           treeData={treeData}
           loadData={loadData}
         />
-      ) : null,
+      ) : (
+        '空态页设计中...'
+      ),
     },
     {
       key: 'role-list',

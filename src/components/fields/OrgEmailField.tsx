@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
@@ -81,7 +81,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
         ]}
         inputProps={{
           disabled: !canEdit,
-          suffix: (
+          suffix: canEdit && (
             <span
               onClick={handleCheckEmailExists}
               style={{ color: '#33C2C8', fontSize: '14px', cursor: 'pointer' }}

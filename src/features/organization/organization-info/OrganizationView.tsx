@@ -18,8 +18,8 @@ import { AntForm, AntRow } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
+import { getParentNode } from '@/shared/utils/dataTransformer';
 
-import { getParentNode } from '../utils/dataTransformer';
 import OrgInfo from './OrganizationInfo';
 
 import styles from './OrganizationView.module.scss';
@@ -39,7 +39,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   const [form] = AntForm.useForm();
   const [spinning, setSpinning] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [detail, setDetail] = useState({});
+  const [detail, setDetail] = useState<any>({});
   const { t } = useLanguage();
   const {
     userExists,
@@ -49,7 +49,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
     verifyEmail,
     verifyOrganizationByUpdate,
   } = useOrganizationForm(currentParentNode);
-  const { success: ModalSuccess, error: ModalError } = FormModal();
+  const { success: ModalSuccess, error: ModalError, warningConfirm } = FormModal();
 
   // 获取父节点信息
   const parentNode =
@@ -89,22 +89,45 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
       if (res.code === 200) {
         setValue(res);
         setDetail(res.data);
-        setSpinning(false);
       }
     } catch (error) {
-      setSpinning(false);
       console.error('Get org detail failed:', error);
     } finally {
       setSpinning(false);
     }
   };
-  const onEdit = () => {
+  const handleEdit = () => {
     setCanEdit(true);
     form.setFieldsValue({ res: detail });
   };
-  const onCancel = () => {
-    setCanEdit(false);
-    form.setFieldsValue({ res: detail });
+  const handleCancel = () => {
+    const formValues = form.getFieldsValue();
+    const fieldMap = {
+      orgName: 'orgName',
+      orgDescription: 'description',
+      orgAddress: 'address',
+      orgCountryRegion: 'regionCode',
+      orgPostalCode: 'zipCode',
+      orgType: 'orgType',
+    };
+
+    const isSame = Object.entries(fieldMap).every(
+      ([formKey, detailKey]) => formValues[formKey] === detail?.[detailKey],
+    );
+    if (isSame) {
+      setCanEdit(false);
+      form.setFieldsValue({ res: detail });
+    } else {
+      warningConfirm({
+        title: t('org.dialog.unsaved.title'),
+        content: t('org.dialog.unsaved.content'),
+        okText: 'Exit',
+        onOk: () => {
+          setCanEdit(false);
+          form.setFieldsValue({ res: detail });
+        },
+      });
+    }
   };
   const handleSubmit = useCallback(
     async (values: OrganizationFormData) => {
@@ -130,7 +153,6 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
           return { success: false, reason: 'create_failed', response };
         }
       } catch (error) {
-        setSpinning(false);
         return { success: false, reason: 'error', error };
       } finally {
         setSpinning(false);
@@ -174,7 +196,9 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
     <Spin description="加载中..." spinning={spinning}>
       <div className={styles.organizationView}>
         {/* 组织基本信息 */}
-        <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
+        {parentNode && (
+          <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
+        )}
         {/* 组织信息编辑 */}
         <div className={styles.editContainer}>
           <AntForm form={form} layout="vertical" initialValues={detail}>
@@ -232,7 +256,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
           <div className={styles.btns}>
             {canEdit ? (
               [
-                <FormButton key="org_common.action.cancel" onClick={onCancel}>
+                <FormButton key="org_common.action.cancel" onClick={handleCancel}>
                   {t('common.action.cancel')}
                 </FormButton>,
                 <FormButton
@@ -245,7 +269,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
                 </FormButton>,
               ]
             ) : (
-              <FormButton key="org_common.action.modify" color="default" onClick={onEdit}>
+              <FormButton key="org_common.action.modify" color="default" onClick={handleEdit}>
                 {t('common.action.modify')}
               </FormButton>
             )}

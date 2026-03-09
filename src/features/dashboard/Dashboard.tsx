@@ -2,9 +2,7 @@ import React from 'react';
 import { BulbOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { Button, Card, Input, Space, Typography } from 'antd';
 
-import { useTheme } from '../../shared/hooks/theme';
-import { useThemeContext } from '../../shared/hooks/theme';
-import { useLanguage } from '../../shared/hooks/useLanguage';
+import { useLanguage, useTheme, useThemeContext } from '@/shared/hooks';
 
 import './Dashboard.css';
 

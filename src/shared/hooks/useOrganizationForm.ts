@@ -2,8 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { FormModal } from '@/components';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useGlobalLoading, useLanguage } from '@/shared/hooks';
 import type { OrganizationType } from '@/shared/types/organization';
 import type {
   CreateOrganizationRequest,

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import GlobalLoading from '../../shared/components/GlobalLoading';
-import Layout from '../../shared/components/layout/Layout';
-import { Content, Sider } from '../../shared/components/layout/Layout';
-import { useGlobalLoading } from '../../shared/hooks/useGlobalLoading';
+import GlobalLoading from '@/shared/components/GlobalLoading';
+import Layout from '@/shared/components/layout/Layout';
+import { Content, Sider } from '@/shared/components/layout/Layout';
+import { useGlobalLoading } from '@/shared/hooks';
+
 import SiderFooter from './SiderFooter';
 import SiderHeader from './SiderHeader';
 import SiderMenu from './SiderMenu';

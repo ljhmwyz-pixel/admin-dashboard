@@ -6,8 +6,7 @@ import { Dropdown } from 'antd';
 import { ImageIcons } from '@/components';
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
 import type { RootState } from '@/core/store';
-
-import { useLanguage } from '../../shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import styles from './SiderFooter.module.scss';
 

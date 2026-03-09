@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Col, Form, Input } from 'antd';
 
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { VerifyOrganization } from '@/shared/types/organization';
 
 import AddressPickerAutoComplete from './AddressPickerAutoComplete';

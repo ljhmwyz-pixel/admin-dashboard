@@ -65,7 +65,7 @@ class ApiClient {
           ModalError({
             content: res.message || res.msg,
           });
-          return;
+          return Promise.reject(res);
         }
         return res;
       },
