@@ -18,6 +18,7 @@ type Props = {
   popupTitle?: string;
   onResolved?: (location: LocationInfo) => void;
   formatAddress?: (location: LocationInfo) => string;
+  canEdit?: boolean;
 };
 
 export default function AddressPickerAutoComplete({

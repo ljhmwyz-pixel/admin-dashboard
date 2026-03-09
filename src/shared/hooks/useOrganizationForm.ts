@@ -214,12 +214,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         const verifyData = await verifyOrganization(values);
 
         // 如果验证失败，直接返回
-        if (
-          verifyData?.isOrganizationExists ||
-          verifyData?.isOrganizationSimilar ||
-          verifyData?.isPhoneExists ||
-          !verifyData?.isCountryInScope
-        ) {
+        if (!verifyData.valid) {
           return { success: false, reason: 'validation_failed', verifyData };
         }
 

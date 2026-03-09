@@ -8,7 +8,7 @@ import type { FieldProps } from './types';
 
 type OrgPostalCodeFieldProps = FieldProps & { canEdit: boolean };
 
-const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit }) => {
+const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
