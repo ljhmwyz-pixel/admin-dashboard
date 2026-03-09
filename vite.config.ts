@@ -20,6 +20,12 @@ export default defineConfig({
     cssMinify: 'esbuild',
     // 启用 terser 压缩以获得更好的 Tree Shaking
     minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // 生产环境移除 console
+        drop_debugger: true, // 移除 debugger
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -32,9 +38,13 @@ export default defineConfig({
           i18n: ['i18next', 'react-i18next'],
           utils: ['axios'],
         },
+        // 优化 chunk 命名
+        entryFileNames: `assets/[name]-[hash].js`,
+        chunkFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`,
       },
     },
-    chunkSizeWarningLimit: 1000, // 增加警告阈值
+    chunkSizeWarningLimit: 1500, // 增加警告阈值，因为 antd 确实很大
   },
   define: {
     'process.env': {},
