@@ -68,7 +68,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     timestamp: 0,
   });
 
-  // TODO 参数需要重新处理
   const requestParams = useCallback(
     (values: OrganizationFormData) => {
       return {
@@ -123,7 +122,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         setExistingPhone(result.existingPhone || '');
         setUserType(result.userType || '');
         return result;
-      } catch (error) {
+      } catch {
         setUserExists(false);
         setExistingUsername('');
         setExistingPhone('');
@@ -162,12 +161,12 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         const result = { ...response.data, timestamp: Date.now() };
         setVerifyResult(result);
         return result;
-      } catch (error) {
+      } catch {
         setVerifyResult(defaultResult);
         return defaultResult;
       }
     },
-    [currentParentNode],
+    [requestParams],
   );
 
   /**
@@ -185,7 +184,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
       return response;
     },
-    [currentParentNode],
+    [requestParams],
   );
 
   /**
@@ -198,7 +197,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
       return response;
     },
-    [currentParentNode],
+    [requestParams],
   );
 
   /**
@@ -214,12 +213,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         const verifyData = await verifyOrganization(values);
 
         // 如果验证失败，直接返回
-        if (
-          verifyData?.isOrganizationExists ||
-          verifyData?.isOrganizationSimilar ||
-          verifyData?.isPhoneExists ||
-          !verifyData?.isCountryInScope
-        ) {
+        if (!verifyData.valid) {
           return { success: false, reason: 'validation_failed', verifyData };
         }
 
@@ -276,7 +270,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       handleCreateOrganization,
       success,
       t,
-      currentParentNode,
     ],
   );
 

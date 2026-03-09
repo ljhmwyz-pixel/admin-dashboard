@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FormButton, FormModal } from '@/components';
+import { FormButton, FormDrawer, FormModal } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -78,22 +78,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   };
 
   return (
-    <Drawer
-      styles={{
-        body: { padding: '0 30px', backgroundColor: '#fff' },
-        header: {
-          backgroundColor: '#F1F1F2',
-          borderBottom: 'none',
-          borderTopLeftRadius: '12px',
-          color: '#191B1F',
-          fontWeight: '600',
-        },
-        footer: {
-          backgroundColor: '#fff',
-          borderTop: 'none',
-          padding: '0 0 60px',
-        },
-      }}
+    <FormDrawer
       className={styles.drawer}
       size="60%"
       placement="right"
@@ -170,7 +155,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
           <OrgDescriptionField form={form} />
         </AntRow>
       </Form>
-    </Drawer>
+    </FormDrawer>
   );
 };
 

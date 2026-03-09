@@ -46,7 +46,7 @@ const Login: React.FC = () => {
         // 登录失败
         message.error(resultAction.payload as string);
       }
-    } catch (err) {
+    } catch {
       setError('登录失败，请重试');
     } finally {
       setLoading(false);

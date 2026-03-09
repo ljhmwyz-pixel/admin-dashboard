@@ -17,7 +17,7 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
       children: [],
       type: org.orgType,
       canAdd: true,
-      canDelete: true,
+      canDelete: org.orgType !== 'PYLONTECH',
       description: org.description,
       status: org.status, // 保持原始状态值
       createdAt: org.createdAt,

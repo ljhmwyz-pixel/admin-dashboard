@@ -26,7 +26,7 @@ interface OrganizationTreeProps {
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   onSelect,
   selectedKey = '',
-  setCurParentNode = (node: TreeNodeData) => {},
+  setCurParentNode,
 }) => {
   const { withLoading, showLoading, hideLoading } = useGlobalLoading();
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
@@ -57,17 +57,17 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     [withLoading],
   );
 
-  // 防抖搜索函数
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(async (value: string) => {
       setCurrentParentNode({} as TreeNodeData);
-      setCurParentNode({} as TreeNodeData);
+      setCurParentNode?.({} as TreeNodeData);
       if (onSelect) {
         onSelect('');
       }
       await loadData(value);
     }, 1000),
-    [loadData, onSelect],
+    [],
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     loadingRef.current = true;
 
     loadData();
-  }, []);
+  }, [loadData]);
 
   // 处理搜索框变化（带防抖）
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +101,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   // 处理节点添加事件
   const handleNodeAdd = (nodeData: TreeNodeData) => {
     setCurrentParentNode(nodeData);
-    setCurParentNode(nodeData);
+    setCurParentNode?.(nodeData);
     setAddDrawerVisible(true);
   };
 

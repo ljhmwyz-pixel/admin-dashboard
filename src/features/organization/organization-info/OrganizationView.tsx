@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  FormButton,
-  FormDrawer,
-  FormInput,
-  FormModal,
-  FormSelect,
-  FormTextArea,
-  ImageIcons,
-} from '@/components';
+import { FormButton } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -21,7 +13,7 @@ import {
   OrgUsernameField,
 } from '@/components/fields';
 import organizationApi from '@/services/modules/organization/organizationApi';
-import { AntCol, AntForm, AntRow } from '@/shared/components/antd-imports';
+import { AntForm, AntRow } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -39,9 +31,8 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [detail, setDetail] = useState({});
   const { t } = useLanguage();
-  const { success } = FormModal();
 
-  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit } =
+  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail } =
     useOrganizationForm(currentParentNode);
 
   useEffect(() => {
@@ -52,7 +43,17 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
         const res = await organizationApi.detail({ orgId });
 
         if (res.code === 200) {
-          form.setFieldsValue(res.data);
+          form.setFieldsValue({
+            orgName: res.data.orgName,
+            orgDescription: res.data.description,
+            orgUsername: res.data.contactPerson,
+            orgPhone: res.data.contactPhone,
+            orgEmail: res.data.contactEmail,
+            orgPostalCode: res.data.zipCode,
+            orgType: res.data.orgType,
+            orgAddress: res.data.address,
+            orgCountryRegion: res.data.regionCode,
+          });
           setDetail(res.data);
         }
       } catch (error) {
@@ -72,7 +73,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
     form.setFieldsValue(detail);
   };
   const onSave = () => {
-    form.validateFields().then(async (values) => {
+    form.validateFields().then(async (_values) => {
       try {
         // const requestParams = {
         //   orgName: 'Updated Dealer Name',
@@ -113,7 +114,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
             <OrgAddressField form={form} verifyResult={verifyResult} canEdit={canEdit} />
 
             {/* 国家地区字段 */}
-            <OrgCountryRegionField form={form} canEdit={canEdit} />
+            <OrgCountryRegionField form={form} canEdit={false} />
           </AntRow>
           <AntRow gutter={30}>
             {/* 邮政编码字段 */}
@@ -134,7 +135,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
               form={form}
               userExists={userExists}
               existingUsername={existingUsername}
-              canEdit={canEdit}
+              canEdit={false}
             />
 
             {/* 电话字段 */}
@@ -143,7 +144,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
               userExists={userExists}
               existingPhone={existingPhone}
               verifyResult={verifyResult}
-              canEdit={canEdit}
+              canEdit={false}
             />
           </AntRow>
           <AntRow gutter={30}>

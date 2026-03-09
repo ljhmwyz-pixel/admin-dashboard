@@ -6,7 +6,7 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { FieldProps } from './types';
 
-type OrgPostalCodeFieldProps = FieldProps & { canEdit: boolean };
+type OrgPostalCodeFieldProps = FieldProps & { canEdit?: boolean };
 
 const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();

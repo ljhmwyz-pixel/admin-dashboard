@@ -100,7 +100,9 @@ class ApiClient {
               });
               break;
             default:
-              console.error('请求失败:', data.message);
+              ModalError({
+                content: data.msg,
+              });
           }
         } else if (error.request) {
           // 网络错误

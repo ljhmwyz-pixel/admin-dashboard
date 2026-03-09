@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   position: relative;
+  flex-shrink: 0;
   .orgBase {
     display: flex;
     flex-direction: row;

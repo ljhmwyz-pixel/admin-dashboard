@@ -18,26 +18,24 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
   children,
   ...rest
 }) => {
+  const [isOverflow, setIsOverflow] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [footerHeight, setFooterHeight] = useState(60);
+
+  const checkOverflow = () => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    setIsOverflow(el.scrollHeight > el.clientHeight);
+  };
 
   useEffect(() => {
-    const body = contentRef.current?.closest('.ant-drawer-body') as HTMLElement;
-    if (!body) return;
-
-    const checkOverflow = () => {
-      const isOverflow = body.scrollHeight > body.clientHeight;
-
-      setFooterHeight((prev) => {
-        const next = isOverflow ? 30 : 60;
-        return prev === next ? prev : next;
-      });
-    };
+    const el = contentRef.current;
+    if (!el) return;
 
     checkOverflow();
 
     const observer = new ResizeObserver(checkOverflow);
-    observer.observe(body);
+    observer.observe(el);
 
     return () => observer.disconnect();
   }, [children]);
@@ -54,7 +52,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
       closeIcon={closeIcon ?? <img src={ImageIcons.form.drawerCloseIcon} width={18} height={18} />}
       footer={
         rest.footer ? (
-          <div className={styles.footer} style={{ height: footerHeight }}>
+          <div className={classNames(styles.footer, isOverflow && styles.footerOverflow)}>
             {rest.footer}
           </div>
         ) : null

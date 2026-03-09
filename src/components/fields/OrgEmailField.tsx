@@ -30,6 +30,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
 
   const handleCheckEmailExists = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!canEdit) return;
     const value = form.getFieldValue('orgEmail') || '';
 
     // 先进行基础格式校验
@@ -61,7 +62,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
         },
       ]);
     }
-  }, [userExists]);
+  }, [userExists, form, t]);
 
   return (
     <AntCol span={12}>

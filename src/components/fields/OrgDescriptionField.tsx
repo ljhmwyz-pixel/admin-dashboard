@@ -6,7 +6,7 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import type { FieldProps } from './types';
 
-type OrgDescriptionFieldProps = FieldProps & { canEdit: boolean };
+type OrgDescriptionFieldProps = FieldProps & { canEdit?: boolean };
 
 const OrgDescriptionField: React.FC<OrgDescriptionFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();

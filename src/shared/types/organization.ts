@@ -96,7 +96,7 @@ export interface CreateOrganizationRequest {
   contactPerson?: string;
   contactPhone?: string;
   contactEmail?: string;
-  orgId: string;
+  orgId?: string;
 }
 
 export interface CreateOrganizationResponse {

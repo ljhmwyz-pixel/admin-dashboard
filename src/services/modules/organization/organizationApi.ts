@@ -48,7 +48,7 @@ class OrganizationApiImpl implements OrganizationApi {
   }
 
   async update(data: CreateOrganizationRequest): Promise<CreateOrganizationResponse> {
-    return apiClient.put(ORGANIZATION_ENDPOINTS.UPDATE(data.orgId), data);
+    return apiClient.put(ORGANIZATION_ENDPOINTS.UPDATE(data.orgId || ''), data);
   }
 
   async detail(data: { orgId: string }): Promise<CreateOrganizationResponse> {

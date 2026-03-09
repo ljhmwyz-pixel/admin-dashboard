@@ -27,7 +27,7 @@ export default function OrgAddressField({
         },
       ]);
     }
-  }, [verifyResult]);
+  }, [verifyResult, form]);
   return (
     <Col span={12}>
       <AddressPickerAutoComplete

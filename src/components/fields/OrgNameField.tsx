@@ -50,7 +50,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({
           errors: [t('org.dialog.similar_org.content')],
         },
       ]);
-  }, [verifyResult]);
+  }, [verifyResult, form, t]);
 
   return (
     <AntCol span={12}>
