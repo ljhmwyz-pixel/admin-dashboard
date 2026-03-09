@@ -12,12 +12,14 @@ interface OrganizationDetailPanelIProps {
   selectedKey: string;
   currentParentNode: TreeNodeData;
   treeData: TreeNodeData[];
+  loadData: () => void;
 }
 
 const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
   selectedKey: orgId,
   currentParentNode,
   treeData,
+  loadData,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
@@ -28,7 +30,12 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
       children: orgId ? (
-        <OrganizationView orgId={orgId} currentParentNode={currentParentNode} treeData={treeData} />
+        <OrganizationView
+          orgId={orgId}
+          currentParentNode={currentParentNode}
+          treeData={treeData}
+          loadData={loadData}
+        />
       ) : null,
     },
     {

@@ -63,9 +63,9 @@ class ApiClient {
         // 统一业务错误处理
         if (res.code && res.code !== 200) {
           ModalError({
-            content: res.message,
+            content: res.message || res.msg,
           });
-          return Promise.reject(res);
+          return;
         }
         return res;
       },

@@ -111,6 +111,7 @@ const OrganizationList: React.FC = () => {
             selectedKey={selectedKey}
             currentParentNode={currentParentNode}
             treeData={treeData}
+            loadData={loadTreeData}
           />
         </Splitter.Panel>
       </Splitter>

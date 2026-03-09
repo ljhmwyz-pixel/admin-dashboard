@@ -60,7 +60,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const [existingPhone, setExistingPhone] = useState<string>('');
   const [userType, setUserType] = useState<string>('');
 
-  // 组织验证状态
+  // 组织验证状态(创建)
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
     valid: false,
     isCountryInScope: true,
@@ -71,6 +71,17 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     isOrganizationSimilar: false,
     isPhoneExists: false,
     timestamp: 0,
+  });
+
+  // 组织验证状态(修改)
+  const [verifyResultByUpdate, setVerifyResultByUpdate] = useState<any>({
+    valid: false,
+    isOrganizationNotFound: false,
+    isPylontech: false,
+    isOrganizationExists: false,
+    isOrganizationSimilar: false,
+    isOrgTypeChangeAllowed: true,
+    isCountryInScope: true,
   });
 
   const requestParams = useCallback(
@@ -90,6 +101,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         latitude: values.lat,
         longitude: values.lng,
         regionCode: values.orgCountryRegion || '',
+        orgId: values.orgId || '',
       };
     },
     [currentParentNode],
@@ -144,7 +156,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   );
 
   /**
-   * 验证组织信息
+   * 验证组织信息(创建)
    */
   const verifyOrganization = useCallback(
     async (values: OrganizationFormData) => {
@@ -169,6 +181,38 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         return result;
       } catch {
         setVerifyResult(defaultResult);
+        return defaultResult;
+      }
+    },
+    [requestParams],
+  );
+
+  /**
+   * 验证组织信息(更新)
+   */
+  const verifyOrganizationByUpdate = useCallback(
+    async (values: OrganizationFormData) => {
+      const defaultResult: VerifyOrganization = {
+        isOwnerTypeValid: false,
+        isOrgTypeAllowed: false,
+        isBdScopesAvailable: false,
+        isOrganizationNotFound: false,
+        isPylontech: false,
+        isOrganizationExists: false,
+        isOrganizationSimilar: false,
+        similarOrgName: null,
+        isOrgTypeChangeAllowed: true,
+        isCountryInScope: true,
+        valid: false,
+      };
+      try {
+        const verifyParams: CreateOrganizationRequest = requestParams(values);
+        const response = await organizationApi.verifyByUpdate(verifyParams);
+        const result = { ...response.data, timestamp: Date.now() };
+        setVerifyResultByUpdate(result);
+        return result;
+      } catch {
+        setVerifyResultByUpdate(defaultResult);
         return defaultResult;
       }
     },
@@ -224,7 +268,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         }
 
         // ===== 第二步：验证邮箱 =====
-        const emailResult = await verifyEmail(values.orgEmail);
+        const emailResult = await verifyEmail(values.orgEmail || '');
 
         // ===== 第三步：创建组织 =====
         let response;
@@ -306,6 +350,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     existingPhone,
     userType,
     verifyResult,
+    verifyResultByUpdate,
 
     // 方法
     verifyEmail,
@@ -313,5 +358,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     handleSubmit,
     resetVerifyStatus,
     requestParams,
+    verifyOrganizationByUpdate,
   };
 };

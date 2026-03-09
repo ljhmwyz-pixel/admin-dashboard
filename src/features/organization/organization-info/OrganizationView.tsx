@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Spin } from 'antd';
 
 import { FormButton, FormModal } from '@/components';
 import {
@@ -14,7 +15,6 @@ import {
 } from '@/components/fields';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -28,24 +28,26 @@ interface OrganizationViewIProps {
   orgId: string;
   currentParentNode: TreeNodeData;
   treeData: TreeNodeData[];
+  loadData: () => void;
 }
 const OrganizationView: React.FC<OrganizationViewIProps> = ({
   orgId,
   currentParentNode,
   treeData,
+  loadData,
 }) => {
   const [form] = AntForm.useForm();
+  const [spinning, setSpinning] = useState<boolean>(false);
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [detail, setDetail] = useState({});
   const { t } = useLanguage();
-  const { showLoading, hideLoading } = useGlobalLoading();
   const {
     userExists,
     existingUsername,
     existingPhone,
-    verifyResult,
+    verifyResultByUpdate,
     verifyEmail,
-    verifyOrganization,
+    verifyOrganizationByUpdate,
   } = useOrganizationForm(currentParentNode);
   const { success: ModalSuccess, error: ModalError } = FormModal();
 
@@ -55,7 +57,9 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
 
   useEffect(() => {
     if (!orgId) return;
+    setSpinning(true);
     fetchDetail(orgId);
+    setCanEdit(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgId]);
   /**
@@ -82,12 +86,16 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   const fetchDetail = async (orgId: string) => {
     try {
       const res = await organizationApi.detail({ orgId });
-      setValue(res);
       if (res.code === 200) {
+        setValue(res);
         setDetail(res.data);
+        setSpinning(false);
       }
     } catch (error) {
+      setSpinning(false);
       console.error('Get org detail failed:', error);
+    } finally {
+      setSpinning(false);
     }
   };
   const onEdit = () => {
@@ -100,9 +108,9 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   };
   const handleSubmit = useCallback(
     async (values: OrganizationFormData) => {
-      showLoading();
       try {
-        const verifyData = await verifyOrganization(values);
+        setSpinning(true);
+        const verifyData = await verifyOrganizationByUpdate({ ...values, orgId });
         if (!verifyData.valid) {
           return { success: false, reason: 'validation_failed', verifyData };
         }
@@ -122,12 +130,13 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
           return { success: false, reason: 'create_failed', response };
         }
       } catch (error) {
+        setSpinning(false);
         return { success: false, reason: 'error', error };
       } finally {
-        hideLoading();
+        setSpinning(false);
       }
     },
-    [hideLoading, orgId, showLoading, verifyOrganization, handleUpdateOrganization],
+    [orgId, verifyOrganizationByUpdate, handleUpdateOrganization],
   );
 
   const onSave = () => {
@@ -150,6 +159,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
           } else {
             setCanEdit(false);
             fetchDetail(orgId);
+            loadData?.();
             ModalSuccess({
               title: t('org.toast.update_success'),
             });
@@ -161,87 +171,88 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   };
 
   return (
-    <div className={styles.organizationView}>
-      {/* 组织基本信息 */}
-      <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
-      {/* 组织信息编辑 */}
-      <div className={styles.editContainer}>
-        <AntForm form={form} layout="vertical" initialValues={detail}>
-          <AntRow gutter={30}>
-            {/* 组织名称字段 */}
-            <OrgNameField form={form} verifyResult={verifyResult} canEdit={canEdit} />
+    <Spin description="加载中..." spinning={spinning}>
+      <div className={styles.organizationView}>
+        {/* 组织基本信息 */}
+        <OrgInfo orgName={parentNode?.title} orgType={parentNode?.type} orgId={parentNode?.key} />
+        {/* 组织信息编辑 */}
+        <div className={styles.editContainer}>
+          <AntForm form={form} layout="vertical" initialValues={detail}>
+            <AntRow gutter={30}>
+              {/* 组织名称字段 */}
+              <OrgNameField form={form} verifyResult={verifyResultByUpdate} canEdit={canEdit} />
 
-            {/* 组织类型字段 */}
-            <OrgTypeField form={form} parentOrgType={currentParentNode?.type} canEdit={canEdit} />
-          </AntRow>
-          <AntRow gutter={30}>
-            {/* 组织地址字段 */}
-            <OrgAddressField form={form} verifyResult={verifyResult} canEdit={canEdit} />
+              {/* 组织类型字段 */}
+              <OrgTypeField form={form} parentOrgType={currentParentNode?.type} canEdit={canEdit} />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 组织地址字段 */}
+              <OrgAddressField form={form} verifyResult={verifyResultByUpdate} canEdit={canEdit} />
 
-            {/* 国家地区字段 */}
-            <OrgCountryRegionField form={form} canEdit={false} />
-          </AntRow>
-          <AntRow gutter={30}>
-            {/* 邮政编码字段 */}
-            <OrgPostalCodeField form={form} canEdit={canEdit} />
-          </AntRow>
-          <AntRow gutter={30}>
-            {/* 邮箱字段 */}
-            <OrgEmailField
-              form={form}
-              onCheckEmailExists={verifyEmail}
-              userExists={userExists}
-              canEdit={false}
-            />
-          </AntRow>
-          <AntRow gutter={30}>
-            {/* 用户名字段 */}
-            <OrgUsernameField
-              form={form}
-              userExists={userExists}
-              existingUsername={existingUsername}
-              canEdit={false}
-            />
+              {/* 国家地区字段 */}
+              <OrgCountryRegionField form={form} canEdit={false} />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 邮政编码字段 */}
+              <OrgPostalCodeField form={form} canEdit={canEdit} />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 邮箱字段 */}
+              <OrgEmailField
+                form={form}
+                onCheckEmailExists={verifyEmail}
+                userExists={userExists}
+                canEdit={false}
+              />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 用户名字段 */}
+              <OrgUsernameField
+                form={form}
+                userExists={userExists}
+                existingUsername={existingUsername}
+                canEdit={false}
+              />
 
-            {/* 电话字段 */}
-            <OrgPhoneField
-              form={form}
-              userExists={userExists}
-              existingPhone={existingPhone}
-              verifyResult={verifyResult}
-              canEdit={false}
-            />
-          </AntRow>
-          <AntRow gutter={30}>
+              {/* 电话字段 */}
+              <OrgPhoneField
+                form={form}
+                userExists={userExists}
+                existingPhone={existingPhone}
+                canEdit={false}
+              />
+            </AntRow>
+            <AntRow gutter={30}>
+              {/* 描述字段 */}
+              <OrgDescriptionField form={form} canEdit={canEdit} />
+            </AntRow>
             {/* 描述字段 */}
-            <OrgDescriptionField form={form} canEdit={canEdit} />
-          </AntRow>
-          {/* 描述字段 */}
-        </AntForm>
-        {/* 操作按钮 */}
-        <div className={styles.btns}>
-          {canEdit ? (
-            [
-              <FormButton key="org_common.action.cancel" onClick={onCancel}>
-                {t('common.action.cancel')}
-              </FormButton>,
-              <FormButton
-                key="org_common.action.save"
-                color="primary"
-                variant="solid"
-                onClick={onSave}
-              >
-                {t('common.action.save')}
-              </FormButton>,
-            ]
-          ) : (
-            <FormButton key="org_common.action.modify" color="default" onClick={onEdit}>
-              {t('common.action.modify')}
-            </FormButton>
-          )}
+          </AntForm>
+          {/* 操作按钮 */}
+          <div className={styles.btns}>
+            {canEdit ? (
+              [
+                <FormButton key="org_common.action.cancel" onClick={onCancel}>
+                  {t('common.action.cancel')}
+                </FormButton>,
+                <FormButton
+                  key="org_common.action.save"
+                  color="primary"
+                  variant="solid"
+                  onClick={onSave}
+                >
+                  {t('common.action.save')}
+                </FormButton>,
+              ]
+            ) : (
+              <FormButton key="org_common.action.modify" color="default" onClick={onEdit}>
+                {t('common.action.modify')}
+              </FormButton>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Spin>
   );
 };
 

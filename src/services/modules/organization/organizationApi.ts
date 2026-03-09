@@ -59,6 +59,10 @@ class OrganizationApiImpl implements OrganizationApi {
     return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY, data);
   }
 
+  async verifyByUpdate(data: CreateOrganizationRequest): Promise<VerifyResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.VERIFY_UPDATE(data.orgId || ''), data);
+  }
+
   async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
     return apiClient.get(ORGANIZATION_ENDPOINTS.VERIFY_EMAIL, { params: data });
   }
