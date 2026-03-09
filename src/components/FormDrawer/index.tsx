@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { DrawerProps } from 'antd';
 import { Drawer } from 'antd';
 import classNames from 'classnames';
@@ -18,6 +18,30 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
   children,
   ...rest
 }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [footerHeight, setFooterHeight] = useState(60);
+
+  useEffect(() => {
+    const body = contentRef.current?.closest('.ant-drawer-body') as HTMLElement;
+    if (!body) return;
+
+    const checkOverflow = () => {
+      const isOverflow = body.scrollHeight > body.clientHeight;
+
+      setFooterHeight((prev) => {
+        const next = isOverflow ? 30 : 60;
+        return prev === next ? prev : next;
+      });
+    };
+
+    checkOverflow();
+
+    const observer = new ResizeObserver(checkOverflow);
+    observer.observe(body);
+
+    return () => observer.disconnect();
+  }, [children]);
+
   return (
     <Drawer
       {...rest}
@@ -28,8 +52,17 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
         </div>
       }
       closeIcon={closeIcon ?? <img src={ImageIcons.form.drawerCloseIcon} width={18} height={18} />}
+      footer={
+        rest.footer ? (
+          <div className={styles.footer} style={{ height: footerHeight }}>
+            {rest.footer}
+          </div>
+        ) : null
+      }
     >
-      <div className={styles.content}>{children}</div>
+      <div ref={contentRef} className={styles.content}>
+        {children}
+      </div>
     </Drawer>
   );
 };

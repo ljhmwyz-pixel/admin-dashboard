@@ -24,3 +24,14 @@
     padding: 18px 30px;
   }
 }
+.content {
+  overflow-y: auto;
+  min-height: 0;
+}
+.footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  transition: height 0.2s;
+}
