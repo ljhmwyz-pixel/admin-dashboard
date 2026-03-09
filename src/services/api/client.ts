@@ -59,10 +59,10 @@ class ApiClient {
       (response: AxiosResponse) => {
         // 统一处理响应数据
         const res = response.data;
-        const { error } = useAppModal();
+        const { error: ModalError } = useAppModal();
         // 统一业务错误处理
         if (res.code && res.code !== 200) {
-          error({
+          ModalError({
             content: res.message,
           });
           return Promise.reject(res);
@@ -70,6 +70,7 @@ class ApiClient {
         return res;
       },
       (error: any) => {
+        const { error: ModalError } = useAppModal();
         // 统一错误处理
         if (error.response) {
           const { status, data } = error.response;
@@ -82,15 +83,21 @@ class ApiClient {
               break;
             case 403:
               // 权限不足
-              console.error('权限不足:', data.message);
+              ModalError({
+                content: data.msg,
+              });
               break;
             case 404:
               // 资源不存在
-              console.error('请求资源不存在:', data.message);
+              ModalError({
+                content: data.msg,
+              });
               break;
             case 500:
               // 服务器错误
-              console.error('服务器内部错误:', data.message);
+              ModalError({
+                content: data.msg,
+              });
               break;
             default:
               console.error('请求失败:', data.message);

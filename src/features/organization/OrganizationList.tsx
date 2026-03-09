@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Splitter } from 'antd';
 
-import type { TreeNodeData } from '@/shared/types/organization';
-
 // import { AntTabs } from '@/shared/components/antd-imports';
 import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
 import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
+import type { TreeNodeData } from '@/shared/types/organization';
 
 // import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
