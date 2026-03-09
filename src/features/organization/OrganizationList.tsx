@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Splitter } from 'antd';
 
+import AddOrganizationDrawer from '@/features/organization/organization-info/AddOrganizationDrawer';
 import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
 import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
-import type { TreeNodeData } from '@/shared/types/organization';
+import { useOrganizationTree } from '@/shared/hooks/useOrganizationTree';
 
 import styles from './OrganizationList.module.scss';
 
 const OrganizationList: React.FC = () => {
-  const [selectedKey, setSelectedKey] = useState<string>('');
-  const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
-  const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
-
-  // 使用模拟数据作为默认树数据
+  const {
+    treeData,
+    selectedKey,
+    currentParentNode,
+    addDrawerVisible,
+    expandedKeys,
+    loadTreeData,
+    handleSelect,
+    handleAdd,
+    handleDelete,
+    closeAddDrawer,
+    handleExpand,
+  } = useOrganizationTree();
 
   return (
     <div className={styles.organizationListPage}>
@@ -84,13 +93,14 @@ const OrganizationList: React.FC = () => {
         <Splitter.Panel defaultSize="40%" min="20%" max="70%">
           <div className={styles.organizationListPanel}>
             <OrganizationTree
-              onSelect={(selectedKey) => {
-                setSelectedKey(selectedKey);
-              }}
-              setCurParentNode={(parentNode: TreeNodeData) => setCurrentParentNode(parentNode)}
+              onSelect={handleSelect}
               selectedKey={selectedKey}
-              setTreeData={(data) => setTreeData(data)}
+              onAdd={handleAdd}
+              onDelete={handleDelete}
+              onExpand={handleExpand}
+              expandedKeys={expandedKeys}
               treeData={treeData}
+              loadData={loadTreeData}
             />
           </div>
         </Splitter.Panel>
@@ -104,6 +114,16 @@ const OrganizationList: React.FC = () => {
           />
         </Splitter.Panel>
       </Splitter>
+
+      {addDrawerVisible && (
+        <AddOrganizationDrawer
+          visible={addDrawerVisible}
+          onChange={closeAddDrawer}
+          currentParentNode={currentParentNode}
+          loadData={loadTreeData}
+          treeData={treeData}
+        />
+      )}
     </div>
   );
 };

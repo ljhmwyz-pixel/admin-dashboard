@@ -17,7 +17,6 @@ const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
   form,
   onCheckEmailExists,
-  userExists,
   canEdit = true,
 }) => {
   const { t } = useLanguage();
@@ -52,17 +51,6 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
       onCheckEmailExists(value, true);
     }
   };
-
-  useEffect(() => {
-    if (userExists) {
-      form.setFields([
-        {
-          name: 'orgEmail',
-          errors: [t('org.validation.email.exists')],
-        },
-      ]);
-    }
-  }, [userExists, form, t]);
 
   return (
     <AntCol span={12}>

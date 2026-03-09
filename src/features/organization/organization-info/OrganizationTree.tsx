@@ -7,12 +7,7 @@ import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import type { TreeNodeData } from '@/shared/types/organization';
 
-import {
-  deleteOrganization,
-  loadOrganizationData,
-  validateDeleteOrganization,
-} from '../services/organizationService';
-import AddOrganizationDrawer from './AddOrganizationDrawer';
+import { deleteOrganization } from '../services/organizationService';
 import TreeNodeTitle from './TreeNodeTitle';
 
 import styles from './OrganizationTree.module.scss';
@@ -20,51 +15,59 @@ import styles from './OrganizationTree.module.scss';
 interface OrganizationTreeProps {
   onSelect?: (selectedKey: string) => void;
   selectedKey?: string;
-  setCurParentNode?: (node: TreeNodeData) => void;
-  setTreeData: (data: TreeNodeData[]) => void;
+  onAdd?: (node: TreeNodeData) => void;
+  onDelete?: (node: TreeNodeData, onFila: () => void, onSuccess: () => void) => void;
+  onExpand?: (keys: React.Key[]) => void;
+  expandedKeys?: React.Key[];
   treeData: TreeNodeData[];
+  loadData: (searchKeyword?: string) => Promise<void>;
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   onSelect,
   selectedKey = '',
-  setCurParentNode,
-  setTreeData,
+  onAdd,
+  onDelete,
+  onExpand,
+  expandedKeys = [],
   treeData,
+  loadData,
 }) => {
-  const { withLoading, showLoading, hideLoading } = useGlobalLoading();
-  const [addDrawerVisible, setAddDrawerVisible] = useState(false);
-  const [currentParentNode, setCurrentParentNode] = useState<TreeNodeData>({} as TreeNodeData);
+  const { showLoading, hideLoading } = useGlobalLoading();
   const [searchValue, setSearchValue] = useState<string>('');
-  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const initializedRef = useRef(false);
   const loadingRef = useRef(false);
   const { t } = useLanguage();
   const { warning, confirm } = FormModal();
 
-  const loadData = useCallback(
-    async (searchKeyword?: string) => {
-      await loadOrganizationData({
-        searchKeyword,
-        withLoading,
-        setData: (data) => {
-          setTreeData(data);
-          setExpandedKeys([]);
-          initializedRef.current = true;
-          loadingRef.current = false;
-        },
-      }).catch(() => {
+  // 初始化加载数据
+  useEffect(() => {
+    if (initializedRef.current || loadingRef.current) {
+      return;
+    }
+    loadingRef.current = true;
+
+    loadData()
+      .then(() => {
+        initializedRef.current = true;
+        loadingRef.current = false;
+      })
+      .catch(() => {
         loadingRef.current = false;
       });
+  }, [loadData]);
+
+  // 处理展开/收起（使用外部传入的回调）
+  const handleExpand = useCallback(
+    (keys: React.Key[]) => {
+      onExpand?.(keys);
     },
-    [withLoading],
+    [onExpand],
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(async (value: string) => {
-      setCurrentParentNode({} as TreeNodeData);
-      setCurParentNode?.({} as TreeNodeData);
       if (onSelect) {
         onSelect('');
       }
@@ -73,101 +76,80 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
     [],
   );
 
-  useEffect(() => {
-    if (initializedRef.current || loadingRef.current) {
-      return;
-    }
-    loadingRef.current = true;
-
-    loadData();
-  }, [loadData]);
-
-  // 处理搜索框变化（带防抖）
+  // 处理搜索框变化
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchValue(value);
-    // 使用防抖函数进行搜索
     debouncedSearch(value);
   };
 
   // 处理树节点选择
   const handleTreeSelect = (selectedKeys: React.Key[]) => {
-    console.log('Selected Keys:', selectedKeys);
     if (selectedKeys.length > 0) {
       const key = selectedKeys[0] as string;
-      if (onSelect) {
-        onSelect(key);
-      }
+      onSelect?.(key);
     }
   };
 
-  // 处理节点添加事件
+  // 处理节点添加事件 - 调用外部回调
   const handleNodeAdd = (nodeData: TreeNodeData) => {
-    setCurrentParentNode(nodeData);
-    setCurParentNode?.(nodeData);
-    setAddDrawerVisible(true);
+    onAdd?.(nodeData);
   };
 
+  // 处理节点删除事件
   const handleNodeDelete = async (nodeData: TreeNodeData) => {
-    try {
-      // 步骤 1：先进行删除验证
-      const validationResult = await validateDeleteOrganization(nodeData.key, withLoading);
-
-      if (!validationResult.canDelete) {
+    onDelete?.(
+      nodeData,
+      () => {
         warning({
           title: 'Sub-Organizations Exists !',
           content: t('org.error.sub_org_exists.content'),
         });
-        return;
-      }
+      },
+      () => {
+        let confirmValue = '';
 
-      // 步骤 2：验证通过，显示确认对话框
-      let confirmValue = '';
-
-      const modalInstance = confirm({
-        title: 'Confirm Deletion !',
-        content: (
-          <DeleteConfirmInput
-            placeholder="Please enter organization code"
-            onChange={(value) => {
-              confirmValue = value;
-              if (modalInstance) {
-                modalInstance.update({
-                  okButtonProps: {
-                    danger: true,
-                    disabled: value !== nodeData.key,
-                    className: styles.okConfirm,
-                  },
-                });
-              }
-            }}
-            confirmText="Are you sure delete this organization? This action cannot be undone."
-            nodeData={nodeData}
-          />
-        ),
-        okText: t('common.action.delete'),
-        cancelText: t('common.action.cancel'),
-        okButtonProps: {
-          danger: true,
-          disabled: true,
-        },
-        onOk: async () => {
-          try {
+        const modalInstance = confirm({
+          title: 'Confirm Deletion !',
+          content: (
+            <DeleteConfirmInput
+              placeholder="Please enter organization code"
+              onChange={(value) => {
+                confirmValue = value;
+                if (modalInstance) {
+                  modalInstance.update({
+                    okButtonProps: {
+                      danger: true,
+                      disabled: value !== nodeData.key,
+                      className: styles.okConfirm,
+                    },
+                  });
+                }
+              }}
+              confirmText="Are you sure delete this organization? This action cannot be undone."
+              nodeData={nodeData}
+            />
+          ),
+          okText: t('common.action.delete'),
+          cancelText: t('common.action.cancel'),
+          okButtonProps: {
+            danger: true,
+            disabled: true,
+          },
+          onOk: async () => {
             if (confirmValue === nodeData.key) {
-              showLoading();
-              await deleteOrganization(nodeData.key);
-              await loadData();
+              try {
+                showLoading();
+                await deleteOrganization(nodeData.key);
+                await loadData();
+              } finally {
+                hideLoading();
+              }
             }
-          } catch (error) {
-            console.error('Delete operation failed:', error);
-          } finally {
-            hideLoading();
-          }
-        },
-      });
-    } catch (error) {
-      console.error('Delete validation failed:', error);
-    }
+          },
+        });
+      },
+    );
   };
 
   return (
@@ -201,36 +183,29 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
           allowClear
         />
       </div>
-      <div className={styles.organizationTreeSearch} />
-      <div className={styles.treeContainer}>
-        <AntTree
-          className={styles.organizationTree}
-          treeData={treeData}
-          onSelect={handleTreeSelect}
-          selectedKeys={[selectedKey]}
-          expandedKeys={expandedKeys}
-          onExpand={setExpandedKeys}
-          showLine
-          height={(window && window?.innerHeight - 74) || 400}
-          blockNode
-          virtual
-          titleRender={(nodeData: TreeNodeData) => (
-            <TreeNodeTitle
-              nodeData={nodeData}
-              onNodeAdd={handleNodeAdd}
-              onNodeDelete={handleNodeDelete}
-            />
-          )}
-        />
+      <div className={styles.organizationTreeSearch}>
+        <div className={styles.treeContainer}>
+          <AntTree
+            className={styles.organizationTree}
+            treeData={treeData}
+            onSelect={handleTreeSelect}
+            selectedKeys={[selectedKey]}
+            expandedKeys={expandedKeys}
+            onExpand={handleExpand}
+            showLine
+            height={(window && window?.innerHeight - 74) || 400}
+            blockNode
+            virtual
+            titleRender={(nodeData: TreeNodeData) => (
+              <TreeNodeTitle
+                nodeData={nodeData}
+                onNodeAdd={handleNodeAdd}
+                onNodeDelete={handleNodeDelete}
+              />
+            )}
+          />
+        </div>
       </div>
-      {/* 添加组织抽屉 */}
-      <AddOrganizationDrawer
-        currentParentNode={currentParentNode}
-        visible={addDrawerVisible}
-        onChange={(visible) => setAddDrawerVisible(visible)}
-        loadData={loadData}
-        treeData={treeData}
-      />
     </div>
   );
 };

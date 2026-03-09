@@ -9,9 +9,9 @@ interface OrganizationInfoProps {
 }
 
 const OrganizationInfo: React.FC<OrganizationInfoProps> = ({
-  orgName = 'Pylontech',
-  orgType = 'Pylontech',
-  orgId = 'ROOT-PYL5-T9W3',
+  orgName = '',
+  orgType = '',
+  orgId = '',
 }) => {
   return (
     <div className={styles.orgInfo}>
