@@ -8,7 +8,6 @@ import type { VerifyOrganization } from '@/shared/types/organization';
 import type { FieldProps } from './types';
 
 type OrgPhoneFieldProps = FieldProps & {
-  userExists?: boolean;
   existingPhone?: string;
   verifyResult?: VerifyOrganization;
   canEdit?: boolean;
@@ -16,7 +15,6 @@ type OrgPhoneFieldProps = FieldProps & {
 
 const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   form,
-  userExists = false,
   existingPhone,
   verifyResult = {} as VerifyOrganization,
   canEdit = true,
@@ -88,7 +86,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
     if (existingPhone) {
       form.setFieldValue('orgPhone', existingPhone);
     }
-  }, [userExists, existingPhone, form]);
+  }, [existingPhone, form]);
 
   useEffect(() => {
     if (verifyResult.isPhoneExists) {
@@ -128,7 +126,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
           inputMode: 'numeric',
           placeholder: t('org.placeholder.enter_phone'),
           maxLength: 16,
-          disabled: userExists || !canEdit,
+          disabled: !!existingPhone || !canEdit,
           onChange: handleChange,
           onBlur: handleBlur,
         }}

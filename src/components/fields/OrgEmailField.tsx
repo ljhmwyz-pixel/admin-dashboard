@@ -8,7 +8,6 @@ import type { FieldProps } from './types';
 
 type OrgEmailFieldProps = FieldProps & {
   onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
-  userExists?: boolean;
   canEdit?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
