@@ -28,7 +28,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
     }, 0);
   };
   useEffect(() => {
-    if (userExists && existingUsername) {
+    if (existingUsername) {
       form.setFieldValue('orgUsername', existingUsername);
     }
   }, [userExists, existingUsername, form]);
