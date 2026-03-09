@@ -7,14 +7,12 @@ import { useLanguage } from '@/shared/hooks';
 import type { FieldProps } from './types';
 
 type OrgUsernameFieldProps = FieldProps & {
-  userExists?: boolean;
   existingUsername?: string;
   canEdit?: boolean;
 };
 
 const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   form,
-  userExists = false,
   existingUsername,
   canEdit = true,
 }) => {
@@ -28,10 +26,10 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
     }, 0);
   };
   useEffect(() => {
-    if (userExists && existingUsername) {
+    if (existingUsername) {
       form.setFieldValue('orgUsername', existingUsername);
     }
-  }, [userExists, existingUsername, form]);
+  }, [existingUsername, form]);
 
   return (
     <AntCol span={12}>
@@ -59,7 +57,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
         inputProps={{
           placeholder: t('org.placeholder.enter_username'),
           maxLength: 100,
-          disabled: userExists || !canEdit,
+          disabled: !!existingUsername || !canEdit,
           onBlur: handleBlur,
         }}
       />

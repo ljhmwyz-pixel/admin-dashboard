@@ -41,15 +41,8 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   const { t } = useLanguage();
   const { warningConfirm } = FormModal();
 
-  const {
-    userExists,
-    existingUsername,
-    existingPhone,
-    verifyResult,
-    verifyEmail,
-    handleSubmit,
-    loading,
-  } = useOrganizationForm(currentParentNode);
+  const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
+    useOrganizationForm(currentParentNode);
 
   // 获取父节点信息
   const parentNode =
@@ -149,18 +142,13 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
             </AntRow>
             <AntRow gutter={30}>
               {/* 用户名字段 */}
-              <OrgUsernameField
-                form={form}
-                userExists={userExists}
-                existingUsername={existingUsername}
-              />
+              <OrgUsernameField form={form} existingUsername={existingUsername} />
 
               {/* 电话字段 */}
               <OrgPhoneField
                 form={form}
-                userExists={userExists}
-                existingPhone={existingPhone}
                 verifyResult={verifyResult}
+                existingPhone={existingPhone}
               />
             </AntRow>
             {/* <AntRow gutter={30}>

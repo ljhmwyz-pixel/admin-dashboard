@@ -42,7 +42,6 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   const [detail, setDetail] = useState<any>({});
   const { t } = useLanguage();
   const {
-    userExists,
     existingUsername,
     existingPhone,
     verifyResultByUpdate,
@@ -221,29 +220,14 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
             </AntRow>
             <AntRow gutter={30}>
               {/* 邮箱字段 */}
-              <OrgEmailField
-                form={form}
-                onCheckEmailExists={verifyEmail}
-                userExists={userExists}
-                canEdit={false}
-              />
+              <OrgEmailField form={form} onCheckEmailExists={verifyEmail} canEdit={false} />
             </AntRow>
             <AntRow gutter={30}>
               {/* 用户名字段 */}
-              <OrgUsernameField
-                form={form}
-                userExists={userExists}
-                existingUsername={existingUsername}
-                canEdit={false}
-              />
+              <OrgUsernameField form={form} existingUsername={existingUsername} canEdit={false} />
 
               {/* 电话字段 */}
-              <OrgPhoneField
-                form={form}
-                userExists={userExists}
-                existingPhone={existingPhone}
-                canEdit={false}
-              />
+              <OrgPhoneField form={form} existingPhone={existingPhone} canEdit={false} />
             </AntRow>
             <AntRow gutter={30}>
               {/* 描述字段 */}
