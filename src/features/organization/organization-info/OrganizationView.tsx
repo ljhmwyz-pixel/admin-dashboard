@@ -14,8 +14,7 @@ import {
 } from '@/components/fields';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
-import { useGlobalLoading } from '@/shared/hooks/useGlobalLoading';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useGlobalLoading, useLanguage } from '@/shared/hooks';
 import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
 import { getParentNode } from '@/shared/utils/dataTransformer';

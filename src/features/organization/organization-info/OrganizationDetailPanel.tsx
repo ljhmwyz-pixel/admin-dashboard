@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { FormTabs } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrganizationView from './OrganizationView';

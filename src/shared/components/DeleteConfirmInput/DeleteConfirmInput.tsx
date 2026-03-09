@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input } from 'antd';
 import classNames from 'classnames';
 
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import styles from './DeleteConfirmInput.module.scss';

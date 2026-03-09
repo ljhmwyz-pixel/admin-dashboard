@@ -3,8 +3,7 @@ import { Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 
 import cls from 'classnames';
 
 import { FormAutoComplete } from '@/components';
-import { useAddressPickerMap } from '@/shared/hooks/useAddressPickerMap';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useAddressPickerMap, useLanguage } from '@/shared/hooks';
 import type { FieldMap, GoogleOption, LocationInfo } from '@/shared/types/addressPickerTypes';
 import { stripPostalCodeText } from '@/shared/utils/addressUtils';
 

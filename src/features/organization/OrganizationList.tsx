@@ -4,7 +4,7 @@ import { Splitter } from 'antd';
 import AddOrganizationDrawer from '@/features/organization/organization-info/AddOrganizationDrawer';
 import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
 import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
-import { useOrganizationTree } from '@/shared/hooks/useOrganizationTree';
+import { useOrganizationTree } from '@/shared/hooks';
 
 import styles from './OrganizationList.module.scss';
 

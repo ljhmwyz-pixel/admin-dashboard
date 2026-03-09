@@ -10,7 +10,7 @@ import type { MenuProps } from 'antd';
 import { Button, Dropdown, Space } from 'antd';
 
 import type { ColorScheme } from '@/config/themes';
-import { useTheme, useThemeContext } from '@/shared/hooks/theme';
+import { useTheme, useThemeContext } from '@/shared/hooks';
 
 import ColorPreview from '../atoms/ColorPreview/ColorPreview';
 
