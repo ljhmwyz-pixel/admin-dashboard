@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { FormButton } from '@/components';
+import { FormButton, FormModal } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -38,9 +38,16 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [detail, setDetail] = useState({});
   const { t } = useLanguage();
-  const { withLoading, showLoading, hideLoading } = useGlobalLoading();
-  const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail } =
-    useOrganizationForm(currentParentNode);
+  const { showLoading, hideLoading } = useGlobalLoading();
+  const {
+    userExists,
+    existingUsername,
+    existingPhone,
+    verifyResult,
+    verifyEmail,
+    verifyOrganization,
+  } = useOrganizationForm(currentParentNode);
+  const { success: ModalSuccess, error: ModalError } = FormModal();
 
   // 获取父节点信息
   const parentNode =
@@ -48,115 +55,109 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
 
   useEffect(() => {
     if (!orgId) return;
+    fetchDetail(orgId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
+  /**
+   * 编辑组织
+   */
+  const handleUpdateOrganization = useCallback(async (values: OrganizationFormData) => {
+    const response = await organizationApi.update(values);
+    return response;
+  }, []);
 
-    const fetchDetail = async () => {
-      try {
-        const res = await organizationApi.detail({ orgId });
-
-        if (res.code === 200) {
-          form.setFieldsValue({
-            orgName: res.data.orgName,
-            orgDescription: res.data.description,
-            orgUsername: res.data.contactPerson,
-            orgPhone: res.data.contactPhone,
-            orgEmail: res.data.contactEmail,
-            orgPostalCode: res.data.zipCode,
-            orgType: res.data.orgType,
-            orgAddress: res.data.address,
-            orgCountryRegion: res.data.regionCode,
-          });
-          setDetail(res.data);
-        }
-      } catch (error) {
-        console.error('Get org detail failed:', error);
+  const setValue = (res: any) => {
+    form.setFieldsValue({
+      orgName: res.data.orgName,
+      orgDescription: res.data.description,
+      orgUsername: res.data.ownerUserName,
+      orgPhone: res.data.ownerPhone,
+      orgEmail: res.data.ownerEmail,
+      orgPostalCode: res.data.zipCode,
+      orgType: res.data.orgType,
+      orgAddress: res.data.address,
+      orgCountryRegion: res.data.regionCode,
+    });
+  };
+  const fetchDetail = async (orgId: string) => {
+    try {
+      const res = await organizationApi.detail({ orgId });
+      setValue(res);
+      if (res.code === 200) {
+        setDetail(res.data);
       }
-    };
-
-    fetchDetail();
-  }, [orgId, form]);
-
+    } catch (error) {
+      console.error('Get org detail failed:', error);
+    }
+  };
   const onEdit = () => {
     setCanEdit(true);
-    form.setFieldsValue(detail);
+    form.setFieldsValue({ res: detail });
   };
   const onCancel = () => {
     setCanEdit(false);
-    form.setFieldsValue(detail);
+    form.setFieldsValue({ res: detail });
   };
-  const handleSubmit = useCallback(async (values: OrganizationFormData, onRefresh?: () => void) => {
-    // 开始全局 loading
-    showLoading();
-
-    try {
-      // ===== 第一步：验证组织信息 =====
-      // const verifyData = await verifyOrganization(values);
-      // // 如果验证失败，直接返回
-      // if (!verifyData.valid) {
-      //   return { success: false, reason: 'validation_failed', verifyData };
-      // }
-      // // ===== 第二步：验证邮箱 =====
-      // const emailResult = await verifyEmail(values.orgEmail);
-      // // ===== 第三步：创建组织 =====
-      // let response;
-      // // 关键判断：只有当 userExists 为 true 时才使用已存在用户
-      // if (emailResult?.userExists) {
-      //   // 用户已存在，使用现有用户信息创建组织
-      //   response = await handleConfirmWithExistingUser(
-      //     values,
-      //     emailResult.existingUsername || '',
-      //     emailResult.existingPhone || '',
-      //   );
-      // } else {
-      //   // 用户不存在，创建新组织和用户
-      //   response = await handleCreateOrganization(values);
-      // }
-      // // ===== 第四步：检查创建结果 =====
-      // if (response.code === 200) {
-      //   // 显示成功提示（在回调中刷新列表）
-      //   success({
-      //     title: 'Success !',
-      //     content: t('org.toast.create_success'),
-      //     onOk: () => {
-      //       onRefresh?.();
-      //     },
-      //   });
-      //   return { success: true, data: response };
-      // } else {
-      //   // 创建失败时不刷新列表，直接返回错误
-      //   return { success: false, reason: 'create_failed', response };
-      // }
-    } catch (error) {
-      // 发生异常时不刷新列表，直接返回错误
-      return { success: false, reason: 'error', error };
-    } finally {
-      // 所有请求结束后关闭 loading
-      hideLoading();
-    }
-  }, []);
-  const onSave = () => {
-    form.validateFields().then(async (values) => {
+  const handleSubmit = useCallback(
+    async (values: OrganizationFormData) => {
+      showLoading();
       try {
-        const result = await handleSubmit(values, () => {
-          setCanEdit(false);
-          // loadData?.();
-        });
-
-        // if (!result.success) {
-        //   console.warn('❌ 表单提交失败:', result.reason);
-        // } else {
-        //   console.log('✅ 表单提交成功');
-        // }
-        // const res = await organizationApi.update(requestParams);
-        // if (res.code === 200) {
-        //   setCanEdit(false);
-        //   // Moda({
-        //   //   title: t('org.toast.update_success'),
-        //   // });
-        // }
+        const verifyData = await verifyOrganization(values);
+        if (!verifyData.valid) {
+          return { success: false, reason: 'validation_failed', verifyData };
+        }
+        const requestData: OrganizationFormData = {
+          orgName: values.orgName || '',
+          orgType: values.orgType || '',
+          address: values.orgAddress || '',
+          regionCode: values.orgCountryRegion || '',
+          zipCode: values.orgPostalCode || '',
+          description: values.orgDescription || '',
+          orgId,
+        };
+        const response = await handleUpdateOrganization(requestData);
+        if (response.code === 200) {
+          return { success: true, data: response };
+        } else {
+          return { success: false, reason: 'create_failed', response };
+        }
       } catch (error) {
-        console.error('Get org detail failed:', error);
+        return { success: false, reason: 'error', error };
+      } finally {
+        hideLoading();
       }
-    });
+    },
+    [hideLoading, orgId, showLoading, verifyOrganization, handleUpdateOrganization],
+  );
+
+  const onSave = () => {
+    form
+      .validateFields([
+        'orgName',
+        'orgType',
+        'orgAddress',
+        'orgPostalCode',
+        'orgCountryRegion',
+        'orgDescription',
+      ])
+      .then(async (values) => {
+        try {
+          const result = await handleSubmit(values);
+          if (!result.success) {
+            ModalError({
+              title: result.reason,
+            });
+          } else {
+            setCanEdit(false);
+            fetchDetail(orgId);
+            ModalSuccess({
+              title: t('org.toast.update_success'),
+            });
+          }
+        } catch (error) {
+          console.error('Get org detail failed:', error);
+        }
+      });
   };
 
   return (
@@ -190,7 +191,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
               form={form}
               onCheckEmailExists={verifyEmail}
               userExists={userExists}
-              canEdit={canEdit}
+              canEdit={false}
             />
           </AntRow>
           <AntRow gutter={30}>

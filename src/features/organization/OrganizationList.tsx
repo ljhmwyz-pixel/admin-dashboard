@@ -87,7 +87,7 @@ const OrganizationList: React.FC = () => {
               onSelect={(selectedKey) => {
                 setSelectedKey(selectedKey);
               }}
-              setCurParentNode={(parentNode: any) => setCurrentParentNode(parentNode)}
+              setCurParentNode={(parentNode: TreeNodeData) => setCurrentParentNode(parentNode)}
               selectedKey={selectedKey}
               setTreeData={(data) => setTreeData(data)}
               treeData={treeData}

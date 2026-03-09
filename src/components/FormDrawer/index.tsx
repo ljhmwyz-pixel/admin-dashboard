@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { DrawerProps } from 'antd';
 import { Drawer } from 'antd';
 import classNames from 'classnames';

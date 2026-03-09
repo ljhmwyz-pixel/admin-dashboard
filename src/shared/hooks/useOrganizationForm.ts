@@ -20,13 +20,18 @@ export interface OrganizationFormData {
   orgAddress?: string;
   orgCountryRegion?: string;
   orgPostalCode?: string;
-  orgEmail: string;
+  orgEmail?: string;
   orgUsername?: string;
   orgPhone?: string;
   orgDescription?: string;
   countryCode?: string;
   lat?: number;
   lng?: number;
+  orgId?: string;
+  description?: string;
+  zipCode?: string;
+  address?: string;
+  regionCode?: string;
 }
 
 /**
@@ -307,5 +312,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     verifyOrganization,
     handleSubmit,
     resetVerifyStatus,
+    requestParams,
   };
 };
