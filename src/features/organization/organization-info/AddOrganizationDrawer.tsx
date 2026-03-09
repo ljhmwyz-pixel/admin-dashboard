@@ -17,6 +17,7 @@ import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
 
+import { getParentNode } from '../utils/dataTransformer';
 import OrganizationInfo from './OrganizationInfo';
 
 import styles from './AddOrganizationDrawer.module.scss';
@@ -26,6 +27,7 @@ interface AddOrganizationProps {
   onChange: (visible: boolean) => void;
   currentParentNode?: TreeNodeData;
   loadData?: () => void;
+  treeData?: TreeNodeData[]; // 添加树形数据参数
 }
 
 const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
@@ -33,6 +35,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   onChange,
   currentParentNode,
   loadData,
+  treeData,
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
@@ -40,6 +43,10 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   const { userExists, existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit } =
     useOrganizationForm(currentParentNode);
+
+  // 获取父节点信息
+  const parentNode =
+    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
 
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
@@ -112,64 +119,68 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         </div>
       }
     >
-      <div className={styles.info}>
-        <OrganizationInfo
-          showExtra={false}
-          orgName={currentParentNode?.title || ''}
-          orgCode={currentParentNode?.key || ''}
-        />
-      </div>
-      <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
-        <AntRow gutter={30}>
-          {/* 组织名称字段 */}
-          <OrgNameField form={form} verifyResult={verifyResult} />
-
-          {/* 组织类型字段 */}
-          <OrgTypeField form={form} parentOrgType={currentParentNode?.type} />
-        </AntRow>
-
-        <AntRow gutter={30}>
-          {/* 组织地址字段 */}
-          <OrgAddressField form={form} verifyResult={verifyResult} />
-
-          {/* 国家地区字段 */}
-          <OrgCountryRegionField form={form} />
-        </AntRow>
-
-        <AntRow gutter={30}>
-          {/* 邮政编码字段 */}
-          <OrgPostalCodeField form={form} />
-        </AntRow>
-
-        <AntRow gutter={30}>
-          {/* 邮箱字段 */}
-          <OrgEmailField form={form} onCheckEmailExists={verifyEmail} userExists={userExists} />
-        </AntRow>
-        <AntRow gutter={30}>
-          {/* 用户名字段 */}
-          <OrgUsernameField
-            form={form}
-            userExists={userExists}
-            existingUsername={existingUsername}
+      {parentNode && (
+        <div className={styles.info}>
+          <OrganizationInfo
+            orgName={parentNode?.title}
+            orgType={parentNode?.type}
+            orgId={parentNode?.key}
           />
+        </div>
+      )}
+      <div className={styles.form}>
+        <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
+          <AntRow gutter={30}>
+            {/* 组织名称字段 */}
+            <OrgNameField form={form} verifyResult={verifyResult} />
 
-          {/* 电话字段 */}
-          <OrgPhoneField
-            form={form}
-            userExists={userExists}
-            existingPhone={existingPhone}
-            verifyResult={verifyResult}
-          />
-        </AntRow>
-        {/* <AntRow gutter={30}>
+            {/* 组织类型字段 */}
+            <OrgTypeField form={form} parentOrgType={currentParentNode?.type} />
+          </AntRow>
+
+          <AntRow gutter={30}>
+            {/* 组织地址字段 */}
+            <OrgAddressField form={form} verifyResult={verifyResult} />
+
+            {/* 国家地区字段 */}
+            <OrgCountryRegionField form={form} canEdit={false} />
+          </AntRow>
+
+          <AntRow gutter={30}>
+            {/* 邮政编码字段 */}
+            <OrgPostalCodeField form={form} />
+          </AntRow>
+
+          <AntRow gutter={30}>
+            {/* 邮箱字段 */}
+            <OrgEmailField form={form} onCheckEmailExists={verifyEmail} userExists={userExists} />
+          </AntRow>
+          <AntRow gutter={30}>
+            {/* 用户名字段 */}
+            <OrgUsernameField
+              form={form}
+              userExists={userExists}
+              existingUsername={existingUsername}
+            />
+
+            {/* 电话字段 */}
+            <OrgPhoneField
+              form={form}
+              userExists={userExists}
+              existingPhone={existingPhone}
+              verifyResult={verifyResult}
+            />
+          </AntRow>
+          {/* <AntRow gutter={30}>
           <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
         </AntRow> */}
 
-        <AntRow gutter={30}>
-          {/* 描述字段 */}
-          <OrgDescriptionField form={form} />
-        </AntRow>
-      </Form>
+          <AntRow gutter={30}>
+            {/* 描述字段 */}
+            <OrgDescriptionField form={form} />
+          </AntRow>
+        </Form>
+      </div>
     </Drawer>
   );
 };

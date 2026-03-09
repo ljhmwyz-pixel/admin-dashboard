@@ -226,6 +226,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
         visible={addDrawerVisible}
         onChange={(visible) => setAddDrawerVisible(visible)}
         loadData={loadData}
+        treeData={treeData}
       />
     </div>
   );

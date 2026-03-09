@@ -108,3 +108,67 @@ export function generateFallbackTreeData(count: number = 10): TreeNodeData[] {
 
   return [rootNode];
 }
+
+/**
+ * 获取指定节点的父节点信息
+ * @param treeData 树形结构数据
+ * @param nodeId 目标节点 ID
+ * @returns 父节点信息，如果没有父节点则返回 null
+ */
+export function getParentNode(treeData: TreeNodeData[], nodeId: string): TreeNodeData | null {
+  // 方法 1: 使用 Map 缓存父节点关系（推荐，性能最好）
+  const parentMap = new Map<string, TreeNodeData>();
+
+  // 构建父节点映射表 - O(n)
+  function buildParentMap(nodes: TreeNodeData[]) {
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        for (const child of node.children) {
+          parentMap.set(child.key, node);
+        }
+        // 递归处理子节点
+        buildParentMap(node.children);
+      }
+    }
+  }
+
+  buildParentMap(treeData);
+
+  // O(1) 查找
+  return parentMap.get(nodeId) || null;
+}
+
+/**
+ * 批量获取多个节点的父节点信息（性能最优）
+ * @param treeData 树形结构数据
+ * @param nodeIds 目标节点 ID 数组
+ * @returns Map<节点 ID, 父节点>
+ */
+export function getParentNodesBatch(
+  treeData: TreeNodeData[],
+  nodeIds: string[],
+): Map<string, TreeNodeData | null> {
+  const parentMap = new Map<string, TreeNodeData>();
+  const result = new Map<string, TreeNodeData | null>();
+
+  // 构建父节点映射表 - O(n)
+  function buildParentMap(nodes: TreeNodeData[]) {
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        for (const child of node.children) {
+          parentMap.set(child.key, node);
+        }
+        buildParentMap(node.children);
+      }
+    }
+  }
+
+  buildParentMap(treeData);
+
+  // O(m) 批量查找
+  for (const nodeId of nodeIds) {
+    result.set(nodeId, parentMap.get(nodeId) || null);
+  }
+
+  return result;
+}

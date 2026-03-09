@@ -88,7 +88,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({ orgId, currentPare
   return (
     <div className={styles.organizationView}>
       {/* 组织基本信息 */}
-      <OrgInfo orgDetail={detail} />
+      <OrgInfo />
       {/* 组织信息编辑 */}
       <div className={styles.editContainer}>
         <AntForm form={form} layout="vertical" initialValues={detail}>
