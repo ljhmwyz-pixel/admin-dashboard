@@ -2,7 +2,7 @@ import type { ApiOrganization, TreeNodeData } from '@/shared/types/organization'
 
 /**
  * 将API组织数据转换为 antd 树形结构数据
- * @param apiData API返回的组织列表数据
+ * @param apiData API 返回的组织列表数据
  * @returns antd 树形结构数据
  */
 export function transformOrganizationToTreeData(apiData: ApiOrganization[]): TreeNodeData[] {
@@ -41,6 +41,8 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
           parentNode.children = [];
         }
         parentNode.children.push(currentNode);
+      } else {
+        treeData.push(currentNode);
       }
     } else {
       treeData.push(currentNode);
