@@ -1,6 +1,8 @@
 import React from 'react';
 import { Space } from 'antd';
 
+import { PermissionCode } from '@/shared/constants/permissions';
+import { usePermission } from '@/shared/hooks/usePermission';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import styles from './TreeNodeTitle.module.scss';
@@ -19,13 +21,29 @@ interface TreeNodeTitleProps {
  * 负责渲染树节点的自定义标题，包含操作图标
  */
 const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNodeDelete }) => {
+  const { hasPermission } = usePermission();
+  // 是否为pylontech
+  const isPylontech = nodeData.key === 'org-pylontech-root';
+  // 是否为根节点
+  const isRoot = !nodeData.parentOrgId;
+  // 是否有直属节点
+  const hasChildren = (nodeData?.children?.length || -1) > 0;
+  // 是否能删除本组织
+  const canDeleteSelf = hasPermission(PermissionCode.ORG_DELETE_SELF) && !hasChildren && !isRoot;
+  // 是否能删除子组织
+  const canDeleteSub = hasPermission(PermissionCode.ORG_DELETE_SUB) && hasChildren;
+  // 是否能创建直属组织
+  const canCreateDirect = hasPermission(PermissionCode.ORG_CREATE_SUB) && isRoot;
+  // 是否能创建非直属组织
+  const canCreateNonDirect = hasPermission(PermissionCode.ORG_CREATE_NON_DIRECT) && !isRoot;
+
   return (
     <div className={styles.treeNodeTitle}>
       <span className={styles.nodeTitle} id="tree-title">
         {nodeData.title}
       </span>
       <Space className={styles.nodeActions} size="small">
-        {nodeData.canDelete && (
+        {!isPylontech && (canDeleteSelf || canDeleteSub) && (
           <span
             className={styles.actionIcon}
             onClick={(e) => {
@@ -63,7 +81,7 @@ const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNo
             </svg>
           </span>
         )}
-        {nodeData.canAdd && (
+        {(canCreateDirect || canCreateNonDirect) && (
           <span
             className={styles.actionIcon}
             onClick={(e) => {

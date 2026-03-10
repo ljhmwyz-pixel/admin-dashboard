@@ -8,5 +8,6 @@ export {
 } from './useMonitoring';
 export { useOrganizationForm } from './useOrganizationForm';
 export { useOrganizationTree } from './useOrganizationTree';
+export { useHasPermission, usePermission } from './usePermission';
 export { useTheme, useThemeContext } from './useTheme';
 export { useUnifiedTheme } from './useUnifiedTheme';
