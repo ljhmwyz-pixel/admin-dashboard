@@ -22,26 +22,25 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const checkOverflow = () => {
-    const el = contentRef.current;
-    if (!el) return;
+    const body = contentRef.current?.closest('.ant-drawer-body') as HTMLElement;
+    if (!body) return;
 
-    setIsOverflow(el.scrollHeight > el.clientHeight);
+    const hasScrollbar = body.scrollHeight > body.clientHeight + 1;
+    setIsOverflow(hasScrollbar);
   };
 
   useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
+    if (!rest.open) return;
 
-    checkOverflow();
+    // 等 Drawer 动画 + DOM 渲染完成
+    const timer = setTimeout(checkOverflow, 50);
 
-    const observer = new ResizeObserver(checkOverflow);
-    observer.observe(el);
-
-    return () => observer.disconnect();
-  }, [children]);
+    return () => clearTimeout(timer);
+  }, [rest.open]);
 
   return (
     <Drawer
+      open={rest.open}
       {...rest}
       className={classNames(styles.drawer, className)}
       title={
@@ -52,7 +51,11 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
       closeIcon={closeIcon ?? <img src={ImageIcons.form.drawerCloseIcon} width={18} height={18} />}
       footer={
         rest.footer ? (
-          <div className={classNames(styles.footer, isOverflow && styles.footerOverflow)}>
+          <div
+            className={classNames(styles.footer, {
+              [styles.footerOverflow]: isOverflow,
+            })}
+          >
             {rest.footer}
           </div>
         ) : null
