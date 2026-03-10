@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { FormModal } from '@/components';
+import { useThemeModal } from '@/components/Modal';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 import { useLanguage } from '@/shared/hooks';
 import type { OrganizationType } from '@/shared/types/organization';
@@ -49,7 +49,7 @@ export interface EmailVerifyResult {
 export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const { t } = useLanguage();
 
-  const { success } = FormModal();
+  const { success } = useThemeModal();
 
   // 邮箱验证状态
   const [userExists, setUserExists] = useState<boolean>(false);

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Spin } from 'antd';
 
-import { FormButton, FormModal } from '@/components';
+import { FormButton } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -13,6 +13,7 @@ import {
   OrgTypeField,
   OrgUsernameField,
 } from '@/components/fields';
+import { useThemeModal } from '@/components/Modal';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
@@ -50,7 +51,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
     verifyEmail,
     verifyOrganizationByUpdate,
   } = useOrganizationForm(currentParentNode);
-  const { success: ModalSuccess, error: ModalError, warningConfirm } = FormModal();
+  const { success: ModalSuccess, error: ModalError, warningConfirm } = useThemeModal();
 
   // 获取父节点信息
   const parentNode =
