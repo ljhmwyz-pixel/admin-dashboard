@@ -1,0 +1,41 @@
+// App组件样式 - SCSS版本
+@use './shared/styles/variables' as *;
+@use './shared/styles/mixins' as *;
+@use 'sass:color';
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+// Ant Design Tree组件样式定制
+.ant-tree-switcher {
+  display: flex;
+  align-items: center;
+}
+
+// .ant-tree-node-selected,
+// .ant-tree-treenode-selected {
+//   background-color: #fff !important;
+//   color: #33C2C8 !important;
+// }
+
+// .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
+//   width: calc(100% - 52px);
+// }
+
+// 主题相关的全局样式
+// [data-theme="dark"] {
+//   .ant-tree-node-selected,
+//   .ant-tree-treenode-selected {
+//     background-color: $dark-color-bg-container !important;
+//     color: color.adjust(#33C2C8, $lightness: 20%) !important;
+//   }
+// }
+
+// // 响应式设计
+// @include respond-to(768px) {
+//   .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal {
+//     width: calc(100% - 40px);
+//   }
+// }

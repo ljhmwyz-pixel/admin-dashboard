@@ -1,0 +1,150 @@
+/* 主题切换器样式 - 优化版本 */
+
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-switcher::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+  z-index: 1;
+}
+
+.theme-switcher:hover::before {
+  transform: translateX(100%);
+}
+
+.theme-switcher:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 颜色预览小圆点 */
+.color-preview {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border, #d9d9d9);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-preview:hover {
+  transform: scale(1.2) rotate(5deg);
+  border-color: var(--color-primary, #1677ff);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 暗色主题下的样式调整 */
+[data-theme='dark'] .theme-switcher {
+  background-color: var(--color-bg-container, #191B1F);
+  border-color: var(--color-border, #424242);
+}
+
+[data-theme='dark'] .theme-switcher:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .color-preview {
+  border-color: var(--color-border-secondary, #303030);
+}
+
+/* 不同尺寸的样式 */
+.theme-switcher.ant-btn-sm {
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.theme-switcher.ant-btn-large {
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+/* 动画效果 */
+.theme-switcher .anticon {
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  will-change: transform;
+}
+
+.theme-switcher:hover .anticon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* 下拉菜单样式优化 */
+.ant-dropdown-menu-item {
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: var(--color-fill-quaternary, rgba(0, 0, 0, 0.04));
+  transform: translateX(4px);
+}
+
+.ant-dropdown-menu-item-selected {
+  background-color: var(--color-primary, #1677ff);
+  color: white;
+  font-weight: 500;
+  border-left: 3px solid white;
+}
+
+/* 选中状态的额外动画 */
+.ant-dropdown-menu-item-selected .anticon {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .theme-switcher {
+    padding: 0 12px;
+  }
+
+  .theme-switcher:not(.ant-btn-icon-only) .ant-btn-icon {
+    margin-inline-end: 4px;
+  }
+  
+  .color-preview {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* 主题切换过渡动画 */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 加载状态样式 */
+.theme-switcher.ant-btn-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.theme-switcher.ant-btn-loading .anticon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,129 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
+$requireIcon: '@/assets/images/form/require_icon.png';
+
+
+.wrapper {
+  margin-bottom: 30px;
+
+  :global(.ant-form-item-explain) {
+    margin-top: -12px;
+    margin-left: 14px;
+    width: fit-content;
+    padding: 0 8px;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fff;
+  }
+
+  :global(.ant-form-item-required) {
+    position: relative;
+  }
+
+  :global(.ant-form-item-required)::before {
+    content: '' !important;
+    color: #f45858 !important;
+    font-size: 14px;
+    margin-right: 6px;
+    position: absolute;
+    top: 3px;
+    right: -4px;
+    width: 6px;
+    height: 14px;
+    background-image: url(#{$requireIcon});
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 14px;
+  color: rgba(25, 27, 31, 0.6);
+  font-weight: 500;
+}
+
+.input {
+  height: 54px !important;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  color: #191b1f;
+  border-radius: 6px;
+  transition: all 0.2s;
+  padding: 20px;
+  max-width: 100%;
+}
+
+.disabledStyle {
+  color: #191b1f99 !important;
+}
+
+// 多选的样式控制
+.multiSelect {
+  padding: 10px;
+
+  /* selector 本身 */
+  :global(.ant-select-selector) {
+    height: 54px !important;
+    background: #fff !important;
+    border: 1px solid $color-border !important;
+    border-radius: 6px !important;
+    overflow: hidden;
+
+    background-color: red !important;
+  }
+
+  :global(.ant-select-selection-overflow) {
+    flex-wrap: nowrap !important;
+    overflow: hidden;
+    min-width: 0;
+    background-color: blue !important;
+  }
+
+  /* 每个 tag */
+  :global(.ant-select-selection-item) {
+    background: #fff !important;
+    border: 1px solid $color-border !important;
+    border-radius: 6px !important;
+    height: 34px;
+    padding: 0 12px !important;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    max-width: 160px;
+    /* 防止撑爆 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 右侧 +N 不压缩 */
+  :global(.ant-select-selection-overflow-item-rest) {
+    flex-shrink: 0;
+  }
+
+  :global(.ant-select-content) {
+    height: 34px;
+  }
+
+  :global(.ant-select-content-item) {
+    transform: translateY(-2px) !important;
+  }
+
+  :global(.ant-select-content-item-suffix) {
+    top: 4px !important;
+  }
+}
+
+.multiSelectDisabledStyle {
+  :global(.ant-select-selection-item-content) {
+    font-size: 14px;
+    font-weight: 500;
+    color: #191b1f99 !important;
+  }
+}

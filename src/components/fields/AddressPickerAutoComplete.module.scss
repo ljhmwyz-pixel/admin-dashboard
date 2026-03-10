@@ -1,0 +1,62 @@
+.addressOption {
+  line-height: 1.4;
+
+  .addressOptionSecondary {
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+.addressSuffix {
+  cursor: pointer;
+}
+
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f7f7f7;
+
+  .map {
+    width: 100%;
+    height: 100%;
+  }
+
+  .locator {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    pointer-events: none;
+    font-size: 34px;
+    line-height: 1;
+    transition: transform 120ms ease;
+    transform: translate(-50%, -100%);
+
+    &.dragging {
+      transform: translate(-50%, -105%) scale(1.08);
+    }
+  }
+
+  .loadingText {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+.errorText {
+  display: block;
+  margin-top: 12px;
+}
+
+.popupAutoComplete {
+    margin-bottom: 12px;
+}
