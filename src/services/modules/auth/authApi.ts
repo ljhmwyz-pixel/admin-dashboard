@@ -39,8 +39,8 @@ class AuthApi {
   }
 
   // 获取权限资源
-  async getPermissionSource(): Promise<void> {
-    const response = await apiClient.get('/api/v1/auth/xxx-xxx');
+  async getPermissionSource() {
+    const response = await apiClient.get('/api/v1/auth/current-user');
     return response;
   }
 

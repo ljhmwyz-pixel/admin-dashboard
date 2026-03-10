@@ -14,6 +14,8 @@ import {
   OrgUsernameField,
 } from '@/components/fields';
 import { useThemeModal } from '@/components/Modal';
+import { Permission } from '@/components/Permission';
+import { PermissionCode } from '@/components/Permission/permissionCode';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks/useLanguage';
@@ -257,9 +259,11 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
                 </FormButton>,
               ]
             ) : (
-              <FormButton key="org_common.action.modify" color="default" onClick={handleEdit}>
-                {t('common.action.modify')}
-              </FormButton>
+              <Permission value={PermissionCode.ORG_EDIT}>
+                <FormButton key="org_common.action.modify" color="default" onClick={handleEdit}>
+                  {t('common.action.modify')}
+                </FormButton>
+              </Permission>
             )}
           </div>
         </div>
