@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spin } from 'antd';
 
-import { FormButton, FormDrawer, FormModal } from '@/components';
+import { FormButton, FormDrawer } from '@/components';
 import {
   OrgAddressField,
   OrgCountryRegionField,
@@ -13,6 +13,7 @@ import {
   OrgTypeField,
   OrgUsernameField,
 } from '@/components/fields';
+import { useThemeModal } from '@/components/Modal';
 import { AntRow, Form, useForm } from '@/shared/components';
 import { useLanguage, useOrganizationForm } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -39,7 +40,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = useForm();
   const { t } = useLanguage();
-  const { warningConfirm } = FormModal();
+  const { warningConfirm } = useThemeModal();
 
   const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
     useOrganizationForm(currentParentNode);

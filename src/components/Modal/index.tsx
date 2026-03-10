@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ModalFuncProps } from 'antd';
+import { App } from 'antd';
 
 import closeIcon from '@/assets/images/form/close_icon.png';
 import confirmIcon from '@/assets/images/form/confirm_status.png';
@@ -72,6 +73,7 @@ const renderConfig = (config: AppModalProps, modalType: ModalType) => {
   };
 };
 
+//静态
 const appModal = {
   success: (config: AppModalProps) => AntModal.success(renderConfig(config, 'success')),
 
@@ -83,6 +85,24 @@ const appModal = {
 
   warningConfirm: (config: AppModalProps) =>
     AntModal.confirm(renderConfig(config, 'warningConfirm')),
+};
+
+// 动态
+export const useThemeModal = () => {
+  const { modal } = App.useApp();
+  const { success, confirm, error, warning } = modal;
+
+  return {
+    success: (config: AppModalProps) => success(renderConfig(config, 'success')),
+
+    confirm: (config: AppModalProps) => confirm(renderConfig(config, 'confirm')),
+
+    error: (config: AppModalProps) => error(renderConfig(config, 'error')),
+
+    warning: (config: AppModalProps) => warning(renderConfig(config, 'warning')),
+
+    warningConfirm: (config: AppModalProps) => confirm(renderConfig(config, 'warningConfirm')),
+  };
 };
 
 // 保持原来的调用方式

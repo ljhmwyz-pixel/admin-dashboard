@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { App as AntdApp } from 'antd';
 import { I18nextProvider } from 'react-i18next';
 
 import AuthProvider from '@/core/providers/AuthProvider';
@@ -47,13 +48,15 @@ const App: React.FC = () => {
       <Provider store={store}>
         <ThemeProvider>
           <AntdThemeProvider>
-            <I18nextProvider i18n={i18n}>
-              <BrowserRouter>
-                <AuthProvider>
-                  <AppRoutes />
-                </AuthProvider>
-              </BrowserRouter>
-            </I18nextProvider>
+            <AntdApp>
+              <I18nextProvider i18n={i18n}>
+                <BrowserRouter>
+                  <AuthProvider>
+                    <AppRoutes />
+                  </AuthProvider>
+                </BrowserRouter>
+              </I18nextProvider>
+            </AntdApp>
           </AntdThemeProvider>
         </ThemeProvider>
       </Provider>

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import { debounce } from 'lodash-es';
 
-import { FormModal } from '@/components';
+import { useThemeModal } from '@/components/Modal';
 import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
 import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
@@ -41,7 +41,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const { t } = useLanguage();
-  const { warning, confirm } = FormModal();
+  const { warning, confirm } = useThemeModal();
 
   // 初始化加载数据
   useEffect(() => {
