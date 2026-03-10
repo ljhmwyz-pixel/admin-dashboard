@@ -12,14 +12,14 @@ export const AUTH_ENDPOINTS = {
 export const ORGANIZATION_ENDPOINTS = {
   LIST: '/api/v1/organization/organizations',
   CREATE: '/api/v1/organization/organizations',
-  VERIFY_EMAIL: '/api/v1/organization/organizations/verify-email',
-  VERIFY: '/api/v1/organization/organizations/verify',
-
-  DETAIL: (id: string | number) => `/api/v1/organization/organizations/${id}`,
-  UPDATE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
+  UPDATE: (orgId: string) => `/api/v1/organization/organizations/${orgId}`,
+  DETAIL: (orgId: string) => `/api/v1/organization/organizations/${orgId}`,
+  VERIFY_EMAIL: ' /api/v1/organization/users/lookup-by-email',
+  VERIFY: '/api/v1/organization/organizations/validate',
+  VERIFY_UPDATE: (orgId: string) => `/api/v1/organization/organizations/${orgId}/validate-update`,
   DELETE: (id: string | number) => `/api/v1/organization/organizations/${id}`,
-  TREE: '/api/v1/organization/organizations/tree',
-  TYPES: '/api/v1/organization/organizations/types',
+  VERIFY_DELETE: (id: string | number) =>
+    `/api/v1/organization/organizations/${id}/validate-delete`,
 } as const;
 
 // 用户管理相关

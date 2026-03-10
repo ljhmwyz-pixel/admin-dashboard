@@ -32,6 +32,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       className={classNames(styles.wrapper, className)}
     >
       <Input
+        autoComplete="off"
         {...inputProps}
         className={`
               ${styles.input}

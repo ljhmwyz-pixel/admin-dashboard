@@ -3,12 +3,14 @@
 // 方便后期统一替换或扩展
 
 // 基础组件
+export { default as AntApp } from 'antd/es/app';
 export type { ButtonProps } from 'antd/es/button';
 export { default as AntButton } from 'antd/es/button';
 export { default as AntCheckbox } from 'antd/es/checkbox';
 export { default as AntDatePicker } from 'antd/es/date-picker';
 export { default as AntInput } from 'antd/es/input';
 export { default as AntInputNumber } from 'antd/es/input-number';
+export { default as AntdModal } from 'antd/es/modal';
 export { default as AntRadio } from 'antd/es/radio';
 export { default as AntRate } from 'antd/es/rate';
 export { default as AntSelect } from 'antd/es/select';
@@ -74,4 +76,5 @@ export { default as AntTransfer } from 'antd/es/transfer';
 export { default as AntUpload } from 'antd/es/upload';
 
 // 图标
+export { default as DeleteConfirmInput } from './DeleteConfirmInput';
 export { default as AntIcon } from '@ant-design/icons';

@@ -2,13 +2,13 @@ import React from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
-type OrgPostalCodeFieldProps = FieldProps;
+type OrgPostalCodeFieldProps = FieldProps & { canEdit?: boolean };
 
-const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
+const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,8 +45,14 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
             />
           </svg>
         }
-        rules={[{ pattern: /^[0-9A-Z\s-]+$/, message: t('org.validation.postal.required') }]}
+        rules={[
+          {
+            pattern: /^[0-9A-Z\s-]{3,12}$/,
+            message: t('org.validation.postal.required'),
+          },
+        ]}
         inputProps={{
+          disabled: !canEdit,
           placeholder: t('org.placeholder.enter_postal_code'),
           maxLength: 12,
           onChange: handleInputChange,

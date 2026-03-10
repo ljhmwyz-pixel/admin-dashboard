@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Splitter } from 'antd';
 
-// import { AntTabs } from '@/shared/components/antd-imports';
-import OrganizationDetailPanel from './components/OrganizationDetailPanel';
-import OrganizationTree from './components/OrganizationTree';
+import AddOrganizationDrawer from '@/features/organization/organization-info/AddOrganizationDrawer';
+import OrganizationDetailPanel from '@/features/organization/organization-info/OrganizationDetailPanel';
+import OrganizationTree from '@/features/organization/organization-info/OrganizationTree';
+import { useOrganizationTree } from '@/shared/hooks';
 
-// import { organizationDetails } from './mocks/organizationData';
 import styles from './OrganizationList.module.scss';
 
 const OrganizationList: React.FC = () => {
-  const [selectedKey, setSelectedKey] = useState<string>('');
-
-  // 使用模拟数据作为默认树数据
+  const {
+    treeData,
+    selectedKey,
+    currentParentNode,
+    addDrawerVisible,
+    expandedKeys,
+    loading,
+    loadTreeData,
+    handleSelect,
+    handleAdd,
+    handleDelete,
+    closeAddDrawer,
+    handleExpand,
+    setLoading,
+    setSelectedKey,
+  } = useOrganizationTree();
 
   return (
     <div className={styles.organizationListPage}>
@@ -83,19 +96,42 @@ const OrganizationList: React.FC = () => {
         <Splitter.Panel defaultSize="40%" min="20%" max="70%">
           <div className={styles.organizationListPanel}>
             <OrganizationTree
-              onSelect={(selectedKey) => {
-                setSelectedKey(selectedKey);
-              }}
+              onSelect={handleSelect}
               selectedKey={selectedKey}
+              onAdd={handleAdd}
+              onDelete={handleDelete}
+              onExpand={handleExpand}
+              expandedKeys={expandedKeys}
+              treeData={treeData}
+              loadData={loadTreeData}
+              loading={loading}
+              setLoading={setLoading}
+              setSelectedKey={setSelectedKey}
             />
           </div>
         </Splitter.Panel>
 
         {/* 右侧面板 - 组织详情 */}
         <Splitter.Panel>
-          <OrganizationDetailPanel />
+          <OrganizationDetailPanel
+            selectedKey={selectedKey}
+            currentParentNode={currentParentNode}
+            treeData={treeData}
+            loadData={loadTreeData}
+            setLoading={setLoading}
+          />
         </Splitter.Panel>
       </Splitter>
+
+      {addDrawerVisible && (
+        <AddOrganizationDrawer
+          visible={addDrawerVisible}
+          onChange={closeAddDrawer}
+          currentParentNode={currentParentNode}
+          loadData={loadTreeData}
+          treeData={treeData}
+        />
+      )}
     </div>
   );
 };

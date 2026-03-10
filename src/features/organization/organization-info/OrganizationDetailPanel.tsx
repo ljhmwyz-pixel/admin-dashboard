@@ -1,25 +1,47 @@
 import React, { useState } from 'react';
 
-import { AntTabs } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { FormTabs } from '@/components';
+import { useLanguage } from '@/shared/hooks';
+import type { TreeNodeData } from '@/shared/types/organization';
 
 import OrganizationView from './OrganizationView';
 
 import styles from './OrganizationDetailPanel.module.scss';
 
-const OrganizationDetailPanel: React.FC = () => {
+interface OrganizationDetailPanelIProps {
+  selectedKey: string;
+  currentParentNode: TreeNodeData;
+  treeData: TreeNodeData[];
+  loadData: () => void;
+  setLoading: (loading: boolean) => void;
+}
+
+const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
+  selectedKey: orgId,
+  currentParentNode,
+  treeData,
+  loadData,
+  setLoading,
+}) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
-
-  // 获取当前选中的组织详情
-  // const currentDetail = organizationDetails[selectedKey] || organizationDetails['p001'];
 
   // Tab内容配置
   const tabItems = [
     {
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
-      children: <OrganizationView />,
+      children: orgId ? (
+        <OrganizationView
+          orgId={orgId}
+          currentParentNode={currentParentNode}
+          treeData={treeData}
+          loadData={loadData}
+          setLoading={setLoading}
+        />
+      ) : (
+        '空态页设计中...'
+      ),
     },
     {
       key: 'role-list',
@@ -43,14 +65,11 @@ const OrganizationDetailPanel: React.FC = () => {
 
   return (
     <div className={styles.organizationDetailPanel}>
-      <AntTabs
+      <FormTabs
         activeKey={activeTabKey}
         onChange={setActiveTabKey}
         items={tabItems}
         className={styles.antTabs}
-        classNames={{
-          indicator: styles.indicator,
-        }}
       />
     </div>
   );

@@ -23,27 +23,16 @@ export interface FormProps extends AntFormProps {
  * 提供更多主题和动画选项
  */
 const Form: React.FC<FormProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   theme = 'default',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   animated = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   className = '',
   children,
   ...restProps
 }) => {
-  // 构建自定义类名
-  const customClassName = [
-    'custom-form',
-    `custom-form--${theme}`,
-    animated ? 'custom-form--animated' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  return (
-    <AntForm className={customClassName} {...restProps}>
-      {children}
-    </AntForm>
-  );
+  return <AntForm {...restProps}>{children}</AntForm>;
 };
 
 // 导出 Form 的子组件和 hooks
@@ -52,6 +41,8 @@ export const FormList = AntForm.List;
 export const FormProvider = AntForm.Provider;
 // eslint-disable-next-line react-refresh/only-export-components
 export const useForm = AntForm.useForm;
+// eslint-disable-next-line react-refresh/only-export-components
+export const useWatch = AntForm.useWatch;
 // eslint-disable-next-line react-refresh/only-export-components
 export const useFormInstance = AntForm.useFormInstance;
 

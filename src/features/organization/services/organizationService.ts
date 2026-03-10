@@ -1,23 +1,26 @@
 // 组织服务API
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import type {
-  CreateOrganizationRequest,
-  OrganizationListParams,
-  TreeNodeData,
-} from '@/shared/types/organization';
+import type { OrganizationListParams, TreeNodeData } from '@/shared/types/organization';
+import { transformOrganizationToTreeData } from '@/shared/utils/dataTransformer';
 
-import {
-  generateFallbackTreeData,
-  transformOrganizationToTreeData,
-} from '../utils/dataTransformer';
+// 删除验证结果类型
+export interface DeleteValidationResult {
+  canDelete: boolean; // 是否可以删除
+  code: number; // 响应码
+}
+
+// 删除操作结果类型
+export interface DeleteResult {
+  success: boolean;
+}
 
 // 通用的组织数据加载服务
 export interface LoadOrganizationDataOptions {
   searchKeyword?: string;
-  withLoading?: (
-    asyncFn: () => Promise<any>,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
     options?: { onError?: (error: unknown) => void },
-  ) => Promise<unknown>;
+  ) => Promise<T | undefined>;
   setData?: (data: TreeNodeData[]) => void;
 }
 
@@ -58,58 +61,126 @@ export const loadOrganizationData = async ({
 
   // 如果提供了withLoading，则使用它包装异步操作
   if (withLoading) {
-    await withLoading(loadDataLogic, {
-      onError: (error) => {
-        console.error('Failed to load organization tree:', error);
-        // 使用兜底数据
-        const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
-        if (setData) {
-          setData(fallbackData);
-        }
-      },
-    });
+    await withLoading(loadDataLogic);
   } else {
     // 如果没有提供withLoading，直接执行
     try {
       await loadDataLogic();
     } catch (error) {
       console.error('Failed to load organization tree:', error);
-      // 使用兜底数据
-      const fallbackData = generateFallbackTreeData(searchKeyword ? 10 : 100);
-      if (setData) {
-        setData(fallbackData);
-      }
     }
   }
 };
 
 /**
- * 创建组织
- * @param params 创建组织参数
- * @returns 创建成功的组织数据
+ * 删除组织前的验证接口
+ * @param orgId 组织 ID
+ * @param withLoading 全局 loading 包装函数
+ * @returns 验证结果
  */
-export const createOrganization = async (params: CreateOrganizationRequest) => {
-  // 调用 API 创建组织
-  const response = await organizationApi.create(params);
+export const validateDeleteOrganization = async (
+  orgId: string | number,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteValidationResult> => {
+  const validateLogic = async (): Promise<DeleteValidationResult> => {
+    try {
+      const response = await organizationApi.verifyDelete({ orgId });
 
-  return response;
+      if (response.code === 200 && response.data.valid) {
+        return {
+          canDelete: true,
+          code: response.code,
+        };
+      } else {
+        return {
+          canDelete: false,
+          code: response.code,
+        };
+      }
+    } catch (error) {
+      // 处理网络错误或异常
+      console.error('Validate delete failed:', error);
+      return {
+        canDelete: false,
+        code: 500,
+      };
+    }
+  };
+
+  // 如果提供了 withLoading，则使用它包装
+  if (withLoading) {
+    const result = await withLoading(validateLogic, {
+      onError: (error) => {
+        console.error('Validate operation error:', error);
+      },
+    });
+    // 如果 withLoading 返回 undefined（理论上不应该），使用兜底值
+    return (
+      result ?? {
+        canDelete: false,
+        code: 500,
+      }
+    );
+  }
+
+  // 否则直接执行
+  return validateLogic();
 };
 
 /**
- * 创建组织
- * @param params 邮箱验证参数
- * @returns
+ * 删除组织操作
+ * @param orgId 组织 ID
+ * @param withLoading 全局 loading 包装函数
+ * @returns 删除结果
  */
-export const verifyEmail = async (params: { email: string }) => {
-  // 调用 API 邮箱验证
-  const response = await organizationApi.verifyEmail(params);
+export const deleteOrganization = async (
+  orgId: string | number,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteResult> => {
+  const deleteLogic = async (): Promise<DeleteResult> => {
+    try {
+      const response = await organizationApi.delete({ orgId });
 
-  return response;
-};
+      if (response.code === 200) {
+        return {
+          success: true,
+        };
+      }
 
-export const verify = async (params: CreateOrganizationRequest) => {
-  // 调用 API 验证组织名称
-  const response = await organizationApi.verify(params);
+      // 删除操作理论上不应该失败，如果失败直接返回错误
+      return {
+        success: false,
+      };
+    } catch (error) {
+      // 处理网络错误或异常
+      console.error('Delete organization failed:', error);
+      return {
+        success: false,
+      };
+    }
+  };
 
-  return response;
+  // 如果提供了 withLoading，则使用它包装
+  if (withLoading) {
+    const result = await withLoading(deleteLogic, {
+      onError: (error) => {
+        console.error('Delete operation error:', error);
+      },
+    });
+    // 如果 withLoading 返回 undefined（理论上不应该），使用兜底值
+    return (
+      result ?? {
+        success: false,
+      }
+    );
+  }
+
+  // 否则直接执行
+  return deleteLogic();
 };

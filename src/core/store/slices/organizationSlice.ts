@@ -20,7 +20,7 @@ const initialState: OrganizationState = {
 // 异步thunk动作
 export const fetchOrganizations = createAsyncThunk(
   'organization/fetchList',
-  async (data: OrganizationListParams, { getState, rejectWithValue }) => {
+  async (data: OrganizationListParams, { rejectWithValue }) => {
     try {
       const response = await organizationApi.getList(data);
       return response;

@@ -64,6 +64,7 @@
   "org.toast.create_success": "Die Organisation wurde erfolgreich angelegt. Eine E-Mail mit dem initialen Anmeldepasswort wurde an die E-Mail-Adresse des Administrators gesendet.",
   "org.toast.update_success": "Die Organisationsdaten wurden erfolgreich aktualisiert.",
   "org.dialog.similar_org.title": "Ähnliche Organisation",
+  "org.dialog.exists_org.title": "Organisationsname existiert bereits!",
   "org.dialog.similar_org.content": "Ein ähnlicher Organisationsname ist bereits vorhanden. Bitte bestätigen Sie Ihre Eingabe.",
   "org.dialog.unsaved.title": "Nicht gespeicherte Änderungen",
   "org.dialog.unsaved.content": "Es liegen nicht gespeicherte Änderungen vor. Möchten Sie den Vorgang ohne Speichern beenden?",

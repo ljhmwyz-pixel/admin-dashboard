@@ -7,6 +7,7 @@ import Login from '../../features/login/Login';
 import Register from '../../features/register/Register';
 import { routesConfig } from './config/routes';
 import { ProtectedRoute } from './guards/AuthGuard';
+import GuestRoute from './GuestRoute';
 
 // 懒加载 fallback 组件
 const LoadingFallback = () => (
@@ -28,9 +29,23 @@ const AppRoutes: React.FC = () => {
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
         {/* 登录页（独立） */}
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
         {/* 注册页（独立） */}
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={
+            <GuestRoute>
+              <Register />
+            </GuestRoute>
+          }
+        />
         <Route element={<BaseLayout />}>
           {routesConfig.map((route) => (
             <Route
