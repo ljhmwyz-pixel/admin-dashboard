@@ -62,12 +62,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit =
 
               // 未输入或长度<3，显示错误
               if (!value || value.trim() === '' || value.length < 3) {
-                form.setFields([
-                  {
-                    name: 'orgPostalCode',
-                    errors: [t('org.validation.postal.required')],
-                  },
-                ]);
+                form.setFieldValue('orgPostalCode', '');
                 return;
               }
 

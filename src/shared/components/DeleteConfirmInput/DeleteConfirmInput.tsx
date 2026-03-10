@@ -48,11 +48,11 @@ const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
       <div className={styles.confirmContent}>
         <div className={styles.confirmItems}>
           <div className={styles.confirmItem}>
-            <span>{t('org.dialog.confirm_delete.title')}</span>
+            <span>{t('org.field.name')}</span>
             <span className={styles.confirmItemValue}>{nodeData.title}</span>
           </div>
           <div className={styles.confirmItem}>
-            <span>{t('org.dialog.confirm_delete.field.name')}</span>
+            <span>{t('org.field.code')}</span>
             <span className={styles.confirmItemValue}>{nodeData.key}</span>
           </div>
         </div>
