@@ -24,7 +24,7 @@ const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNo
       <span className={styles.nodeTitle} id="tree-title">
         {nodeData.title}
       </span>
-      <div className={styles.nodeActions}>
+      <Space className={styles.nodeActions} size="small">
         {nodeData.canDelete && (
           <span
             className={styles.actionIcon}
@@ -99,7 +99,7 @@ const TreeNodeTitle: React.FC<TreeNodeTitleProps> = ({ nodeData, onNodeAdd, onNo
             </svg>
           </span>
         )}
-      </div>
+      </Space>
     </div>
   );
 };

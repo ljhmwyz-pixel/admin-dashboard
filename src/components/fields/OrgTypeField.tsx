@@ -2,15 +2,16 @@ import { useMemo } from 'react';
 
 import { FormSelect } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
 type OrgTypeFieldProps = FieldProps & {
   parentOrgType?: string;
+  canEdit?: boolean;
 };
 
-const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
+const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType, canEdit = true }) => {
   const { t } = useLanguage();
 
   const availableOptions = useMemo(() => {
@@ -64,6 +65,7 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType }) => {
         }
         rules={[{ required: true, message: t('org.validation.type.required') }]}
         selectProps={{
+          disabled: !canEdit,
           options: availableOptions,
           placeholder: t('org.placeholder.select_org_type'),
           onChange: (value) => {

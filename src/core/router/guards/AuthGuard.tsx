@@ -115,31 +115,31 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // 使用 useMemo 优化权限检查，避免不必要的重新计算
   const authCheckResult = useMemo(() => {
     // 没有 refreshToken → 直接认为未登录
-    // if (requireAuth && !refreshToken) {
-    //   return { authenticated: false, authorized: false, reason: 'no_refresh_token' };
-    // }
-    // // 检查认证状态
-    // if (requireAuth && !isAuthenticated) {
-    //   return { authenticated: false, authorized: false, reason: 'unauthenticated' };
-    // }
+    if (requireAuth && !refreshToken) {
+      return { authenticated: false, authorized: false, reason: 'no_refresh_token' };
+    }
+    // 检查认证状态
+    if (requireAuth && !isAuthenticated) {
+      return { authenticated: false, authorized: false, reason: 'unauthenticated' };
+    }
 
-    // // 检查权限
-    // if (permissions.length > 0) {
-    //   const hasAllPermissions = permissions.every((permission) =>
-    //     userPermissions.includes(permission),
-    //   );
-    //   if (!hasAllPermissions) {
-    //     return { authenticated: true, authorized: false, reason: 'insufficient_permissions' };
-    //   }
-    // }
+    // 检查权限
+    if (permissions.length > 0) {
+      const hasAllPermissions = permissions.every((permission) =>
+        userPermissions.includes(permission),
+      );
+      if (!hasAllPermissions) {
+        return { authenticated: true, authorized: false, reason: 'insufficient_permissions' };
+      }
+    }
 
-    // // 检查角色
-    // if (roles.length > 0) {
-    //   const hasAnyRole = roles.some((role) => userRoles.includes(role));
-    //   if (!hasAnyRole) {
-    //     return { authenticated: true, authorized: false, reason: 'insufficient_roles' };
-    //   }
-    // }
+    // 检查角色
+    if (roles.length > 0) {
+      const hasAnyRole = roles.some((role) => userRoles.includes(role));
+      if (!hasAnyRole) {
+        return { authenticated: true, authorized: false, reason: 'insufficient_roles' };
+      }
+    }
 
     return { authenticated: true, authorized: true, reason: null };
   }, [requireAuth, isAuthenticated, permissions, userPermissions, roles, userRoles, refreshToken]);

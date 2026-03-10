@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import { FormSelect } from '@/components';
 import { useWatch } from '@/shared/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
-type OrgCountryRegionFieldProps = FieldProps;
+type OrgCountryRegionFieldProps = FieldProps & { canEdit?: boolean };
 
-const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) => {
+const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const country = useWatch('country', form);
@@ -56,7 +56,7 @@ const OrgCountryRegionField: React.FC<OrgCountryRegionFieldProps> = ({ form }) =
         }
         required
         selectProps={{
-          disabled: true,
+          disabled: !canEdit,
           placeholder: t('org.placeholder.select_country_region'),
         }}
       />

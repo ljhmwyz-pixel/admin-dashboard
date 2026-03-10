@@ -50,7 +50,7 @@ export default defineConfig([
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^React$' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_|^React$' },
       ],
 
       /* ================= React prop-types ================= */

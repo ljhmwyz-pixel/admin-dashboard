@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
 
 import { FormTabs } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
+import type { TreeNodeData } from '@/shared/types/organization';
 
-import RoleInfo from '../role-info/RoleInfo';
 import OrganizationView from './OrganizationView';
 
 import styles from './OrganizationDetailPanel.module.scss';
 
-const OrganizationDetailPanel: React.FC = () => {
+interface OrganizationDetailPanelIProps {
+  selectedKey: string;
+  currentParentNode: TreeNodeData;
+  treeData: TreeNodeData[];
+  loadData: () => void;
+  setLoading: (loading: boolean) => void;
+}
+
+const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
+  selectedKey: orgId,
+  currentParentNode,
+  treeData,
+  loadData,
+  setLoading,
+}) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('info');
   const { t } = useLanguage();
 
@@ -17,12 +31,26 @@ const OrganizationDetailPanel: React.FC = () => {
     {
       key: 'info',
       label: <div className={styles.tabItems}>{t('org.info.title')}</div>,
-      children: <OrganizationView />,
+      children: orgId ? (
+        <OrganizationView
+          orgId={orgId}
+          currentParentNode={currentParentNode}
+          treeData={treeData}
+          loadData={loadData}
+          setLoading={setLoading}
+        />
+      ) : (
+        '空态页设计中...'
+      ),
     },
     {
       key: 'role-list',
       label: <div className={styles.tabItems}>{t('role.list.title')}</div>,
-      children: <RoleInfo />,
+      children: (
+        <div className="organization-detail-content">
+          <p>Role list content will be implemented here.</p>
+        </div>
+      ),
     },
     {
       key: 'member-list',

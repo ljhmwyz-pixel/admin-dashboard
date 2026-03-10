@@ -2,7 +2,7 @@ import type {
   BaseLocationInfo,
   GooglePlaceAddressComponent,
   LocationInfo,
-} from '../types/addressPickerTypes';
+} from '@/shared/types/addressPickerTypes';
 
 function normalizeI18nLang(raw?: string) {
   if (!raw) return 'en-US';

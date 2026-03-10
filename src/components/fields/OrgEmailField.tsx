@@ -1,19 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
 type OrgEmailFieldProps = FieldProps & {
   onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
-  userExists?: boolean;
+  canEdit?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
-const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists, userExists }) => {
+const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
+  form,
+  onCheckEmailExists,
+  canEdit = true,
+}) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,6 +28,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
 
   const handleCheckEmailExists = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!canEdit) return;
     const value = form.getFieldValue('orgEmail') || '';
 
     // 先进行基础格式校验
@@ -45,17 +50,6 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
       onCheckEmailExists(value, true);
     }
   };
-
-  useEffect(() => {
-    if (userExists) {
-      form.setFields([
-        {
-          name: 'orgEmail',
-          errors: [t('org.validation.email.exists')],
-        },
-      ]);
-    }
-  }, [userExists]);
 
   return (
     <AntCol span={12}>
@@ -85,7 +79,8 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({ form, onCheckEmailExists,
           { pattern: EMAIL_PATTERN, message: t('org.validation.email.required') },
         ]}
         inputProps={{
-          suffix: (
+          disabled: !canEdit,
+          suffix: canEdit && (
             <span
               onClick={handleCheckEmailExists}
               style={{ color: '#33C2C8', fontSize: '14px', cursor: 'pointer' }}

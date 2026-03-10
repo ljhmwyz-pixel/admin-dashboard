@@ -2,13 +2,13 @@ import React from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
-type OrgPostalCodeFieldProps = FieldProps;
+type OrgPostalCodeFieldProps = FieldProps & { canEdit?: boolean };
 
-const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
+const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +52,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
           },
         ]}
         inputProps={{
+          disabled: !canEdit,
           placeholder: t('org.placeholder.enter_postal_code'),
           maxLength: 12,
           onChange: handleInputChange,
@@ -61,12 +62,7 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form }) => {
 
               // 未输入或长度<3，显示错误
               if (!value || value.trim() === '' || value.length < 3) {
-                form.setFields([
-                  {
-                    name: 'orgPostalCode',
-                    errors: [t('org.validation.postal.required')],
-                  },
-                ]);
+                form.setFieldValue('orgPostalCode', '');
                 return;
               }
 

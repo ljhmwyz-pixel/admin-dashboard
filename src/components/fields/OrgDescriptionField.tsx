@@ -2,13 +2,13 @@ import React from 'react';
 
 import { FormTextArea } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import type { FieldProps } from './types';
 
-type OrgDescriptionFieldProps = FieldProps;
+type OrgDescriptionFieldProps = FieldProps & { canEdit?: boolean };
 
-const OrgDescriptionField: React.FC<OrgDescriptionFieldProps> = ({ form }) => {
+const OrgDescriptionField: React.FC<OrgDescriptionFieldProps> = ({ form, canEdit = true }) => {
   const { t } = useLanguage();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,6 +26,7 @@ const OrgDescriptionField: React.FC<OrgDescriptionFieldProps> = ({ form }) => {
         name="orgDescription"
         label={t('org.field.comment')}
         inputProps={{
+          disabled: !canEdit,
           autoSize: { minRows: 6, maxRows: 8 },
           placeholder: t('org.placeholder.enter_comment'),
           maxLength: 400,

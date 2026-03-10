@@ -2,22 +2,22 @@ import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { VerifyOrganization } from '@/shared/types/organization';
 
 import type { FieldProps } from './types';
 
 type OrgPhoneFieldProps = FieldProps & {
-  userExists?: boolean;
   existingPhone?: string;
   verifyResult?: VerifyOrganization;
+  canEdit?: boolean;
 };
 
 const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   form,
-  userExists = false,
   existingPhone,
-  verifyResult = {},
+  verifyResult = {} as VerifyOrganization,
+  canEdit = true,
 }) => {
   const { t } = useLanguage();
 
@@ -83,10 +83,12 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   };
 
   useEffect(() => {
-    if (userExists && existingPhone) {
+    if (existingPhone) {
       form.setFieldValue('orgPhone', existingPhone);
+    } else {
+      form.setFieldValue('orgPhone', '');
     }
-  }, [userExists, existingPhone]);
+  }, [existingPhone, form]);
 
   useEffect(() => {
     if (verifyResult.isPhoneExists) {
@@ -97,7 +99,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
         },
       ]);
     }
-  }, [verifyResult.isPhoneExists]);
+  }, [verifyResult.isPhoneExists, form, t]);
 
   return (
     <AntCol span={12}>
@@ -126,7 +128,7 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
           inputMode: 'numeric',
           placeholder: t('org.placeholder.enter_phone'),
           maxLength: 16,
-          disabled: userExists,
+          disabled: !!existingPhone || !canEdit,
           onChange: handleChange,
           onBlur: handleBlur,
         }}

@@ -1,3 +1,8 @@
+
+.organizationTreeLoading {
+    height: 100%;
+}
+
 .organizationTree {
     display: flex;
     flex-direction: column;
@@ -60,7 +65,6 @@
                     border-top-right-radius: 2px;
                     border-bottom-right-radius: 2px;
                     border-right: 2px solid transparent;
-                    overflow: hidden;
                 }
 
                 .ant-tree-node-selected #tree-title {

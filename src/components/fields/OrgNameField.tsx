@@ -2,17 +2,18 @@ import React, { useEffect } from 'react';
 
 import { FormInput } from '@/components';
 import { AntCol } from '@/shared/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { VerifyOrganization } from '@/shared/types/organization';
 import { containsEmoji } from '@/shared/utils/organizationUtil';
 
 import type { FieldProps } from './types';
 
-type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization };
+type OrgNameFieldProps = FieldProps & { verifyResult: VerifyOrganization; canEdit?: boolean };
 
 const OrgNameField: React.FC<OrgNameFieldProps> = ({
   form,
   verifyResult = {} as VerifyOrganization,
+  canEdit = true,
 }) => {
   const { t } = useLanguage();
 
@@ -49,7 +50,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({
           errors: [t('org.dialog.similar_org.content')],
         },
       ]);
-  }, [verifyResult]);
+  }, [verifyResult, form, t]);
 
   return (
     <AntCol span={12}>
@@ -79,6 +80,7 @@ const OrgNameField: React.FC<OrgNameFieldProps> = ({
           placeholder: t('org.placeholder.search_org'),
           maxLength: 254,
           onChange: handleInputChange,
+          disabled: !canEdit,
           onBlur: () => {
             setTimeout(() => {
               const value = form.getFieldValue('orgName') || '';

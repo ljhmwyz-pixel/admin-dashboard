@@ -4,7 +4,7 @@ import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
 import { ImageIcons } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 
 import styles from './SiderMenu.module.scss';
 

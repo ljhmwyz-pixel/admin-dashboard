@@ -39,14 +39,14 @@ const Login: React.FC = () => {
       const resultAction = await dispatch(loginUser(form));
       if (loginUser.fulfilled.match(resultAction)) {
         // 获取权限列表
-        await dispatch(fetchPermissions());
+        // await dispatch(fetchPermissions());
         // 登录成功
         navigate('/dashboard', { replace: true });
       } else {
         // 登录失败
         message.error(resultAction.payload as string);
       }
-    } catch (err) {
+    } catch {
       setError('登录失败，请重试');
     } finally {
       setLoading(false);

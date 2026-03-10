@@ -1,13 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, Form, type FormInstance, Modal, Space, Spin, Typography } from 'antd';
 import cls from 'classnames';
 
 import { FormAutoComplete } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
-
-import { useAddressPickerMap } from './hooks/useAddressPickerMap';
-import type { FieldMap, GoogleOption, LocationInfo } from './types/addressPickerTypes';
-import { stripPostalCodeText } from './utils/addressUtils';
+import { useAddressPickerMap, useLanguage } from '@/shared/hooks';
+import type { FieldMap, GoogleOption, LocationInfo } from '@/shared/types/addressPickerTypes';
+import { stripPostalCodeText } from '@/shared/utils/addressUtils';
 
 import styles from './AddressPickerAutoComplete.module.scss';
 
@@ -19,6 +17,7 @@ type Props = {
   popupTitle?: string;
   onResolved?: (location: LocationInfo) => void;
   formatAddress?: (location: LocationInfo) => string;
+  canEdit?: boolean;
 };
 
 export default function AddressPickerAutoComplete({
@@ -29,6 +28,7 @@ export default function AddressPickerAutoComplete({
   popupTitle = '选择地址',
   onResolved,
   formatAddress,
+  canEdit = true,
 }: Props) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -129,10 +129,11 @@ export default function AddressPickerAutoComplete({
   }, [draftLocation?.displayAddress, geocodeText, minSearchLength, popupValue]);
 
   const handleOpenModal = useCallback(() => {
+    if (!canEdit) return;
     const currentAddress = String(form.getFieldValue(fieldMap.address) ?? '');
     setPopupValue(stripPostalCodeText(currentAddress));
     setOpen(true);
-  }, [fieldMap.address, form]);
+  }, [fieldMap.address, form, canEdit]);
 
   const handleAfterOpenChange = useCallback(
     (visible: boolean) => {
@@ -143,6 +144,14 @@ export default function AddressPickerAutoComplete({
     },
     [initOrRefreshMap],
   );
+
+  useEffect(() => {
+    if (open && draftLocation?.displayAddress) {
+      Promise.resolve().then(() => {
+        setPopupValue(stripPostalCodeText(draftLocation.displayAddress));
+      });
+    }
+  }, [open, draftLocation?.displayAddress]);
 
   return (
     <>
@@ -174,6 +183,7 @@ export default function AddressPickerAutoComplete({
           },
         ]}
         autoCompleteProps={{
+          disabled: !canEdit,
           value: addressValue,
           options: mainOptions,
           status: error ? 'error' : undefined,
@@ -198,7 +208,7 @@ export default function AddressPickerAutoComplete({
           onSelect: (_, option) => {
             void resolveSuggestion(option as GoogleOption, 'main');
           },
-          suffix: (
+          suffix: canEdit && (
             <span className={styles.addressSuffix} onClick={handleOpenModal}>
               <svg
                 width="14"
@@ -238,7 +248,7 @@ export default function AddressPickerAutoComplete({
         onCancel={() => setOpen(false)}
         afterOpenChange={handleAfterOpenChange}
         width={920}
-        destroyOnClose={false}
+        destroyOnHidden={false}
         footer={
           <Space>
             <Button onClick={() => setOpen(false)}>取消</Button>

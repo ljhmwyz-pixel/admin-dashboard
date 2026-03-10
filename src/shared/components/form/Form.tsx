@@ -23,8 +23,11 @@ export interface FormProps extends AntFormProps {
  * 提供更多主题和动画选项
  */
 const Form: React.FC<FormProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   theme = 'default',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   animated = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   className = '',
   children,
   ...restProps

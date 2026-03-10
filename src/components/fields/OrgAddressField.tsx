@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Col, Form, Input } from 'antd';
 
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks';
 import type { VerifyOrganization } from '@/shared/types/organization';
 
 import AddressPickerAutoComplete from './AddressPickerAutoComplete';
@@ -9,9 +9,14 @@ import type { FieldProps } from './types';
 
 type OrgAddressFieldProps = FieldProps & {
   verifyResult: VerifyOrganization;
+  canEdit?: boolean;
 };
 
-export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldProps) {
+export default function OrgAddressField({
+  form,
+  verifyResult,
+  canEdit = true,
+}: OrgAddressFieldProps) {
   const { t } = useLanguage();
   useEffect(() => {
     if (!verifyResult?.isCountryInScope) {
@@ -22,7 +27,7 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
         },
       ]);
     }
-  }, [verifyResult]);
+  }, [verifyResult, form]);
   return (
     <Col span={12}>
       <AddressPickerAutoComplete
@@ -41,6 +46,7 @@ export default function OrgAddressField({ form, verifyResult }: OrgAddressFieldP
           route: 'route',
           streetNumber: 'streetNumber',
         }}
+        canEdit={canEdit}
         onResolved={(loc) => {
           form.setFields([
             {

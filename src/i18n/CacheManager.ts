@@ -193,7 +193,7 @@ export class LanguageCacheManager {
               cleanedCount++;
             }
           }
-        } catch (_error) {
+        } catch {
           // 解析失败的数据也清理掉
           localStorage.removeItem(key);
           cleanedCount++;
@@ -220,7 +220,7 @@ export class LanguageCacheManager {
             const entry: CacheEntry = JSON.parse(data);
             entries.push({ key, timestamp: entry.timestamp });
           }
-        } catch (_error) {
+        } catch {
           // 无法解析的条目直接删除
           localStorage.removeItem(key);
         }
