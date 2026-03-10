@@ -23,6 +23,7 @@ const OrganizationList: React.FC = () => {
     closeAddDrawer,
     handleExpand,
     setLoading,
+    setSelectedKey,
   } = useOrganizationTree();
 
   return (
@@ -105,6 +106,7 @@ const OrganizationList: React.FC = () => {
               loadData={loadTreeData}
               loading={loading}
               setLoading={setLoading}
+              setSelectedKey={setSelectedKey}
             />
           </div>
         </Splitter.Panel>

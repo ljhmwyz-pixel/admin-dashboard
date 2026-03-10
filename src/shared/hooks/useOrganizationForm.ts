@@ -287,12 +287,10 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         // ===== 第四步：检查创建结果 =====
         if (response.code === 200) {
           // 显示成功提示（在回调中刷新列表）
+          onRefresh?.();
           success({
             title: 'Success !',
             content: t('org.toast.create_success'),
-            onOk: () => {
-              onRefresh?.();
-            },
           });
 
           return { success: true, data: response };
