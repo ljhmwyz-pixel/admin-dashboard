@@ -23,6 +23,7 @@ interface OrganizationTreeProps {
   loadData: (searchKeyword?: string) => Promise<void>;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  setSelectedKey: (key: string) => void;
 }
 
 const OrganizationTree: React.FC<OrganizationTreeProps> = ({
@@ -36,6 +37,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   loadData,
   loading,
   setLoading,
+  setSelectedKey,
 }) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const { t } = useLanguage();
@@ -134,6 +136,9 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
               try {
                 await deleteOrganization(nodeData.key);
                 await loadData();
+                if (selectedKey === nodeData.key) {
+                  setSelectedKey('');
+                }
               } catch (err) {
                 console.error('Delete organization failed:', err);
               }

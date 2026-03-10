@@ -97,5 +97,6 @@ export function useOrganizationTree() {
     closeAddDrawer,
     handleExpand,
     setTreeData,
+    setSelectedKey,
   };
 }
