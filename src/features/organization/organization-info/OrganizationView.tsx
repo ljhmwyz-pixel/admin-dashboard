@@ -15,9 +15,9 @@ import {
 } from '@/components/fields';
 import { useThemeModal } from '@/components/Modal';
 import { Permission } from '@/components/Permission';
-import { PermissionCode } from '@/components/Permission/permissionCode';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
+import { PermissionCode } from '@/shared/constants/permissions';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { type OrganizationFormData, useOrganizationForm } from '@/shared/hooks/useOrganizationForm';
 import type { TreeNodeData } from '@/shared/types/organization';
