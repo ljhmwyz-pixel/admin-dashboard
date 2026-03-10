@@ -85,6 +85,8 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   useEffect(() => {
     if (existingPhone) {
       form.setFieldValue('orgPhone', existingPhone);
+    } else {
+      form.setFieldValue('orgPhone', '');
     }
   }, [existingPhone, form]);
 
