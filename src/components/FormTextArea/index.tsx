@@ -1,6 +1,6 @@
 import React from 'react';
+import { AntForm, AntInput } from '@shared/components';
 import type { FormItemProps } from 'antd';
-import { Form, Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input';
 import classNames from 'classnames';
 
@@ -21,7 +21,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item
+    <AntForm.Item
       label={
         <div className={styles.label}>
           {prefixIcon ? prefixIcon : null}
@@ -31,7 +31,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
       {...formItemProps}
       className={classNames(styles.wrapper, className)}
     >
-      <Input.TextArea
+      <AntInput.TextArea
         autoSize={{ minRows: 3, maxRows: 6 }}
         {...inputProps}
         className={`
@@ -40,7 +40,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
               ${inputProps?.disabled ? styles.disabledStyle : ''}
             `}
       />
-    </Form.Item>
+    </AntForm.Item>
   );
 };
 

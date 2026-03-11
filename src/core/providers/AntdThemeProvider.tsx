@@ -1,9 +1,8 @@
 import React from 'react';
+import { useUnifiedTheme } from '@shared/hooks';
 import type { ThemeConfig } from 'antd';
 import { ConfigProvider } from 'antd';
 import type { ReactNode } from 'react';
-
-import { useUnifiedTheme } from '@/shared/hooks';
 
 interface AntdThemeProviderProps {
   children: ReactNode;

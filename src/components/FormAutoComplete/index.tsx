@@ -1,6 +1,6 @@
 import React from 'react';
+import { AntAutoComplete, AntForm } from '@shared/components';
 import type { AutoCompleteProps, FormItemProps } from 'antd';
-import { AutoComplete, Form } from 'antd';
 import classNames from 'classnames';
 
 import styles from './index.module.scss';
@@ -20,7 +20,7 @@ const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item
+    <AntForm.Item
       label={
         <div className={styles.label}>
           {prefixIcon ? prefixIcon : null}
@@ -30,7 +30,7 @@ const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
       {...formItemProps}
       className={classNames(styles.wrapper, className)}
     >
-      <AutoComplete
+      <AntAutoComplete
         {...autoCompleteProps}
         className={classNames(
           styles.input,
@@ -38,7 +38,7 @@ const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
           autoCompleteProps?.disabled && styles.disabledStyle,
         )}
       />
-    </Form.Item>
+    </AntForm.Item>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { AntDrawer } from '@shared/components';
 import type { DrawerProps } from 'antd';
-import { Drawer } from 'antd';
 import classNames from 'classnames';
 
 import { ImageIcons } from '@/components/ImageIcons';
@@ -39,7 +39,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
   }, [rest.open]);
 
   return (
-    <Drawer
+    <AntDrawer
       open={rest.open}
       {...rest}
       className={classNames(styles.drawer, className)}
@@ -64,7 +64,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
       <div ref={contentRef} className={styles.content}>
         {children}
       </div>
-    </Drawer>
+    </AntDrawer>
   );
 };
 

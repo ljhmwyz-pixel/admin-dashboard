@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
-
-import { useAppDispatch, useAppSelector } from '../../core/store/hooks';
-import { selectGlobalLoading, setGlobalLoading } from '../../core/store/slices/uiSlice';
+import { useAppDispatch, useAppSelector } from '@core/store/hooks';
+import { selectGlobalLoading, setGlobalLoading } from '@core/store/slices/uiSlice';
 
 /**
  * 全局loading状态管理hook

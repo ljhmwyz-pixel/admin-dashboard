@@ -1,6 +1,6 @@
 // SCSS Modules变量和混合宏
-@use '@/shared/styles/variables' as *;
-@use '@/shared/styles/mixins' as *;
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
 @use 'sass:color';
 
 .container {

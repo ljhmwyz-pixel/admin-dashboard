@@ -1,7 +1,6 @@
 import React from 'react';
-import { Form, Input } from 'antd';
-import type { FormItemProps } from 'antd/es/form';
-import type { InputProps } from 'antd/es/input';
+import { AntForm, AntInput } from '@shared/components';
+import type { FormItemProps, InputProps } from 'antd';
 import classNames from 'classnames';
 
 import styles from './index.module.scss';
@@ -21,7 +20,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
   ...formItemProps
 }) => {
   return (
-    <Form.Item
+    <AntForm.Item
       label={
         <div className={styles.label}>
           {prefixIcon ? prefixIcon : null}
@@ -31,7 +30,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       {...formItemProps}
       className={classNames(styles.wrapper, className)}
     >
-      <Input
+      <AntInput
         autoComplete="off"
         {...inputProps}
         className={`
@@ -40,7 +39,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
               ${inputProps?.disabled ? styles.disabledStyle : ''}
             `}
       />
-    </Form.Item>
+    </AntForm.Item>
   );
 };
 
