@@ -109,10 +109,9 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchPermissions.fulfilled, (state, action) => {
-        debugger;
         state.loading = false;
         state.isAuthenticated = true;
-        state.permissions = action.payload.permissions || [];
+        state.permissions = flattenPermission(action.payload.menuTree) || [];
         state.lastLoginAt = new Date().toISOString();
       })
       .addCase(fetchPermissions.rejected, (state, action) => {
@@ -168,8 +167,7 @@ const authSlice = createSlice({
       .addCase(fetchUserInfo.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isAuthenticated = true;
-        // state.permissions = action.payload.permissions || [];
-        // state.roles = action.payload.user.roles || [];
+        state.permissions = flattenPermission(action.payload.menuTree) || [];
       })
       .addCase(fetchUserInfo.rejected, (state, action) => {
         state.error = action.payload as string;
@@ -245,6 +243,27 @@ const authSlice = createSlice({
       });
   },
 });
+
+// 树形=> 扁平的树
+function flattenPermission(tree: any[]) {
+  const list: string[] = [];
+
+  const loop = (nodes: any[]) => {
+    nodes.forEach((node) => {
+      if (node.permissionCode) {
+        list.push(node.permissionCode);
+      }
+
+      if (node.children?.length) {
+        loop(node.children);
+      }
+    });
+  };
+
+  loop(tree);
+
+  return list;
+}
 
 // 导出 actions
 export const { setAuthenticated, setUser, setPermissions, clearAuth, clearError } =

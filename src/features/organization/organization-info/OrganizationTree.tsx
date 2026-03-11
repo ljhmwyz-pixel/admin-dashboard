@@ -4,7 +4,9 @@ import { debounce } from 'lodash-es';
 
 import { useThemeModal } from '@/components/Modal';
 import { AntInput, AntTree, DeleteConfirmInput } from '@/shared/components/antd-imports';
+import { PermissionCode } from '@/shared/constants/permissions';
 import { useLanguage } from '@/shared/hooks';
+import { usePermission } from '@/shared/hooks/usePermission';
 import type { TreeNodeData } from '@/shared/types/organization';
 
 import { deleteOrganization } from '../services/organizationService';
@@ -42,7 +44,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
   const [searchValue, setSearchValue] = useState<string>('');
   const { t } = useLanguage();
   const { warning, confirm } = useThemeModal();
-
+  const { hasPermission } = usePermission();
   // 初始化加载数据
   useEffect(() => {
     loadData().then(() => {
@@ -80,9 +82,11 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
 
   // 处理树节点选择
   const handleTreeSelect = (selectedKeys: React.Key[]) => {
-    if (selectedKeys.length > 0) {
-      const key = selectedKeys[0] as string;
-      onSelect?.(key);
+    if (hasPermission(PermissionCode.ORG_DETAIL)) {
+      if (selectedKeys.length > 0) {
+        const key = selectedKeys[0] as string;
+        onSelect?.(key);
+      }
     }
   };
 

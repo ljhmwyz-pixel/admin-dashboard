@@ -1,5 +1,7 @@
 import { lazy } from 'react';
 
+import { PermissionCode } from '@/shared/constants/permissions';
+
 // 路由配置接口
 export interface RouteConfig {
   path: string;
@@ -47,8 +49,8 @@ export const routesConfig: RouteConfig[] = [
   {
     path: '/organization/list',
     element: OrganizationList,
+    permissions: [PermissionCode.ORG_LIST],
     auth: true,
-    permissions: ['organization:manage'],
     meta: {
       title: '组织列表',
       icon: 'apartment',
@@ -59,7 +61,7 @@ export const routesConfig: RouteConfig[] = [
     path: '/organization/type',
     element: OrganizationType,
     auth: true,
-    permissions: ['organization:type'],
+    permissions: [PermissionCode.ORG_TYPE_CFG],
     meta: {
       title: '组织类型',
       icon: 'setting',
@@ -70,7 +72,7 @@ export const routesConfig: RouteConfig[] = [
     path: '/role',
     element: RoleManagement,
     auth: true,
-    permissions: ['role:manage'],
+    permissions: [PermissionCode.ROLE_MANAGE],
     meta: {
       title: '角色管理',
       icon: 'usergroup-add',
@@ -81,7 +83,7 @@ export const routesConfig: RouteConfig[] = [
     path: '/user',
     element: UserManagement,
     auth: true,
-    permissions: ['user:manage'],
+    permissions: [PermissionCode.USER_MANAGE],
     meta: {
       title: '用户管理',
       icon: 'user',
@@ -107,34 +109,26 @@ export const flattenRoutes = (routes: RouteConfig[]): RouteConfig[] => {
   return result;
 };
 
-// 根据权限过滤路由
+// 根据权限过滤路由（纯函数）
 export const filterRoutesByPermission = (
   routes: RouteConfig[],
   permissions: string[],
-  roles: string[],
+  roles?: string[],
 ): RouteConfig[] => {
   return routes
     .filter((route) => {
-      // 检查认证要求
-      if (route.auth && permissions.length === 0 && roles.length === 0) {
-        return false;
+      // 如果没有设置权限要求，则允许访问
+      if (!route.permissions || route.permissions.length === 0) {
+        return true;
       }
 
-      // 检查权限要求
-      if (route.permissions && route.permissions.length > 0) {
-        const hasPermission = route.permissions.every((permission) =>
-          permissions.includes(permission),
-        );
-        if (!hasPermission) return false;
-      }
+      // 检查权限 - 满足任一权限即可访问
+      // ✅ 使用 some 检查所有权限
+      const hasAnyPermission = route.permissions.some((permission) =>
+        permissions.includes(permission),
+      );
 
-      // 检查角色要求
-      if (route.roles && route.roles.length > 0) {
-        const hasRole = route.roles.some((role) => roles.includes(role));
-        if (!hasRole) return false;
-      }
-
-      return true;
+      return hasAnyPermission;
     })
     .map((route) => ({
       ...route,

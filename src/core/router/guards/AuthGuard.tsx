@@ -102,13 +102,12 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAuth = true,
-  permissions = [],
+  // permissions = [],
   roles = [],
   redirectPath = '/login',
 }) => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const userPermissions = useAppSelector(selectUserPermissions);
   const userRoles = useAppSelector(selectUserRoles);
   const refreshToken = SecurityUtils.getRefreshToken();
 
@@ -124,14 +123,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     // 检查权限
-    if (permissions.length > 0) {
-      const hasAllPermissions = permissions.every((permission) =>
-        userPermissions.includes(permission),
-      );
-      if (!hasAllPermissions) {
-        return { authenticated: true, authorized: false, reason: 'insufficient_permissions' };
-      }
-    }
+    // if (permissions.length > 0) {
+    //   const hasAllPermissions = permissions.every((permission) =>
+    //     userPermissions.includes(permission),
+    //   );
+    //   if (!hasAllPermissions) {
+    //     return { authenticated: true, authorized: false, reason: 'insufficient_permissions' };
+    //   }
+    // }
 
     // 检查角色
     if (roles.length > 0) {
@@ -142,7 +141,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
 
     return { authenticated: true, authorized: true, reason: null };
-  }, [requireAuth, isAuthenticated, permissions, userPermissions, roles, userRoles, refreshToken]);
+  }, [requireAuth, isAuthenticated, roles, userRoles, refreshToken]);
 
   // 根据检查结果决定渲染什么
   if (!authCheckResult.authenticated) {

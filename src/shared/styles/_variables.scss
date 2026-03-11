@@ -7,7 +7,7 @@ $color-info: #1677ff;
 
 // 中性色
 $color-text-primary: #191b1f;
-$color-text-secondary: #5a5a5a;
+$color-text-secondary: rgba(25, 27, 31, 0.6);
 $color-text-tertiary: #8c8c8c;
 $color-text-quaternary: #bfbfbf;
 
@@ -18,7 +18,7 @@ $color-bg-elevated: #ffffff;
 $color-bg-spotlight: rgba(0, 0, 0, 0.85);
 
 // 边框色
-$color-border: #191B1F0F;
+$color-border: #191b1f0f;
 $color-border-secondary: #f0f0f0;
 
 // 阴影
@@ -58,8 +58,8 @@ $line-height-normal: 1.5;
 $line-height-relaxed: 1.75;
 
 // 暗色主题变量
-$dark-color-text-primary: rgba(255, 255, 255, 0.85);
-$dark-color-text-secondary: rgba(255, 255, 255, 0.65);
+$dark-color-text-primary: #ffffff;
+$dark-color-text-secondary: rgba(255, 255, 255, 0.6);
 $dark-color-text-tertiary: rgba(255, 255, 255, 0.45);
 $dark-color-text-quaternary: rgba(255, 255, 255, 0.25);
 $dark-color-bg-base: #141414;

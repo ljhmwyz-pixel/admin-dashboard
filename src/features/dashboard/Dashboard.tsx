@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <Card title={t('sidebar.dashboard')} style={{ marginBottom: 24 }}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space orientation="vertical" size="large" style={{ width: '100%' }}>
           <Title level={2}>主题测试面板</Title>
 
           {/* 当前主题状态 */}
@@ -38,7 +38,7 @@ const Dashboard: React.FC = () => {
 
           {/* 主题控制按钮 */}
           <Card size="small" title="主题控制">
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space orientation="vertical" style={{ width: '100%' }}>
               <Space wrap>
                 <Button
                   icon={<BulbOutlined />}
@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
 
           {/* 组件样式测试 */}
           <Card size="small" title="组件样式测试">
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space orientation="vertical" style={{ width: '100%' }}>
               <Space>
                 <Button type="primary">主要按钮</Button>
                 <Button>默认按钮</Button>

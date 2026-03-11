@@ -1,10 +1,16 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
 .organizationDetailPanel {
   display: flex;
   flex-direction: column;
   height: 100%;
   border-radius: 12px;
-  background-color: #ffffff;
   justify-content: space-between;
+  background-color: $color-bg-container;
+  @include dark-theme {
+    background-color: $dark-color-bg-container;
+  }
   .antTabs {
     height: 54px;
     padding-left: 30px;

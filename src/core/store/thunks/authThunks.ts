@@ -32,16 +32,7 @@ export const fetchPermissions = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res: any = await authApi.getPermissionSource();
-      debugger;
       const { data: response } = res;
-      // // 本地缓存refreshToken
-      // if (response.refreshToken) {
-      //   SecurityUtils.setRefreshToken(response.refreshToken);
-      // }
-      // // 本地缓存token
-      // if (response.token) {
-      //   SecurityUtils.setToken(response.token);
-      // }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || '获取资源失败');

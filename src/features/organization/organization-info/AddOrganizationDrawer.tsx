@@ -56,10 +56,13 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       loadData?.();
     });
 
-    if (!result.success) {
-      console.warn('❌ 表单提交失败:', result.reason);
-    } else {
-      console.log('✅ 表单提交成功');
+    if (!result.success && result.code === 422) {
+      form.setFields([
+        {
+          name: 'orgAddress',
+          errors: ['Please select correct country/region to create organization.'],
+        },
+      ]);
     }
   };
 

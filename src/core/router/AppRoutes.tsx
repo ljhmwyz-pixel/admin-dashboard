@@ -1,32 +1,25 @@
 import React, { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import BaseLayout from '@/components/layouts/BaseLayout';
+import type { RootState } from '@/core/store';
 
 import Login from '../../features/login/Login';
 import Register from '../../features/register/Register';
-import { routesConfig } from './config/routes';
+import { filterRoutesByPermission, routesConfig } from './config/routes';
 import { ProtectedRoute } from './guards/AuthGuard';
 import GuestRoute from './GuestRoute';
 
-// 懒加载 fallback 组件
-const LoadingFallback = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '200px',
-    }}
-  >
-    <div>页面加载中...</div>
-    {/* TODO: 替换为统一的加载组件 */}
-  </div>
-);
-
 const AppRoutes: React.FC = () => {
+  const permissions = useSelector((state: RootState) => state.auth.permissions);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  // 根据用户权限过滤可访问的路由
+  const accessibleRoutes = React.useMemo(() => {
+    return filterRoutesByPermission(routesConfig, permissions);
+  }, [permissions]);
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <Suspense>
       <Routes>
         {/* 登录页（独立） */}
         <Route
@@ -47,7 +40,7 @@ const AppRoutes: React.FC = () => {
           }
         />
         <Route element={<BaseLayout />}>
-          {routesConfig.map((route) => (
+          {accessibleRoutes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
@@ -67,7 +60,10 @@ const AppRoutes: React.FC = () => {
           ))}
         </Route>
         {/* 404 页面 */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
+        />
       </Routes>
     </Suspense>
   );
