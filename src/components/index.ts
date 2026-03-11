@@ -15,3 +15,7 @@ export { default as SiderFooter } from './layouts/SiderFooter';
 export { default as SiderHeader } from './layouts/SiderHeader';
 export { default as SiderMenu } from './layouts/SiderMenu';
 export { default as FormModal } from './Modal';
+/**
+ * 分段控制器组件
+ */
+export { default as Segmented } from './Segmented';

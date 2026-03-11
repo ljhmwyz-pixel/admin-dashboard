@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { RoleFooter, RoleHeader, RoleTable } from '@pages/organization/components';
 import type { RoleRecord } from '@pages/organization/dto';
 
-import styles from './RoleInfo.module.scss';
+import type { OptionItem } from '@/components/Segmented';
+
+import RoleFooter from './components/RoleFooter';
+import RoleHeader from './components/RoleHeader';
+import RoleTable from './components/RoleTable';
+
+import styles from './index.module.scss';
 
 // 生成大量模拟数据的方法
 const generateMockData = (count: number): RoleRecord[] => {
@@ -80,6 +85,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
 
   // 状态筛选：'all' | 'normal' | 'deleted'
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
+  const statusList: OptionItem[] = [
+    { label: 'all', value: 'all' },
+    { label: 'normal', value: 'normal' },
+    { label: 'deleted', value: 'deleted' },
+  ];
 
   // Platform 筛选
   const [platformFilter, setPlatformFilter] = useState<{
@@ -245,6 +255,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
         onSearchKeywordChange={setSearchKeyword}
         onAdd={onAdd}
         onRefresh={handleRefresh}
+        statusList={statusList}
       />
 
       <div className={styles.tableContainer}>
@@ -270,7 +281,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
         />
 
         {/* 底部选中状态 */}
-        {selectedKeys.length > 0 && (
+        {/* {selectedKeys.length > 0 && (
           <RoleFooter
             selectedCount={selectedKeys.length}
             onBatchEdit={handleBatchEdit}
@@ -280,7 +291,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
               setSelectedRecords([]);
             }}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

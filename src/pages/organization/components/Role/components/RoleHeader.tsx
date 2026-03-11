@@ -3,7 +3,9 @@ import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { StatusFilter } from '@pages/organization/dto';
 import { AntButton, AntInput, AntSpace, AntTooltip } from '@shared/components';
 import { useLanguage } from '@shared/hooks/useLanguage';
-import cls from 'classnames';
+
+import { Segmented } from '@/components';
+import type { OptionItem } from '@/components/Segmented';
 
 import styles from './RoleHeader.module.scss';
 
@@ -14,6 +16,7 @@ interface RoleHeaderProps {
   onSearchKeywordChange: (keyword: string) => void;
   onAdd: (() => void) | undefined;
   onRefresh: () => void;
+  statusList: OptionItem[];
 }
 
 const RoleHeader: React.FC<RoleHeaderProps> = ({
@@ -23,31 +26,14 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
   onSearchKeywordChange,
   onAdd,
   onRefresh,
+  statusList,
 }) => {
   const { t } = useLanguage();
-
-  const statusList = [
-    { key: 'all', name: 'All' },
-    { key: 'normal', name: 'Normal' },
-    { key: 'deleted', name: 'Deleted' },
-  ];
 
   return (
     <div className={styles.roleHeader}>
       {/* 左侧：状态筛选 */}
-      <div className={styles.headerLeft}>
-        {statusList.map((item) => (
-          <span
-            key={item.key}
-            onClick={() => onStatusChange(item.key as StatusFilter)}
-            className={cls(styles.filterButton, {
-              [styles.filterButtonActive]: statusFilter === item.key,
-            })}
-          >
-            {item.name}
-          </span>
-        ))}
-      </div>
+      <Segmented options={statusList} onChange={(value) => onStatusChange(value as StatusFilter)} />
 
       {/* 右侧：搜索 + 操作按钮 */}
       <div className={styles.headerRight}>

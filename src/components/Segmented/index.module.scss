@@ -1,0 +1,68 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
+
+.segmented {
+  background: rgba(25, 27, 31, 0.06);
+  height: 34px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+
+  // 覆盖 Ant Design 的 CSS 变量，移除 hover 效果
+  --ant-segmented-item-hover-color: transparent !important;
+  --ant-segmented-item-hover-bg: transparent !important;
+  --ant-segmented-item-active-color: transparent !important;
+  --ant-segmented-item-active-bg: transparent !important;
+  --ant-segmented-item-focus-color: transparent !important;
+  --ant-segmented-item-focus-bg: transparent !important;
+
+  :global {
+
+    // 强制覆盖 Ant Design 的 CSS 变量
+    .ant-segmented {
+      --ant-segmented-item-hover-color: transparent !important;
+      --ant-segmented-item-hover-bg: transparent !important;
+      --ant-segmented-item-active-color: transparent !important;
+      --ant-segmented-item-active-bg: transparent !important;
+      --ant-segmented-item-focus-color: transparent !important;
+      --ant-segmented-item-focus-bg: transparent !important;
+    }
+
+    .ant-segmented-item {
+      border-radius: 4px !important;
+      min-width: 80px;
+    }
+
+    .ant-segmented-item-label {
+      height: 31px !important;
+      border-radius: 4px !important;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(25, 27, 31, 0.4);
+      min-width: 80px;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    .ant-segmented-item:hover .ant-segmented-item-label {
+      background: transparent !important;
+      background-color: transparent !important;
+      color: rgba(25, 27, 31, 0.4) !important;
+    }
+
+    .ant-segmented-item-selected .ant-segmented-item-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(51, 194, 200, 1) !important;
+    }
+
+    .ant-segmented-item-selected {
+      border-radius: 4px !important;
+      min-width: 80px;
+    }
+  }
+}
