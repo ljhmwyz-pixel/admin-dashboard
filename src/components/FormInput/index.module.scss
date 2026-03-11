@@ -45,7 +45,6 @@ $requireIcon: '@/assets/images/form/require_icon.png';
   line-height: 14px;
   font-weight: 500;
   color: $color-text-secondary;
-
   @include dark-theme {
     color: $dark-color-text-secondary;
   }
