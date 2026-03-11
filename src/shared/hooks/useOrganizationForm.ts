@@ -252,6 +252,10 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
    */
   const handleSubmit = useCallback(
     async (values: OrganizationFormData, onRefresh?: () => void) => {
+      if (!values.orgCountryRegion) {
+        return { success: false, code: 422 };
+      }
+
       // 开始全局 loading
       setLoading(true);
 
