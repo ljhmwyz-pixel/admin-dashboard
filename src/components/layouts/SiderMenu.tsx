@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PermissionCode } from '@shared/constants/permissions';
+import { useLanguage } from '@shared/hooks';
+import { usePermission } from '@shared/hooks/usePermission';
 import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
 import { ImageIcons } from '@/components';
-import { PermissionCode } from '@/shared/constants/permissions';
-import { useLanguage } from '@/shared/hooks';
-import { usePermission } from '@/shared/hooks/usePermission';
 
 import styles from './SiderMenu.module.scss';
 

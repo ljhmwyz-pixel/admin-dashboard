@@ -8,10 +8,10 @@ import type {
   VerifyEmailRequest,
   VerifyEmailResponse,
   VerifyResponse,
-} from '@/shared/types/organization';
+} from '@shared/types/organization';
 
-import { apiClient } from '../../api/client';
-import { ORGANIZATION_ENDPOINTS } from '../../api/endpoints';
+import { apiClient } from '@/services/api/client';
+import { ORGANIZATION_ENDPOINTS } from '@/services/api/endpoints';
 
 /**
  * 组织管理 API 接口定义

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import GlobalLoading from '@shared/components/GlobalLoading';
+import SecurityUtils from '@shared/utils/SecurityUtils';
 import type { ReactNode } from 'react';
 
 import { fetchUserInfo } from '@/core/store/thunks/authThunks';
-import GlobalLoading from '@/shared/components/GlobalLoading';
-import SecurityUtils from '@/shared/utils/SecurityUtils';
 
 import type { AppDispatch } from '../store';
 

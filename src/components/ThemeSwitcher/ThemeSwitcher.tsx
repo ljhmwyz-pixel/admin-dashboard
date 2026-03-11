@@ -6,13 +6,13 @@ import {
   SettingOutlined,
   SunOutlined,
 } from '@ant-design/icons';
+import { useTheme, useThemeContext } from '@shared/hooks';
 import type { MenuProps } from 'antd';
 import { Button, Dropdown, Space } from 'antd';
 
 import type { ColorScheme } from '@/config/themes';
-import { useTheme, useThemeContext } from '@/shared/hooks';
 
-import ColorPreview from '../atoms/ColorPreview/ColorPreview';
+import ColorPreview from '../ColorPreview/ColorPreview';
 
 import styles from './ThemeSwitcher.module.scss';
 

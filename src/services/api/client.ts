@@ -1,9 +1,9 @@
+import SecurityUtils from '@shared/utils/SecurityUtils';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 
 import useAppModal from '@/components/Modal';
 import { authApi } from '@/services/modules/auth/authApi';
-import SecurityUtils from '@/shared/utils/SecurityUtils';
 
 // API配置接口
 export interface ApiConfig {

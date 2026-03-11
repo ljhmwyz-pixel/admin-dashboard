@@ -1,0 +1,43 @@
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+@use 'sass:color';
+
+.treeNodeTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 0;
+}
+
+.nodeTitle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1;
+  color: $color-text-primary;
+
+  @include dark-theme {
+    color: $dark-color-text-primary;
+  }
+}
+
+.nodeActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.2s ease;
+  margin-right: 14px;
+
+  .actionIcon {
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(24, 144, 255, 0.1);
+    }
+  }
+}

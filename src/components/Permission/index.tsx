@@ -1,6 +1,5 @@
 import React from 'react';
-
-import { usePermission } from '@/shared/hooks/usePermission';
+import { usePermission } from '@shared/hooks/usePermission';
 
 type PermissionMode = 'all' | 'any' | 'none';
 

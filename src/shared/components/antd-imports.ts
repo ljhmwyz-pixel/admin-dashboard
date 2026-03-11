@@ -78,3 +78,4 @@ export { default as AntUpload } from 'antd/es/upload';
 
 // 图标
 export { default as AntIcon } from '@ant-design/icons';
+export { default as AntAutoComplete } from 'antd/es/auto-complete';

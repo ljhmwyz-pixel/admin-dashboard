@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useLanguage } from '@shared/hooks';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 
 import { ImageIcons } from '@/components';
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
 import type { RootState } from '@/core/store';
-import { useLanguage } from '@/shared/hooks';
 
 import styles from './SiderFooter.module.scss';
 

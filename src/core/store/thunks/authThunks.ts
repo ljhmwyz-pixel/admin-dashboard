@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import type { LoginCredentials, RegisterData } from '@shared/types/auth';
+import SecurityUtils from '@shared/utils/SecurityUtils';
 
 import { authApi } from '@/services/modules/auth/authApi';
-import type { LoginCredentials, RegisterData } from '@/shared/types/auth';
-import SecurityUtils from '@/shared/utils/SecurityUtils';
 
 // 登录 thunk
 export const loginUser = createAsyncThunk(

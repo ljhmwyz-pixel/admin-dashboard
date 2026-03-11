@@ -1,6 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-
-import type { UserInfo } from '@/shared/types/auth';
+import type { UserInfo } from '@shared/types/auth';
 
 import type { RootState } from '../index';
 import {

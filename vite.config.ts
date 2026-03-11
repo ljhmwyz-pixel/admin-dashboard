@@ -52,7 +52,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'), // 关键
+      '@': path.resolve(__dirname, './src'),
+      '@shared': path.resolve(__dirname, './src/shared'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@config': path.resolve(__dirname, './src/config'),
+      '@core': path.resolve(__dirname, './src/core'),
+      '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
   plugins: [

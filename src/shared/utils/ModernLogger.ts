@@ -1,5 +1,5 @@
 // 浏览器友好的日志系统
-import config from '../../config/ModernConfigManager';
+import config from '@config/ModernConfigManager';
 
 // 简单的浏览器日志实现
 const createBrowserLogger = () => {
