@@ -102,13 +102,12 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAuth = true,
-  permissions = [],
+  // permissions = [],
   roles = [],
   redirectPath = '/login',
 }) => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const userPermissions = useAppSelector(selectUserPermissions);
   const userRoles = useAppSelector(selectUserRoles);
   const refreshToken = SecurityUtils.getRefreshToken();
 

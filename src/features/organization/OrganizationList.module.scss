@@ -19,6 +19,9 @@
   height: 100%;
   border-radius: 12px;
   background-color: $color-bg-container;
+  @include dark-theme {
+    background-color: $dark-color-bg-container;
+  }
   min-height: calc(100vh - 20px);
 }
 

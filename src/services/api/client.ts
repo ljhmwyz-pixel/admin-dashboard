@@ -113,13 +113,13 @@ class ApiClient {
             case 404:
               // 资源不存在
               ModalError({
-                content: data.msg,
+                content: data.msg || '资源不存在',
               });
               break;
             case 500:
               // 服务器错误
               ModalError({
-                content: data.msg,
+                content: data.msg || '服务器错误',
               });
               break;
             default:

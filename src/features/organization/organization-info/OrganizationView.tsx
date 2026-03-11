@@ -15,6 +15,7 @@ import {
 } from '@/components/fields';
 import { useThemeModal } from '@/components/Modal';
 import { Permission } from '@/components/Permission';
+import { darkTheme } from '@/config/themes';
 import organizationApi from '@/services/modules/organization/organizationApi';
 import { AntForm, AntRow } from '@/shared/components/antd-imports';
 import { PermissionCode } from '@/shared/constants/permissions';
@@ -246,7 +247,11 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
           <div className={styles.btns}>
             {canEdit ? (
               [
-                <FormButton key="org_common.action.cancel" onClick={handleCancel}>
+                <FormButton
+                  key="org_common.action.cancel"
+                  // color={darkTheme && 'primary'}
+                  onClick={handleCancel}
+                >
                   {t('common.action.cancel')}
                 </FormButton>,
                 <FormButton
@@ -260,7 +265,11 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
               ]
             ) : (
               <Permission value={PermissionCode.ORG_EDIT}>
-                <FormButton key="org_common.action.modify" color="default" onClick={handleEdit}>
+                <FormButton
+                  key="org_common.action.modify"
+                  color={darkTheme ? 'primary' : 'default'}
+                  onClick={handleEdit}
+                >
                   {t('common.action.modify')}
                 </FormButton>
               </Permission>

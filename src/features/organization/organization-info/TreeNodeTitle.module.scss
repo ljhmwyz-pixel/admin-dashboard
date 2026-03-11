@@ -1,3 +1,6 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
 .treeNodeTitle {
   display: flex;
   align-items: center;
@@ -11,10 +14,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #191B1F;
   font-weight: 500;
   font-size: 14px;
   flex: 1;
+  color: $color-text-primary;
+  @include dark-theme {
+    color: $dark-color-text-primary;
+  }
 }
 
 .nodeActions {
