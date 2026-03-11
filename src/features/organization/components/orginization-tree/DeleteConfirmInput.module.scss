@@ -28,14 +28,14 @@
         .confirmItems {
             height: 100%;
             width: 240px;
-            background: url('../../../assets/images/form/Subtract.png') no-repeat;
+            background: url('@/assets/images/form/Subtract.png') no-repeat;
             background-size: 240px 220px;
             background-position: 0 -40px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            
+
             // 卡片高度伸缩动画
             animation: expandHeight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             transform-origin: top;
@@ -47,6 +47,7 @@
                 opacity: 0;
                 transform: scaleY(0);
             }
+
             to {
                 height: 100%;
                 opacity: 1;
@@ -76,6 +77,7 @@
                 letter-spacing: 0%;
                 color: #191B1F;
                 max-width: 160px;
+                word-break: break-all;
             }
 
 
