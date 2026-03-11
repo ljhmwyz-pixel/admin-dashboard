@@ -1,0 +1,23 @@
+.roleFooter {
+  background-color: #fff;
+  border-top: 1px solid #e8e8e8;
+  padding: 8px 16px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: -1px;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectedInfo {
+  font-size: 14px;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}

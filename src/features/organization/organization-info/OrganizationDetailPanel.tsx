@@ -4,6 +4,7 @@ import { FormTabs } from '@/components';
 import { useLanguage } from '@/shared/hooks';
 import type { TreeNodeData } from '@/shared/types/organization';
 
+import RoleInfo from '../role-info/RoleInfo';
 import OrganizationView from './OrganizationView';
 
 import styles from './OrganizationDetailPanel.module.scss';
@@ -46,11 +47,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
     {
       key: 'role-list',
       label: <div className={styles.tabItems}>{t('role.list.title')}</div>,
-      children: (
-        <div className="organization-detail-content">
-          <p>Role list content will be implemented here.</p>
-        </div>
-      ),
+      children: <RoleInfo />,
     },
     {
       key: 'member-list',

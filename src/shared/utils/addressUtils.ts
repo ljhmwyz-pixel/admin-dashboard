@@ -88,7 +88,10 @@ function buildDefaultDisplayAddress(loc: BaseLocationInfo, rawLang?: string) {
     return [province, city, district, street].filter(Boolean).join('');
   }
 
-  return [street, district, city, province].filter(Boolean).join(', ');
+  const addressParts = [street, district, city, province].filter((part): part is string =>
+    Boolean(part),
+  );
+  return addressParts.map((part) => part.toUpperCase()).join(', ');
 }
 
 export function finalizeLocation(
