@@ -46,6 +46,7 @@ export {
   AntRate,
   AntResult,
   AntRow,
+  AntSegmented,
   AntSelect,
   AntSkeleton,
   AntSlider,

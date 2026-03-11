@@ -17,10 +17,10 @@ import AddOrganizationDrawer from './orginization-tree/AddOrganizationDrawer';
 import DeleteConfirmInput from './orginization-tree/DeleteConfirmInput';
 import OrganizationTree from './orginization-tree/OrganizationTree';
 import TreeNodeTitle from './orginization-tree/TreeNodeTitle';
-import RoleFooter from './role-info/RoleFooter';
-import RoleHeader from './role-info/RoleHeader';
-import RoleInfo from './role-info/RoleInfo';
-import RoleTable from './role-info/RoleTable';
+import RoleInfo from './Role';
+import RoleFooter from './Role/components/RoleFooter';
+import RoleHeader from './Role/components/RoleHeader';
+import RoleTable from './Role/components/RoleTable';
 
 export {
   AddOrganizationDrawer,

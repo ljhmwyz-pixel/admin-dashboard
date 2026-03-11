@@ -70,6 +70,8 @@ export { default as AntConfigProvider } from 'antd/es/config-provider';
 export { default as AntDrawer } from 'antd/es/drawer';
 export { default as AntForm } from 'antd/es/form';
 export { default as AntPopover } from 'antd/es/popover';
+export type { SegmentedProps } from 'antd/es/segmented';
+export { default as AntSegmented } from 'antd/es/segmented';
 export { default as AntTooltip } from 'antd/es/tooltip';
 export { default as AntTour } from 'antd/es/tour';
 export { default as AntTransfer } from 'antd/es/transfer';
