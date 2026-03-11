@@ -19,11 +19,11 @@ export interface RouteConfig {
 }
 
 // 懒加载组件
-const Dashboard = lazy(() => import('../../../features/dashboard/Dashboard'));
-const OrganizationList = lazy(() => import('../../../features/organization/OrganizationList'));
-const OrganizationType = lazy(() => import('../../../features/organization/OrganizationType'));
-const RoleManagement = lazy(() => import('../../../features/role/RoleManagement'));
-const UserManagement = lazy(() => import('../../../features/user/UserManagement'));
+const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'));
+const OrganizationList = lazy(() => import('@/features/organization'));
+const OrganizationType = lazy(() => import('@/features/organization-type/OrganizationType'));
+const RoleManagement = lazy(() => import('@/features/role/RoleManagement'));
+const UserManagement = lazy(() => import('@/features/user/UserManagement'));
 // 路由配置
 export const routesConfig: RouteConfig[] = [
   {

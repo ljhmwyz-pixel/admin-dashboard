@@ -1,7 +1,7 @@
 // 组织服务API
+import type { OrganizationListParams, TreeNodeData } from '@/features/organization/dto';
+import { transformOrganizationToTreeData } from '@/features/organization/utils';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import type { OrganizationListParams, TreeNodeData } from '@/shared/types/organization';
-import { transformOrganizationToTreeData } from '@/shared/utils/dataTransformer';
 
 // 删除验证结果类型
 export interface DeleteValidationResult {

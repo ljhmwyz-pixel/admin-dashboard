@@ -1,8 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import type { ButtonProps } from '@/shared/components/antd-imports';
-import { AntButton } from '@/shared/components/antd-imports';
+import { AntButton, type ButtonProps } from '@/shared/components';
 
 import styles from './index.module.scss';
 

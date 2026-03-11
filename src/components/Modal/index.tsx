@@ -9,7 +9,7 @@ import successIcon from '@/assets/images/form/success_status.png';
 import warningIcon from '@/assets/images/form/warning_status.png';
 
 import { i18n } from '@/i18n';
-import { AntModal } from '@/shared/components/antd-imports';
+import { AntModal } from '@/shared/components';
 
 import styles from './index.module.scss';
 

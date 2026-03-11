@@ -99,6 +99,7 @@ export {
   AntSlider,
   AntSpace,
   AntSpin,
+  AntSplitter,
   AntStatistic,
   AntSteps,
   AntSwitch,
@@ -112,6 +113,7 @@ export {
   AntTour,
   AntTransfer,
   AntTree,
+  AntTypography,
   AntUpload,
 } from './antd-imports';
 
@@ -134,5 +136,3 @@ export const defaultComponentConfig: ComponentLibraryConfig = {
   animationsEnabled: true,
   prefixCls: 'custom',
 };
-
-export { default as DeleteConfirmInput } from './DeleteConfirmInput';

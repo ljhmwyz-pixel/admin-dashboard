@@ -1,7 +1,6 @@
 import React from 'react';
-import type { FormItemProps } from 'antd';
+import type { AutoCompleteProps, FormItemProps } from 'antd';
 import { AutoComplete, Form } from 'antd';
-import type { AutoCompleteProps } from 'antd/es/auto-complete';
 import classNames from 'classnames';
 
 import styles from './index.module.scss';
