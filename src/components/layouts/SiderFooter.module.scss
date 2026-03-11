@@ -1,3 +1,7 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
+
 $footerArrowRightActiveIcon: '@/assets/images/layout/footer_arrow_right_active_icon.png';
 $footerArrowRightDefaultIcon: '@/assets/images/layout/footer_arrow_right_default_icon.png';
 $footLanguageActiveIcon: '@/assets/images/layout/foot_language_active_icon.png';
@@ -15,12 +19,15 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background-color: rgba(25, 27, 31, 0.06);
   border-radius: 12px;
   max-height: 54px;
   overflow: hidden;
   transition: all 0.25s ease;
   z-index: 2;
+  background-color: $color-bg-container;
+  @include dark-theme {
+    background-color: $dark-color-bg-container;
+  }
 
   .userContainer {
     display: flex;
@@ -36,14 +43,20 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         font-weight: 500;
         font-size: 14px;
         line-height: 14px;
-        color: #191b1f;
+        color: $color-text-primary;
+        @include dark-theme {
+          color: $dark-color-text-primary;
+        }
       }
 
       .roleName {
         font-weight: 500;
         font-size: 14px;
         line-height: 14px;
-        color: rgba(25, 27, 31, 0.6);
+        color: $color-text-secondary !important;
+        @include dark-theme {
+          color: $dark-color-text-secondary !important;
+        }
       }
     }
   }
@@ -111,8 +124,11 @@ $footUserActiveIcon: '@/assets/images/layout/foot_user_active_icon.png';
         font-size: 14px;
         font-weight: 500;
         line-height: 14px;
-        color: #191b1f;
         transition: color 0.3s ease;
+        color: $color-text-primary;
+        @include dark-theme {
+          color: $dark-color-text-primary;
+        }
       }
     }
   }
