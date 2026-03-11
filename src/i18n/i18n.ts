@@ -82,7 +82,7 @@ i18n
 
         // 降级到本地JSON文件
         try {
-          const localResponse = await import(`../locales/${lng}.json`);
+          const localResponse = await import(`@assets/locales/${lng}.json`);
           const localData = localResponse.default;
           cacheManager.set(lng, localData, 'local');
           callback(null, { status: 200, data: localData });
@@ -90,7 +90,7 @@ i18n
           console.error('Local language file loading failed:', localError);
           // 最后的降级方案 - 使用默认语言的本地文件
           try {
-            const defaultResponse = await import(`../locales/${DEFAULT_LANGUAGE}.json`);
+            const defaultResponse = await import(`@assets/locales/${DEFAULT_LANGUAGE}.json`);
             const defaultData = defaultResponse.default;
             cacheManager.set(DEFAULT_LANGUAGE, defaultData, 'default');
             callback(null, { status: 200, data: defaultData });

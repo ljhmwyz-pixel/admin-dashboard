@@ -1,5 +1,5 @@
-@use '@/shared/styles/variables' as *;
-@use '@/shared/styles/mixins' as *;
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
 @use 'sass:color';
 
 $requireIcon: '@/assets/images/form/require_icon.png';
@@ -44,6 +44,7 @@ $requireIcon: '@/assets/images/form/require_icon.png';
   line-height: 14px;
   font-weight: 500;
   color: $color-text-secondary;
+
   @include dark-theme {
     color: $dark-color-text-secondary;
   }
@@ -59,6 +60,7 @@ $requireIcon: '@/assets/images/form/require_icon.png';
   transition: all 0.2s;
   padding: 20px;
   color: $color-text-secondary;
+
   @include dark-theme {
     color: $dark-color-text-secondary;
   }
@@ -67,6 +69,7 @@ $requireIcon: '@/assets/images/form/require_icon.png';
 .disabledStyle {
   // color: #191b1f99 !important;
   color: $color-text-secondary !important;
+
   @include dark-theme {
     color: $dark-color-text-secondary !important;
   }

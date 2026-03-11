@@ -1,9 +1,5 @@
 // 原子组件导出
-export { default as ColorPreview } from './atoms/ColorPreview/ColorPreview';
-export { default as IconButton } from './atoms/IconButton/IconButton';
-
-// 模板组件导出
-export { default as SidebarTemplate } from './templates/SidebarTemplate/SidebarTemplate';
+export { default as ColorPreview } from './ColorPreview/ColorPreview';
 
 // 布局组件导出（保持向后兼容）
 export { default as FormAutoComplete } from './FormAutoComplete';

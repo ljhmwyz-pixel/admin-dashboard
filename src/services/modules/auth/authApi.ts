@@ -5,8 +5,9 @@ import type {
   RegisterData,
   ResetPasswordData,
   VerificationCodeRequest,
-} from '../../../shared/types/auth';
-import { apiClient } from '../../api/client';
+} from '@shared/types/auth';
+
+import { apiClient } from '@/services/api/client';
 
 class AuthApi {
   // 登录

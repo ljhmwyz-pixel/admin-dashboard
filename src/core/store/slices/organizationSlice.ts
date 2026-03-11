@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { OrganizationListParams } from '@shared/types/organization';
 
 import { organizationApi } from '@/services/modules/organization/organizationApi';
-import type { OrganizationListParams } from '@/shared/types/organization';
 
 import type { RootState } from '../index';
 

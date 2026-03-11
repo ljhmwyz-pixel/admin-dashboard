@@ -59,7 +59,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   return <>{children}</>;
 };
 
-import SecurityUtils from '@/shared/utils/SecurityUtils';
+import SecurityUtils from '@shared/utils/SecurityUtils';
 
 import type { UserRole } from '../../store/slices/userSlice';
 

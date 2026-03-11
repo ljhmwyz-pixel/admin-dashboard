@@ -279,7 +279,7 @@ export class LanguageCacheManager {
     const loadPromises = languages.map(async (lang) => {
       // 即使已有缓存也检查是否需要更新
       try {
-        const module = await import(`../locales/${lang}.json`);
+        const module = await import(`@assets/locales/${lang}.json`);
         this.set(lang, module.default, 'preload-v1.0');
         console.log(`✅ Preloaded language: ${lang}`);
       } catch (error) {
@@ -427,7 +427,7 @@ export class LanguageCacheManager {
         await new Promise((resolve) => setTimeout(resolve, 1000)); // 延迟加载
         if (!this.get(lang)) {
           // 只有当缓存中没有时才加载
-          const module = await import(`../locales/${lang}.json`);
+          const module = await import(`@assets/locales/${lang}.json`);
           this.set(lang, module.default, 'background-load');
           console.log(`🌙 Background loaded: ${lang}`);
         }

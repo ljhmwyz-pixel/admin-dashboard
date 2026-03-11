@@ -1,12 +1,12 @@
 import React, { Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Login from '@pages/login/Login';
+import Register from '@pages/register/Register';
 
 import BaseLayout from '@/components/layouts/BaseLayout';
 import type { RootState } from '@/core/store';
 
-import Login from '../../features/login/Login';
-import Register from '../../features/register/Register';
 import { filterRoutesByPermission, routesConfig } from './config/routes';
 import { ProtectedRoute } from './guards/AuthGuard';
 import GuestRoute from './GuestRoute';

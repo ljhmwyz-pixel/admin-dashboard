@@ -1,7 +1,6 @@
+import { EnhancedErrorTracker, enhanceSentryConfig } from '@config/errorTracking';
+import config from '@config/ModernConfigManager';
 import * as Sentry from '@sentry/react';
-
-import { EnhancedErrorTracker, enhanceSentryConfig } from '../../config/errorTracking';
-import config from '../../config/ModernConfigManager';
 
 class ModernErrorTracker {
   private static instance: ModernErrorTracker;

@@ -1,6 +1,5 @@
 import { lazy } from 'react';
-
-import { PermissionCode } from '@/shared/constants/permissions';
+import { PermissionCode } from '@shared/constants/permissions';
 
 // 路由配置接口
 export interface RouteConfig {
@@ -19,11 +18,11 @@ export interface RouteConfig {
 }
 
 // 懒加载组件
-const Dashboard = lazy(() => import('../../../features/dashboard/Dashboard'));
-const OrganizationList = lazy(() => import('../../../features/organization/OrganizationList'));
-const OrganizationType = lazy(() => import('../../../features/organization/OrganizationType'));
-const RoleManagement = lazy(() => import('../../../features/role/RoleManagement'));
-const UserManagement = lazy(() => import('../../../features/user/UserManagement'));
+const Dashboard = lazy(() => import('@pages/dashboard/Dashboard'));
+const OrganizationList = lazy(() => import('@pages/organization'));
+const OrganizationType = lazy(() => import('@pages/organization-type/OrganizationType'));
+const RoleManagement = lazy(() => import('@pages/role/RoleManagement'));
+const UserManagement = lazy(() => import('@pages/user/UserManagement'));
 // 路由配置
 export const routesConfig: RouteConfig[] = [
   {

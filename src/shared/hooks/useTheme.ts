@@ -1,6 +1,6 @@
 import { useContext } from 'react';
+import { ThemeContext, type ThemeContextType } from '@core/providers/ThemeContext';
 
-import { ThemeContext, type ThemeContextType } from '../../core/providers/ThemeContext';
 import { useUnifiedTheme } from './useUnifiedTheme';
 
 /**

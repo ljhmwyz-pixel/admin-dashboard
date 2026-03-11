@@ -1,9 +1,0 @@
-export { default as OrgAddressField } from './OrgAddressField';
-export { default as OrgCountryRegionField } from './OrgCountryRegionField';
-export { default as OrgDescriptionField } from './OrgDescriptionField';
-export { default as OrgEmailField } from './OrgEmailField';
-export { default as OrgNameField } from './OrgNameField';
-export { default as OrgPhoneField } from './OrgPhoneField';
-export { default as OrgPostalCodeField } from './OrgPostalCodeField';
-export { default as OrgTypeField } from './OrgTypeField';
-export { default as OrgUsernameField } from './OrgUsernameField';

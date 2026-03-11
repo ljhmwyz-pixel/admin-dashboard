@@ -73,8 +73,9 @@ export { default as AntPopover } from 'antd/es/popover';
 export { default as AntTooltip } from 'antd/es/tooltip';
 export { default as AntTour } from 'antd/es/tour';
 export { default as AntTransfer } from 'antd/es/transfer';
+export { default as AntTypography } from 'antd/es/typography';
 export { default as AntUpload } from 'antd/es/upload';
 
 // 图标
-export { default as DeleteConfirmInput } from './DeleteConfirmInput';
 export { default as AntIcon } from '@ant-design/icons';
+export { default as AntAutoComplete } from 'antd/es/auto-complete';
