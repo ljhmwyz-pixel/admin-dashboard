@@ -1,0 +1,42 @@
+.searchInput {
+  width: 260px;
+  height: 34px;
+  border-radius: 6px;
+  background-color: rgba(25, 27, 31, 0.06);
+  padding-left: 10px;
+  font-size: 14px;
+  font-weight: 500;
+
+  :global(.ant-input)::placeholder {
+    color: rgba(25, 27, 31, 0.4);
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.tooltipContent {
+  .tooltipTitle {
+    font-size: 12px;
+    line-height: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+  }
+
+  .tooltipItem {
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 1);
+    margin-bottom: 6px;
+  }
+
+  .tooltipItem:last-child {
+    margin-bottom: 0;
+  }
+}
+
+:global(.ant-tooltip-container) {
+  padding: 10px !important;
+  background: #191b1fe5;
+}

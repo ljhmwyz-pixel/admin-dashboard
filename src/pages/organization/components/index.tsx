@@ -20,7 +20,6 @@ import TreeNodeTitle from './orginization-tree/TreeNodeTitle';
 import RoleInfo from './Role';
 import RoleFooter from './Role/components/RoleFooter';
 import RoleHeader from './Role/components/RoleHeader';
-import RoleTable from './Role/components/RoleTable';
 
 export {
   AddOrganizationDrawer,
@@ -42,6 +41,5 @@ export {
   RoleFooter,
   RoleHeader,
   RoleInfo,
-  RoleTable,
   TreeNodeTitle,
 };

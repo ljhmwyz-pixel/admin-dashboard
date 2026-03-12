@@ -1,0 +1,11 @@
+.baseTable {
+  border-radius: 6px;
+
+  :global(.ant-table-thead > tr > th) {
+    background-color: #191B1F0F;
+    font-weight: 600;
+    font-size: 14px;
+    color: #191B1F99;
+  }
+
+}

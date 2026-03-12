@@ -2,7 +2,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #191B1F0F;
+  border-bottom: 1px solid #191b1f0f;
   margin-left: -20px;
   padding: 10px 20px;
+  .addBtn {
+    font-weight: 500;
+    font-size: 14px;
+    width: 74px;
+    height: 34px;
+    border-radius: 6px;
+  }
+  .refreshBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background-color: #191b1f0a;
+    border: none;
+  }
+  .refreshBtn:hover {
+    background-color: #191b1f0a !important;
+    border: none !important;
+  }
 }
