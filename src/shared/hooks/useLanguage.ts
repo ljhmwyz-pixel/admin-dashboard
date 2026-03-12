@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LanguageKey } from '../../i18n/types';
+import type { LanguageKey } from '@/i18n/types';
 
 interface SimpleUseLanguageReturn {
   currentLanguage: LanguageKey;

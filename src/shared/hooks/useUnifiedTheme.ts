@@ -1,11 +1,9 @@
 // 外部依赖
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { ThemeConfig } from 'antd';
-
-import { getThemeConfig, SystemThemeDetector, ThemePersistence } from '../../config/themes';
+import { getThemeConfig, SystemThemeDetector, ThemePersistence } from '@config/themes';
 // 内部模块
-import type { ThemeAlgorithm } from '../../core/store/slices/themeSlice';
+import type { ThemeAlgorithm } from '@core/store/slices/themeSlice';
 import {
   resetToAuto,
   selectCurrentAlgorithm,
@@ -17,7 +15,8 @@ import {
   setThemeAlgorithm,
   setThemeMode,
   toggleDarkMode,
-} from '../../core/store/slices/themeSlice';
+} from '@core/store/slices/themeSlice';
+import type { ThemeConfig } from 'antd';
 
 // 使用原生防抖实现
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {

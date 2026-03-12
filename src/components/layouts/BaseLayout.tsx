@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { AntLayout } from '@shared/components';
+import GlobalLoading from '@shared/components/GlobalLoading';
+import { useGlobalLoading } from '@shared/hooks';
 
-import GlobalLoading from '../../shared/components/GlobalLoading';
-import Layout from '../../shared/components/layout/Layout';
-import { Content, Sider } from '../../shared/components/layout/Layout';
-import { useGlobalLoading } from '../../shared/hooks/useGlobalLoading';
 import SiderFooter from './SiderFooter';
 import SiderHeader from './SiderHeader';
 import SiderMenu from './SiderMenu';
@@ -14,9 +13,10 @@ import styles from './BaseLayout.module.scss';
 const BaseLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const { isLoading: globalLoading } = useGlobalLoading();
+  const { Sider, Content } = AntLayout;
 
   return (
-    <Layout className={styles.siderLayout}>
+    <AntLayout className={styles.siderLayout}>
       {/* 侧边栏 */}
       <Sider
         collapsible
@@ -37,7 +37,7 @@ const BaseLayout: React.FC = () => {
       </Sider>
 
       {/* 主内容区域 */}
-      <Layout
+      <AntLayout
         className={styles.adminMainLayout}
         style={{
           marginLeft: collapsed ? 80 : 256,
@@ -52,8 +52,8 @@ const BaseLayout: React.FC = () => {
             <Outlet />
           </div>
         </Content>
-      </Layout>
-    </Layout>
+      </AntLayout>
+    </AntLayout>
   );
 };
 

@@ -50,8 +50,12 @@ export default defineConfig([
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^React$' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_|^React$' },
       ],
+
+      /* ================= React prop-types ================= */
+      // 使用 TypeScript 时不需要 prop-types
+      'react/prop-types': 'off',
 
       /* ================= import 排序 ================= */
       'simple-import-sort/imports': [

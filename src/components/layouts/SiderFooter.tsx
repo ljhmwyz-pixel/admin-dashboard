@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useLanguage } from '@shared/hooks';
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 
 import { ImageIcons } from '@/components';
 import ThemeSwitcher from '@/components/ThemeSwitcher/ThemeSwitcher';
-
-import { useLanguage } from '../../shared/hooks/useLanguage';
+import type { RootState } from '@/core/store';
 
 import styles from './SiderFooter.module.scss';
 
@@ -17,7 +18,8 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
   // 控制底部整体展开
   const [expanded, setExpanded] = useState(false);
   const { t, currentLanguage, changeLanguage } = useLanguage();
-
+  // 获取 auth slice 的 user
+  const user = useSelector((state: RootState) => state.auth.user);
   // 控制哪个菜单激活
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
@@ -49,7 +51,7 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
         ${styles.sideMenuContainer}
         ${collapsed && !expanded && styles.sideMenuContainerCollapsed}
         ${expanded && styles.expanded}
-        ${(!collapsed || expanded) && styles.expandedHover}
+        ${(collapsed || expanded) && styles.expandedHover}
       `}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => {
@@ -155,14 +157,14 @@ const SiderFooter: React.FC<Props> = ({ collapsed }) => {
           {/* 底部用户信息 */}
           <div className={styles.bottomRow}>
             <div className={styles.userContainer}>
-              <img src={ImageIcons.footer.avatarIcon} className={styles.avatar} alt="avatar" />
+              <img
+                src={user?.avatar ? user.avatar : ImageIcons.footer.avatarIcon}
+                className={styles.avatar}
+                alt="avatar"
+              />
               <div className={styles.userInfoContainer}>
-                <div className={styles.userName}>
-                  {t('layout.userName', { defaultValue: 'Leyu.song' })}
-                </div>
-                <div className={styles.roleName}>
-                  {t('layout.admin', { defaultValue: 'Admin' })}
-                </div>
+                <div className={styles.userName}>{user?.username}</div>
+                <div className={styles.roleName}>{user?.userType}</div>
               </div>
             </div>
             <img src={ImageIcons.footer.moreIcon} className={styles.more} alt="more" />

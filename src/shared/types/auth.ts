@@ -26,6 +26,7 @@ export interface UserInfo {
   lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;
+  userType?: string;
 }
 
 export interface PersonalIdentity {

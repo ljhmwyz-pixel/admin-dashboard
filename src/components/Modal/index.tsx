@@ -1,6 +1,7 @@
 import React from 'react';
+import { AntModal } from '@shared/components';
 import type { ModalFuncProps } from 'antd';
-import { Modal } from 'antd';
+import { App } from 'antd';
 
 import closeIcon from '@/assets/images/form/close_icon.png';
 import confirmIcon from '@/assets/images/form/confirm_status.png';
@@ -8,7 +9,7 @@ import errorIcon from '@/assets/images/form/error_status.png';
 import successIcon from '@/assets/images/form/success_status.png';
 import warningIcon from '@/assets/images/form/warning_status.png';
 
-import { useLanguage } from '@/shared/hooks/useLanguage';
+import { i18n } from '@/i18n';
 
 import styles from './index.module.scss';
 
@@ -46,12 +47,12 @@ const baseConfig: Partial<ModalFuncProps> = {
   className: styles.modal,
 };
 
-const renderConfig = (config: AppModalProps, modalType: ModalType, t: any) => {
+const renderConfig = (config: AppModalProps, modalType: ModalType) => {
   return {
     closable: true,
     closeIcon: <img src={closeIcon} width={26} height={26} />,
-    okText: t('common.action.ok'),
-    cancelText: t('common.action.cancel'),
+    okText: i18n.t('common.action.ok'),
+    cancelText: i18n.t('common.action.cancel'),
     ...baseConfig,
     ...config,
     title: (
@@ -72,27 +73,39 @@ const renderConfig = (config: AppModalProps, modalType: ModalType, t: any) => {
   };
 };
 
-const useAppModal = () => {
-  const { t } = useLanguage();
+//静态
+const appModal = {
+  success: (config: AppModalProps) => AntModal.success(renderConfig(config, 'success')),
 
-  const success = (config: AppModalProps) => Modal.success(renderConfig(config, 'success', t));
+  confirm: (config: AppModalProps) => AntModal.confirm(renderConfig(config, 'confirm')),
 
-  const confirm = (config: AppModalProps) => Modal.confirm(renderConfig(config, 'confirm', t));
+  error: (config: AppModalProps) => AntModal.error(renderConfig(config, 'error')),
 
-  const error = (config: AppModalProps) => Modal.error(renderConfig(config, 'error', t));
+  warning: (config: AppModalProps) => AntModal.warning(renderConfig(config, 'warning')),
 
-  const warning = (config: AppModalProps) => Modal.warning(renderConfig(config, 'warning', t));
+  warningConfirm: (config: AppModalProps) =>
+    AntModal.confirm(renderConfig(config, 'warningConfirm')),
+};
 
-  const warningConfirm = (config: AppModalProps) =>
-    Modal.confirm(renderConfig(config, 'warningConfirm', t));
+// 动态
+export const useThemeModal = () => {
+  const { modal } = App.useApp();
+  const { success, confirm, error, warning } = modal;
 
   return {
-    success,
-    confirm,
-    error,
-    warning,
-    warningConfirm,
+    success: (config: AppModalProps) => success(renderConfig(config, 'success')),
+
+    confirm: (config: AppModalProps) => confirm(renderConfig(config, 'confirm')),
+
+    error: (config: AppModalProps) => error(renderConfig(config, 'error')),
+
+    warning: (config: AppModalProps) => warning(renderConfig(config, 'warning')),
+
+    warningConfirm: (config: AppModalProps) => confirm(renderConfig(config, 'warningConfirm')),
   };
 };
+
+// 保持原来的调用方式
+const useAppModal = () => appModal;
 
 export default useAppModal;

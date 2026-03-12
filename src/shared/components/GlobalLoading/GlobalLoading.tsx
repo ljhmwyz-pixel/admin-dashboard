@@ -33,7 +33,7 @@ const GlobalLoading: React.FC<GlobalLoadingProps> = ({
   return (
     <div className={`${styles.globalLoadingOverlay} ${className}`} style={style}>
       <div className={styles.loadingContent}>
-        <Spin size="large" tip={tip} {...spinProps} />
+        <Spin size="large" description={tip} {...spinProps} />
       </div>
     </div>
   );

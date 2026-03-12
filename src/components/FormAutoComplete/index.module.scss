@@ -1,0 +1,87 @@
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+@use 'sass:color';
+$requireIcon: '@/assets/images/form/require_icon.png';
+
+.wrapper {
+  margin-bottom: 30px;
+
+  :global(.ant-form-item-explain) {
+    margin-top: -12px;
+    margin-left: 14px;
+    width: fit-content;
+    padding: 0 8px;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fff;
+  }
+
+  :global(.ant-form-item-required) {
+    position: relative;
+  }
+
+  :global(.ant-form-item-required)::before {
+    content: '' !important;
+    color: #f45858 !important;
+    font-size: 14px;
+    margin-right: 6px;
+    position: absolute;
+    top: 3px;
+    right: -4px;
+    width: 6px;
+    height: 14px;
+    background-image: url(#{$requireIcon});
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+.label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 500;
+  color: $color-text-secondary;
+
+  @include dark-theme {
+    color: $dark-color-text-secondary;
+  }
+}
+
+.input {
+  height: 54px !important;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  // border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all 0.2s;
+  padding: 0 20px;
+  line-height: 40px;
+  color: $color-text-secondary !important;
+
+  @include dark-theme {
+    color: $dark-color-text-secondary;
+  }
+
+  :global(.ant-select-input) {
+    color: $color-text-secondary;
+
+    @include dark-theme {
+      color: $dark-color-text-secondary;
+    }
+  }
+}
+
+.disabledStyle {
+  // color: #191b1f99 !important;
+  color: $color-text-secondary !important;
+
+  @include dark-theme {
+    color: $dark-color-text-secondary !important;
+  }
+}

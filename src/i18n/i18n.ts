@@ -51,58 +51,58 @@ i18n
         const lng = (url.match(/\/api\/languages\/([^/]+)/)?.[1] ||
           DEFAULT_LANGUAGE) as LanguageKey;
 
+        // try {
+        //   // 尝试从缓存加载
+        //   const cachedEntry = cacheManager.get(lng);
+
+        //   if (cachedEntry) {
+        //     callback(null, { status: 200, data: cachedEntry.resources });
+        //     return;
+        //   }
+
+        //   // 如果缓存不存在或过期，则请求云端
+        //   const response = await fetch(url, {
+        //     method: 'GET',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //   });
+
+        //   if (!response.ok) {
+        //     throw new Error(`HTTP error! status: ${response.status}`);
+        //   }
+
+        //   const data = await response.json();
+
+        //   // 缓存云端数据
+        //   cacheManager.set(lng, data, '1.0.0');
+        //   callback(null, { status: 200, data });
+        // } catch (error) {
+        //   console.warn('Language loading failed, using fallback:', error);
+
+        // 降级到本地JSON文件
         try {
-          // 尝试从缓存加载
-          const cachedEntry = cacheManager.get(lng);
-
-          if (cachedEntry) {
-            callback(null, { status: 200, data: cachedEntry.resources });
-            return;
-          }
-
-          // 如果缓存不存在或过期，则请求云端
-          const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-
-          // 缓存云端数据
-          cacheManager.set(lng, data, '1.0.0');
-          callback(null, { status: 200, data });
-        } catch (error) {
-          console.warn('Language loading failed, using fallback:', error);
-
-          // 降级到本地JSON文件
+          const localResponse = await import(`@assets/locales/${lng}.json`);
+          const localData = localResponse.default;
+          cacheManager.set(lng, localData, 'local');
+          callback(null, { status: 200, data: localData });
+        } catch (localError) {
+          console.error('Local language file loading failed:', localError);
+          // 最后的降级方案 - 使用默认语言的本地文件
           try {
-            const localResponse = await import(`../locales/${lng}.json`);
-            const localData = localResponse.default;
-            cacheManager.set(lng, localData, 'local');
-            callback(null, { status: 200, data: localData });
-          } catch (localError) {
-            console.error('Local language file loading failed:', localError);
-            // 最后的降级方案 - 使用默认语言的本地文件
-            try {
-              const defaultResponse = await import(`../locales/${DEFAULT_LANGUAGE}.json`);
-              const defaultData = defaultResponse.default;
-              cacheManager.set(DEFAULT_LANGUAGE, defaultData, 'default');
-              callback(null, { status: 200, data: defaultData });
-            } catch (defaultError) {
-              console.error('Default language loading failed:', defaultError);
-              callback(new Error('Failed to load any language resources'), {
-                status: 500,
-                data: {},
-              });
-            }
+            const defaultResponse = await import(`@assets/locales/${DEFAULT_LANGUAGE}.json`);
+            const defaultData = defaultResponse.default;
+            cacheManager.set(DEFAULT_LANGUAGE, defaultData, 'default');
+            callback(null, { status: 200, data: defaultData });
+          } catch (defaultError) {
+            console.error('Default language loading failed:', defaultError);
+            callback(new Error('Failed to load any language resources'), {
+              status: 500,
+              data: {},
+            });
           }
         }
+        // }
       },
     },
 

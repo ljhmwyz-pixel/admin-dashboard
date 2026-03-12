@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PermissionCode } from '@shared/constants/permissions';
+import { useLanguage } from '@shared/hooks';
+import { usePermission } from '@shared/hooks/usePermission';
 import type { MenuProps, PopoverProps } from 'antd';
 import { ConfigProvider, Menu, Popover } from 'antd';
 
 import { ImageIcons } from '@/components';
-import { useLanguage } from '@/shared/hooks/useLanguage';
 
 import styles from './SiderMenu.module.scss';
 
@@ -14,29 +16,28 @@ interface Props {
 
 const SiderMenu: React.FC<Props> = ({ collapsed }) => {
   const navigate = useNavigate();
-  const [selectedKeys, setSelectedKeys] = useState<string[]>(['orglist']);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([PermissionCode.ORG_LIST]);
   const { t } = useLanguage();
-
+  const { hasPermission } = usePermission();
   const handleMenuClick = (key: string) => {
     setSelectedKeys([key]);
 
-    if (key === 'orglist') navigate('/organization/list');
-    if (key === 'orgtype') navigate('/organization/type');
-    if (key === 'role') navigate('/role');
-    if (key === 'user') navigate('/user');
-    if (key === 'performance-test') navigate('/performance-test');
+    if (key === PermissionCode.ORG_LIST) navigate('/organization/list');
+    if (key === PermissionCode.ORG_TYPE_CFG) navigate('/organization/type');
+    if (key === PermissionCode.ROLE_MANAGE) navigate('/role');
+    if (key === PermissionCode.USER_MANAGE) navigate('/user');
   };
 
   const menuItems: MenuProps['items'] = [
     {
       label: <span className={styles.menuItemLabelStyle}>{t('org.mgmt.title')}</span>,
-      key: 'org',
+      key: PermissionCode.ORG_MANAGE,
       icon: (
         <img
           src={
-            selectedKeys.includes('org') ||
-            selectedKeys.includes('orglist') ||
-            selectedKeys.includes('orgtype')
+            selectedKeys.includes(PermissionCode.ORG_MANAGE) ||
+            selectedKeys.includes(PermissionCode.ORG_LIST) ||
+            selectedKeys.includes(PermissionCode.ORG_TYPE_CFG)
               ? ImageIcons.menu.orgActiveIcon
               : ImageIcons.menu.orgDefaultIcon
           }
@@ -46,21 +47,21 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
       children: [
         {
           label: t('org.list.title'),
-          key: 'orglist',
+          key: PermissionCode.ORG_LIST,
         },
         {
           label: t('org.type.title'),
-          key: 'orgtype',
+          key: PermissionCode.ORG_TYPE_CFG,
         },
       ],
     },
     {
       label: <span className={styles.menuItemLabelStyle}>{t('role.mgmt.title')}</span>,
-      key: 'role',
+      key: PermissionCode.ROLE_MANAGE,
       icon: (
         <img
           src={
-            selectedKeys.includes('role')
+            selectedKeys.includes(PermissionCode.ROLE_MANAGE)
               ? ImageIcons.menu.roleActiveIcon
               : ImageIcons.menu.roleDefaultIcon
           }
@@ -70,25 +71,11 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
     },
     {
       label: <span className={styles.menuItemLabelStyle}>{t('user.mgmt.title')}</span>,
-      key: 'user',
+      key: PermissionCode.USER_MANAGE,
       icon: (
         <img
           src={
-            selectedKeys.includes('user')
-              ? ImageIcons.menu.userActiveIcon
-              : ImageIcons.menu.userDefaultIcon
-          }
-          className={styles.menu_icon}
-        />
-      ),
-    },
-    {
-      label: <span className={styles.menuItemLabelStyle}>Performance Test</span>,
-      key: 'performance-test',
-      icon: (
-        <img
-          src={
-            selectedKeys.includes('performance-test')
+            selectedKeys.includes(PermissionCode.USER_MANAGE)
               ? ImageIcons.menu.userActiveIcon
               : ImageIcons.menu.userDefaultIcon
           }
@@ -162,6 +149,12 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
     });
   };
 
+  // menu权限过滤
+  const filteredMenuItems = menuItems.filter((item: any) => {
+    if (hasPermission(item?.key)) return true;
+    return false;
+  });
+
   return (
     <ConfigProvider
       theme={{
@@ -175,7 +168,7 @@ const SiderMenu: React.FC<Props> = ({ collapsed }) => {
       {!collapsed ? (
         <Menu
           mode="inline"
-          items={menuItems}
+          items={filteredMenuItems}
           selectedKeys={selectedKeys}
           onClick={({ key }) => handleMenuClick(key)}
           expandIcon={({ isOpen }) => (

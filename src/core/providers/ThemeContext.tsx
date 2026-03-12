@@ -1,9 +1,9 @@
 import React, { createContext } from 'react';
+import { useUnifiedTheme } from '@shared/hooks';
 import type { ThemeConfig } from 'antd';
 import type { ReactNode } from 'react';
 
-import type { ColorScheme, ThemeAlgorithm, ThemeMode } from '../../config/themes';
-import { useUnifiedTheme } from '../../shared/hooks/useUnifiedTheme';
+import type { ColorScheme, ThemeAlgorithm, ThemeMode } from '@/config/themes';
 
 // 主题上下文类型
 interface ThemeContextType {
