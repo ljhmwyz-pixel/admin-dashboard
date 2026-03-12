@@ -4,7 +4,7 @@ import type { StatusFilter } from '@pages/organization/dto';
 import { AntButton, AntInput, AntSpace, AntTooltip } from '@shared/components';
 import { useLanguage } from '@shared/hooks/useLanguage';
 
-import { Segmented } from '@/components';
+import { FormButton, SearchInput, Segmented } from '@/components';
 import type { OptionItem } from '@/components/Segmented';
 
 import styles from './RoleHeader.module.scss';
@@ -33,53 +33,69 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
   return (
     <div className={styles.roleHeader}>
       {/* 左侧：状态筛选 */}
-      <Segmented options={statusList} onChange={(value) => onStatusChange(value as StatusFilter)} />
+      <Segmented
+        value={statusFilter}
+        options={statusList}
+        onChange={(value) => onStatusChange(value as StatusFilter)}
+      />
 
       {/* 右侧：搜索 + 操作按钮 */}
       <div className={styles.headerRight}>
-        <AntSpace size="middle">
-          <AntTooltip
-            title={
-              <div>
-                <p>Support searchable fields</p>
-                <p>1. Role name</p>
-              </div>
+        <AntSpace size={20}>
+          <SearchInput
+            allowClear={false}
+            placeholder="Please enter role name"
+            // 此字段决定是否展示Tooltip
+            searchFields={['Role name']}
+            value={searchKeyword}
+            onChange={(e) => onSearchKeywordChange(e.target.value)}
+          />
+          <FormButton
+            color="primary"
+            variant="solid"
+            icon={
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 6.99989H13M6.995 13.0049L6.99499 1.00488"
+                  stroke="white"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
             }
-            placement="bottomLeft"
+            onClick={onAdd}
+            className={styles.addBtn}
           >
-            <AntInput
-              name="search"
-              placeholder={t('role.placeholder.search') || 'Please enter role name'}
-              value={searchKeyword}
-              onChange={(e) => onSearchKeywordChange(e.target.value)}
-              allowClear
-              className={styles.searchInput}
-              style={{ width: 240 }}
-              prefix={
-                <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 15 15"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M13.6001 13.6L10.1001 10.1M11.6001 6.1C11.6001 9.13757 9.13766 11.6 6.1001 11.6C3.06253 11.6 0.600098 9.13757 0.600098 6.1C0.600098 3.06243 3.06253 0.6 6.1001 0.6C9.13766 0.6 11.6001 3.06243 11.6001 6.1Z"
-                    stroke="#191B1F"
-                    strokeOpacity="0.4"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              }
-            />
-          </AntTooltip>
-          <AntSpace size="small">
-            <AntButton type="primary" icon={<PlusOutlined />} onClick={onAdd}>
-              Add
-            </AntButton>
-            <AntButton icon={<ReloadOutlined />} onClick={onRefresh} title="Refresh" />
-          </AntSpace>
+            Add
+          </FormButton>
+          <FormButton
+            className={styles.refreshBtn}
+            icon={
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.4001 7.0001C13.4001 3.46548 10.5347 0.600098 7.0001 0.600098C3.46548 0.600098 0.600098 3.46548 0.600098 7.0001C0.600098 10.5347 3.46548 13.4001 7.0001 13.4001C8.51148 13.4001 9.90051 12.8762 10.9955 12.0001M10.9955 12.0001L9.80049 11.5001M10.9955 12.0001L10.7706 13.4001M8.00049 7.0001C8.00049 7.55238 7.55277 8.0001 7.00049 8.0001C6.4482 8.0001 6.00049 7.55238 6.00049 7.0001C6.00049 6.44781 6.4482 6.0001 7.00049 6.0001C7.55277 6.0001 8.00049 6.44781 8.00049 7.0001Z"
+                  stroke="#191B1F"
+                  strokeOpacity="0.4"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            }
+            onClick={onRefresh}
+            title="Refresh"
+          />
         </AntSpace>
       </div>
     </div>

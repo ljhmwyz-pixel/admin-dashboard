@@ -8,6 +8,7 @@ export type { ButtonProps } from 'antd/es/button';
 export { default as AntButton } from 'antd/es/button';
 export { default as AntCheckbox } from 'antd/es/checkbox';
 export { default as AntDatePicker } from 'antd/es/date-picker';
+export type { InputProps, SearchProps } from 'antd/es/input';
 export { default as AntInput } from 'antd/es/input';
 export { default as AntInputNumber } from 'antd/es/input-number';
 export { default as AntdModal } from 'antd/es/modal';
@@ -17,6 +18,7 @@ export { default as AntSelect } from 'antd/es/select';
 export { default as AntSlider } from 'antd/es/slider';
 export { default as AntSwitch } from 'antd/es/switch';
 export { default as AntTimePicker } from 'antd/es/time-picker';
+export type { TooltipProps } from 'antd/es/tooltip';
 
 // 布局组件
 export { default as AntCard } from 'antd/es/card';

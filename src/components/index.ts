@@ -19,3 +19,12 @@ export { default as FormModal } from './Modal';
  * 分段控制器组件
  */
 export { default as Segmented } from './Segmented';
+
+/**
+ * 搜索
+ */
+export { default as SearchInput } from './SearchInput';
+/**
+ * 表格
+ */
+export { default as Table } from './Table';

@@ -1,0 +1,36 @@
+.paginationWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  border: 1px solid red;
+  height: 50px;
+  .total {
+    color: #191b1f99;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  .jumpContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    .jumpBtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(6px);
+    }
+  }
+}
+
+// .total {
+//   font-size: 12px;
+//   color: #8c8c8c;
+// }
+
+// .jumpBtn {
+//   margin-right: 4px;
+// }
