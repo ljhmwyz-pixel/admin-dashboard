@@ -2,13 +2,17 @@ import type {
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   DeleteResponse,
+  MemberDetailResponse,
+  MemberListParams,
+  MemberListResponse,
+  MemberUpdateResponse,
   OrganizationListParams,
   OrganizationListResponse,
   VerifyDeleteResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
   VerifyResponse,
-} from '@shared/types/organization';
+} from '@pages/organization/dto';
 
 import { apiClient } from '@/services/api/client';
 import { ORGANIZATION_ENDPOINTS } from '@/services/api/endpoints';
@@ -29,6 +33,18 @@ export interface OrganizationApi {
 
   /** 获取组织详情 */
   detail: (data: { orgId: string }) => Promise<CreateOrganizationResponse>;
+
+  /** 获取组织成员列表 */
+  getMembers: (params: MemberListParams) => Promise<MemberListResponse>;
+
+  /** 获取组织成员详情 */
+  getMemberDetail: (memberId: string) => Promise<MemberDetailResponse>;
+
+  /** 更新组织成员信息 */
+  updateMember: (
+    memberId: string,
+    data: { status: string; roleId: string },
+  ) => Promise<MemberUpdateResponse>;
 
   /** 验证组织信息（创建时） */
   verify: (data: CreateOrganizationRequest) => Promise<VerifyResponse>;
@@ -134,6 +150,37 @@ class OrganizationApiImpl implements OrganizationApi {
     return apiClient.get(ORGANIZATION_ENDPOINTS.VERIFY_DELETE(data.orgId), {
       params: { orgId: data.orgId },
     });
+  }
+
+  /**
+   * 获取组织成员列表
+   * @param params - 查询参数（分页、搜索、状态等）
+   * @returns 组织成员列表数据
+   */
+  async getMembers(params: MemberListParams): Promise<MemberListResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.MEMBERS, { params });
+  }
+
+  /**
+   * 获取组织成员详情
+   * @param memberId - 成员ID
+   * @returns 组织成员详情数据
+   */
+  async getMemberDetail(memberId: string): Promise<MemberDetailResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.MEMBER_DETAIL(memberId));
+  }
+
+  /**
+   * 更新组织成员信息
+   * @param memberId - 成员ID
+   * @param data - 更新数据（包含状态、角色ID）
+   * @returns 更新结果
+   */
+  async updateMember(
+    memberId: string,
+    data: { status: string; roleId: string },
+  ): Promise<MemberUpdateResponse> {
+    return apiClient.put(ORGANIZATION_ENDPOINTS.MEMBER_UPDATE(memberId), data);
   }
 }
 

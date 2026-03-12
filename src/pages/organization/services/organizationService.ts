@@ -1,7 +1,14 @@
 // 组织服务API
-import type { OrganizationListParams, TreeNodeData } from '@pages/organization/dto';
 import { transformOrganizationToTreeData } from '@pages/organization/utils';
 
+import type {
+  MemberDetail,
+  MemberListParams,
+  MemberListResponse,
+  MemberUpdateResponse,
+  OrganizationListParams,
+  TreeNodeData,
+} from '@/pages/organization/dto';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 
 // 删除验证结果类型
@@ -184,4 +191,119 @@ export const deleteOrganization = async (
 
   // 否则直接执行
   return deleteLogic();
+};
+
+/**
+ * 获取组织成员列表
+ * @param params 查询参数（分页、搜索、状态等）
+ * @param withLoading 全局 loading 包装函数
+ * @returns 组织成员列表数据
+ */
+export const loadMembers = async (
+  params: MemberListParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<MemberListResponse | undefined> => {
+  const loadMembersLogic = async (): Promise<MemberListResponse> => {
+    const response = await organizationApi.getMembers(params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMembersLogic, {
+      onError: (error) => {
+        console.error('Load members error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMembersLogic();
+  } catch (error) {
+    console.error('Failed to load members:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取组织成员详情
+ * @param memberId 成员ID
+ * @param withLoading 全局 loading 包装函数
+ * @returns 组织成员详情数据
+ */
+export const loadMemberDetail = async (
+  memberId: string,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<MemberDetail | undefined> => {
+  const loadMemberDetailLogic = async (): Promise<MemberDetail> => {
+    const response = await organizationApi.getMemberDetail(memberId);
+    return response.data;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberDetailLogic, {
+      onError: (error) => {
+        console.error('Load member detail error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberDetailLogic();
+  } catch (error) {
+    console.error('Failed to load member detail:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 更新组织成员信息
+ * @param memberId 成员ID
+ * @param status 成员状态
+ * @param withLoading 全局 loading 包装函数
+ * @returns 更新结果
+ */
+export const updateMember = async (
+  memberId: string,
+  data: { status: string; roleId: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<{ success: boolean; message?: string }> => {
+  const updateMemberLogic = async (): Promise<{ success: boolean; message?: string }> => {
+    const response: MemberUpdateResponse = await organizationApi.updateMember(memberId, data);
+    if (response.code === 200) {
+      return {
+        success: true,
+        message: response.message || '更新成功',
+      };
+    } else {
+      return {
+        success: false,
+        message: response.message || '更新失败',
+      };
+    }
+  };
+
+  if (withLoading) {
+    const result = await withLoading(updateMemberLogic, {
+      onError: (error) => {
+        console.error('Update member error:', error);
+      },
+    });
+    return result ?? { success: false, message: '更新失败' };
+  }
+
+  try {
+    return await updateMemberLogic();
+  } catch (error) {
+    console.error('Failed to update member:', error);
+    return { success: false, message: '更新失败' };
+  }
 };

@@ -8,3 +8,6 @@ export { default as OrgPhoneField } from './OrgPhoneField';
 export { default as OrgPostalCodeField } from './OrgPostalCodeField';
 export { default as OrgTypeField } from './OrgTypeField';
 export { default as OrgUsernameField } from './OrgUsernameField';
+export { default as RoleField } from './RoleField';
+export { default as StatusField } from './StatusField';
+export { default as UidField } from './UidField';

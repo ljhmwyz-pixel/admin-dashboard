@@ -1,5 +1,5 @@
+import type { OrganizationListParams } from '@pages/organization/dto';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { OrganizationListParams } from '@shared/types/organization';
 
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 

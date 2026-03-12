@@ -8,6 +8,7 @@ import { FormInput } from '@/components';
 type OrgEmailFieldProps = FieldProps & {
   onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
   canEdit?: boolean;
+  required?: boolean;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -15,7 +16,8 @@ const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
   form,
   onCheckEmailExists,
-  canEdit = true,
+  canEdit,
+  required = true,
 }) => {
   const { t } = useLanguage();
 
@@ -55,7 +57,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
       <FormInput
         name="orgEmail"
         label={t('org.field.email')}
-        required
+        required={required}
         prefixIcon={
           <svg
             width="14"
@@ -73,10 +75,16 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
             />
           </svg>
         }
-        rules={[
-          { required: true, message: t('org.validation.email.required') },
-          { pattern: EMAIL_PATTERN, message: t('org.validation.email.required') },
-        ]}
+        rules={
+          required
+            ? [
+                {
+                  pattern: EMAIL_PATTERN,
+                  message: t('org.validation.email.required'),
+                },
+              ]
+            : []
+        }
         inputProps={{
           disabled: !canEdit,
           suffix: canEdit && (

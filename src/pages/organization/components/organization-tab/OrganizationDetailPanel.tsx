@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { OrganizationView, RoleInfo } from '@pages/organization/components';
-import type { TreeNodeData } from '@pages/organization/dto';
+import { MemberList, OrganizationView, RoleInfo } from '@pages/organization/components';
 import { useLanguage } from '@shared/hooks';
 
 import { FormTabs } from '@/components';
+import type { TreeNodeData } from '@/pages/organization/dto';
 
 import styles from './OrganizationDetailPanel.module.scss';
 
@@ -51,9 +51,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
       key: 'member-list',
       label: <div className={styles.tabItems}>{t('member.list.title')}</div>,
       children: (
-        <div className="organization-detail-content">
-          <p>Member list content will be implemented here.</p>
-        </div>
+        <MemberList orgId={orgId} currentParentNode={currentParentNode} treeData={treeData} />
       ),
     },
   ];
