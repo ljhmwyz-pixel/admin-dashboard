@@ -20,7 +20,7 @@ export interface RouteConfig {
 // 懒加载组件
 const Dashboard = lazy(() => import('@pages/dashboard/Dashboard'));
 const OrganizationList = lazy(() => import('@pages/organization'));
-const OrganizationType = lazy(() => import('@pages/organization-type/OrganizationType'));
+const OrganizationType = lazy(() => import('@pages/organization-type/index'));
 const RoleManagement = lazy(() => import('@pages/role/RoleManagement'));
 const UserManagement = lazy(() => import('@pages/user/UserManagement'));
 // 路由配置
