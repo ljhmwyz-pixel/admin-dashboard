@@ -85,6 +85,13 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
   onBatchDelete,
 }) => {
   // const { t } = useLanguage();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const handlePageChange = (p: number, ps: number) => {
+    setPage(p);
+    setPageSize(ps);
+  };
 
   // 状态筛选：'all' | 'normal' | 'deleted'
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
@@ -367,7 +374,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
       },
     },
   ];
-
   const dataSource = [
     {
       key: '1',
@@ -533,6 +539,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     },
   ];
 
+  const pagedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return dataSource.slice(start, start + pageSize);
+  }, [dataSource, page, pageSize]);
+
   return (
     <div className={styles.roleInfo}>
       {/* 顶部操作栏 */}
@@ -550,12 +561,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
         <Table
           rowKey="key"
           columns={columns}
-          dataSource={dataSource}
+          dataSource={pagedData}
           pagination={{
-            current: 1,
-            pageSize: 10,
-            total: 18,
-            // onChange: handlePageChange,
+            current: page,
+            pageSize,
+            total: dataSource.length,
+            onChange: handlePageChange,
           }}
         />
 
