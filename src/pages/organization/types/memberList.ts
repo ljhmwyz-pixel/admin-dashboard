@@ -83,17 +83,17 @@ export interface MemberDetailResponse {
  */
 export interface MemberListParams {
   /** 页码 */
-  pageNum: number;
+  pageNum?: number;
   /** 每页大小 */
-  pageSize: number;
+  pageSize?: number;
   /** 搜索关键词 */
-  keyword: string;
+  keyword?: string;
   /** 成员状态筛选 */
-  status: string;
+  status?: string;
   /** 排序字段 */
-  sortBy: string;
+  sortBy?: string;
   /** 排序顺序 */
-  sortOrder: string;
+  sortOrder?: string;
   /** 组织ID（必填） */
   orgId: string;
 }

@@ -46,63 +46,110 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
   onApprove,
   onReject,
 }) => {
-  /** 所有操作按钮数组，使用 Permission 组件包裹实现权限控制 */
-  const allButtons = [
-    /** 查看详情按钮 - 需要 MEMBER_VIEW 权限 */
-    <Permission key="view" value={PermissionCode.MEMBER_VIEW}>
-      <AntTooltip title="View details">
-        <AntButton icon={<EyeOutlined />} size="small" onClick={() => onView(member)} />
-      </AntTooltip>
-    </Permission>,
+  /** 根据用户状态生成操作按钮数组，使用 Permission 组件包裹实现权限控制 */
+  const getButtonsByStatus = () => {
+    const buttons = [];
 
-    /** 编辑信息按钮 - 需要 MEMBER_EDIT 权限 */
-    <Permission key="edit" value={PermissionCode.MEMBER_EDIT}>
-      <AntTooltip title="Edit info">
-        <AntButton icon={<EditOutlined />} size="small" onClick={() => onEdit(member)} />
-      </AntTooltip>
-    </Permission>,
+    // 查看详情按钮 - 所有状态都显示
+    buttons.push(
+      <Permission key="view" value={PermissionCode.MEMBER_VIEW}>
+        <AntTooltip title="View details">
+          <AntButton icon={<EyeOutlined />} size="small" onClick={() => onView(member)} />
+        </AntTooltip>
+      </Permission>,
+    );
 
-    /** 删除按钮 - 需要 MEMBER_DELETE 权限 */
-    <Permission key="delete" value={PermissionCode.MEMBER_DELETE}>
-      <AntTooltip title="Delete">
-        <AntButton danger icon={<DeleteOutlined />} size="small" onClick={() => onDelete(member)} />
-      </AntTooltip>
-    </Permission>,
+    switch (member.status) {
+      case 'NORMAL':
+        // Normal 状态：编辑、禁用、删除
+        buttons.push(
+          <Permission key="edit" value={PermissionCode.MEMBER_EDIT}>
+            <AntTooltip title="Edit info">
+              <AntButton icon={<EditOutlined />} size="small" onClick={() => onEdit(member)} />
+            </AntTooltip>
+          </Permission>,
+          <Permission key="delete" value={PermissionCode.MEMBER_DELETE}>
+            <AntTooltip title="Delete">
+              <AntButton
+                danger
+                icon={<DeleteOutlined />}
+                size="small"
+                onClick={() => onDelete(member)}
+              />
+            </AntTooltip>
+          </Permission>,
+          <Permission key="toggleStatus" value={PermissionCode.MEMBER_DISABLE}>
+            <AntTooltip title="Disable">
+              <div className={styles['switch-container']} onClick={() => onDisable(member)}>
+                <AntSwitch checked={false} />
+              </div>
+            </AntTooltip>
+          </Permission>,
+        );
+        break;
 
-    /** 启用/禁用按钮 - 需要 MEMBER_DISABLE 或 MEMBER_ENABLE 权限（满足任一即可） */
-    <Permission
-      key="toggleStatus"
-      value={[PermissionCode.MEMBER_DISABLE, PermissionCode.MEMBER_ENABLE]}
-      mode="any"
-    >
-      <AntTooltip title={member.status === 'LOCKED' ? 'Enable' : 'Disable'}>
-        <div
-          className={styles['switch-container']}
-          onClick={() => (member.status === 'LOCKED' ? onEnable(member) : onDisable(member))}
-        >
-          <AntSwitch checked={member.status === 'LOCKED'} />
-        </div>
-      </AntTooltip>
-    </Permission>,
+      case 'LOCKED':
+        // Locked 状态：编辑、启用、删除
+        buttons.push(
+          <Permission key="edit" value={PermissionCode.MEMBER_EDIT}>
+            <AntTooltip title="Edit info">
+              <AntButton icon={<EditOutlined />} size="small" onClick={() => onEdit(member)} />
+            </AntTooltip>
+          </Permission>,
+          <Permission key="delete" value={PermissionCode.MEMBER_DELETE}>
+            <AntTooltip title="Delete">
+              <AntButton
+                danger
+                icon={<DeleteOutlined />}
+                size="small"
+                onClick={() => onDelete(member)}
+              />
+            </AntTooltip>
+          </Permission>,
+          <Permission key="toggleStatus" value={PermissionCode.MEMBER_ENABLE}>
+            <AntTooltip title="Enable">
+              <div className={styles['switch-container']} onClick={() => onEnable(member)}>
+                <AntSwitch checked={true} />
+              </div>
+            </AntTooltip>
+          </Permission>,
+        );
+        break;
 
-    /** 通过申请按钮 - 需要 MEMBER_APPROVE 权限 */
-    <Permission key="approve" value={PermissionCode.MEMBER_APPROVE}>
-      <AntTooltip title="Approve request">
-        <AntButton size="small" onClick={() => onApprove(member)}>
-          Approve
-        </AntButton>
-      </AntTooltip>
-    </Permission>,
+      case 'WAITING':
+        // Waiting 状态：通过、拒绝
+        buttons.push(
+          <Permission key="approve" value={PermissionCode.MEMBER_APPROVE}>
+            <AntTooltip title="Approve request">
+              <AntButton size="small" onClick={() => onApprove(member)}>
+                Approve
+              </AntButton>
+            </AntTooltip>
+          </Permission>,
+          <Permission key="reject" value={PermissionCode.MEMBER_REJECT}>
+            <AntTooltip title="Reject request">
+              <AntButton danger size="small" onClick={() => onReject(member)}>
+                Reject
+              </AntButton>
+            </AntTooltip>
+          </Permission>,
+        );
+        break;
 
-    /** 拒绝申请按钮 - 需要 MEMBER_REJECT 权限 */
-    <Permission key="reject" value={PermissionCode.MEMBER_REJECT}>
-      <AntTooltip title="Reject request">
-        <AntButton danger size="small" onClick={() => onReject(member)}>
-          Reject
-        </AntButton>
-      </AntTooltip>
-    </Permission>,
-  ];
+      case 'REJECTED':
+        // Rejected 状态：只显示查看按钮
+        break;
+
+      default:
+        break;
+    }
+
+    return buttons;
+  };
+
+  const allButtons = getButtonsByStatus();
+
+  console.log(allButtons, 'allButtons');
 
   /** 如果按钮数量不超过4个，直接返回所有按钮 */
   if (allButtons.length <= 4) {

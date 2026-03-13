@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { type SetStateAction, useCallback, useEffect, useState } from 'react';
 import type { Member } from '@pages/organization/dto';
 import { loadMembers } from '@pages/organization/services/organizationService';
-import { message } from 'antd';
 
 /**
  * useMemberList Hook 参数接口
@@ -29,10 +28,6 @@ interface UseMemberListReturn {
   status: string;
   /** 搜索关键词 */
   keyword: string;
-  /** 排序字段 */
-  sortBy: string;
-  /** 排序顺序 */
-  sortOrder: string;
   /** 状态变更处理函数 */
   handleStatusChange: (newStatus: string) => void;
   /** 关键词变更处理函数 */
@@ -62,8 +57,6 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
   const [pageSize, setPageSize] = useState(10);
   const [status, setStatus] = useState<string>('');
   const [keyword, setKeyword] = useState('');
-  const [sortBy, setSortBy] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
 
   /**
    * 加载成员数据
@@ -77,8 +70,6 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
         pageSize,
         keyword,
         status,
-        sortBy,
-        sortOrder,
         orgId,
       });
       if (response) {
@@ -86,12 +77,11 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
         setTotal(response.data.total);
       }
     } catch (error) {
-      message.error('Failed to load members');
       console.error('Error loading members:', error);
     } finally {
       setLoading(false);
     }
-  }, [current, pageSize, keyword, status, sortBy, sortOrder, orgId]);
+  }, [current, pageSize, keyword, status, orgId]);
 
   /**
    * 当依赖项变化时自动加载成员数据
@@ -115,6 +105,7 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
    */
   const handleKeywordChange = useCallback((newKeyword: string) => {
     setKeyword(newKeyword);
+    setCurrent(1); // 重置页码到第一页
   }, []);
 
   /**
@@ -133,8 +124,6 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
   const handleReset = useCallback(() => {
     setStatus('');
     setKeyword('');
-    setSortBy('');
-    setSortOrder('');
     setCurrent(1);
     setPageSize(10);
   }, []);
@@ -144,12 +133,13 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
    * @param pagination - 分页信息
    * @param sorter - 排序信息
    */
-  const handleTableChange = useCallback((pagination: any, sorter: any) => {
-    if (pagination.current) setCurrent(pagination.current);
-    if (pagination.pageSize) setPageSize(pagination.pageSize);
-    if (sorter.field) setSortBy(sorter.field);
-    if (sorter.order) setSortOrder(sorter.order === 'ascend' ? 'ASC' : 'DESC');
-  }, []);
+  const handleTableChange = useCallback(
+    (pagination: { current: SetStateAction<number>; pageSize: SetStateAction<number> }) => {
+      if (pagination.current) setCurrent(pagination.current);
+      if (pagination.pageSize) setPageSize(pagination.pageSize);
+    },
+    [],
+  );
 
   return {
     loading,
@@ -159,8 +149,6 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
     pageSize,
     status,
     keyword,
-    sortBy,
-    sortOrder,
     handleStatusChange,
     handleKeywordChange,
     handleSearch,
