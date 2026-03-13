@@ -1,16 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { OrganizationInfo } from '@pages/organization/components';
 import type { Member, MemberDetail } from '@pages/organization/dto';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { loadMemberDetail } from '@pages/organization/services/organizationService';
-import { message } from 'antd';
-import { Drawer, Tabs } from 'antd';
 
-import { AntForm } from '@/shared/components';
+import { AntDrawer, AntForm, AntMessage, AntTabs } from '@/shared/components';
 
-import OrganizationInfo from '../organization-info/OrganizationInfo';
+import Plants from '../org-tree/Plants';
 import BasicInfo from './BasicInfo';
 import MemberInfoFooter from './MemberInfoFooter';
-import Plants from './Plants';
 import Record from './Record';
 
 interface MemberInfoModalProps {
@@ -63,7 +61,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
         setMemberDetail(detail);
       }
     } catch (error) {
-      message.error('Failed to load member information');
+      AntMessage.error('Failed to load member information');
       console.error('Error loading member information:', error);
     } finally {
       setLoading(false);
@@ -79,7 +77,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
   if (!memberDetail) return null;
 
   return (
-    <Drawer
+    <AntDrawer
       title="Member Info"
       open={visible}
       onClose={onClose}
@@ -106,7 +104,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
           orgId={parentNodeData?.key}
         />
       )}
-      <Tabs
+      <AntTabs
         defaultActiveKey="basic"
         items={[
           {
@@ -134,7 +132,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
           },
         ]}
       />
-    </Drawer>
+    </AntDrawer>
   );
 };
 
