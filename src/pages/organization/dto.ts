@@ -1,4 +1,6 @@
 import type {
+  AddMemberFormData,
+  ListItem,
   Member,
   MemberDetail,
   MemberDetailResponse,
@@ -6,6 +8,9 @@ import type {
   MemberListResponse,
   MemberUpdateRequest,
   MemberUpdateResponse,
+  OrgTreeSelectorProps,
+  SelectedListProps,
+  TreeNode,
 } from '@pages/organization/types/memberList';
 import type { FormInstance } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
@@ -580,6 +585,8 @@ export interface Pagination {
  * 用于展示组织成员列表
  */
 export type {
+  AddMemberFormData,
+  ListItem,
   Member,
   MemberDetail,
   MemberDetailResponse,
@@ -587,4 +594,7 @@ export type {
   MemberListResponse,
   MemberUpdateRequest,
   MemberUpdateResponse,
+  OrgTreeSelectorProps,
+  SelectedListProps,
+  TreeNode,
 };

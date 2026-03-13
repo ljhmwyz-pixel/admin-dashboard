@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Form } from 'antd';
+import { AntForm } from '@shared/components';
 
-import { RoleField } from '../form-fields';
-import PermissionsList from './PermissionsList';
+import { RoleField } from '../../form-fields';
+import PermissionsList from '../permissions/PermissionsList';
 
 import styles from './AddMemberAssignRoles.module.scss';
 
@@ -60,15 +60,15 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
   /** 角色列表 */
   const [roles] = useState<Role[]>(mockRoles);
   /** 当前选择的角色名称 */
-  const [currentRoleName, setCurrentRoleName] = useState<string[]>([]);
+  const [roleNamesList, setRoleNamesList] = useState<string[]>([]);
 
   /** 处理角色选择变化 */
   const handleRoleChange = (values: string[]) => {
-    setCurrentRoleName(values);
+    setRoleNamesList(values);
   };
 
   return (
-    <Form form={form} onFinish={onSubmit} layout="vertical">
+    <AntForm form={form} onFinish={onSubmit} layout="vertical">
       <div className={styles.stepContent}>
         <RoleField
           form={form}
@@ -81,9 +81,9 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
           onChange={handleRoleChange}
         />
 
-        <PermissionsList roleNamesList={currentRoleName} />
+        <PermissionsList roleNamesList={roleNamesList} />
       </div>
-    </Form>
+    </AntForm>
   );
 };
 

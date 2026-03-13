@@ -1,6 +1,8 @@
 import React from 'react';
+import type { FieldProps } from '@pages/organization/dto';
 import type { Member } from '@pages/organization/types/memberList';
-import { Button, type FormInstance, Space } from 'antd';
+
+import { AntButton, AntSpace } from '@/shared/components';
 
 interface MemberInfoFooterProps {
   /** 成员数据 */
@@ -20,7 +22,7 @@ interface MemberInfoFooterProps {
   /** 审批拒绝回调 */
   onReject?: (member: Member) => void;
   /** 表单实例 */
-  form: FormInstance;
+  form: FieldProps['form'];
 }
 
 /**
@@ -50,9 +52,9 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
   // 生成按钮数组
   const renderButtons = () => {
     const buttons = [
-      <Button key="cancel" onClick={onClose}>
+      <AntButton key="cancel" onClick={onClose}>
         Cancel
-      </Button>,
+      </AntButton>,
     ];
 
     // 如果没有成员数据，只返回取消按钮
@@ -64,49 +66,51 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
     if (member.status === 'NORMAL' || member.status === 'LOCKED') {
       if (!editMember) {
         buttons.push(
-          <Button key="delete" danger onClick={() => handleButtonClick(onDelete)}>
+          <AntButton key="delete" danger onClick={() => handleButtonClick(onDelete)}>
             Delete
-          </Button>,
-          <Button
+          </AntButton>,
+          <AntButton
             key={member.status === 'LOCKED' ? 'unlock' : 'lock'}
             onClick={() => handleButtonClick(onLock)}
           >
             {member.status === 'LOCKED' ? 'Unlock' : 'Lock'}
-          </Button>,
-          <Button key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
+          </AntButton>,
+          <AntButton key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
             Modify
-          </Button>,
+          </AntButton>,
         );
       } else {
         buttons.push(
-          <Button key="save" type="primary" onClick={() => form.submit()}>
+          <AntButton key="save" type="primary" onClick={() => form.submit()}>
             Confirm
-          </Button>,
+          </AntButton>,
         );
       }
     } else if (member.status === 'WAITING') {
       buttons.push(
-        <Button
+        <AntButton
           key="approve"
           type="primary"
           onClick={() => handleButtonClick(onApprove as (member: Member) => void)}
         >
           Approve
-        </Button>,
-        <Button
+        </AntButton>,
+        <AntButton
           key="reject"
           danger
           onClick={() => handleButtonClick(onReject as (member: Member) => void)}
         >
           Reject
-        </Button>,
+        </AntButton>,
       );
     }
 
     return buttons;
   };
 
-  return <Space style={{ width: '100%', justifyContent: 'flex-end' }}>{renderButtons()}</Space>;
+  return (
+    <AntSpace style={{ width: '100%', justifyContent: 'flex-end' }}>{renderButtons()}</AntSpace>
+  );
 };
 
 export default MemberInfoFooter;

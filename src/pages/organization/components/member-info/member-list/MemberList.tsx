@@ -3,10 +3,10 @@ import type { Member, TreeNodeData } from '@pages/organization/dto';
 import { useMemberList } from '@pages/organization/hooks';
 import { updateMember } from '@pages/organization/services/organizationService';
 import { getParentNode } from '@pages/organization/utils';
-import { message } from 'antd';
+import { AntMessage } from '@shared/components';
 
-import AddMemberDrawer from './AddMemberDrawer';
-import MemberInfoModal from './MemberInfoModal';
+import AddMemberDrawer from '../add-member/AddMemberDrawer';
+import MemberInfoModal from '../member-info/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
 import MemberTable from './MemberTable';
 
@@ -128,15 +128,15 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       const { memberId, status, roleId } = member;
       const result = await updateMember(memberId, { status, roleId });
       if (result.success) {
-        message.success('更新成功');
+        AntMessage.success('更新成功');
         setEditMember(false);
         handleSearch();
       } else {
-        message.error(result.message || '更新失败');
+        AntMessage.error(result.message || '更新失败');
       }
     } catch (error) {
       console.error('Error updating member:', error);
-      message.error('更新失败');
+      AntMessage.error('更新失败');
     }
   };
 
@@ -146,11 +146,11 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    */
   const handleDelete = (member: Member) => {
     if (member.roleName === 'Organization Owner') {
-      message.error('Organization owner cannot be deleted');
+      AntMessage.error('Organization owner cannot be deleted');
       return;
     }
     // TODO: 实现确认对话框，提示删除后的数据处理规则及不可恢复性
-    message.info(`Deleting member: ${member.username}`);
+    AntMessage.info(`Deleting member: ${member.username}`);
   };
 
   /**
@@ -158,7 +158,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 禁用后成员无法登录系统及使用相关功能
    */
   const handleDisable = (member: Member) => {
-    message.info(`Disabling member: ${member.username}`);
+    AntMessage.info(`Disabling member: ${member.username}`);
     // TODO: 实现禁用功能并记录操作日志
   };
 
@@ -167,7 +167,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 启用后恢复正常访问权限
    */
   const handleEnable = (member: Member) => {
-    message.info(`Enabling member: ${member.username}`);
+    AntMessage.info(`Enabling member: ${member.username}`);
     // TODO: 实现启用功能并记录操作日志
   };
 
@@ -176,7 +176,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 审批通过后需将成员状态更新为正常，并分配默认权限
    */
   const handleApprove = (member: Member) => {
-    message.info(`Approving member: ${member.username}`);
+    AntMessage.info(`Approving member: ${member.username}`);
     // TODO: 实现审批通过功能，更新状态为正常并分配默认权限
   };
 
@@ -185,7 +185,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 拒绝时需填写拒绝原因（可选），操作后将成员状态更新为拒绝状态并通知申请人
    */
   const handleReject = (member: Member) => {
-    message.info(`Rejecting member: ${member.username}`);
+    AntMessage.info(`Rejecting member: ${member.username}`);
     // TODO: 实现拒绝功能，填写拒绝原因并更新状态
   };
 
@@ -202,7 +202,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const handleAddSuccess = () => {
     setAddDrawerVisible(false);
     handleSearch();
-    message.success('新增成员成功');
+    AntMessage.success('新增成员成功');
   };
 
   return (

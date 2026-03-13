@@ -6,62 +6,11 @@ import {
   SearchOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { Button, Input } from 'antd';
+import type { SelectedListProps } from '@pages/organization/dto';
+import { AntButton, AntInput } from '@shared/components';
+import clsx from 'classnames';
 
 import styles from './SelectedList.module.scss';
-
-/**
- * 列表项数据类型
- */
-export interface ListItem {
-  /** 唯一标识 */
-  key: string;
-  /** 标题 */
-  title: string;
-  /** 是否为电站 */
-  isPlant?: boolean;
-  /** 额外数据 */
-  [key: string]: any;
-}
-
-/**
- * SelectedList 组件属性接口
- */
-export interface SelectedListProps {
-  /** 列表标题 */
-  title: string;
-  /** 列表数据 */
-  data: ListItem[];
-  /** 选中的keys */
-  selectedKeys: React.Key[];
-  /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[]) => void;
-  /** 搜索关键词 */
-  searchValue?: string;
-  /** 搜索变化回调 */
-  onSearch?: (value: string) => void;
-  /** 是否可编辑 */
-  editable?: boolean;
-  /** 是否展示搜索框 */
-  showSearch?: boolean;
-  /** 搜索框占位符 */
-  searchPlaceholder?: string;
-  /** 是否展示重置按钮 */
-  showReset?: boolean;
-  /** 重置回调 */
-  onReset?: () => void;
-  /** 自定义类名 */
-  className?: string;
-  /** 自定义样式 */
-  style?: React.CSSProperties;
-  /** 加载状态 */
-  loading?: boolean;
-  /** 空状态展示 */
-  emptyText?: React.ReactNode;
-  /** 图标类型 */
-  iconType?: 'org' | 'plant';
-}
-
 /**
  * 已选列表组件
  * 支持编辑态（可移除）和展示态（只读）
@@ -144,14 +93,14 @@ const SelectedList: React.FC<SelectedListProps> = ({
    * 渲染编辑态
    */
   const renderEditable = () => (
-    <div className={`${styles.editableContainer} ${className}`} style={style}>
+    <div className={clsx(styles.editableContainer, className)} style={style}>
       <div className={styles.header}>
         <div className={styles.title}>
           {renderIcon()}
           <span>{title}</span>
         </div>
         {showSearch && (
-          <Input
+          <AntInput
             prefix={<SearchOutlined />}
             placeholder={searchPlaceholder}
             value={searchValue}
@@ -178,14 +127,14 @@ const SelectedList: React.FC<SelectedListProps> = ({
       </div>
       {showReset && editable && (
         <div className={styles.footer}>
-          <Button
+          <AntButton
             type="link"
             icon={<ReloadOutlined />}
             onClick={handleReset}
             className={styles.resetBtn}
           >
             Reset
-          </Button>
+          </AntButton>
         </div>
       )}
     </div>
@@ -202,7 +151,7 @@ const SelectedList: React.FC<SelectedListProps> = ({
           <span>{title}</span>
         </div>
         {showSearch && (
-          <Input
+          <AntInput
             prefix={<SearchOutlined />}
             placeholder={searchPlaceholder}
             value={searchValue}

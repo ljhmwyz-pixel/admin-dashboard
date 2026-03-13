@@ -1,8 +1,8 @@
 import React from 'react';
 import { DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import type { Member } from '@pages/organization/dto';
+import { AntButton, AntPopover, AntSpace, AntSwitch, AntTooltip } from '@shared/components';
 import { PermissionCode } from '@shared/constants/permissions';
-import { Button, Popover, Space, Switch, Tooltip } from 'antd';
 
 import { Permission } from '@/components/Permission';
 
@@ -50,23 +50,23 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
   const allButtons = [
     /** 查看详情按钮 - 需要 MEMBER_VIEW 权限 */
     <Permission key="view" value={PermissionCode.MEMBER_VIEW}>
-      <Tooltip title="View details">
-        <Button icon={<EyeOutlined />} size="small" onClick={() => onView(member)} />
-      </Tooltip>
+      <AntTooltip title="View details">
+        <AntButton icon={<EyeOutlined />} size="small" onClick={() => onView(member)} />
+      </AntTooltip>
     </Permission>,
 
     /** 编辑信息按钮 - 需要 MEMBER_EDIT 权限 */
     <Permission key="edit" value={PermissionCode.MEMBER_EDIT}>
-      <Tooltip title="Edit info">
-        <Button icon={<EditOutlined />} size="small" onClick={() => onEdit(member)} />
-      </Tooltip>
+      <AntTooltip title="Edit info">
+        <AntButton icon={<EditOutlined />} size="small" onClick={() => onEdit(member)} />
+      </AntTooltip>
     </Permission>,
 
     /** 删除按钮 - 需要 MEMBER_DELETE 权限 */
     <Permission key="delete" value={PermissionCode.MEMBER_DELETE}>
-      <Tooltip title="Delete">
-        <Button danger icon={<DeleteOutlined />} size="small" onClick={() => onDelete(member)} />
-      </Tooltip>
+      <AntTooltip title="Delete">
+        <AntButton danger icon={<DeleteOutlined />} size="small" onClick={() => onDelete(member)} />
+      </AntTooltip>
     </Permission>,
 
     /** 启用/禁用按钮 - 需要 MEMBER_DISABLE 或 MEMBER_ENABLE 权限（满足任一即可） */
@@ -75,32 +75,32 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
       value={[PermissionCode.MEMBER_DISABLE, PermissionCode.MEMBER_ENABLE]}
       mode="any"
     >
-      <Tooltip title={member.status === 'LOCKED' ? 'Enable' : 'Disable'}>
+      <AntTooltip title={member.status === 'LOCKED' ? 'Enable' : 'Disable'}>
         <div
           className={styles['switch-container']}
           onClick={() => (member.status === 'LOCKED' ? onEnable(member) : onDisable(member))}
         >
-          <Switch checked={member.status === 'LOCKED'} />
+          <AntSwitch checked={member.status === 'LOCKED'} />
         </div>
-      </Tooltip>
+      </AntTooltip>
     </Permission>,
 
     /** 通过申请按钮 - 需要 MEMBER_APPROVE 权限 */
     <Permission key="approve" value={PermissionCode.MEMBER_APPROVE}>
-      <Tooltip title="Approve request">
-        <Button size="small" onClick={() => onApprove(member)}>
+      <AntTooltip title="Approve request">
+        <AntButton size="small" onClick={() => onApprove(member)}>
           Approve
-        </Button>
-      </Tooltip>
+        </AntButton>
+      </AntTooltip>
     </Permission>,
 
     /** 拒绝申请按钮 - 需要 MEMBER_REJECT 权限 */
     <Permission key="reject" value={PermissionCode.MEMBER_REJECT}>
-      <Tooltip title="Reject request">
-        <Button danger size="small" onClick={() => onReject(member)}>
+      <AntTooltip title="Reject request">
+        <AntButton danger size="small" onClick={() => onReject(member)}>
           Reject
-        </Button>
-      </Tooltip>
+        </AntButton>
+      </AntTooltip>
     </Permission>,
   ];
 
@@ -115,16 +115,16 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
 
   /** 添加更多按钮，点击展开剩余按钮 */
   visibleButtons.push(
-    <Popover
+    <AntPopover
       key="more"
-      content={<Space direction="vertical">{remainingButtons}</Space>}
+      content={<AntSpace direction="vertical">{remainingButtons}</AntSpace>}
       title="More Actions"
       trigger="click"
     >
-      <Tooltip title="More actions">
-        <Button icon={<MoreOutlined />} size="small" />
-      </Tooltip>
-    </Popover>,
+      <AntTooltip title="More actions">
+        <AntButton icon={<MoreOutlined />} size="small" />
+      </AntTooltip>
+    </AntPopover>,
   );
 
   return <>{visibleButtons}</>;

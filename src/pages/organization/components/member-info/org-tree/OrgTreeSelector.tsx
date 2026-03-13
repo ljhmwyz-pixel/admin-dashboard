@@ -1,71 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { ApartmentOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Button, Input, Tree } from 'antd';
+import type { OrgTreeSelectorProps, TreeNode } from '@pages/organization/dto';
+import { AntButton, AntInput, AntTree } from '@shared/components';
 import type { TreeProps } from 'antd/es/tree';
 
 import styles from './OrgTreeSelector.module.scss';
-
-/**
- * 树节点数据类型
- */
-export interface TreeNode {
-  /** 节点唯一标识 */
-  key: string;
-  /** 节点标题 */
-  title: string;
-  /** 子节点列表 */
-  children?: TreeNode[];
-  /** 是否为电站 */
-  isPlant?: boolean;
-  /** 父节点ID */
-  parentId?: string;
-  /** 是否禁用 */
-  disabled?: boolean;
-  /** 是否可选 */
-  selectable?: boolean;
-  /** 是否可勾选 */
-  checkable?: boolean;
-}
-
-/**
- * OrgTreeSelector 组件属性接口
- */
-export interface OrgTreeSelectorProps {
-  /** 树形数据 */
-  treeData: TreeNode[];
-  /** 选中的节点keys */
-  selectedKeys: React.Key[];
-  /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[], selectedNodes: TreeNode[]) => void;
-  /** 搜索关键词 */
-  searchValue?: string;
-  /** 搜索变化回调 */
-  onSearch?: (value: string) => void;
-  /** 是否可编辑 */
-  editable?: boolean;
-  /** 是否展示搜索框 */
-  showSearch?: boolean;
-  /** 搜索框占位符 */
-  searchPlaceholder?: string;
-  /** 是否展示全选按钮 */
-  showSelectAll?: boolean;
-  /** 全选回调 */
-  onSelectAll?: () => void;
-  /** 自定义类名 */
-  className?: string;
-  /** 自定义样式 */
-  style?: React.CSSProperties;
-  /** 是否默认展开所有节点 */
-  defaultExpandAll?: boolean;
-  /** 展开的节点keys */
-  expandedKeys?: React.Key[];
-  /** 展开变化回调 */
-  onExpand?: (expandedKeys: React.Key[]) => void;
-  /** 加载状态 */
-  loading?: boolean;
-  /** 空状态展示 */
-  emptyText?: React.ReactNode;
-}
 
 /**
  * 组织树选择器组件
@@ -273,7 +212,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
     <div className={`${styles.editableContainer} ${className}`} style={style}>
       {showSearch && (
         <div className={styles.searchHeader}>
-          <Input
+          <AntInput
             prefix={<SearchOutlined />}
             placeholder={searchPlaceholder}
             value={searchValue}
@@ -289,7 +228,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
         ) : filteredTreeData.length === 0 ? (
           <div className={styles.empty}>{emptyText}</div>
         ) : (
-          <Tree
+          <AntTree
             checkable
             treeData={filteredTreeData as any}
             checkedKeys={selectedKeys}
@@ -304,9 +243,9 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
       </div>
       {showSelectAll && editable && (
         <div className={styles.footer}>
-          <Button type="link" onClick={handleSelectAll} className={styles.selectAllBtn}>
+          <AntButton type="link" onClick={handleSelectAll} className={styles.selectAllBtn}>
             Select All
-          </Button>
+          </AntButton>
         </div>
       )}
     </div>
@@ -334,7 +273,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
       <div className={`${styles.readonlyContainer} ${className}`} style={style}>
         {showSearch && (
           <div className={styles.searchHeader}>
-            <Input
+            <AntInput
               prefix={<SearchOutlined />}
               placeholder={searchPlaceholder}
               value={searchValue}
