@@ -6,7 +6,7 @@ import { getParentNode } from '@pages/organization/utils';
 import { AntMessage } from '@shared/components';
 
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
-import MemberInfoModal from '../member-info/MemberInfoModal';
+import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
 import MemberTable from './MemberTable';
 
