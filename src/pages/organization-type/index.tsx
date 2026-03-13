@@ -65,24 +65,6 @@ const OrganizationType: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   /**
-   * 详情弹窗可见性
-   * 控制组织类型详情弹窗的显示和隐藏
-   */
-  const [detailVisible, setDetailVisible] = useState(false);
-
-  /**
-   * 选中的组织类型
-   * 存储当前选中的组织类型数据，用于详情弹窗显示
-   */
-  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
-
-  /**
-   * 是否为编辑模式
-   * 控制详情弹窗的模式：查看模式或编辑模式
-   */
-  const [isEditMode, setIsEditMode] = useState(false);
-
-  /**
    * 上传loading状态
    * 用于控制全局上传过程中的loading显示
    */

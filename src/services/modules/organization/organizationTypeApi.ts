@@ -123,36 +123,6 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
       },
     });
   }
-
-  /**
-   * 获取组织类型功能权限
-   * @param orgTypeCode 组织类型编码
-   * @param params 查询参数
-   */
-  async getOrganizationTypeFunctionalPermissions(
-    orgTypeCode: string,
-    params?: {
-      platform?: string; // 平台类型，可选值：WEB, APP
-      permissionKeyword?: string;
-    },
-  ): Promise<OrganizationTypeDetailFunctionalResponse> {
-    return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions/functional`, { params });
-  }
-
-  /**
-   * 获取组织类型数据权限
-   * @param orgTypeCode 组织类型编码
-   * @param params 查询参数
-   */
-  async getOrganizationTypeDataPermissions(
-    orgTypeCode: string,
-    params?: {
-      resourceType?: string; // 资源类型，可选值：ORGANIZATION, USER, PLANT
-      permissionKeyword?: string;
-    },
-  ): Promise<OrganizationTypeDetailDataResponse> {
-    return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions/data`, { params });
-  }
 }
 
 // 创建组织 API 实例
