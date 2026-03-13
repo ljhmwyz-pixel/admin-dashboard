@@ -1,12 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import type { RoleRecord } from '@pages/organization/dto';
+import type { TableColumnsType, TableProps } from 'antd';
 
-import { Table } from '@/components';
+import { FormButton, FormDrawer, Table } from '@/components';
 import type { OptionItem } from '@/components/Segmented';
 import type { BatchAction, OperationAction } from '@/components/Table/dto';
-import { AntSpace } from '@/shared/components';
+import { AntDrawer, AntForm, AntSpace } from '@/shared/components';
+import { useLanguage } from '@/shared/hooks';
 
+import AddRole, { type AddRoleRef } from './components/AddRole';
+import HeaderFilter from './components/HeaderFilter';
 import RoleFooter from './components/RoleFooter';
 import RoleHeader from './components/RoleHeader';
 
@@ -77,7 +81,6 @@ interface RoleInfoProps {
 }
 
 const RoleInfo: React.FC<RoleInfoProps> = ({
-  onAdd,
   onEdit,
   onView,
   onDelete,
@@ -87,7 +90,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
   // const { t } = useLanguage();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
+  const [form] = AntForm.useForm();
+  const roleModalRef = useRef<AddRoleRef>(null);
   const handlePageChange = (p: number, ps: number) => {
     setPage(p);
     setPageSize(ps);
@@ -133,7 +137,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
   // 选中的记录
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [selectedRecords, setSelectedRecords] = useState<RoleRecord[]>([]);
-
+  const { t } = useLanguage();
   // 根据筛选条件过滤数据
   const filteredData = useMemo(() => {
     const result = tableData.filter((item) => {
@@ -275,7 +279,17 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
       key: 'roleName',
     },
     {
-      title: 'Platform',
+      title: (
+        <HeaderFilter
+          title="Platform"
+          // value={platform}
+          // onChange={setPlatform}
+          options={[
+            { label: 'App', value: 'app' },
+            { label: 'Web', value: 'web' },
+          ]}
+        />
+      ),
       dataIndex: 'platform',
       key: 'platform',
     },
@@ -544,6 +558,14 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     return dataSource.slice(start, start + pageSize);
   }, [dataSource, page, pageSize]);
 
+  /**
+   *添加角色
+   */
+  const onAdd = () => {
+    roleModalRef.current?.open();
+  };
+  const handleCancel = () => {};
+
   return (
     <div className={styles.roleInfo}>
       {/* 顶部操作栏 */}
@@ -567,6 +589,15 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
             pageSize,
             total: dataSource.length,
             onChange: handlePageChange,
+          }}
+          rowSelection={{
+            onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            },
+            getCheckboxProps: (record: any) => ({
+              disabled: record.name === 'Disabled User', // Column configuration not to be checked
+              name: record.name,
+            }),
           }}
         />
 
@@ -638,6 +669,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
           />
         )} */}
       </div>
+      <AddRole ref={roleModalRef} title="新增角色" />
     </div>
   );
 };
