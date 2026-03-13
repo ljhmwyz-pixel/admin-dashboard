@@ -2,10 +2,10 @@
 export { default as AddMemberDrawer } from './add-member/AddMemberDrawer';
 
 // 成员信息相关组件
-export { default as BasicInfo } from './member-info/BasicInfo';
-export { default as MemberInfoFooter } from './member-info/MemberInfoFooter';
-export { default as MemberInfoModal } from './member-info/MemberInfoModal';
-export { default as Record } from './member-info/Record';
+export { default as BasicInfo } from './member-detail/BasicInfo';
+export { default as MemberInfoFooter } from './member-detail/MemberInfoFooter';
+export { default as MemberInfoModal } from './member-detail/MemberInfoModal';
+export { default as Record } from './member-detail/Record';
 
 // 成员列表相关组件
 export { default as MemberList } from './member-list/MemberList';
