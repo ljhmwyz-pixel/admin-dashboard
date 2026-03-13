@@ -6,9 +6,6 @@ import styles from './Pagination.module.scss';
 
 export interface BasePaginationProps extends PaginationProps {
   showTotalText?: boolean;
-  showQuickJumper?: boolean;
-  showSizeChanger?: boolean;
-  pageSizeOptions?: (string | number)[];
 }
 
 const BasePagination: React.FC<BasePaginationProps> = ({
@@ -140,6 +137,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           size="small"
           disabled={isLast}
           className={styles.iconBtn}
+          style={{ marginRight: 20 }}
           onClick={() => onChange?.(lastPage, pageSize)}
           icon={
             <svg
