@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   OrgEmailField,
   OrgPhoneField,
@@ -8,20 +8,54 @@ import {
   UidField,
 } from '@pages/organization/components';
 import type { MemberDetail } from '@pages/organization/types/memberList';
-import { type FormInstance, Space, Spin, Table, Tabs, Tag } from 'antd';
+import { type FormInstance } from 'antd';
 
 import { AntForm, AntRow } from '@/shared/components';
+
+import PermissionsList from './PermissionsList';
 
 interface BasicInfoProps {
   member: MemberDetail;
   loading: boolean;
   editMember?: boolean;
-  webPermissions: any[];
-  phonePermissions: any[];
   onSave?: (member: MemberDetail) => void;
   /** 表单实例 */
   form: FormInstance;
 }
+
+/**
+ * 角色接口
+ */
+interface Role {
+  /** 角色ID */
+  roleId: string;
+  /** 角色名称 */
+  roleName: string;
+  /** 角色描述 */
+  description: string;
+}
+
+/**
+ * 模拟角色数据
+ */
+const mockRoles: Role[] = [
+  {
+    roleId: 'Organization Owner',
+    roleName: 'Organization Owner',
+    description: 'Full access to the organization',
+  },
+  {
+    roleId: 'Organization Admin',
+    roleName: 'Organization Admin',
+    description: 'Manage organization members and settings',
+  },
+  {
+    roleId: 'Plant Manager',
+    roleName: 'Plant Manager',
+    description: 'Manage plants and related operations',
+  },
+  { roleId: 'Viewer', roleName: 'Viewer', description: 'View-only access to organization data' },
+];
 
 /**
  * 成员基本信息组件
@@ -31,11 +65,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
   member,
   loading,
   editMember = false,
-  webPermissions,
-  phonePermissions,
   onSave,
   form,
 }) => {
+  /** 角色列表 */
+  const [roles] = useState<Role[]>(mockRoles);
+  /** 当前选择的角色名称 */
+  const [currentRoleName, setCurrentRoleName] = useState<string[]>([member.roleName]);
   const setFormValues = useCallback(() => {
     form.setFieldsValue({
       role: [member.roleName],
@@ -63,6 +99,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
     [form, onSave, member],
   );
 
+  /** 处理角色选择变化 */
+  const handleRoleChange = (values: string[]) => {
+    setCurrentRoleName(values);
+  };
   useEffect(() => {
     setFormValues();
   }, [member, setFormValues]);
@@ -71,7 +111,15 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       <div className="form">
         <AntForm form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
           <AntRow gutter={30}>
-            <RoleField form={form} canEdit={editMember} />
+            <RoleField
+              form={form}
+              canEdit={editMember}
+              options={roles.map((role) => ({
+                value: role.roleId,
+                label: role.roleName,
+              }))}
+              onChange={handleRoleChange}
+            />
             <StatusField form={form} canEdit={false} />
           </AntRow>
 
@@ -88,78 +136,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       </div>
 
       {/* 权限清单 */}
-      <div>
-        <h4 style={{ marginBottom: 12 }}>Permissions List</h4>
-        <Tabs
-          defaultActiveKey="web"
-          items={[
-            {
-              key: 'web',
-              label: 'Web',
-              children: (
-                <Spin spinning={loading}>
-                  <Table
-                    dataSource={webPermissions}
-                    columns={[
-                      {
-                        title: 'Permission',
-                        dataIndex: 'permission',
-                        key: 'permission',
-                      },
-                      {
-                        title: 'Roles',
-                        dataIndex: 'roles',
-                        key: 'roles',
-                        render: (roles: string[]) => (
-                          <Space>
-                            {roles.map((role, index) => (
-                              <Tag key={index}>{role}</Tag>
-                            ))}
-                          </Space>
-                        ),
-                      },
-                    ]}
-                    pagination={false}
-                    rowKey="permission"
-                  />
-                </Spin>
-              ),
-            },
-            {
-              key: 'phone',
-              label: 'Phone',
-              children: (
-                <Spin spinning={loading}>
-                  <Table
-                    dataSource={phonePermissions}
-                    columns={[
-                      {
-                        title: 'Permission',
-                        dataIndex: 'permission',
-                        key: 'permission',
-                      },
-                      {
-                        title: 'Roles',
-                        dataIndex: 'roles',
-                        key: 'roles',
-                        render: (roles: string[]) => (
-                          <Space>
-                            {roles.map((role, index) => (
-                              <Tag key={index}>{role}</Tag>
-                            ))}
-                          </Space>
-                        ),
-                      },
-                    ]}
-                    pagination={false}
-                    rowKey="permission"
-                  />
-                </Spin>
-              ),
-            },
-          ]}
-        />
-      </div>
+      <PermissionsList roleNamesList={currentRoleName} loading={loading} />
     </div>
   );
 };

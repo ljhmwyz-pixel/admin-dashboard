@@ -1,0 +1,152 @@
+.drawer {
+  :global {
+    .ant-drawer-body {
+      padding: 0;
+    }
+  }
+}
+
+.header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+
+.orgInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orgName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #262626;
+}
+
+.parentOrg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #595959;
+}
+
+.label {
+  font-weight: 400;
+}
+
+.value {
+  font-weight: 500;
+  color: #1890ff;
+}
+
+.orgCode {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.stepsContainer {
+  display: flex;
+  height: calc(100vh - 200px);
+}
+
+.stepsSidebar {
+  width: 200px;
+  padding: 24px 0;
+  border-right: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+
+.steps {
+  :global {
+    .ant-steps-item-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .ant-steps-item-description {
+      font-size: 12px;
+      color: #8c8c8c;
+      margin-top: 4px;
+    }
+
+    .ant-steps-item-icon {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      font-size: 12px;
+    }
+  }
+}
+
+.stepsContent {
+  flex: 1;
+  padding: 32px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.cancelBtn {
+  min-width: 80px;
+}
+
+.previousBtn {
+  min-width: 80px;
+}
+
+.nextBtn {
+  min-width: 80px;
+}
+
+.confirmBtn {
+  min-width: 80px;
+}
+
+// 响应式适配
+@media (max-width: 768px) {
+  .drawer {
+    width: 90% !important;
+  }
+
+  .stepsContainer {
+    flex-direction: column;
+  }
+
+  .stepsSidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+    padding: 16px 0;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    :global {
+      .ant-steps-item-title {
+        font-size: 12px;
+      }
+
+      .ant-steps-item-description {
+        display: none;
+      }
+    }
+  }
+
+  .stepsContent {
+    padding: 24px;
+  }
+}

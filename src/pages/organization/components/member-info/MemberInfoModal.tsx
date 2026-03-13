@@ -45,8 +45,6 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
   editMember = false,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [webPermissions, setWebPermissions] = useState<any[]>([]);
-  const [phonePermissions, setPhonePermissions] = useState<any[]>([]);
 
   const [memberDetail, setMemberDetail] = useState<MemberDetail | null>(null);
 
@@ -64,32 +62,6 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
       if (detail) {
         setMemberDetail(detail);
       }
-
-      const mockPermissions = [
-        { permission: 'Dashboard', roles: ['FAE'] },
-        { permission: 'Large Screen', roles: ['FAE', 'CED'] },
-        { permission: 'Plants Management', roles: ['FAE', 'CED'] },
-        { permission: 'View Plants List', roles: ['FAE', 'CED'] },
-        { permission: 'Export Plants List', roles: ['FAE', 'CED'] },
-        { permission: 'Plants Overview', roles: ['CED'] },
-        { permission: 'Energy Statistics', roles: ['CED'] },
-        { permission: 'Device Management', roles: ['CED'] },
-        { permission: 'Remote Control', roles: ['CED'] },
-      ];
-
-      const mockPhonePermissions = [
-        { permission: 'Dashboard1111', roles: ['FAE'] },
-        { permission: 'Large Screen', roles: ['FAE', 'CED'] },
-        { permission: 'Plants Management', roles: ['FAE', 'CED'] },
-        { permission: 'View Plants List', roles: ['FAE', 'CED'] },
-        { permission: 'Export Plants List', roles: ['FAE', 'CED'] },
-        { permission: 'Plants Overview', roles: ['CED'] },
-        { permission: 'Energy Statistics', roles: ['CED'] },
-        { permission: 'Device Management', roles: ['CED'] },
-        { permission: 'Remote Control', roles: ['CED'] },
-      ];
-      setWebPermissions(mockPermissions);
-      setPhonePermissions(mockPhonePermissions);
     } catch (error) {
       message.error('Failed to load member information');
       console.error('Error loading member information:', error);
@@ -144,8 +116,6 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
               <BasicInfo
                 member={memberDetail}
                 loading={loading}
-                webPermissions={webPermissions}
-                phonePermissions={phonePermissions}
                 editMember={editMember}
                 onSave={onSave}
                 form={form}
@@ -155,7 +125,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
           {
             key: 'plants',
             label: 'Plants',
-            children: <Plants member={memberDetail} />,
+            children: <Plants member={memberDetail} editMember={editMember} />,
           },
           {
             key: 'record',
