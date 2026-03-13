@@ -1,43 +1,14 @@
 import React, { useState } from 'react';
 import { ApartmentOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Drawer, Form, Steps } from 'antd';
+import { OrganizationInfo } from '@pages/organization/components';
+import type { AddMemberFormData, TreeNodeData } from '@pages/organization/dto';
+import { AntButton, AntDrawer, AntForm, AntSteps } from '@shared/components';
 
-import type { TreeNodeData } from '../../dto';
-import OrganizationInfo from '../organization-info/OrganizationInfo';
 import AddMemberAssignRoles from './AddMemberAssignRoles';
 import AddMemberAssociatePlants from './AddMemberAssociatePlants';
 import AddMemberBasicInfo from './AddMemberBasicInfo';
 
 import styles from './AddMember.module.scss';
-
-/**
- * 新增成员表单数据接口
- */
-export interface AddMemberFormData {
-  /** 基本信息 */
-  basicInfo: {
-    /** 邮箱 */
-    orgEmail: string;
-    /** 用户名 */
-    orgUsername: string;
-    /** 电话号码 */
-    orgPhone: string;
-  };
-  /** 角色信息 */
-  roles: {
-    /** 角色ID */
-    roleId: string;
-    /** 角色名称 */
-    roleName: string;
-  };
-  /** 电站信息 */
-  plants: {
-    /** 组织ID列表 */
-    organizationKeys: string[];
-    /** 电站ID列表 */
-    plantKeys: string[];
-  };
-}
 
 /**
  * AddMemberDrawer 组件属性接口
@@ -78,7 +49,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
     plants: { organizationKeys: [], plantKeys: [] },
   });
   /** 表单实例 */
-  const [form] = Form.useForm();
+  const [form] = AntForm.useForm();
 
   /** 步骤配置 */
   const steps = [
@@ -161,7 +132,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   };
 
   return (
-    <Drawer
+    <AntDrawer
       title="Add Member"
       open={visible}
       onClose={handleCancel}
@@ -169,22 +140,22 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       size="60%"
       footer={
         <div className={styles.actions}>
-          <Button onClick={handleCancel} style={{ marginLeft: 8 }}>
+          <AntButton onClick={handleCancel} style={{ marginLeft: 8 }}>
             Cancel
-          </Button>
+          </AntButton>
           {currentStep > 0 && (
-            <Button onClick={handlePrevious} style={{ marginRight: 8 }}>
+            <AntButton onClick={handlePrevious} style={{ marginRight: 8 }}>
               Previous
-            </Button>
+            </AntButton>
           )}
           {currentStep === steps.length - 1 ? (
-            <Button type="primary" onClick={() => form.submit()}>
+            <AntButton type="primary" onClick={() => form.submit()}>
               Confirm
-            </Button>
+            </AntButton>
           ) : (
-            <Button type="primary" onClick={() => form.submit()}>
+            <AntButton type="primary" onClick={() => form.submit()}>
               Next
-            </Button>
+            </AntButton>
           )}
         </div>
       }
@@ -200,13 +171,13 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       <div className={styles.stepsContainer}>
         {/* 左侧步骤条 */}
         <div className={styles.stepsSidebar}>
-          <Steps current={currentStep} direction="vertical" items={steps} />
+          <AntSteps current={currentStep} direction="vertical" items={steps} />
         </div>
 
         {/* 右侧步骤内容 */}
         <div className={styles.stepsContent}>{renderStepContent()}</div>
       </div>
-    </Drawer>
+    </AntDrawer>
   );
 };
 

@@ -1,8 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Form } from 'antd';
+import { AntForm } from '@shared/components';
 
-import OrgTreeSelector, { type TreeNode } from './OrgTreeSelector';
-import SelectedList, { type ListItem } from './SelectedList';
+import type { ListItem, TreeNode } from '@/pages/organization/dto';
+
+import OrgTreeSelector from '../org-tree/OrgTreeSelector';
+import SelectedList from '../org-tree/SelectedList';
 
 import styles from './AddMember.module.scss';
 
@@ -166,7 +168,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({ for
   );
 
   return (
-    <Form
+    <AntForm
       form={form}
       onFinish={() => onSubmit({ organizationKeys: selectedOrgKeys, plantKeys: selectedPlantKeys })}
       layout="vertical"
@@ -229,7 +231,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({ for
           </div>
         </div>
       </div>
-    </Form>
+    </AntForm>
   );
 };
 

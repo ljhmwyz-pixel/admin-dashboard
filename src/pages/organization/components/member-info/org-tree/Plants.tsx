@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import type { ListItem, TreeNode } from '@pages/organization/dto';
 import type { MemberDetail } from '@pages/organization/types/memberList';
 
-import OrgTreeSelector, { type TreeNode } from './OrgTreeSelector';
-import SelectedList, { type ListItem } from './SelectedList';
+import OrgTreeSelector from './OrgTreeSelector';
+import SelectedList from './SelectedList';
 
 import styles from './Plants.module.scss';
 

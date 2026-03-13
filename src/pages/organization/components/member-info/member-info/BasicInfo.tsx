@@ -7,12 +7,11 @@ import {
   StatusField,
   UidField,
 } from '@pages/organization/components';
-import type { MemberDetail } from '@pages/organization/types/memberList';
-import { type FormInstance } from 'antd';
+import type { FieldProps, MemberDetail } from '@pages/organization/dto';
 
 import { AntForm, AntRow } from '@/shared/components';
 
-import PermissionsList from './PermissionsList';
+import PermissionsList from '../permissions/PermissionsList';
 
 interface BasicInfoProps {
   member: MemberDetail;
@@ -20,7 +19,7 @@ interface BasicInfoProps {
   editMember?: boolean;
   onSave?: (member: MemberDetail) => void;
   /** 表单实例 */
-  form: FormInstance;
+  form: FieldProps['form'];
 }
 
 /**
@@ -71,7 +70,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
   /** 角色列表 */
   const [roles] = useState<Role[]>(mockRoles);
   /** 当前选择的角色名称 */
-  const [currentRoleName, setCurrentRoleName] = useState<string[]>([member.roleName]);
+  const [roleNamesList, setRoleNamesList] = useState<string[]>([member.roleName]);
   const setFormValues = useCallback(() => {
     form.setFieldsValue({
       role: [member.roleName],
@@ -101,7 +100,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
 
   /** 处理角色选择变化 */
   const handleRoleChange = (values: string[]) => {
-    setCurrentRoleName(values);
+    setRoleNamesList(values);
   };
   useEffect(() => {
     setFormValues();
@@ -136,7 +135,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
       </div>
 
       {/* 权限清单 */}
-      <PermissionsList roleNamesList={currentRoleName} loading={loading} />
+      <PermissionsList roleNamesList={roleNamesList} loading={loading} />
     </div>
   );
 };

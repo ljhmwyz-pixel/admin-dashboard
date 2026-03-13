@@ -1,7 +1,8 @@
 import React from 'react';
-import { Form } from 'antd';
+import { OrgEmailField, OrgPhoneField, OrgUsernameField } from '@pages/organization/components';
+import { AntForm } from '@shared/components';
 
-import { OrgEmailField, OrgPhoneField, OrgUsernameField } from '../form-fields';
+import type { FieldProps } from '@/pages/organization/dto';
 
 import styles from './AddMemberBasicInfo.module.scss';
 
@@ -10,7 +11,7 @@ import styles from './AddMemberBasicInfo.module.scss';
  */
 interface AddMemberBasicInfoProps {
   /** 表单实例 */
-  form: any;
+  form: FieldProps['form'];
   /** 提交回调 */
   onSubmit: (values: any) => void;
 }
@@ -21,13 +22,13 @@ interface AddMemberBasicInfoProps {
  */
 const AddMemberBasicInfo: React.FC<AddMemberBasicInfoProps> = ({ form, onSubmit }) => {
   return (
-    <Form form={form} onFinish={onSubmit} layout="vertical">
+    <AntForm form={form} onFinish={onSubmit} layout="vertical">
       <div className={styles.stepContent}>
         <OrgEmailField form={form} canEdit span={24} />
         <OrgUsernameField form={form} span={24} canEdit />
         <OrgPhoneField form={form} span={24} canEdit required={true} />
       </div>
-    </Form>
+    </AntForm>
   );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Member } from '@pages/organization/dto';
+import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
 import type { TableColumnsType, TablePaginationConfig } from 'antd';
-import { Space, Spin, Table, Tag } from 'antd';
 
 import MemberOperationButtons from './MemberOperationButtons';
 
@@ -92,7 +92,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
       key: 'status',
       render: (status) => {
         const statusInfo = statusMap[status as keyof typeof statusMap];
-        return statusInfo ? <Tag color={statusInfo.color}>{statusInfo.text}</Tag> : status;
+        return statusInfo ? <AntTag color={statusInfo.color}>{statusInfo.text}</AntTag> : status;
       },
     },
     {
@@ -104,7 +104,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
       title: 'Operation',
       key: 'operation',
       render: (_, member) => (
-        <Space>
+        <AntSpace>
           <MemberOperationButtons
             member={member}
             onView={onView}
@@ -115,14 +115,14 @@ const MemberTable: React.FC<MemberTableProps> = ({
             onApprove={onApprove}
             onReject={onReject}
           />
-        </Space>
+        </AntSpace>
       ),
     },
   ];
 
   return (
-    <Spin spinning={loading}>
-      <Table
+    <AntSpin spinning={loading}>
+      <AntTable
         columns={columns}
         dataSource={members}
         rowKey="memberId"
@@ -136,7 +136,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
         }}
         onChange={onTableChange}
       />
-    </Spin>
+    </AntSpin>
   );
 };
 

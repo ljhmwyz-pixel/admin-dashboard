@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Segmented, Tooltip } from 'antd';
+import { AntButton, AntInput, AntSegmented, AntTooltip } from '@shared/components';
 
 import styles from './MemberList.module.scss';
 
@@ -49,7 +49,7 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
     <div className={styles.header}>
       {/* 状态筛选 Segmented 组件 */}
       <div className={styles.statusTabs}>
-        <Segmented
+        <AntSegmented
           options={statusOptions}
           value={status}
           onChange={onStatusChange}
@@ -59,7 +59,7 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
 
       {/* 操作区域：搜索框、新增按钮、重置按钮 */}
       <div className={styles.actions}>
-        <Tooltip
+        <AntTooltip
           placement="bottomLeft"
           title={
             <div>
@@ -70,20 +70,20 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
             </div>
           }
         >
-          <Input
+          <AntInput
             placeholder="Please enter role / User..."
             value={keyword}
             onChange={(e) => onKeywordChange(e.target.value)}
             prefix={<SearchOutlined />}
             onPressEnter={onSearch}
           />
-        </Tooltip>
-        <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
+        </AntTooltip>
+        <AntButton type="primary" icon={<PlusOutlined />} onClick={onAdd}>
           Add
-        </Button>
-        <Button icon={<ReloadOutlined />} onClick={onReset}>
+        </AntButton>
+        <AntButton icon={<ReloadOutlined />} onClick={onReset}>
           Reset
-        </Button>
+        </AntButton>
       </div>
     </div>
   );

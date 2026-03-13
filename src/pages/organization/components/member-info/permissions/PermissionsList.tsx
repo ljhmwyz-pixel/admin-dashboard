@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Space, Spin, Table, Tabs, Tag } from 'antd';
+import { AntSpace, AntSpin, AntTable, AntTabs, AntTag } from '@shared/components';
 
 /**
  * 权限项接口
@@ -35,7 +35,7 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ roleNamesList, loadin
 
   /**
    * 获取权限数据
-   * @param role 角色名称
+   * @param roleNamesList 角色名称列表
    */
   const fetchPermissions = async (roleNamesList: string[]) => {
     setIsLoading(true);
@@ -105,16 +105,16 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ roleNamesList, loadin
 
   return (
     <div>
-      <h4 style={{ marginBottom: 12 }}>Permissions List</h4>
-      <Tabs
+      <h4>Permissions List</h4>
+      <AntTabs
         defaultActiveKey="web"
         items={[
           {
             key: 'web',
             label: 'Web',
             children: (
-              <Spin spinning={loading || isLoading}>
-                <Table
+              <AntSpin spinning={loading || isLoading}>
+                <AntTable
                   dataSource={webPermissions}
                   columns={[
                     {
@@ -127,26 +127,26 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ roleNamesList, loadin
                       dataIndex: 'roles',
                       key: 'roles',
                       render: (roles: string[]) => (
-                        <Space>
+                        <AntSpace>
                           {roles.map((role, index) => (
-                            <Tag key={index}>{role}</Tag>
+                            <AntTag key={index}>{role}</AntTag>
                           ))}
-                        </Space>
+                        </AntSpace>
                       ),
                     },
                   ]}
                   pagination={false}
                   rowKey="permission"
                 />
-              </Spin>
+              </AntSpin>
             ),
           },
           {
             key: 'phone',
             label: 'Phone',
             children: (
-              <Spin spinning={loading || isLoading}>
-                <Table
+              <AntSpin spinning={loading || isLoading}>
+                <AntTable
                   dataSource={phonePermissions}
                   columns={[
                     {
@@ -159,18 +159,18 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ roleNamesList, loadin
                       dataIndex: 'roles',
                       key: 'roles',
                       render: (roles: string[]) => (
-                        <Space>
+                        <AntSpace>
                           {roles.map((role, index) => (
-                            <Tag key={index}>{role}</Tag>
+                            <AntTag key={index}>{role}</AntTag>
                           ))}
-                        </Space>
+                        </AntSpace>
                       ),
                     },
                   ]}
                   pagination={false}
                   rowKey="permission"
                 />
-              </Spin>
+              </AntSpin>
             ),
           },
         ]}

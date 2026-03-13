@@ -143,3 +143,146 @@ export interface MemberUpdateRequest {
     roleId: string;
   };
 }
+
+/**
+ * 列表项数据类型
+ */
+export interface ListItem {
+  /** 唯一标识 */
+  key: string;
+  /** 标题 */
+  title: string;
+  /** 是否为电站 */
+  isPlant?: boolean;
+  /** 额外数据 */
+  [key: string]: any;
+}
+
+/**
+ * SelectedList 组件属性接口
+ */
+export interface SelectedListProps {
+  /** 列表标题 */
+  title: string;
+  /** 列表数据 */
+  data: ListItem[];
+  /** 选中的keys */
+  selectedKeys: React.Key[];
+  /** 选中变化回调 */
+  onChange: (selectedKeys: React.Key[]) => void;
+  /** 搜索关键词 */
+  searchValue?: string;
+  /** 搜索变化回调 */
+  onSearch?: (value: string) => void;
+  /** 是否可编辑 */
+  editable?: boolean;
+  /** 是否展示搜索框 */
+  showSearch?: boolean;
+  /** 搜索框占位符 */
+  searchPlaceholder?: string;
+  /** 是否展示重置按钮 */
+  showReset?: boolean;
+  /** 重置回调 */
+  onReset?: () => void;
+  /** 自定义类名 */
+  className?: string;
+  /** 自定义样式 */
+  style?: React.CSSProperties;
+  /** 加载状态 */
+  loading?: boolean;
+  /** 空状态展示 */
+  emptyText?: React.ReactNode;
+  /** 图标类型 */
+  iconType?: 'org' | 'plant';
+}
+
+/**
+ * 树节点数据类型
+ */
+export interface TreeNode {
+  /** 节点唯一标识 */
+  key: string;
+  /** 节点标题 */
+  title: string;
+  /** 子节点列表 */
+  children?: TreeNode[];
+  /** 是否为电站 */
+  isPlant?: boolean;
+  /** 父节点ID */
+  parentId?: string;
+  /** 是否禁用 */
+  disabled?: boolean;
+  /** 是否可选 */
+  selectable?: boolean;
+  /** 是否可勾选 */
+  checkable?: boolean;
+}
+
+/**
+ * OrgTreeSelector 组件属性接口
+ */
+export interface OrgTreeSelectorProps {
+  /** 树形数据 */
+  treeData: TreeNode[];
+  /** 选中的节点keys */
+  selectedKeys: React.Key[];
+  /** 选中变化回调 */
+  onChange: (selectedKeys: React.Key[], selectedNodes: TreeNode[]) => void;
+  /** 搜索关键词 */
+  searchValue?: string;
+  /** 搜索变化回调 */
+  onSearch?: (value: string) => void;
+  /** 是否可编辑 */
+  editable?: boolean;
+  /** 是否展示搜索框 */
+  showSearch?: boolean;
+  /** 搜索框占位符 */
+  searchPlaceholder?: string;
+  /** 是否展示全选按钮 */
+  showSelectAll?: boolean;
+  /** 全选回调 */
+  onSelectAll?: () => void;
+  /** 自定义类名 */
+  className?: string;
+  /** 自定义样式 */
+  style?: React.CSSProperties;
+  /** 是否默认展开所有节点 */
+  defaultExpandAll?: boolean;
+  /** 展开的节点keys */
+  expandedKeys?: React.Key[];
+  /** 展开变化回调 */
+  onExpand?: (expandedKeys: React.Key[]) => void;
+  /** 加载状态 */
+  loading?: boolean;
+  /** 空状态展示 */
+  emptyText?: React.ReactNode;
+}
+
+/**
+ * 新增成员表单数据接口
+ */
+export interface AddMemberFormData {
+  /** 基本信息 */
+  basicInfo: {
+    /** 邮箱 */
+    orgEmail: string;
+    /** 用户名 */
+    orgUsername: string;
+    /** 电话号码 */
+    orgPhone: string;
+  };
+  /** 角色信息 */
+  roles: {
+    /** 角色ID */
+    roleId: string;
+    /** 角色名称 */
+    roleName: string;
+  };
+  /** 电站信息 */
+  plants: {
+    /** 组织ID列表 */
+    organizationKeys: string[];
+    /** 电站ID列表 */
+    plantKeys: string[];
+  };
+}
