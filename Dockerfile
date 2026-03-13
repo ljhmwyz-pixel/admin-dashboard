@@ -7,7 +7,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY dist/ /usr/share/nginx/html/
 
 # 复制 nginx 配置（如果有自定义配置）
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
