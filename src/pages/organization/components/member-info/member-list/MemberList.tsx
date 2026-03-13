@@ -145,7 +145,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 限制组织所有者不可被删除
    */
   const handleDelete = (member: Member) => {
-    if (member.roleName === 'Organization Owner') {
+    if (member.roleName.includes('Organization Owner')) {
       AntMessage.error('Organization owner cannot be deleted');
       return;
     }
@@ -212,7 +212,6 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         status={status}
         keyword={keyword}
         onStatusChange={handleStatusChange}
-        onSearch={handleSearch}
         onReset={handleReset}
         onKeywordChange={handleKeywordChange}
         onAdd={handleAdd}

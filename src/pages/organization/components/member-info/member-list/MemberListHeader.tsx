@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { AntButton, AntInput, AntSegmented, AntTooltip } from '@shared/components';
+import { debounce } from 'lodash-es';
 
 import styles from './MemberList.module.scss';
 
@@ -14,8 +15,6 @@ interface MemberListHeaderProps {
   keyword: string;
   /** 状态变更回调函数 */
   onStatusChange: (status: string) => void;
-  /** 搜索回调函数 */
-  onSearch: () => void;
   /** 重置回调函数 */
   onReset: () => void;
   /** 关键词变更回调函数 */
@@ -32,7 +31,6 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
   status,
   keyword,
   onStatusChange,
-  onSearch,
   onReset,
   onKeywordChange,
   onAdd,
@@ -64,18 +62,17 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
           title={
             <div>
               <div>Support searchable fields:</div>
-              <div>1. Role name</div>
-              <div>2. User name</div>
-              <div>3. UID</div>
+              <div>1. User name</div>
+              <div>2. UID</div>
             </div>
           }
         >
           <AntInput
             placeholder="Please enter role / User..."
             value={keyword}
+            maxLength={100}
             onChange={(e) => onKeywordChange(e.target.value)}
             prefix={<SearchOutlined />}
-            onPressEnter={onSearch}
           />
         </AntTooltip>
         <AntButton type="primary" icon={<PlusOutlined />} onClick={onAdd}>

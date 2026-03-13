@@ -92,6 +92,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
           },
         ]);
         return;
+      } else {
+        form.setFields([
+          {
+            name: 'role',
+            errors: [],
+          },
+        ]);
       }
       onSave?.(member);
     },

@@ -5,6 +5,8 @@ import type { TableColumnsType, TablePaginationConfig } from 'antd';
 
 import MemberOperationButtons from './MemberOperationButtons';
 
+import styles from './MemberList.module.scss';
+
 /**
  * MemberTable 组件属性接口
  */
@@ -67,6 +69,9 @@ const MemberTable: React.FC<MemberTableProps> = ({
   onReject,
   onTableChange,
 }) => {
+  const handleClickRole = (role: string) => {
+    console.log(role);
+  };
   /** 表格列定义 */
   const columns: TableColumnsType<Member> = [
     {
@@ -79,7 +84,12 @@ const MemberTable: React.FC<MemberTableProps> = ({
       title: 'User Name',
       dataIndex: 'username',
       key: 'username',
-      sorter: true,
+      sorter: (a, b) => {
+        const nameA = (a.username || '').toLowerCase();
+        const nameB = (b.username || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      },
+      defaultSortOrder: undefined,
     },
     {
       title: 'UID',
@@ -99,6 +109,15 @@ const MemberTable: React.FC<MemberTableProps> = ({
       title: 'Role',
       dataIndex: 'roleName',
       key: 'roleName',
+      render: (roleList) => {
+        // todo 处理角色列表，展示多个角色
+        // return roleList.map((role: string) => (
+        //   <span key={role} className={styles.role} onClick={() => handleClickRole(role)}>
+        //     {role}
+        //   </span>
+        // ));
+        return <div>{roleList}</div>;
+      },
     },
     {
       title: 'Operation',
@@ -125,6 +144,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
       <AntTable
         columns={columns}
         dataSource={members}
+        showSorterTooltip={false}
         rowKey="memberId"
         pagination={{
           current,
