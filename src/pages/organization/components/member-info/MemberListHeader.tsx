@@ -20,6 +20,8 @@ interface MemberListHeaderProps {
   onReset: () => void;
   /** 关键词变更回调函数 */
   onKeywordChange: (keyword: string) => void;
+  /** 新增成员回调函数 */
+  onAdd: () => void;
 }
 
 /**
@@ -33,6 +35,7 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
   onSearch,
   onReset,
   onKeywordChange,
+  onAdd,
 }) => {
   /** 状态选项配置 */
   const statusOptions = [
@@ -75,7 +78,7 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
             onPressEnter={onSearch}
           />
         </Tooltip>
-        <Button type="primary" icon={<PlusOutlined />}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={onAdd}>
           Add
         </Button>
         <Button icon={<ReloadOutlined />} onClick={onReset}>

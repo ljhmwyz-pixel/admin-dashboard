@@ -5,6 +5,7 @@ import { updateMember } from '@pages/organization/services/organizationService';
 import { getParentNode } from '@pages/organization/utils';
 import { message } from 'antd';
 
+import AddMemberDrawer from './AddMemberDrawer';
 import MemberInfoModal from './MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
 import MemberTable from './MemberTable';
@@ -54,6 +55,9 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [editMember, setEditMember] = useState<boolean>(false);
+
+  /** 新增成员抽屉状态 */
+  const [addDrawerVisible, setAddDrawerVisible] = useState(false);
 
   // 获取父节点信息
   const parentNodeData =
@@ -125,11 +129,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       const result = await updateMember(memberId, { status, roleId });
       if (result.success) {
         message.success('更新成功');
-        // 关闭模态框
-        setInfoModalVisible(false);
-        setSelectedMember(null);
         setEditMember(false);
-        // 重新加载成员列表
         handleSearch();
       } else {
         message.error(result.message || '更新失败');
@@ -189,6 +189,22 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     // TODO: 实现拒绝功能，填写拒绝原因并更新状态
   };
 
+  /**
+   * 处理新增成员按钮点击
+   */
+  const handleAdd = () => {
+    setAddDrawerVisible(true);
+  };
+
+  /**
+   * 处理新增成员成功
+   */
+  const handleAddSuccess = () => {
+    setAddDrawerVisible(false);
+    handleSearch();
+    message.success('新增成员成功');
+  };
+
   return (
     <div className={styles.container}>
       {/* 成员列表头部：状态筛选、搜索框、新增和重置按钮 */}
@@ -199,6 +215,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onSearch={handleSearch}
         onReset={handleReset}
         onKeywordChange={handleKeywordChange}
+        onAdd={handleAdd}
       />
 
       {/* 成员列表表格 */}
@@ -231,6 +248,15 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onSave={handleSaveMember}
         parentNodeData={parentNodeData}
         editMember={editMember}
+      />
+
+      {/* 新增成员抽屉 */}
+      <AddMemberDrawer
+        visible={addDrawerVisible}
+        onClose={() => setAddDrawerVisible(false)}
+        onSuccess={handleAddSuccess}
+        orgId={orgId}
+        parentNodeData={parentNodeData}
       />
     </div>
   );

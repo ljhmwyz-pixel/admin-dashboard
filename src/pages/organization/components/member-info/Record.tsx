@@ -18,7 +18,7 @@ interface OperationRecord {
  * 成员操作记录组件
  * 展示成员的变更历史记录
  */
-const Record: React.FC<RecordProps> = ({ member }) => {
+const Record: React.FC<RecordProps> = () => {
   // 模拟操作记录数据
   const recordData: OperationRecord[] = [
     {
