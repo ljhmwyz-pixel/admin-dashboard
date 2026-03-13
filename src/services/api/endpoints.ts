@@ -33,6 +33,8 @@ export const ORGANIZATION_ENDPOINTS = {
   /** 验证删除组织 */
   VERIFY_DELETE: (id: string | number) =>
     `/api/v1/organization/organizations/${id}/validate-delete`,
+  /** 获取组织类型列表 */
+  ORGANIZATION_TYPES: '/api/v1/organization/organization-types',
 } as const;
 
 // 用户管理相关
@@ -81,6 +83,12 @@ export const UPLOAD_ENDPOINTS = {
   AVATAR: '/upload/avatar',
 } as const;
 
+// 组织类型管理相关
+export const ORGANIZATIONTYPE_ENDPOINTS = {
+  /** 获取组织类型列表 */
+  ORGANIZATION_TYPES: '/api/v1/organization/organization-types',
+} as const;
+
 // 导出所有端点
 export const API_ENDPOINTS = {
   AUTH: AUTH_ENDPOINTS,
@@ -89,6 +97,7 @@ export const API_ENDPOINTS = {
   DASHBOARD: DASHBOARD_ENDPOINTS,
   SYSTEM: SYSTEM_ENDPOINTS,
   UPLOAD: UPLOAD_ENDPOINTS,
+  ORGANIZATIONTYPE: ORGANIZATIONTYPE_ENDPOINTS,
 } as const;
 
 export default API_ENDPOINTS;
