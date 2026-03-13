@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import type { RoleRecord } from '@pages/organization/dto';
+import type { TreeNodeData } from '@pages/organization/dto';
 import type { TableColumnsType, TableProps } from 'antd';
 
 import { FormButton, FormDrawer, Table } from '@/components';
@@ -72,6 +73,8 @@ const generateMockData = (count: number): RoleRecord[] => {
 const mockData = generateMockData(20);
 
 interface RoleInfoProps {
+  currentParentNode: TreeNodeData;
+  treeData: TreeNodeData[];
   onAdd?: () => void;
   onEdit?: (record: RoleRecord) => void;
   onView?: (record: RoleRecord) => void;
@@ -81,6 +84,8 @@ interface RoleInfoProps {
 }
 
 const RoleInfo: React.FC<RoleInfoProps> = ({
+  currentParentNode,
+  treeData,
   onEdit,
   onView,
   onDelete,
@@ -669,7 +674,13 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
           />
         )} */}
       </div>
-      <AddRole ref={roleModalRef} title="新增角色" />
+      {/* 新增角色 */}
+      <AddRole
+        ref={roleModalRef}
+        title="新增角色"
+        currentParentNode={currentParentNode}
+        treeData={treeData}
+      />
     </div>
   );
 };

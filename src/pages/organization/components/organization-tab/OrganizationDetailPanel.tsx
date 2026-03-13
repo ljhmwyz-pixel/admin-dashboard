@@ -45,7 +45,7 @@ const OrganizationDetailPanel: React.FC<OrganizationDetailPanelIProps> = ({
     {
       key: 'role-list',
       label: <div className={styles.tabItems}>{t('role.list.title')}</div>,
-      children: <RoleInfo />,
+      children: <RoleInfo currentParentNode={currentParentNode} treeData={treeData} />,
     },
     {
       key: 'member-list',
