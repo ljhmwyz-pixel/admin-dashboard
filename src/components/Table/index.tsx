@@ -1,3 +1,4 @@
+import type { TablePaginationConfig } from 'antd';
 import { Table as AntTable } from 'antd';
 import classNames from 'classnames';
 
@@ -11,8 +12,9 @@ function BaseTable<RecordType extends object = any>({
   className,
   ...props
 }: BaseTableProps<RecordType>) {
+  // 不使用内部 pagination，统一用自定义 Pagination 组件
+  const showPagination = pagination !== false;
   const paginationConfig = typeof pagination === 'object' ? pagination : undefined;
-  const showPagination = pagination !== false && paginationConfig;
 
   return (
     <div>
@@ -22,7 +24,7 @@ function BaseTable<RecordType extends object = any>({
         className={classNames(styles.baseTable, className)}
         pagination={false}
       />
-      {showPagination && (
+      {showPagination && paginationConfig && (
         <Pagination
           current={paginationConfig.current}
           pageSize={paginationConfig.pageSize}

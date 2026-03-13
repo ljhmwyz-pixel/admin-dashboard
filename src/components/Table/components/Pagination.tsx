@@ -1,13 +1,16 @@
 import React from 'react';
 import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import type { PaginationProps } from 'antd';
-import { Pagination } from 'antd';
+import { Button, Pagination } from 'antd';
 import classNames from 'classnames';
 
 import styles from './Pagination.module.scss';
 
 export interface BasePaginationProps extends PaginationProps {
   showTotalText?: boolean;
+  showQuickJumper?: boolean;
+  showSizeChanger?: boolean;
+  pageSizeOptions?: (string | number)[];
 }
 
 const BasePagination: React.FC<BasePaginationProps> = ({
@@ -17,9 +20,14 @@ const BasePagination: React.FC<BasePaginationProps> = ({
   total = 0,
   onChange,
   showTotalText = true,
+  showQuickJumper = true,
+  showSizeChanger = true,
+  pageSizeOptions = ['10', '20', '50', '100'],
   ...rest
 }) => {
-  const lastPage = Math.ceil(total / pageSize);
+  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+  const isFirst = current === 1;
+  const isLast = current === lastPage;
 
   return (
     <div className={classNames(styles.paginationWrapper, className)}>
@@ -34,92 +42,124 @@ const BasePagination: React.FC<BasePaginationProps> = ({
         </div>
       )}
 
-      <Pagination
-        current={current}
-        pageSize={pageSize}
-        total={total}
-        showSizeChanger
-        showPrevNextJumpers
-        showLessItems
-        showQuickJumper
-        onChange={onChange}
-        itemRender={(page, type, original) => {
-          if (type === 'prev') {
-            return (
-              <div className={styles.jumpContainer}>
-                <div
-                  className={styles.jumpBtn}
-                  onClick={() => current !== 1 && onChange?.(1, pageSize)}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect width="20" height="20" rx="4" fill="white" />
-                    <path
-                      d="M9 13L6.06401 10.15C5.97866 10.0672 5.97866 9.93284 6.06401 9.85L9 7"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M14 13L11.064 10.15C10.9787 10.0672 10.9787 9.93284 11.064 9.85L14 7"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div>{original}</div>
-              </div>
-            );
-          }
+      <div className={styles.paginationGroup}>
+        {/* 首页按钮 */}
+        <Button
+          size="small"
+          disabled={isFirst}
+          className={styles.iconBtn}
+          onClick={() => onChange?.(1, pageSize)}
+          icon={<DoubleLeftOutlined />}
+          title="First Page"
+        />
 
-          if (type === 'next') {
-            return (
-              <div className={styles.jumpContainer}>
-                <div>{original}</div>
-                <div
-                  className={styles.jumpBtn}
-                  onClick={() => current !== lastPage && onChange?.(lastPage, pageSize)}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect width="20" height="20" rx="4" fill="white" />
-                    <path
-                      d="M6 13L8.93599 10.15C9.02134 10.0672 9.02134 9.93284 8.93599 9.85L6 7"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M11 13L13.936 10.15C14.0213 10.0672 14.0213 9.93284 13.936 9.85L11 7"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            );
-          }
+        {/* Ant Design Pagination */}
+        <Pagination
+          {...rest}
+          current={current}
+          pageSize={pageSize}
+          total={total}
+          showQuickJumper={false}
+          showSizeChanger={false}
+          onChange={onChange}
+          // itemRender={(page, type, originalElement) => {
+          //   if (type === 'prev') {
+          //     return (
+          //       <Button
+          //         size="small"
+          //         disabled={isFirst}
+          //         className={styles.iconBtn}
+          //         icon={
+          //           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          //             <path
+          //               d="M6.5 8.5L3 5L6.5 1.5"
+          //               stroke="currentColor"
+          //               strokeWidth="1.5"
+          //               strokeLinecap="round"
+          //               strokeLinejoin="round"
+          //             />
+          //           </svg>
+          //         }
+          //       />
+          //     );
+          //   }
+          //   if (type === 'next') {
+          //     return (
+          //       <Button
+          //         size="small"
+          //         disabled={isLast}
+          //         className={styles.iconBtn}
+          //         icon={
+          //           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          //             <path
+          //               d="M3.5 1.5L7 5L3.5 8.5"
+          //               stroke="currentColor"
+          //               strokeWidth="1.5"
+          //               strokeLinecap="round"
+          //               strokeLinejoin="round"
+          //             />
+          //           </svg>
+          //         }
+          //       />
+          //     );
+          //   }
+          //   return originalElement;
+          // }}
+        />
 
-          return original;
-        }}
-        {...rest}
-      />
+        {/* 末页按钮 */}
+        <Button
+          size="small"
+          disabled={isLast}
+          className={styles.iconBtn}
+          onClick={() => onChange?.(lastPage, pageSize)}
+          icon={<DoubleRightOutlined />}
+          title="Last Page"
+        />
+
+        {/* 快速跳转 */}
+        {showQuickJumper && (
+          <div className={styles.quickJumper}>
+            <span>to</span>
+            <input
+              type="number"
+              min="1"
+              max={lastPage}
+              value={current}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                if (val >= 1 && val <= lastPage) {
+                  onChange?.(val, pageSize);
+                }
+              }}
+            />
+            <span>Page</span>
+          </div>
+        )}
+
+        {/* 每页条数选择器 */}
+        {showSizeChanger && (
+          <div className={styles.pageSize}>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                onChange?.(1, val);
+              }}
+            >
+              {pageSizeOptions.map((option) => {
+                const numValue = parseInt(option);
+                return (
+                  <option key={option} value={numValue}>
+                    {numValue}
+                  </option>
+                );
+              })}
+            </select>
+            <span>/Page</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
