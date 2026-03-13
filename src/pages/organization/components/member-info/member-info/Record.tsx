@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Tag } from 'antd';
+import { AntTable, AntTag } from '@shared/components';
 
 interface RecordProps {
   member: any;
@@ -87,7 +87,7 @@ const Record: React.FC<RecordProps> = () => {
 
   return (
     <div style={{ padding: '0 16px' }}>
-      <Table
+      <AntTable
         dataSource={recordData}
         columns={[
           {
@@ -100,7 +100,7 @@ const Record: React.FC<RecordProps> = () => {
             dataIndex: 'changeType',
             key: 'changeType',
             render: (changeType: string) => (
-              <Tag color={getChangeTypeColor(changeType)}>{changeType}</Tag>
+              <AntTag color={getChangeTypeColor(changeType)}>{changeType}</AntTag>
             ),
           },
           {
