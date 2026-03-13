@@ -6,16 +6,29 @@ import { FormSelect } from '@/components';
 
 type RoleFieldProps = FieldProps & {
   canEdit?: boolean;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+  span?: number;
+  onChange?: (value: string[]) => void;
 };
 
-const RoleField: React.FC<RoleFieldProps> = ({ form, canEdit = true }) => {
+const RoleField: React.FC<RoleFieldProps> = ({
+  form,
+  canEdit = true,
+  required = false,
+  options = [],
+  span = 12,
+  onChange,
+}) => {
   // const { t } = useLanguage();
 
   return (
-    <AntCol span={12}>
+    <AntCol span={span}>
       <FormSelect
         name="role"
         label="Role"
+        required={required}
+        rules={required ? [{ required: true, message: 'Please select a role!' }] : []}
         prefixIcon={
           <svg
             width="15"
@@ -36,10 +49,12 @@ const RoleField: React.FC<RoleFieldProps> = ({ form, canEdit = true }) => {
         selectProps={{
           disabled: !canEdit,
           mode: 'multiple',
-          options: [],
+          options: options,
           placeholder: 'role',
           onChange: (value) => {
             form.setFieldsValue({ role: value });
+            onChange?.(value);
+            console.log(value);
           },
         }}
       />

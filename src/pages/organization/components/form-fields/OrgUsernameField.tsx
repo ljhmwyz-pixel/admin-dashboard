@@ -9,13 +9,15 @@ type OrgUsernameFieldProps = FieldProps & {
   existingUsername?: string;
   canEdit?: boolean;
   required?: boolean;
+  span?: number;
 };
 
 const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   form,
   existingUsername,
-  canEdit,
+  canEdit = true,
   required = true,
+  span = 12,
 }) => {
   const { t } = useLanguage();
 
@@ -35,7 +37,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   }, [existingUsername, form]);
 
   return (
-    <AntCol span={12}>
+    <AntCol span={span}>
       <FormInput
         name="orgUsername"
         label={t('org.field.username')}

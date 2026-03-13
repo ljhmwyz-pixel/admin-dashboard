@@ -171,7 +171,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
         setSpinning(false);
       }
     },
-    [setLoading, verifyOrganizationByUpdate, orgId, handleUpdateOrganization],
+    [form, handleUpdateOrganization, orgId, setLoading, verifyOrganizationByUpdate],
   );
 
   const onSave = () => {

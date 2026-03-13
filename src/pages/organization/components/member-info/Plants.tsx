@@ -1,131 +1,295 @@
-import React, { useState } from 'react';
-import { Input, Space, Table, Tabs } from 'antd';
+import React, { useCallback, useMemo, useState } from 'react';
+import type { MemberDetail } from '@pages/organization/types/memberList';
 
+import OrgTreeSelector, { type TreeNode } from './OrgTreeSelector';
+import SelectedList, { type ListItem } from './SelectedList';
+
+import styles from './Plants.module.scss';
+
+/**
+ * Plants 组件属性接口
+ */
 interface PlantsProps {
-  member: any;
+  /** 成员详情数据 */
+  member: MemberDetail;
+  /** 是否为编辑状态 */
+  editMember?: boolean;
 }
-
-const { TabPane } = Tabs;
 
 /**
  * 成员 Plants 信息组件
- * 展示成员可访问的电站信息，分为组织级别和电站级别
+ * 展示成员可访问的组织和电站信息
+ *
+ * 组件结构：
+ * - 左侧：OrgTreeSelector（组织树选择器）
+ * - 右侧上：SelectedList（已选组织列表）
+ * - 右侧下：SelectedList（已选电站列表）
+ *
+ * 功能说明：
+ * - 查看状态：分为左右两部分，分别展示已筛选的组织和已筛选的电站
+ * - 编辑状态：左侧为树形穿梭框主体，右侧分为上下两部分，分别接收穿梭框筛选的组织和电站
+ *   - 电站属于组织内部，选中组织会自动包含其下的电站
+ *   - 左侧底部支持全选按钮
+ *   - 右侧底部支持重置按钮
  */
-const Plants: React.FC<PlantsProps> = ({ member }) => {
-  const [orgSearch, setOrgSearch] = useState<string>('');
-  const [plantSearch, setPlantSearch] = useState<string>('');
-  const [selectedOrg, setSelectedOrg] = useState<string>('');
-  const [selectedPlants, setSelectedPlants] = useState<string[]>([]);
+const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
+  /** 左侧搜索关键词 */
+  const [leftSearchValue, setLeftSearchValue] = useState('');
+  /** 右侧组织搜索关键词 */
+  const [rightOrgSearchValue, setRightOrgSearchValue] = useState('');
+  /** 右侧电站搜索关键词 */
+  const [rightPlantSearchValue, setRightPlantSearchValue] = useState('');
+  /** 选中的组织keys */
+  const [selectedOrgKeys, setSelectedOrgKeys] = useState<React.Key[]>([]);
+  /** 选中的电站keys */
+  const [selectedPlantKeys, setSelectedPlantKeys] = useState<React.Key[]>([]);
 
-  // 模拟组织数据（仅展示当前登录组织及其下级，不展示上级）
-  const organizations = [
-    { value: 'org1', label: 'Pylontech' },
-    { value: 'org2', label: 'Dealer A' },
-    { value: 'org3', label: 'Dealer B' },
-  ];
+  /**
+   * 模拟组织和电站数据
+   * 实际项目中应该从接口获取
+   */
+  const treeData: TreeNode[] = useMemo(
+    () => [
+      {
+        key: 'pylontech',
+        title: 'Pylontech',
+        children: [
+          {
+            key: 'dealer-1a',
+            title: 'Dealer 1-A',
+            parentId: 'pylontech',
+            children: [
+              {
+                key: 'plant-1a-1',
+                title: 'Plant 1 (PRG-NMXW-64kW)',
+                parentId: 'dealer-1a',
+                isPlant: true,
+              },
+              {
+                key: 'plant-1a-2',
+                title: 'Plant 2 (PRG-NMXW-64kW)',
+                parentId: 'dealer-1a',
+                isPlant: true,
+              },
+            ],
+          },
+          {
+            key: 'dealer-1b',
+            title: 'Dealer 1-B',
+            parentId: 'pylontech',
+            children: [
+              {
+                key: 'plant-1b-1',
+                title: 'Plant 1 (PRG-NMXW-64kW)',
+                parentId: 'dealer-1b',
+                isPlant: true,
+              },
+            ],
+          },
+          {
+            key: 'dealer-1c',
+            title: 'Dealer 1-C',
+            parentId: 'pylontech',
+            children: [],
+          },
+        ],
+      },
+    ],
+    [],
+  );
 
-  // 模拟电站数据
-  const plants = [
-    { key: 'plant1', name: 'Plant 1', id: 'PRC-NXW-644W1' },
-    { key: 'plant2', name: 'Plant 2', id: 'PRC-NXW-644W2' },
-  ];
+  /**
+   * 已选中的组织数据
+   */
+  const selectedOrgs: ListItem[] = useMemo(() => {
+    const orgs: ListItem[] = [];
+    const findOrgs = (nodes: TreeNode[]) => {
+      nodes.forEach((node) => {
+        if (!node.isPlant && selectedOrgKeys.includes(node.key)) {
+          orgs.push({
+            key: node.key,
+            title: node.title,
+            isPlant: false,
+          });
+        }
+        if (node.children) {
+          findOrgs(node.children);
+        }
+      });
+    };
+    findOrgs(treeData);
+    return orgs;
+  }, [treeData, selectedOrgKeys]);
+
+  /**
+   * 已选中的电站数据
+   */
+  const selectedPlants: ListItem[] = useMemo(() => {
+    const plants: ListItem[] = [];
+    const findPlants = (nodes: TreeNode[]) => {
+      nodes.forEach((node) => {
+        if (node.isPlant && selectedPlantKeys.includes(node.key)) {
+          plants.push({
+            key: node.key,
+            title: node.title,
+            isPlant: true,
+          });
+        }
+        if (node.children) {
+          findPlants(node.children);
+        }
+      });
+    };
+    findPlants(treeData);
+    return plants;
+  }, [treeData, selectedPlantKeys]);
+
+  /**
+   * 处理树选择变化
+   */
+  const handleTreeChange = useCallback((keys: React.Key[], nodes: TreeNode[]) => {
+    const orgKeys: string[] = [];
+    const plantKeys: string[] = [];
+
+    nodes.forEach((node) => {
+      if (node.isPlant) {
+        plantKeys.push(node.key);
+      } else {
+        orgKeys.push(node.key);
+      }
+    });
+
+    setSelectedOrgKeys(orgKeys);
+    setSelectedPlantKeys(plantKeys);
+  }, []);
+
+  /**
+   * 处理组织列表变化
+   */
+  const handleOrgListChange = useCallback((keys: React.Key[]) => {
+    setSelectedOrgKeys(keys);
+  }, []);
+
+  /**
+   * 处理电站列表变化
+   */
+  const handlePlantListChange = useCallback((keys: React.Key[]) => {
+    setSelectedPlantKeys(keys);
+  }, []);
+
+  /**
+   * 处理重置
+   */
+  const handleReset = useCallback(() => {
+    setSelectedOrgKeys([]);
+    setSelectedPlantKeys([]);
+  }, []);
+
+  // 合并选中的keys
+  const mergedSelectedKeys = useMemo(
+    () => [...selectedOrgKeys, ...selectedPlantKeys],
+    [selectedOrgKeys, selectedPlantKeys],
+  );
 
   return (
-    <div style={{ padding: '0 16px' }}>
-      <Tabs defaultActiveKey="organization">
-        {/* 组织级别 */}
-        <TabPane tab="Organization Level" key="organization">
-          <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>Selected Organization (1)</span>
-              <Input
-                placeholder="Please enter organization name..."
-                value={orgSearch}
-                onChange={(e) => setOrgSearch(e.target.value)}
-                style={{ width: 200 }}
-              />
-            </div>
-          </Space>
-
-          <div style={{ border: '1px solid #e8e8e8', borderRadius: 4, overflow: 'hidden' }}>
-            <Table
-              dataSource={organizations}
-              columns={[
-                {
-                  title: '',
-                  dataIndex: 'checkbox',
-                  render: (_, record) => (
-                    <input
-                      type="checkbox"
-                      checked={selectedOrg === record.value}
-                      onChange={() => setSelectedOrg(record.value)}
-                    />
-                  ),
-                },
-                {
-                  title: '',
-                  dataIndex: 'label',
-                  key: 'label',
-                },
-              ]}
-              pagination={false}
-              rowKey="value"
+    <div className={styles.container}>
+      {editMember ? (
+        // 编辑状态
+        <div className={styles.editContainer}>
+          {/* 左侧：树形选择器 */}
+          <div className={styles.leftSection}>
+            <OrgTreeSelector
+              treeData={treeData}
+              selectedKeys={mergedSelectedKeys}
+              onChange={handleTreeChange}
+              searchValue={leftSearchValue}
+              onSearch={setLeftSearchValue}
+              editable={true}
+              showSearch={true}
+              searchPlaceholder="Please enter organization name or ID"
+              showSelectAll={true}
+              className={styles.fullHeight}
             />
           </div>
-        </TabPane>
 
-        {/* 电站级别 */}
-        <TabPane tab="Plant Level" key="plant">
-          <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>Selected Plants</span>
-              <Input
-                placeholder="Please enter plant name..."
-                value={plantSearch}
-                onChange={(e) => setPlantSearch(e.target.value)}
-                style={{ width: 200 }}
+          {/* 中间：穿梭箭头 */}
+          <div className={styles.transferArrow}>
+            <div className={styles.arrowIcon}>&gt;&gt;</div>
+          </div>
+
+          {/* 右侧：已选列表 */}
+          <div className={styles.rightSection}>
+            <div className={styles.selectedOrgSection}>
+              <SelectedList
+                title="Selected Organization"
+                data={selectedOrgs}
+                selectedKeys={selectedOrgKeys}
+                onChange={handleOrgListChange}
+                searchValue={rightOrgSearchValue}
+                onSearch={setRightOrgSearchValue}
+                editable={true}
+                showSearch={true}
+                searchPlaceholder="Please enter organization name..."
+                showReset={false}
+                iconType="org"
+                emptyText="No selected organizations"
               />
             </div>
-          </Space>
-
-          <div style={{ border: '1px solid #e8e8e8', borderRadius: 4, overflow: 'hidden' }}>
-            <Table
-              dataSource={plants}
-              columns={[
-                {
-                  title: '',
-                  dataIndex: 'checkbox',
-                  render: (_, record) => (
-                    <input
-                      type="checkbox"
-                      checked={selectedPlants.includes(record.key)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedPlants([...selectedPlants, record.key]);
-                        } else {
-                          setSelectedPlants(selectedPlants.filter((key) => key !== record.key));
-                        }
-                      }}
-                    />
-                  ),
-                },
-                {
-                  title: 'Plant Name',
-                  dataIndex: 'name',
-                  key: 'name',
-                },
-                {
-                  title: 'Plant ID',
-                  dataIndex: 'id',
-                  key: 'id',
-                },
-              ]}
-              pagination={false}
-              rowKey="key"
+            <div className={styles.selectedPlantSection}>
+              <SelectedList
+                title="Selected Plants"
+                data={selectedPlants}
+                selectedKeys={selectedPlantKeys}
+                onChange={handlePlantListChange}
+                searchValue={rightPlantSearchValue}
+                onSearch={setRightPlantSearchValue}
+                editable={true}
+                showSearch={true}
+                searchPlaceholder="Please enter plant name or ID"
+                showReset={true}
+                onReset={handleReset}
+                iconType="plant"
+                emptyText="No selected plants"
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        // 查看状态
+        <div className={styles.viewContainer}>
+          {/* 左侧：已选组织 */}
+          <div className={styles.viewSection}>
+            <OrgTreeSelector
+              treeData={treeData}
+              selectedKeys={selectedOrgKeys}
+              onChange={handleTreeChange}
+              editable={false}
+              showSearch={true}
+              searchPlaceholder="Search organization..."
+              showSelectAll={false}
+              className={styles.fullHeight}
+              emptyText="No selected organizations"
             />
           </div>
-        </TabPane>
-      </Tabs>
+
+          {/* 右侧：已选电站 */}
+          <div className={styles.viewSection}>
+            <SelectedList
+              title="Selected Plants"
+              data={selectedPlants}
+              selectedKeys={selectedPlantKeys}
+              onChange={handlePlantListChange}
+              editable={false}
+              showSearch={true}
+              searchPlaceholder="Search plant..."
+              showReset={false}
+              iconType="plant"
+              emptyText="No selected plants"
+              className={styles.fullHeight}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
