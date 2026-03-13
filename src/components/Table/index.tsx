@@ -1,4 +1,3 @@
-import type { TablePaginationConfig } from 'antd';
 import { Table as AntTable } from 'antd';
 import classNames from 'classnames';
 
@@ -24,14 +23,7 @@ function BaseTable<RecordType extends object = any>({
         className={classNames(styles.baseTable, className)}
         pagination={false}
       />
-      {showPagination && paginationConfig && (
-        <Pagination
-          current={paginationConfig.current}
-          pageSize={paginationConfig.pageSize}
-          total={paginationConfig.total}
-          onChange={paginationConfig.onChange}
-        />
-      )}
+      {showPagination && paginationConfig && <Pagination {...paginationConfig} />}
     </div>
   );
 }

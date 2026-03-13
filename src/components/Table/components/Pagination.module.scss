@@ -1,199 +1,276 @@
-.paginationWrapper {
+.paginationBar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
   height: 50px;
-}
 
-.total {
-  color: #191b1f99;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.paginationGroup {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* icon 按钮 */
-.iconBtn {
-  height: 20px;
-  min-width: 20px;
-  padding: 0;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #191b1f14;
-  border-radius: 4px;
-  background: transparent;
-  transition: all 0.2s;
-  color: #191b1f99;
-
-  &:hover:not(:disabled) {
-    border-color: #33c2c8;
-    color: #33c2c8;
-  }
-
-  &:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  svg {
-    width: 10px;
-    height: 10px;
-  }
-}
-
-/* ===== antd pagination 样式覆盖 ===== */
-
-.paginationGroup :global {
-  .ant-pagination {
-    margin: 0;
+  .totalText {
+    color: #191b1f99;
     font-size: 14px;
     font-weight: 500;
+    white-space: nowrap;
+    margin-right: 10px;
+  }
+
+  /* 中间分页 */
+  .centerPager {
     display: flex;
     align-items: center;
     gap: 4px;
-
-    // 页码按钮
-    .ant-pagination-item {
-      min-width: 20px !important;
-      height: 20px !important;
-      line-height: 20px !important;
-      border-radius: 4px;
-      border: 1px solid #191b1f14;
-      background: transparent;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-
-      a {
-        color: #191b1f99;
-        font-size: 14px;
-        font-weight: 500;
-        margin: 0;
-      }
-
-      &:hover {
-        border-color: #33c2c8;
-
-        a {
-          color: #33c2c8;
-        }
-      }
-
-      &.ant-pagination-item-active {
-        background: #33c2c8;
-        border-color: #33c2c8;
-
-        a {
-          color: #fff;
-          font-weight: 600;
-        }
-      }
-    }
-
-    // 隐藏上一页/下一页按钮（因为我们自定义了）
-    .ant-pagination-prev,
-    .ant-pagination-next {
-      display: none;
-    }
   }
-}
 
-/* 快速跳转 */
-.quickJumper {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #191b1f99;
-  white-space: nowrap;
+  .centerPager :global(.ant-pagination) {
+    margin: 0;
+  }
 
-  input {
-    width: 40px;
-    height: 20px;
-    min-height: 20px;
-    padding: 0 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #191b1f99;
-    border: 1px solid #191b1f14;
-    border-radius: 4px;
-    text-align: center;
-    transition: all 0.2s;
-    background: transparent;
+  /* 右侧 */
+  .optionsWrap {
+    display: flex;
+    align-items: center;
 
-    &:hover {
-      border-color: #33c2c8;
-    }
-
-    &:focus {
-      border-color: #33c2c8;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
-    }
-
-    /* 移除数字输入框的箭头 */
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
+    .optionPagination {
       margin: 0;
     }
 
-    -moz-appearance: textfield;
-    appearance: none;
+    /* 隐藏页码 */
+    .optionPagination :global(.ant-pagination-prev),
+    .optionPagination :global(.ant-pagination-next),
+    .optionPagination :global(.ant-pagination-item),
+    .optionPagination :global(.ant-pagination-jump-prev),
+    .optionPagination :global(.ant-pagination-jump-next) {
+      display: none !important;
+    }
+
+    /* 只保留 options */
+    .optionPagination :global(.ant-pagination-options) {
+      margin-left: 0;
+    }
   }
-}
 
-/* 每页条数 */
-.pageSize {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #191b1f99;
-  white-space: nowrap;
-
-  select {
+  /* icon */
+  .iconBtn {
+    width: 20px;
     height: 20px;
-    min-height: 20px;
-    padding: 0 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #191b1f99;
-    border: 1px solid #191b1f14;
     border-radius: 4px;
-    background: transparent;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     cursor: pointer;
-    transition: all 0.2s;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23191B1F99' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 4px center;
-    padding-right: 20px;
-
-    &:hover {
-      border-color: #33c2c8;
-      color: #33c2c8;
-    }
-
-    &:focus {
-      border-color: #33c2c8;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
-    }
   }
+
 }
+
+
+
+
+// .paginationWrapper {
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
+//   gap: 16px;
+//   height: 50px;
+//   position: relative;
+
+//   .totalText {
+//     color: #191b1f99;
+//     font-size: 14px;
+//     font-weight: 500;
+//     white-space: nowrap;
+//     margin-right: 40px;
+//   }
+
+// }
+
+// .total {
+//   color: #191b1f99;
+//   font-size: 14px;
+//   font-weight: 500;
+//   white-space: nowrap;
+// }
+
+// .paginationGroup {
+//   display: flex;
+//   align-items: center;
+//   gap: 8px;
+// }
+
+// /* icon 按钮 */
+// .iconBtn {
+//   height: 20px;
+//   min-width: 20px;
+//   padding: 0;
+//   font-size: 14px;
+//   font-weight: 500;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   border: 1px solid #191b1f14;
+//   border-radius: 4px;
+//   background: transparent;
+//   transition: all 0.2s;
+//   color: #191b1f99;
+
+//   &:hover:not(:disabled) {
+//     border-color: #33c2c8;
+//     color: #33c2c8;
+//   }
+
+//   &:disabled {
+//     opacity: 0.3;
+//     cursor: not-allowed;
+//   }
+
+//   svg {
+//     width: 10px;
+//     height: 10px;
+//   }
+// }
+
+// /* ===== antd pagination 样式覆盖 ===== */
+
+// .paginationGroup :global {
+//   .ant-pagination {
+//     margin: 0;
+//     font-size: 14px;
+//     font-weight: 500;
+//     display: flex;
+//     align-items: center;
+//     gap: 4px;
+
+//     // 页码按钮
+//     .ant-pagination-item {
+//       min-width: 20px !important;
+//       height: 20px !important;
+//       line-height: 20px !important;
+//       border-radius: 4px;
+//       border: 1px solid #191b1f14;
+//       background: transparent;
+//       transition: all 0.2s;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       margin: 0;
+//       padding: 0;
+
+//       a {
+//         color: #191b1f99;
+//         font-size: 14px;
+//         font-weight: 500;
+//         margin: 0;
+//       }
+
+//       &:hover {
+//         border-color: #33c2c8;
+
+//         a {
+//           color: #33c2c8;
+//         }
+//       }
+
+//       &.ant-pagination-item-active {
+//         background: #33c2c8;
+//         border-color: #33c2c8;
+
+//         a {
+//           color: #fff;
+//           font-weight: 600;
+//         }
+//       }
+//     }
+
+//     // 隐藏上一页/下一页按钮（因为我们自定义了）
+//     .ant-pagination-prev,
+//     .ant-pagination-next {
+//       display: none;
+//     }
+//   }
+// }
+
+// /* 快速跳转 */
+// .quickJumper {
+//   display: flex;
+//   align-items: center;
+//   gap: 6px;
+//   font-size: 14px;
+//   font-weight: 500;
+//   color: #191b1f99;
+//   white-space: nowrap;
+
+//   input {
+//     width: 40px;
+//     height: 20px;
+//     min-height: 20px;
+//     padding: 0 6px;
+//     font-size: 14px;
+//     font-weight: 500;
+//     color: #191b1f99;
+//     border: 1px solid #191b1f14;
+//     border-radius: 4px;
+//     text-align: center;
+//     transition: all 0.2s;
+//     background: transparent;
+
+//     &:hover {
+//       border-color: #33c2c8;
+//     }
+
+//     &:focus {
+//       border-color: #33c2c8;
+//       outline: none;
+//       box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
+//     }
+
+//     /* 移除数字输入框的箭头 */
+//     &::-webkit-inner-spin-button,
+//     &::-webkit-outer-spin-button {
+//       -webkit-appearance: none;
+//       margin: 0;
+//     }
+
+//     -moz-appearance: textfield;
+//     appearance: none;
+//   }
+// }
+
+// /* 每页条数 */
+// .pageSize {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+//   font-size: 14px;
+//   font-weight: 500;
+//   color: #191b1f99;
+//   white-space: nowrap;
+
+//   select {
+//     height: 20px;
+//     min-height: 20px;
+//     padding: 0 6px;
+//     font-size: 14px;
+//     font-weight: 500;
+//     color: #191b1f99;
+//     border: 1px solid #191b1f14;
+//     border-radius: 4px;
+//     background: transparent;
+//     cursor: pointer;
+//     transition: all 0.2s;
+//     appearance: none;
+//     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23191B1F99' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+//     background-repeat: no-repeat;
+//     background-position: right 4px center;
+//     padding-right: 20px;
+
+//     &:hover {
+//       border-color: #33c2c8;
+//       color: #33c2c8;
+//     }
+
+//     &:focus {
+//       border-color: #33c2c8;
+//       outline: none;
+//       box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
+//     }
+//   }
+// }
