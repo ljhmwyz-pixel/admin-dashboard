@@ -4,3 +4,18 @@
   align-items: center;
   gap: 30px;
 }
+
+.antTabs {
+  :global(.ant-tabs-nav-list) {
+    padding-left: 30px;
+  }
+}
+
+.tabItems {
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+.formFields {
+  padding: 0 30px;
+}
