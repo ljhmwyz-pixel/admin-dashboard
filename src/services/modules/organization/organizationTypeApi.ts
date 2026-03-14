@@ -136,7 +136,7 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
       pageNum?: number;
       pageSize?: number;
       keyword?: string;
-      recordType?: 'PERMISSION' | 'DATA_ORGANIZATION' | 'DATA_USER' | 'DATA_PLANT';
+      recordType?: string; // 变更记录类型，可选值：PERMISSION, DATA_ORGANIZATION, DATA_USER, DATA_PLANT
     },
   ): Promise<OrganizationTypeRecordResponse> {
     return apiClient.get(`/api/v1/organization/organization-types/${typeCode}/records`, { params });
