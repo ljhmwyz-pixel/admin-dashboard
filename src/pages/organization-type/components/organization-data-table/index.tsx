@@ -19,12 +19,14 @@ interface OrganizationDataTableProps {
   typeCode: string;
   isEditMode?: boolean;
   onHasChanges?: (hasChanges: boolean) => void;
+  onGetModifiedData?: (data: any) => void;
 }
 
 const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   typeCode,
   isEditMode = false,
   onHasChanges,
+  onGetModifiedData,
 }) => {
   const [activeTab, setActiveTab] = useState('ORGANIZATION'); // 默认选中Organization权限
   const [originalData, setOriginalData] = useState<OrganizationTypeDataItem[]>([]); // 原始数据，用于比较是否有修改
@@ -79,7 +81,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   // 初始加载和切换tab时获取数据权限
   useEffect(() => {
     fetchDataPermissions(debouncedSearchText);
-  }, [activeTab, debouncedSearchText, typeCode, fetchDataPermissions]);
+  }, [activeTab, typeCode, fetchDataPermissions]);
 
   // 处理权限级别变更
   const handlePermissionChange = (key: string, field: string, value: string) => {
@@ -92,31 +94,56 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
         newData[key] = {};
       }
       newData[key][field] = value;
+
+      // 通知外层组件有修改
+      if (onHasChanges) {
+        onHasChanges(Object.keys(newData).length > 0);
+      }
+
+      // 通知外层组件修改后的数据
+      if (onGetModifiedData) {
+        onGetModifiedData(newData);
+      }
+
       return newData;
     });
-
-    // 通知外层组件有修改
-    setModifiedData((prev: any) => {
-      const hasChanges = Object.keys(prev).length > 0;
-      if (onHasChanges) {
-        onHasChanges(hasChanges);
-      }
-      return prev;
-    });
   };
+
+  // 组件挂载时通知外层组件修改后的数据
+  React.useEffect(() => {
+    if (onGetModifiedData) {
+      onGetModifiedData(modifiedData);
+    }
+  }, [modifiedData, onGetModifiedData]);
 
   // 生成表格数据
   const generateTableData = () => {
-    return originalData.map((dataPermission) => ({
-      key: dataPermission.dataPermissionCode,
-      dataField: dataPermission.dataPermissionName,
-      thisOrganization: dataPermission.levels.SELF,
-      directSubOrganizations: dataPermission.levels.DIRECT_CHILD,
-      indirectSubOrganizations: dataPermission.levels.NON_DIRECT_CHILD,
-    }));
+    let data = originalData;
+
+    // 搜索过滤
+    if (debouncedSearchText) {
+      const searchLower = debouncedSearchText.toLowerCase();
+      data = data.filter((item) => item.dataPermissionName.toLowerCase().includes(searchLower));
+    }
+
+    return data.map((dataPermission) => {
+      const hasModifiedData = modifiedData[dataPermission.dataPermissionCode];
+
+      return {
+        key: dataPermission.dataPermissionCode,
+        dataField: dataPermission.dataPermissionName,
+        thisOrganization: hasModifiedData?.SELF || dataPermission.levels.SELF,
+        directSubOrganizations: hasModifiedData?.DIRECT_CHILD || dataPermission.levels.DIRECT_CHILD,
+        indirectSubOrganizations:
+          hasModifiedData?.NON_DIRECT_CHILD || dataPermission.levels.NON_DIRECT_CHILD,
+      };
+    });
   };
 
-  const tableDataForDisplay = generateTableData();
+  // 使用useMemo优化表格数据计算
+  const tableDataForDisplay = React.useMemo(() => {
+    return generateTableData();
+  }, [originalData, debouncedSearchText, modifiedData]);
 
   const columns = [
     {
