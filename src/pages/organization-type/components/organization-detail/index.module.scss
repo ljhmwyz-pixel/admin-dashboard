@@ -2,44 +2,29 @@
 @use '@shared/styles/mixins' as *;
 @use 'sass:color';
 .drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background-color: transparent !important;
   .info {
     margin: 0 -15px;
   }
-
-  .footer {
+  .footerDiv {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 30px;
+   
   }
-.antTabs {
-  :global(.ant-tabs-nav-list) {
-    padding-left: 30px;
-  }
-}
-}
-
-.tabContent {
-  flex: '1';
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  border-radius: 12px;
-  justify-content: space-between;
-  background-color: $color-bg-container;
-
-  @include dark-theme {
-    background-color: $dark-color-bg-container;
-  }
-
-  .tabItems {
-    padding: 4px 0;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  :global(.ant-tabs-nav) {
-    margin-bottom: 0;
+  .antTabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    :global(.ant-tabs-nav-list) {
+      padding-left: 30px;
+    }
+    :global(.ant-tabs-nav) {
+      margin-bottom: 0;
+    }
   }
 }

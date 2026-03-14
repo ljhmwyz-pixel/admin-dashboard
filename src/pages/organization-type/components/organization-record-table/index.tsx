@@ -12,11 +12,12 @@ interface OrganizationRecordTableProps {
 }
 
 const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeCode }) => {
-  const [activeTab, setActiveTab] = useState('ORGANIZATION'); // 默认选中Organization标签
+  const [activeTab, setActiveTab] = useState('DATA_ORGANIZATION'); // 默认选中Organization标签
   const [records, setRecords] = useState<OrganizationTypeRecordItem[]>([]); // 变更记录数据
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState(''); // 搜索关键词
+  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // 防抖后的搜索关键词
 
   // 获取组织类型-变更记录数据
   const fetchRecords = useCallback(
@@ -24,7 +25,10 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
       try {
         setLoading(true);
         setError(null);
-        const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode);
+        const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
+          recordType: activeTab,
+          keyword,
+        });
         const recordPage = response.data || {};
         const recordData = recordPage.records || [];
 
@@ -37,23 +41,32 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         setLoading(false);
       }
     },
-    [typeCode],
+    [typeCode, activeTab],
   );
 
   // 初始加载变更记录
   useEffect(() => {
-    fetchRecords();
-  }, [typeCode, fetchRecords]);
+    fetchRecords(debouncedSearchText);
+  }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
   // 处理搜索
   const handleSearch = () => {
-    fetchRecords(searchText);
+    setDebouncedSearchText(searchText);
   };
 
   // 处理刷新
   const handleRefresh = () => {
-    fetchRecords(searchText);
+    setDebouncedSearchText(searchText);
   };
+
+  // 防抖处理
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 500); // 500ms防抖
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
 
   const columns = [
     {
@@ -66,37 +79,47 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
       title: 'Change Type',
       dataIndex: 'changeType',
       key: 'changeType',
-      width: 100,
+      width: 180,
       render: (text: string) => <span className={styles.changeType}>{text}</span>,
     },
     {
       title: 'Changed By',
       dataIndex: 'changedBy',
       key: 'changedBy',
-      width: 150,
+      width: 180,
     },
     {
       title: 'Changed Content',
       dataIndex: 'changeContent',
       key: 'changeContent',
-      flex: 1,
     },
     {
       title: 'Changed Time',
       dataIndex: 'changeTime',
       key: 'changeTime',
-      width: 180,
+      width: 200,
+      render: (text: string) => {
+        // 解析时间字符串，提取日期和时间部分
+        const [date, time] = text.split(' ');
+        return (
+          <div className={styles.changeTimeContainer}>
+            <div className={styles.time}>{time}</div>
+            <div className={styles.date}>{date}</div>
+          </div>
+        );
+      },
+      align: 'right' as const,
     },
   ];
 
   return (
-    <div>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div className={styles.topSearchContainer}>
         <Segmented
           options={[
-            { label: 'Organization', value: 'ORGANIZATION' },
-            { label: 'Members', value: 'USER' },
-            { label: 'Plants', value: 'PLANT' },
+            { label: 'Organization', value: 'DATA_ORGANIZATION' },
+            { label: 'Members', value: 'DATA_USER' },
+            { label: 'Plants', value: 'DATA_PLANT' },
           ]}
           value={activeTab}
           onChange={setActiveTab}
@@ -118,27 +141,29 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         </div>
       </div>
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-          <Spin size="large" />
-        </div>
-      ) : error ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', color: 'red' }}>
-          {error}
-        </div>
-      ) : (
-        <div style={{ border: '1px solid #f0f0f0' }}>
-          <div style={{ padding: '16px', overflow: 'auto' }}>
-            <Table
-              dataSource={records}
-              columns={columns}
-              pagination={false}
-              rowKey="no"
-              className={styles.recordTable}
-            />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Table
+          className={styles.table}
+          dataSource={loading ? [] : records}
+          columns={columns}
+          pagination={false}
+          rowKey="no"
+          loading={{ spinning: loading, indicator: <Spin size="large" /> }}
+        />
+        {error && (
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: 'red',
+            }}
+          >
+            {error}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
