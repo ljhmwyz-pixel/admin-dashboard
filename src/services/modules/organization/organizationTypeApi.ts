@@ -82,22 +82,6 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
   ): Promise<OrganizationTypeDetailDataResponse> {
     return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions/data`, { params });
   }
-  /**
-   * 获取组织类型变更记录
-   * @param typeCode 组织类型编码
-   * @param params 查询参数
-   */
-  async getOrganizationTypeRecords(
-    typeCode: string,
-    params?: {
-      pageNum?: number;
-      pageSize?: number;
-      keyword?: string;
-      recordType?: string; // 变更记录类型，可选值：PERMISSION, DATA_ORGANIZATION, DATA_USER, DATA_PLANT
-    },
-  ): Promise<OrganizationTypeRecordResponse> {
-    return apiClient.get(`/api/v1/organization/organization-types/${typeCode}/records`, { params });
-  }
 
   /**
    * 更新组织类型权限配置
@@ -122,6 +106,40 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
         'Content-Type': 'multipart/form-data',
       },
     });
+  }
+
+  /**
+   * 获取组织类型权限
+   * @param typeCode 组织类型编码
+   * @param params 查询参数
+   */
+  async getOrganizationTypePermissions(
+    orgTypeCode: string,
+    params?: {
+      permissionType?: string; // 权限类型，可选值：FUNCTIONAL, DATA
+      platform?: string; // 平台类型，可选值：WEB, APP
+      resourceType?: string; // 资源类型，可选值：ORGANIZATION, USER, PLANT
+      permissionKeyword?: string;
+      dataKeyword?: string;
+    },
+  ): Promise<OrganizationTypePermissionResponse> {
+    return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions`, { params });
+  }
+  /**
+   * 获取组织类型变更记录
+   * @param typeCode 组织类型编码
+   * @param params 查询参数
+   */
+  async getOrganizationTypeRecords(
+    typeCode: string,
+    params?: {
+      pageNum?: number;
+      pageSize?: number;
+      keyword?: string;
+      recordType?: 'PERMISSION' | 'DATA_ORGANIZATION' | 'DATA_USER' | 'DATA_PLANT';
+    },
+  ): Promise<OrganizationTypeRecordResponse> {
+    return apiClient.get(`/api/v1/organization/organization-types/${typeCode}/records`, { params });
   }
 }
 
