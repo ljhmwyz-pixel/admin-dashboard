@@ -1,17 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type {
   OrganizationTypePermissionItem,
   OrganizationTypePermissionResponse,
 } from '@shared/types/organizationType';
-import { Input, Layout, Segmented, Select, Spin, Table } from 'antd';
+import { Input, Segmented, Select, Spin, Table } from 'antd';
 
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 import styles from './index.module.scss';
 
-const { Sider, Content } = Layout;
 const { Option } = Select;
+// 抽离出options
+const permissionOptions = [
+  { label: 'Assignable', value: 'ASSIGNABLE' },
+  { label: 'Owner Only', value: 'OWNER_ONLY' },
+  { label: 'No Access', value: 'NO_ACCESS' },
+];
 
 interface OrganizationPermissionTableProps {
   typeCode: string;
@@ -25,7 +30,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   onHasChanges,
 }) => {
   const [activeTab, setActiveTab] = useState('WEB'); // 默认选中web端权限 (实际值)
-  const [originalData, setOriginalData] = useState<any>({}); // 原始数据，用于比较是否有修改
+  const [originalData, setOriginalData] = useState<OrganizationTypePermissionItem[]>([]); // 原始数据，用于比较是否有修改
   const [modifiedData, setModifiedData] = useState<any>({}); // 修改的数据
   const [firstLevelNodes, setFirstLevelNodes] = useState<
     Omit<OrganizationTypePermissionItem, 'children'>[]
@@ -34,16 +39,26 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState(''); // 权限搜索关键词
+  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // 防抖后的搜索关键词
 
-  //
+  // 防抖处理
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300); // 300ms防抖
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
   // 处理搜索
   const handleSearch = () => {
-    fetchPermissions(searchText);
+    // 直接更新防抖搜索文本，触发前端搜索
+    setDebouncedSearchText(searchText);
   };
 
   // 处理刷新
   const handleRefresh = () => {
-    fetchPermissions(searchText);
+    // 刷新时重新获取数据，不需要传递搜索关键词
+    fetchPermissions();
   };
 
   // 获取组织类型-权限数据
@@ -78,102 +93,136 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     [typeCode, activeTab],
   );
 
-  // 初始加载权限数据
+  // 初始加载权限数据或当切换tab时重新获取权限数据
   useEffect(() => {
     fetchPermissions();
-  }, [typeCode, fetchPermissions]);
-
-  // 当切换tab时重新获取权限数据
-  useEffect(() => {
-    fetchPermissions(searchText);
-  }, [activeTab, searchText, typeCode, fetchPermissions]);
+  }, [typeCode, activeTab, fetchPermissions]);
 
   // 处理树节点点击
   const handleTreeSelect = (selectedKey: string) => {
-    debugger;
     setSelectedKey(selectedKey || null);
   };
 
-  // 生成表格数据
-  const generateTableData = (
-    permission: OrganizationTypePermissionItem | null,
-    parentCode: string = '',
-  ): any[] => {
-    if (!permission) return [];
-
-    // 只返回children数据，不显示一级节点
-    if (!permission.children || permission.children.length === 0) {
-      return [];
-    }
-
-    return permission.children.map((child) => {
-      // 生成唯一的key，避免重复
-      const uniqueKey = parentCode ? `${parentCode}-${child.permissionCode}` : child.permissionCode;
-
-      return {
-        key: uniqueKey,
-        permissionName: child.permissionName,
-        thisOrganization: child.scopeLevels.SELF,
-        directSubOrganizations: child.scopeLevels.DIRECT_CHILD,
-        indirectSubOrganizations: child.scopeLevels.NON_DIRECT_CHILD,
-        children:
-          child.children && child.children.length > 0
-            ? generateTableData({ ...child, children: child.children }, uniqueKey)
-            : undefined,
-      };
-    });
-  };
-
   // 查找选中的权限
-  const findPermissionByCode = (
-    code: string,
-    permissions: OrganizationTypePermissionItem[],
-  ): OrganizationTypePermissionItem | null => {
-    // 确保permissions是数组
-    if (!Array.isArray(permissions)) {
-      return null;
-    }
-
-    for (const permission of permissions) {
-      if (permission.permissionCode === code) {
-        return permission;
+  const findPermissionByCode = useCallback(
+    (
+      code: string,
+      permissions: OrganizationTypePermissionItem[],
+    ): OrganizationTypePermissionItem | null => {
+      // 确保permissions是数组
+      if (!Array.isArray(permissions)) {
+        return null;
       }
-      if (permission.children && Array.isArray(permission.children)) {
-        const found = findPermissionByCode(code, permission.children);
-        if (found) {
-          return found;
+
+      for (const permission of permissions) {
+        if (permission.permissionCode === code) {
+          return permission;
+        }
+        if (permission.children && Array.isArray(permission.children)) {
+          const found = findPermissionByCode(code, permission.children);
+          if (found) {
+            return found;
+          }
         }
       }
-    }
-    return null;
-  };
-  debugger;
-  const selectedPermission = selectedKey
-    ? findPermissionByCode(selectedKey, Array.isArray(originalData) ? originalData : [])
-    : null;
-  const tableDataForDisplay = generateTableData(selectedPermission);
+      return null;
+    },
+    [],
+  );
+
+  // 使用useMemo优化selectedPermission的计算
+  const selectedPermission = useMemo(() => {
+    return selectedKey ? findPermissionByCode(selectedKey, originalData) : null;
+  }, [selectedKey, originalData, findPermissionByCode]);
+
+  // 生成表格数据
+  const generateTableData = useCallback(
+    (permission: OrganizationTypePermissionItem | null, parentCode: string = ''): any[] => {
+      if (!permission) return [];
+
+      // 只返回children数据，不显示一级节点
+      if (!permission.children || permission.children.length === 0) {
+        return [];
+      }
+
+      return permission.children.map((child) => {
+        // 生成唯一的key，避免重复
+        const uniqueKey = parentCode
+          ? `${parentCode}-${child.permissionCode}`
+          : child.permissionCode;
+
+        return {
+          key: uniqueKey,
+          permissionName: child.permissionName,
+          thisOrganization: child.scopeLevels.SELF,
+          directSubOrganizations: child.scopeLevels.DIRECT_CHILD,
+          indirectSubOrganizations: child.scopeLevels.NON_DIRECT_CHILD,
+          children:
+            child.children && child.children.length > 0
+              ? generateTableData({ ...child, children: child.children }, uniqueKey)
+              : undefined,
+        };
+      });
+    },
+    [],
+  );
+
+  // 过滤表格数据（前端搜索）
+  const filterTableData = useCallback(
+    (data: any[]): any[] => {
+      if (!debouncedSearchText) return data;
+
+      const searchLower = debouncedSearchText.toLowerCase();
+
+      const filterRecursive = (items: any[]): any[] => {
+        return items
+          .map((item) => {
+            // 过滤子节点
+            const filteredChildren = item.children ? filterRecursive(item.children) : [];
+
+            // 检查当前节点或其子节点是否匹配搜索条件
+            const itemMatches = item.permissionName.toLowerCase().includes(searchLower);
+            const hasMatchingChildren = filteredChildren.length > 0;
+
+            if (itemMatches || hasMatchingChildren) {
+              return {
+                ...item,
+                children: filteredChildren.length > 0 ? filteredChildren : undefined,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean) as any[];
+      };
+
+      return filterRecursive(data);
+    },
+    [debouncedSearchText],
+  );
+
+  // 使用useMemo优化表格数据计算
+  const tableDataForDisplay = useMemo(() => {
+    return filterTableData(generateTableData(selectedPermission));
+  }, [filterTableData, generateTableData, selectedPermission]);
 
   // 处理权限级别变更
   const handlePermissionChange = (key: string, field: string, value: string) => {
     console.log(`Change ${field} for ${key} to ${value}`);
 
-    // 更新修改的数据
+    // 更新修改的数据并通知外层组件
     setModifiedData((prev: any) => {
       const newData = { ...prev };
       if (!newData[key]) {
         newData[key] = {};
       }
       newData[key][field] = value;
-      return newData;
-    });
 
-    // 通知外层组件有修改
-    setModifiedData((prev: any) => {
-      const hasChanges = Object.keys(prev).length > 0;
+      // 通知外层组件有修改
       if (onHasChanges) {
-        onHasChanges(hasChanges);
+        onHasChanges(Object.keys(newData).length > 0);
       }
-      return prev;
+
+      return newData;
     });
   };
 
@@ -187,16 +236,19 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       title: 'This Organization',
       dataIndex: 'thisOrganization',
       key: 'thisOrganization',
+      width: 150,
       render: (text: string, record: any) => (
         <Select
           value={text}
-          style={{ width: 120 }}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
           disabled={!isEditMode}
         >
-          <Option value="ASSIGNABLE">Assignable</Option>
-          <Option value="OWNER_ONLY">Owner Only</Option>
-          <Option value="NO_ACCESS">No Access</Option>
+          {permissionOptions.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -204,17 +256,19 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       title: 'Direct Sub-Organizations',
       dataIndex: 'directSubOrganizations',
       key: 'directSubOrganizations',
+      width: 220,
       render: (text: string, record: any) => (
         <Select
           value={text}
-          style={{ width: 120 }}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
           disabled={!isEditMode}
         >
-          <Option value="ASSIGNABLE">Assignable</Option>
-          <Option value="OWNER_ONLY">Owner Only</Option>
-          <Option value="NO_ACCESS">No Access</Option>
-          <Option value="---">---</Option>
+          {permissionOptions.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -222,29 +276,31 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       title: 'Indirect Sub-Organizations',
       dataIndex: 'indirectSubOrganizations',
       key: 'indirectSubOrganizations',
+      width: 220,
       render: (text: string, record: any) => (
         <Select
           value={text}
-          style={{ width: 120 }}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
           disabled={!isEditMode}
         >
-          <Option value="ASSIGNABLE">Assignable</Option>
-          <Option value="OWNER_ONLY">Owner Only</Option>
-          <Option value="NO_ACCESS">No Access</Option>
-          <Option value="---">---</Option>
+          {permissionOptions.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
   ];
 
   return (
-    <div>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div className={styles.topSearchContainer}>
         <Segmented
           options={[
             { label: 'Web', value: 'WEB' },
-            { label: 'Phone', value: 'PHONE' },
+            { label: 'App', value: 'APP' },
           ]}
           value={activeTab}
           onChange={setActiveTab}
@@ -265,45 +321,68 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
           </div>
         </div>
       </div>
-
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Spin size="large" />
         </div>
       ) : error ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', color: 'red' }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'red',
+          }}
+        >
           {error}
         </div>
       ) : (
-        <Layout style={{ height: '100%', border: '1px solid #f0f0f0' }}>
-          <Sider width={184} style={{ background: '#ffffff' }}>
-            {firstLevelNodes.map((node) => (
-              <div
-                key={node.permissionCode}
-                className={styles.itemBlock}
-                style={{ padding: '8px 16px' }}
-                onClick={() => handleTreeSelect(node.permissionCode)}
-              >
-                <div
-                  className={`${styles.itemName} ${selectedKey === node.permissionCode ? styles.active : ''}`}
-                >
-                  {node.permissionName}
+        <div className={styles.treeContainer} style={{ flex: 1 }}>
+          {firstLevelNodes.length === 0 ? (
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#8c8c8c',
+              }}
+            >
+              无数据
+            </div>
+          ) : (
+            <>
+              <div style={{ width: 184, background: '#ffffff', overflow: 'auto' }}>
+                {firstLevelNodes.map((node) => (
+                  <div
+                    key={node.permissionCode}
+                    className={styles.itemBlock}
+                    style={{ padding: '8px 16px' }}
+                    onClick={() => handleTreeSelect(node.permissionCode)}
+                  >
+                    <div
+                      className={`${styles.itemName} ${selectedKey === node.permissionCode ? styles.active : ''}`}
+                    >
+                      {node.permissionName}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
+                  <Table
+                    dataSource={tableDataForDisplay}
+                    columns={columns}
+                    pagination={false}
+                    rowKey="key"
+                    locale={{ emptyText: '无数据' }}
+                  />
                 </div>
               </div>
-            ))}
-          </Sider>
-          <Content
-            style={{ padding: '16px', overflow: 'auto', display: 'flex', flexDirection: 'column' }}
-          >
-            <Table
-              dataSource={tableDataForDisplay}
-              columns={columns}
-              pagination={false}
-              rowKey="key"
-              style={{ flex: 1 }}
-            />
-          </Content>
-        </Layout>
+            </>
+          )}
+        </div>
       )}
     </div>
   );

@@ -14,6 +14,13 @@
   align-items: center;
   gap: 8px;
 }
+.treeContainer{
+    flex: 1;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+
+}
 .itemBlock{
     padding: 4px 10px;
     .itemName{

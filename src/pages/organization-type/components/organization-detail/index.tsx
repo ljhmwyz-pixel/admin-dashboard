@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { SaveOutlined } from '@ant-design/icons';
 import { useLanguage } from '@shared/hooks/useLanguage';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { Button, message, Space } from 'antd';
+import { message } from 'antd';
 
 import { FormTabs } from '@/components';
 import { FormButton, FormDrawer } from '@/components';
@@ -109,7 +108,7 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
         body: { padding: '0px', display: 'flex', flexDirection: 'column' },
       }}
       footer={
-        <div className={styles.footer}>
+        <div className={styles.footerDiv}>
           <FormButton color="default" onClick={handleCancel}>
             {t('common.action.cancel')}
           </FormButton>
@@ -125,14 +124,12 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
         </div>
       }
     >
-      <div className={styles.tabContent}>
-        <FormTabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={tabItems}
-          className={styles.antTabs}
-        />
-      </div>
+      <FormTabs
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        items={tabItems}
+        className={styles.antTabs}
+      />
     </FormDrawer>
   );
 };

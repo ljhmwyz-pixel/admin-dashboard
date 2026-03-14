@@ -1,13 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Input, Segmented, Select, Spin, Table } from 'antd';
+import { Input, Segmented, Select, Spin, Table, Tabs } from 'antd';
 
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 import styles from './index.module.scss';
 
 const { Option } = Select;
+// 定义一个options数组常量，用于Select组件的选项
+const options = [
+  { label: 'Unmasked', value: 'FULL' },
+  { label: 'Masked', value: 'MASKED' },
+  { label: 'Hidden', value: 'HIDDEN' },
+];
 
 interface OrganizationDataTableProps {
   typeCode: string;
@@ -26,10 +32,21 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState(''); // 权限搜索关键词
+  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // 防抖后的搜索关键词
+
   // 处理搜索
   const handleSearch = () => {
-    fetchDataPermissions(searchText);
+    setDebouncedSearchText(searchText);
   };
+
+  // 防抖处理
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300); // 500ms防抖
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
   // 处理刷新
   const handleRefresh = () => {
     fetchDataPermissions(searchText);
@@ -59,15 +76,10 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
     [typeCode, activeTab],
   );
 
-  // 初始加载数据权限
+  // 初始加载和切换tab时获取数据权限
   useEffect(() => {
-    fetchDataPermissions();
-  }, [typeCode, fetchDataPermissions]);
-
-  // 当切换tab时重新获取权限数据
-  useEffect(() => {
-    fetchDataPermissions(searchText);
-  }, [activeTab, searchText, typeCode, fetchDataPermissions]);
+    fetchDataPermissions(debouncedSearchText);
+  }, [activeTab, debouncedSearchText, typeCode, fetchDataPermissions]);
 
   // 处理权限级别变更
   const handlePermissionChange = (key: string, field: string, value: string) => {
@@ -116,16 +128,19 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       title: 'This Organization',
       dataIndex: 'thisOrganization',
       key: 'thisOrganization',
+      width: 180,
       render: (text: string, record: any) => (
         <Select
           value={text}
-          style={{ width: 120 }}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
           disabled={!isEditMode}
         >
-          <Option value="UNMASKED">Unmasked</Option>
-          <Option value="MASKED">Masked</Option>
-          <Option value="NO_ACCESS">No Access</Option>
+          {options.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -133,16 +148,19 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       title: 'Direct Sub-Organizations',
       dataIndex: 'directSubOrganizations',
       key: 'directSubOrganizations',
+      width: 230,
       render: (text: string, record: any) => (
         <Select
           value={text}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
           disabled={!isEditMode}
         >
-          <Option value="UNMASKED">Unmasked</Option>
-          <Option value="MASKED">Masked</Option>
-          <Option value="NO_ACCESS">No Access</Option>
-          <Option value="---">---</Option>
+          {options.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
@@ -150,23 +168,26 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       title: 'Indirect Sub-Organizations',
       dataIndex: 'indirectSubOrganizations',
       key: 'indirectSubOrganizations',
+      width: 210,
       render: (text: string, record: any) => (
         <Select
           value={text}
+          style={{ width: 132 }}
           onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
           disabled={!isEditMode}
         >
-          <Option value="UNMASKED">Unmasked</Option>
-          <Option value="MASKED">Masked</Option>
-          <Option value="NO_ACCESS">No Access</Option>
-          <Option value="---">---</Option>
+          {options.map((item) => (
+            <Option key={item.value} value={item.value}>
+              {item.label}
+            </Option>
+          ))}
         </Select>
       ),
     },
   ];
 
   return (
-    <div>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div className={styles.topSearchContainer}>
         <Segmented
           options={[
@@ -179,9 +200,9 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
         />
         <div className={styles.searchContainer}>
           <Input
-            placeholder="Please enter role name"
+            placeholder="Please enter data field "
             prefix={<SearchOutlined />}
-            style={{ width: 200 }}
+            style={{ width: 260 }}
             value={searchText}
             onChange={(e) => {
               setSearchText(e.target.value);
@@ -194,24 +215,28 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
         </div>
       </div>
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
-          <Spin size="large" />
-        </div>
-      ) : error ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', color: 'red' }}>
-          {error}
-        </div>
-      ) : (
-        <div style={{ border: '1px solid #f0f0f0' }}>
-          <Table
-            dataSource={tableDataForDisplay}
-            columns={columns}
-            pagination={false}
-            rowKey="key"
-          />
-        </div>
-      )}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Table
+          className={styles.table}
+          dataSource={loading ? [] : tableDataForDisplay}
+          columns={columns}
+          rowKey="key"
+          loading={{ spinning: loading, indicator: <Spin size="small" /> }}
+        />
+        {error && (
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: 'red',
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
