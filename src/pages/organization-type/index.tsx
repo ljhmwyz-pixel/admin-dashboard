@@ -77,13 +77,13 @@ const OrganizationType: React.FC = () => {
             return (
               <div
                 key={type.id}
-                className={`${styles.card} ${type.coverImage ? styles.cardWithBackground : ''}`}
+                className={`${styles.card} ${type.imageUrl ? styles.cardWithBackground : ''}`}
                 onClick={() => handleCardClick(type)}
               >
                 <div className={styles.cardContent}>
-                  {type.coverImage ? (
+                  {type.imageUrl ? (
                     <img
-                      src={type.coverImage}
+                      src={type.imageUrl}
                       alt={type.typeName}
                       className={styles.cardBackground}
                     />
@@ -128,12 +128,14 @@ const OrganizationType: React.FC = () => {
       )}
 
       {/* 组织类型详情弹窗 */}
-      <OrganizationTypeDetail
-        visible={detailVisible}
-        onCancel={() => setDetailVisible(false)}
-        organizationType={selectedType}
-        isDefaultEditMode={isEditMode}
-      />
+      {detailVisible && (
+        <OrganizationTypeDetail
+          visible={detailVisible}
+          onCancel={() => setDetailVisible(false)}
+          isDefaultEditMode={isEditMode}
+          organizationType={selectedType}
+        />
+      )}
     </div>
   );
 };
