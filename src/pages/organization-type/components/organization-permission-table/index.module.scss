@@ -1,0 +1,36 @@
+
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+
+.topSearchContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0px -1px 0px 0px #191B1F0F inset;
+}
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.itemBlock{
+    padding: 4px 10px;
+    .itemName{
+        padding: 12px 20px;
+        border-radius: $border-radius-sm;
+       
+        &:hover{
+            background: #33C2C80F;
+            color: var(--ant-color-primary);
+        }
+        &.active{
+            font-weight: 600;
+            background: #33C2C80F;
+            color: var(--ant-color-primary);
+            border-right: 2px solid var(--ant-color-primary);
+        }
+    }
+
+
+}

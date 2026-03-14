@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { Empty, message, Spin, Typography } from 'antd';
+import { Empty, Spin, Typography } from 'antd';
 
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
+
+import OrganizationTypeDetail from './components/organization-detail/index';
 
 import styles from './index.module.scss';
 
@@ -12,6 +14,9 @@ const OrganizationType: React.FC = () => {
   const [organizationTypes, setOrganizationTypes] = useState<OrganizationTypeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // 获取组织类型列表
   useEffect(() => {
@@ -32,14 +37,19 @@ const OrganizationType: React.FC = () => {
     fetchOrganizationTypes();
   }, []);
 
-  // 处理卡片点击事件
-  const handleCardClick = (type: any) => {
-    console.log('Edit organization type:', type);
+  // 处理卡片点击事件（查看模式）
+  const handleCardClick = (type: OrganizationTypeItem) => {
+    setSelectedType(type);
+    setIsEditMode(false);
+    setDetailVisible(true);
   };
-  // 处理卡片点击事件
-  const handleEditClick = (e: React.MouseEvent, type: any) => {
+
+  // 处理编辑按钮点击事件（编辑模式）
+  const handleEditClick = (e: React.MouseEvent, type: OrganizationTypeItem) => {
     e.stopPropagation(); // 阻止事件冒泡
-    console.log('Edit organization type:', type);
+    setSelectedType(type);
+    setIsEditMode(true);
+    setDetailVisible(true);
   };
 
   // 处理上传按钮点击事件
@@ -66,7 +76,7 @@ const OrganizationType: React.FC = () => {
           {organizationTypes.map((type) => {
             return (
               <div
-                key={type.typeCode}
+                key={type.id}
                 className={`${styles.card} ${type.coverImage ? styles.cardWithBackground : ''}`}
                 onClick={() => handleCardClick(type)}
               >
@@ -116,6 +126,14 @@ const OrganizationType: React.FC = () => {
           })}
         </div>
       )}
+
+      {/* 组织类型详情弹窗 */}
+      <OrganizationTypeDetail
+        visible={detailVisible}
+        onCancel={() => setDetailVisible(false)}
+        organizationType={selectedType}
+        isDefaultEditMode={isEditMode}
+      />
     </div>
   );
 };
