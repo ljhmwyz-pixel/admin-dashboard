@@ -7,7 +7,7 @@ export interface OrganizationTypeItem {
   canRegister: number; // 是否可注册（0=否，1=是）
   description: string; // 类型描述
   organizationCount: number; // 关联组织数量
-  coverImage: string; // 组织类型封面图
+  imageUrl: string; // 组织类型封面图
 }
 
 // 组织类型详情-权限项
