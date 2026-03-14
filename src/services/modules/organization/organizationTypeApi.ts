@@ -13,6 +13,9 @@ export interface OrganizationTypeApi {
   /** 查询组织类型权限配置 */
   getOrganizationTypePermissions: (typeCode: string) => Promise<OrganizationTypePermissionResponse>;
 
+  /** 更新组织类型权限配置 */
+  updateOrganizationTypePermissions: (orgTypeCode: string, data: any) => Promise<any>;
+
   /** 查询组织类型变更记录 */
   getOrganizationTypeRecords: (typeCode: string) => Promise<OrganizationTypeRecordResponse>;
 }
@@ -61,6 +64,15 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
     },
   ): Promise<OrganizationTypeRecordResponse> {
     return apiClient.get(`/api/v1/organization/organization-types/${typeCode}/records`, { params });
+  }
+
+  /**
+   * 更新组织类型权限配置
+   * @param orgTypeCode 组织类型编码
+   * @param data 权限配置数据
+   */
+  async updateOrganizationTypePermissions(orgTypeCode: string, data: any): Promise<any> {
+    return apiClient.put(`/api/v1/org-types/${orgTypeCode}/permissions`, data);
   }
 }
 

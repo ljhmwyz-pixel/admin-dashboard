@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLanguage } from '@shared/hooks/useLanguage';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 
 import { FormTabs } from '@/components';
 import { FormButton, FormDrawer } from '@/components';
+import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 import OrganizationDataTable from '../organization-data-table';
 import OrganizationPermissionTable from '../organization-permission-table';
@@ -14,7 +15,7 @@ import styles from './index.module.scss';
 
 interface OrganizationTypeDetailProps {
   visible: boolean;
-  organizationType: OrganizationTypeItem | null;
+  organizationType: OrganizationTypeItem;
   isDefaultEditMode: boolean;
   onCancel: () => void;
 }
@@ -28,16 +29,68 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
   const [activeTab, setActiveTab] = useState('permissions'); // 当前选中的Tab
   const [isEditMode, setIsEditMode] = useState(isDefaultEditMode);
   const [hasChanges, setHasChanges] = useState(false); // 是否有未保存的修改
+  const [functionalPermissions, setFunctionalPermissions] = useState<any[]>([]); // 功能权限修改数据
+  const [dataPermissions, setDataPermissions] = useState<any[]>([]); // 数据权限修改数据
+  const [loading, setLoading] = useState(false); // 保存时的loading状态
   const { t } = useLanguage();
+
+  // 处理功能权限修改数据
+  const handleFunctionalPermissionsChange = useCallback((data: any) => {
+    // 转换数据格式为API需要的格式
+    const formattedData = Object.entries(data)
+      .map(([key, value]: [string, any]) => {
+        // 从key中提取permissionCode
+        const permissionCode = key.split('-').pop() || key;
+
+        // 根据实际data中给的scope来处理
+        return Object.entries(value).map(([scope, accessLevel]) => ({
+          permissionCode,
+          scope,
+          accessLevel,
+        }));
+      })
+      .flat();
+
+    setFunctionalPermissions(formattedData);
+  }, []);
+
+  // 处理数据权限修改数据
+  const handleDataPermissionsChange = useCallback((data: any) => {
+    // 转换数据格式为API需要的格式
+    const formattedData = Object.entries(data).map(([dataPermissionCode, levels]) => ({
+      dataPermissionCode,
+      levels,
+    }));
+
+    setDataPermissions(formattedData);
+  }, []);
 
   // 处理保存
   const handleSave = async () => {
+    if (!organizationType) return;
+
     try {
+      setLoading(true);
+
+      // 构建请求数据
+      const requestData = {
+        functionalPermissions,
+        dataPermissions,
+      };
+
+      // 调用API保存权限配置
+      await organizationTypeApi.updateOrganizationTypePermissions(
+        organizationType.typeCode,
+        requestData,
+      );
+
       message.success('保存成功');
       setHasChanges(false);
       setIsEditMode(false);
     } catch (error) {
       message.error(error instanceof Error ? error.message : '保存失败');
+    } finally {
+      setLoading(false);
     }
   };
   // 处理修改
@@ -49,29 +102,35 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
   const handleCancel = () => {
     if (hasChanges) {
       // 提示用户有未保存的数据
+      Modal.confirm({
+        title: '确认取消',
+        content: '您有未保存的修改，确定要取消吗？',
+        onOk: () => {
+          onCancel();
+        },
+        onCancel: () => {},
+      });
     } else {
-      console.log('取消保存');
       onCancel();
     }
   };
 
   // 处理子组件的修改通知
-  const handleHasChanges = (changes: boolean) => {
-    // todo: 这里需要判断多个子组件是否有修改
+  const handleHasChanges = useCallback((changes: boolean) => {
+    // 只要有一个子组件有修改，就设置为有修改
     setHasChanges(changes);
-  };
-  if (!organizationType) return null;
+  }, []);
   // Tab内容配置
   const tabItems = [
     {
       key: 'permissions',
       label: <div className={styles.tabItems}>Permissions</div>,
-      // children: '空态页设计中...',
       children: (
         <OrganizationPermissionTable
           isEditMode={isEditMode}
           typeCode={organizationType.typeCode}
           onHasChanges={handleHasChanges}
+          onGetModifiedData={handleFunctionalPermissionsChange}
         />
       ),
     },
@@ -83,6 +142,7 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
           isEditMode={isEditMode}
           typeCode={organizationType.typeCode}
           onHasChanges={handleHasChanges}
+          onGetModifiedData={handleDataPermissionsChange}
         />
       ),
     },
@@ -92,8 +152,6 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       children: <OrganizationRecordTable typeCode={organizationType.typeCode} />,
     },
   ];
-
-  if (!organizationType) return null;
 
   return (
     <FormDrawer
@@ -113,7 +171,7 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
             {t('common.action.cancel')}
           </FormButton>
           {isEditMode ? (
-            <FormButton color="primary" variant="solid" onClick={handleSave}>
+            <FormButton color="primary" variant="solid" onClick={handleSave} loading={loading}>
               {t('common.action.save')}
             </FormButton>
           ) : (

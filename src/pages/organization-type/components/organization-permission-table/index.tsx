@@ -22,12 +22,14 @@ interface OrganizationPermissionTableProps {
   typeCode: string;
   isEditMode?: boolean;
   onHasChanges?: (hasChanges: boolean) => void;
+  onGetModifiedData?: (data: any) => void;
 }
 
 const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = ({
   typeCode,
   isEditMode = false,
   onHasChanges,
+  onGetModifiedData,
 }) => {
   const [activeTab, setActiveTab] = useState('WEB'); // 默认选中web端权限 (实际值)
   const [originalData, setOriginalData] = useState<OrganizationTypePermissionItem[]>([]); // 原始数据，用于比较是否有修改
@@ -151,12 +153,16 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
           ? `${parentCode}-${child.permissionCode}`
           : child.permissionCode;
 
+        // 检查是否有修改的数据
+        const hasModifiedData = modifiedData[uniqueKey];
+
         return {
           key: uniqueKey,
           permissionName: child.permissionName,
-          thisOrganization: child.scopeLevels.SELF,
-          directSubOrganizations: child.scopeLevels.DIRECT_CHILD,
-          indirectSubOrganizations: child.scopeLevels.NON_DIRECT_CHILD,
+          thisOrganization: hasModifiedData?.SELF || child.scopeLevels.SELF,
+          directSubOrganizations: hasModifiedData?.DIRECT_CHILD || child.scopeLevels.DIRECT_CHILD,
+          indirectSubOrganizations:
+            hasModifiedData?.NON_DIRECT_CHILD || child.scopeLevels.NON_DIRECT_CHILD,
           children:
             child.children && child.children.length > 0
               ? generateTableData({ ...child, children: child.children }, uniqueKey)
@@ -164,7 +170,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         };
       });
     },
-    [],
+    [modifiedData],
   );
 
   // 过滤表格数据（前端搜索）
@@ -222,9 +228,21 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         onHasChanges(Object.keys(newData).length > 0);
       }
 
+      // 通知外层组件修改后的数据
+      if (onGetModifiedData) {
+        onGetModifiedData(newData);
+      }
+
       return newData;
     });
   };
+
+  // 组件挂载时通知外层组件修改后的数据
+  React.useEffect(() => {
+    if (onGetModifiedData) {
+      onGetModifiedData(modifiedData);
+    }
+  }, [modifiedData, onGetModifiedData]);
 
   const columns = [
     {

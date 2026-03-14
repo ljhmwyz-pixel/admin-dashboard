@@ -15,7 +15,9 @@ const OrganizationType: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
+  const [selectedType, setSelectedType] = useState<OrganizationTypeItem>(
+    {} as OrganizationTypeItem,
+  );
   const [isEditMode, setIsEditMode] = useState(false);
 
   // 获取组织类型列表
