@@ -17,6 +17,12 @@ import { DATA_PERMISSION_OPTIONS, DATA_PLATFORM_OPTIONS } from '../../constants'
 import styles from './index.module.scss';
 
 const { Option } = Select;
+// 定义一个options数组常量，用于Select组件的选项
+const options = [
+  { label: 'Unmasked', value: 'FULL' },
+  { label: 'Masked', value: 'MASKED' },
+  { label: 'Hidden', value: 'HIDDEN' },
+];
 
 /**
  * 组织数据权限表格组件属性
