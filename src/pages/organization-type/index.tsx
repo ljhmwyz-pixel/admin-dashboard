@@ -46,7 +46,9 @@ const OrganizationType: React.FC = () => {
    */
   const [error, setError] = useState<string | null>(null);
   const [detailVisible, setDetailVisible] = useState(false);
-  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
+  const [selectedType, setSelectedType] = useState<OrganizationTypeItem>(
+    {} as OrganizationTypeItem,
+  );
   const [isEditMode, setIsEditMode] = useState(false);
 
   /**
