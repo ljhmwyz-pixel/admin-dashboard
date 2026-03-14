@@ -1,0 +1,45 @@
+.topSearchContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0px -1px 0px 0px #191B1F0F inset;
+}
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.itemBlock {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.itemName {
+  padding: 20px 12px;
+  border-radius: 4px;
+  border-right: 2px solid var(--ant-color-primary);
+  &:hover {
+    background: #33C2C80F;
+    color: var(--ant-color-primary);
+  }
+  &.active {
+    font-weight: bold;
+    background: #33C2C80F;
+    color: var(--ant-color-primary);
+  }
+}
+
+.dataField {
+  font-weight: 500;
+}
+
+.antTabs {
+  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--ant-color-primary);
+  }
+  .ant-tabs-ink-bar {
+    background: var(--ant-color-primary);
+  }
+}
