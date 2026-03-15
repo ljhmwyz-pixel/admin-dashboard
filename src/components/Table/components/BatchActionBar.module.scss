@@ -1,16 +1,17 @@
 .batchBar {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
+  position: sticky;
+  bottom: 16px;
+
+  margin: 0 auto;
+  width: fit-content;
+
+  z-index: 10;
 
   background: #fff;
   border-radius: 8px;
   padding: 12px 24px;
 
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  border: 1px solid #f0f0f0;
 
   .selectedText {
     font-weight: 500;

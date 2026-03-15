@@ -12,13 +12,22 @@ export interface BatchAction {
 
 // 行操作动作
 export interface OperationAction<T> {
+  // key: string;
+  // label: React.ReactNode;
+  // icon?: React.ReactNode;
+  // onClick: (record: T) => void;
+  // disabled?: boolean;
+  // danger?: boolean;
+  // divider?: boolean;
   key: string;
   label: React.ReactNode;
-  icon?: React.ReactNode;
   onClick: (record: T) => void;
-  disabled?: boolean;
+
   danger?: boolean;
-  divider?: boolean;
+  disabled?: boolean | ((record: T) => boolean);
+  hidden?: boolean | ((record: T) => boolean);
+
+  icon?: React.ReactNode;
 }
 
 // 分页配置
@@ -37,6 +46,20 @@ export interface PaginationState {
   onShowSizeChange?: (current: number, size: number) => void;
 }
 
+/** 单列过滤配置 */
+export type ColumnFilterConfig<T = any> = {
+  type: 'select';
+  options: {
+    label: React.ReactNode;
+    value: any;
+  }[];
+  multiple?: boolean;
+  allowClear?: boolean;
+  onFilter?: (value: any, record: T) => boolean;
+};
+
+export type TableFilterConfig<T = any> = Partial<Record<keyof T | string, ColumnFilterConfig<T>>>;
+
 // 表格基础配置
 export interface BaseTableProps<T> extends Omit<TableProps<T>, 'pagination' | 'size'> {
   /** 批量操作配置 */
@@ -44,6 +67,7 @@ export interface BaseTableProps<T> extends Omit<TableProps<T>, 'pagination' | 's
 
   /** 行操作配置 */
   operations?: OperationAction<T>[];
+  operationWidth?: number;
 
   /** 分页配置 */
   paginationConfig?: PaginationConfig;
@@ -68,4 +92,6 @@ export interface BaseTableProps<T> extends Omit<TableProps<T>, 'pagination' | 's
 
   /** 已选择的项目数量提示文本 */
   selectedCountText?: (count: number) => string;
+
+  filterConfig?: TableFilterConfig<T>;
 }
