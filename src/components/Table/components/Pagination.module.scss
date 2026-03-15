@@ -1,8 +1,13 @@
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+@use 'sass:color';
+
 .paginationBar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   height: 50px;
+  // border: 1px solid red;
 
   .totalText {
     color: #191b1f99;
@@ -17,6 +22,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    margin-right: 20px;
   }
 
   .centerPager :global(.ant-pagination) {
@@ -58,219 +64,112 @@
     justify-content: center;
 
     cursor: pointer;
+    border: none !important;
+    background: transparent;
+    transform: translateY(1px);
+  }
+
+  // ===== 所有分页元素高度统一为 20px =====
+  :global(.ant-pagination-item) {
+    height: 20px !important;
+    min-width: 20px !important;
+    line-height: 20px !important;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    color: rgba(25, 27, 31, 0.4);
+    font-size: 14px;
+    font-weight: 500;
+
+    &:hover {
+      height: 20px !important;
+      background-color: #f5f5f5;
+    }
+  }
+
+  :global(.ant-pagination-item a) {
+    color: rgba(25, 27, 31, 0.4);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  :global(.ant-pagination-item-active a) {
+    color: rgba(51, 194, 200, 1);
+    // 主题色
+    // color: $color-text-primary;
+
+    // @include dark-theme {
+    //   color: $dark-color-text-primary;
+    // }
+
+  }
+
+
+  :global(.ant-pagination-options-quick-jumper) {
+    color: rgba(25, 27, 31, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    order: 1;
+    margin-right: 20px;
+    margin-left: 0;
+  }
+
+  :global(.ant-pagination-options-quick-jumper input) {
+    height: 20px !important;
+    min-height: 20px !important;
+    border-radius: 4px;
+    color: rgba(25, 27, 31, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 0 6px;
+  }
+
+  :global(.ant-pagination-options-size-changer) {
+    height: 20px !important;
+    min-height: 20px !important;
+    border-radius: 4px;
+    color: rgba(25, 27, 31, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    margin-right: 40px; // 给 /Page 留空间
+    order: 2;
+    width: 60px;
+    padding: 0 10px;
+  }
+
+  :global(.ant-pagination-options-size-changer::after) {
+    content: '/Page';
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(25, 27, 31, 0.6);
+    white-space: nowrap;
+  }
+
+  :global(.ant-pagination-options) {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.ant-pagination-prev) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.ant-pagination-next) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.ant-select-suffix) {
+    transform: translate(1px, -1px)
   }
 
 }
-
-
-
-
-// .paginationWrapper {
-//   display: flex;
-//   align-items: center;
-//   justify-content: flex-end;
-//   gap: 16px;
-//   height: 50px;
-//   position: relative;
-
-//   .totalText {
-//     color: #191b1f99;
-//     font-size: 14px;
-//     font-weight: 500;
-//     white-space: nowrap;
-//     margin-right: 40px;
-//   }
-
-// }
-
-// .total {
-//   color: #191b1f99;
-//   font-size: 14px;
-//   font-weight: 500;
-//   white-space: nowrap;
-// }
-
-// .paginationGroup {
-//   display: flex;
-//   align-items: center;
-//   gap: 8px;
-// }
-
-// /* icon 按钮 */
-// .iconBtn {
-//   height: 20px;
-//   min-width: 20px;
-//   padding: 0;
-//   font-size: 14px;
-//   font-weight: 500;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   border: 1px solid #191b1f14;
-//   border-radius: 4px;
-//   background: transparent;
-//   transition: all 0.2s;
-//   color: #191b1f99;
-
-//   &:hover:not(:disabled) {
-//     border-color: #33c2c8;
-//     color: #33c2c8;
-//   }
-
-//   &:disabled {
-//     opacity: 0.3;
-//     cursor: not-allowed;
-//   }
-
-//   svg {
-//     width: 10px;
-//     height: 10px;
-//   }
-// }
-
-// /* ===== antd pagination 样式覆盖 ===== */
-
-// .paginationGroup :global {
-//   .ant-pagination {
-//     margin: 0;
-//     font-size: 14px;
-//     font-weight: 500;
-//     display: flex;
-//     align-items: center;
-//     gap: 4px;
-
-//     // 页码按钮
-//     .ant-pagination-item {
-//       min-width: 20px !important;
-//       height: 20px !important;
-//       line-height: 20px !important;
-//       border-radius: 4px;
-//       border: 1px solid #191b1f14;
-//       background: transparent;
-//       transition: all 0.2s;
-//       display: flex;
-//       align-items: center;
-//       justify-content: center;
-//       margin: 0;
-//       padding: 0;
-
-//       a {
-//         color: #191b1f99;
-//         font-size: 14px;
-//         font-weight: 500;
-//         margin: 0;
-//       }
-
-//       &:hover {
-//         border-color: #33c2c8;
-
-//         a {
-//           color: #33c2c8;
-//         }
-//       }
-
-//       &.ant-pagination-item-active {
-//         background: #33c2c8;
-//         border-color: #33c2c8;
-
-//         a {
-//           color: #fff;
-//           font-weight: 600;
-//         }
-//       }
-//     }
-
-//     // 隐藏上一页/下一页按钮（因为我们自定义了）
-//     .ant-pagination-prev,
-//     .ant-pagination-next {
-//       display: none;
-//     }
-//   }
-// }
-
-// /* 快速跳转 */
-// .quickJumper {
-//   display: flex;
-//   align-items: center;
-//   gap: 6px;
-//   font-size: 14px;
-//   font-weight: 500;
-//   color: #191b1f99;
-//   white-space: nowrap;
-
-//   input {
-//     width: 40px;
-//     height: 20px;
-//     min-height: 20px;
-//     padding: 0 6px;
-//     font-size: 14px;
-//     font-weight: 500;
-//     color: #191b1f99;
-//     border: 1px solid #191b1f14;
-//     border-radius: 4px;
-//     text-align: center;
-//     transition: all 0.2s;
-//     background: transparent;
-
-//     &:hover {
-//       border-color: #33c2c8;
-//     }
-
-//     &:focus {
-//       border-color: #33c2c8;
-//       outline: none;
-//       box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
-//     }
-
-//     /* 移除数字输入框的箭头 */
-//     &::-webkit-inner-spin-button,
-//     &::-webkit-outer-spin-button {
-//       -webkit-appearance: none;
-//       margin: 0;
-//     }
-
-//     -moz-appearance: textfield;
-//     appearance: none;
-//   }
-// }
-
-// /* 每页条数 */
-// .pageSize {
-//   display: flex;
-//   align-items: center;
-//   gap: 4px;
-//   font-size: 14px;
-//   font-weight: 500;
-//   color: #191b1f99;
-//   white-space: nowrap;
-
-//   select {
-//     height: 20px;
-//     min-height: 20px;
-//     padding: 0 6px;
-//     font-size: 14px;
-//     font-weight: 500;
-//     color: #191b1f99;
-//     border: 1px solid #191b1f14;
-//     border-radius: 4px;
-//     background: transparent;
-//     cursor: pointer;
-//     transition: all 0.2s;
-//     appearance: none;
-//     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23191B1F99' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-//     background-repeat: no-repeat;
-//     background-position: right 4px center;
-//     padding-right: 20px;
-
-//     &:hover {
-//       border-color: #33c2c8;
-//       color: #33c2c8;
-//     }
-
-//     &:focus {
-//       border-color: #33c2c8;
-//       outline: none;
-//       box-shadow: 0 0 0 2px rgba(51, 194, 200, 0.1);
-//     }
-//   }
-// }

@@ -2,10 +2,12 @@
   border-radius: 6px;
 
   :global(.ant-table-thead > tr > th) {
-    background-color: #191B1F0F;
+    background-color: #191b1f0f;
     font-weight: 600;
     font-size: 14px;
-    color: #191B1F99;
+    color: #191b1f99;
   }
-
+  .operationButtonItem {
+    cursor: pointer;
+  }
 }

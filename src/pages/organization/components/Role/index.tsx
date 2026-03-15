@@ -11,7 +11,6 @@ import { AntDrawer, AntForm, AntSpace } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
 import AddRole, { type AddRoleRef } from './components/AddRole';
-import HeaderFilter from './components/HeaderFilter';
 import RoleFooter from './components/RoleFooter';
 import RoleHeader from './components/RoleHeader';
 
@@ -272,127 +271,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     loadData();
   }, [loadData]);
 
-  const columns = [
-    {
-      title: 'No.',
-      dataIndex: 'no',
-      key: 'no',
-    },
-    {
-      title: 'Role Name',
-      dataIndex: 'roleName',
-      key: 'roleName',
-    },
-    {
-      title: (
-        <HeaderFilter
-          title="Platform"
-          // value={platform}
-          // onChange={setPlatform}
-          options={[
-            { label: 'App', value: 'app' },
-            { label: 'Web', value: 'web' },
-          ]}
-        />
-      ),
-      dataIndex: 'platform',
-      key: 'platform',
-    },
-    {
-      title: 'Number of Members',
-      dataIndex: 'members',
-      key: 'members',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Operation',
-      dataIndex: 'operation',
-      key: 'operation',
-      render: (_, record) => {
-        return (
-          <div className={styles.operationButtons}>
-            <AntSpace size={20}>
-              <div className={styles.operationButtonItem}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M15.3141 7.99979C15.3141 8.78297 12.0394 13.1426 7.99983 13.1426C3.96026 13.1426 0.685547 8.78297 0.685547 7.99979C0.685547 7.21661 3.96026 2.85693 7.99983 2.85693C12.0394 2.85693 15.3141 7.21661 15.3141 7.99979Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M10.2858 8.00007C10.2858 9.26243 9.26243 10.2858 8.00007 10.2858C6.7377 10.2858 5.71436 9.26243 5.71436 8.00007C5.71436 6.7377 6.7377 5.71436 8.00007 5.71436"
-                    stroke="#33C2C8"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.operationButtonItem}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8.59171 1.82879C9.22289 0.735546 10.6208 0.360973 11.7141 0.992156C12.8073 1.62334 13.1819 3.02126 12.5507 4.1145L8.73416 10.7249C8.63121 10.9032 8.48202 11.0504 8.30233 11.1509L5.01355 12.9905C4.86239 13.0751 4.67577 12.9673 4.67342 12.7941L4.62218 9.02617C4.61938 8.82031 4.67224 8.61751 4.77518 8.4392L8.59171 1.82879Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M0.685547 15.3105H15.314"
-                    stroke="#33C2C8"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <div className={styles.operationButtonItem}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11.4289 2.97126V1.8284C11.4289 1.19722 10.9172 0.685547 10.286 0.685547H5.7146C5.08342 0.685547 4.57174 1.19722 4.57174 1.8284V2.97126M0.686035 3.42841H15.3146M2.28603 3.42841H13.7146V13.0284C13.7146 14.2908 12.6912 15.3141 11.4289 15.3141H4.57174C3.30938 15.3141 2.28603 14.2908 2.28603 13.0284V3.42841Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M6.28564 6.85693V11.8855M9.71422 6.85693V11.8855"
-                    stroke="#F45858"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-            </AntSpace>
-          </div>
-        );
-      },
-    },
-  ];
   const dataSource = [
     {
       key: '1',
@@ -558,6 +436,38 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     },
   ];
 
+  const columns = [
+    {
+      title: 'No.',
+      dataIndex: 'no',
+      key: 'no',
+    },
+    {
+      title: 'Role Name',
+      dataIndex: 'roleName',
+      key: 'roleName',
+    },
+    {
+      title: 'Platform',
+      dataIndex: 'platform',
+      key: 'platform',
+    },
+    {
+      title: 'Number of Members',
+      dataIndex: 'members',
+      key: 'members',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+    },
+  ];
   const pagedData = useMemo(() => {
     const start = (page - 1) * pageSize;
     return dataSource.slice(start, start + pageSize);
@@ -604,27 +514,15 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
               name: record.name,
             }),
           }}
-        />
-
-        {/* <RoleTable
-          dataSource={filteredData}
-          loading={loading}
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: filteredData.length,
+          filterConfig={{
+            platform: {
+              type: 'select',
+              options: [
+                { label: 'App', value: 'app' },
+                { label: 'Web', value: 'web' },
+              ],
+            },
           }}
-          onTableChange={handleTableChange}
-          selectedKeys={selectedKeys}
-          onSelectAll={handleSelectAll}
-          onSelectChange={handleSelectChange}
-          platformFilter={platformFilter}
-          onPlatformChange={handlePlatformChange}
-          onStatusChange={handleStatusChange}
-          onView={onView}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          // enableRowSelection={true}
           batchActions={[
             {
               key: 'batch-delete',
@@ -645,34 +543,86 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
               key: 'view',
               label: 'View',
               onClick: (record: RoleRecord) => onView?.(record),
+              icon: (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15.3141 7.99979C15.3141 8.78297 12.0394 13.1426 7.99983 13.1426C3.96026 13.1426 0.685547 8.78297 0.685547 7.99979C0.685547 7.21661 3.96026 2.85693 7.99983 2.85693C12.0394 2.85693 15.3141 7.21661 15.3141 7.99979Z"
+                    stroke="#191B1F"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M10.2858 8.00007C10.2858 9.26243 9.26243 10.2858 8.00007 10.2858C6.7377 10.2858 5.71436 9.26243 5.71436 8.00007C5.71436 6.7377 6.7377 5.71436 8.00007 5.71436"
+                    stroke="#33C2C8"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
             },
             {
               key: 'edit',
               label: 'Edit',
               onClick: (record: RoleRecord) => onEdit?.(record),
+              icon: (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8.59171 1.82879C9.22289 0.735546 10.6208 0.360973 11.7141 0.992156C12.8073 1.62334 13.1819 3.02126 12.5507 4.1145L8.73416 10.7249C8.63121 10.9032 8.48202 11.0504 8.30233 11.1509L5.01355 12.9905C4.86239 13.0751 4.67577 12.9673 4.67342 12.7941L4.62218 9.02617C4.61938 8.82031 4.67224 8.61751 4.77518 8.4392L8.59171 1.82879Z"
+                    stroke="#191B1F"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M0.685547 15.3105H15.314"
+                    stroke="#33C2C8"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
             },
             {
               key: 'delete',
               label: 'Delete',
               danger: true,
               onClick: (record: RoleRecord) => onDelete?.(record),
+              icon: (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.4289 2.97126V1.8284C11.4289 1.19722 10.9172 0.685547 10.286 0.685547H5.7146C5.08342 0.685547 4.57174 1.19722 4.57174 1.8284V2.97126M0.686035 3.42841H15.3146M2.28603 3.42841H13.7146V13.0284C13.7146 14.2908 12.6912 15.3141 11.4289 15.3141H4.57174C3.30938 15.3141 2.28603 14.2908 2.28603 13.0284V3.42841Z"
+                    stroke="#191B1F"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M6.28564 6.85693V11.8855M9.71422 6.85693V11.8855"
+                    stroke="#F45858"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
             },
           ]}
-          selectedCountText={(count: number) => `${count} items selected`}
-        /> */}
-
-        {/* 底部选中状态 */}
-        {/* {selectedKeys.length > 0 && (
-          <RoleFooter
-            selectedCount={selectedKeys.length}
-            onBatchEdit={handleBatchEdit}
-            onBatchDelete={handleBatchDelete}
-            onClearSelection={() => {
-              setSelectedKeys([]);
-              setSelectedRecords([]);
-            }}
-          />
-        )} */}
+        />
       </div>
       {/* 新增角色 */}
       <AddRole
