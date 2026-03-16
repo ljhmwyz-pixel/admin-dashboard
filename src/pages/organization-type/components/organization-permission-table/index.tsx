@@ -21,12 +21,6 @@ import { FUNCTIONAL_PERMISSION_OPTIONS, PLATFORM_OPTIONS } from '../../constants
 import styles from './index.module.scss';
 
 const { Option } = Select;
-// 抽离出options
-const permissionOptions = [
-  { label: 'Assignable', value: 'ASSIGNABLE' },
-  { label: 'Owner Only', value: 'OWNER_ONLY' },
-  { label: 'No Access', value: 'NO_ACCESS' },
-];
 
 /**
  * 组织权限表格组件属性接口
