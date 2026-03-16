@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { Empty, Spin, Typography } from 'antd';
+import { Empty, message, Spin, Typography } from 'antd';
 
+// 引入图标资源
+import editIcon from '@/assets/images/org-type/edit.png';
+import orgTypeTree from '@/assets/images/org-type/org-type-tree.png';
+import uploadIcon from '@/assets/images/org-type/upload.png';
+import vectorIcon from '@/assets/images/org-type/vector.png';
+
+// 引入组织类型API服务
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
+// 引入组织类型详情组件
 import OrganizationTypeDetail from './components/organization-detail/index';
 
 import styles from './index.module.scss';
@@ -11,55 +19,128 @@ import styles from './index.module.scss';
 const { Title } = Typography;
 
 const OrganizationType: React.FC = () => {
+  /**
+   * 组织类型列表
+   * 存储从API获取的所有组织类型数据
+   */
   const [organizationTypes, setOrganizationTypes] = useState<OrganizationTypeItem[]>([]);
+
+  /**
+   * 加载状态
+   * 用于控制加载动画的显示
+   */
   const [loading, setLoading] = useState(true);
+
+  /**
+   * 错误信息
+   * 存储API调用过程中发生的错误信息
+   */
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * 详情弹窗可见性
+   * 控制组织类型详情弹窗的显示和隐藏
+   */
   const [detailVisible, setDetailVisible] = useState(false);
-  const [selectedType, setSelectedType] = useState<OrganizationTypeItem>(
-    {} as OrganizationTypeItem,
-  );
+
+  /**
+   * 选中的组织类型
+   * 存储当前选中的组织类型数据，用于详情弹窗显示
+   */
+  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
+
+  /**
+   * 是否为编辑模式
+   * 控制详情弹窗的模式：查看模式或编辑模式
+   */
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // 获取组织类型列表
-  useEffect(() => {
-    const fetchOrganizationTypes = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await organizationTypeApi.getAllOrganizationTypes();
-        setOrganizationTypes(response.data);
-      } catch (err) {
-        setError('获取组织类型失败');
-        console.error('Failed to fetch organization types:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrganizationTypes();
+  /**
+   * 获取组织类型列表
+   */
+  const fetchOrganizationTypes = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await organizationTypeApi.getAllOrganizationTypes();
+      setOrganizationTypes(response.data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '获取组织类型失败';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // 处理卡片点击事件（查看模式）
-  const handleCardClick = (type: OrganizationTypeItem) => {
+  // 初始加载
+  useEffect(() => {
+    fetchOrganizationTypes();
+  }, [fetchOrganizationTypes]);
+
+  /**
+   * 处理卡片点击事件（查看模式）
+   * @param type 组织类型
+   */
+  const handleCardClick = useCallback((type: OrganizationTypeItem) => {
     setSelectedType(type);
     setIsEditMode(false);
     setDetailVisible(true);
-  };
+  }, []);
 
-  // 处理编辑按钮点击事件（编辑模式）
-  const handleEditClick = (e: React.MouseEvent, type: OrganizationTypeItem) => {
+  /**
+   * 处理编辑按钮点击事件（编辑模式）
+   * @param e 鼠标事件
+   * @param type 组织类型
+   */
+  const handleEditClick = useCallback((e: React.MouseEvent, type: OrganizationTypeItem) => {
     e.stopPropagation(); // 阻止事件冒泡
     setSelectedType(type);
     setIsEditMode(true);
     setDetailVisible(true);
-  };
+  }, []);
 
-  // 处理上传按钮点击事件
-  const handleUploadClick = (e: React.MouseEvent, type: any) => {
-    e.stopPropagation(); // 阻止事件冒泡
-    console.log('Upload image for organization type:', type);
-    // 这里可以打开上传组件
-  };
+  /**
+   * 处理上传按钮点击事件
+   * @param e 鼠标事件
+   * @param type 组织类型
+   */
+  const handleUploadClick = useCallback(
+    (e: React.MouseEvent, type: OrganizationTypeItem) => {
+      e.stopPropagation(); // 阻止事件冒泡
+
+      // 创建文件输入元素
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+
+      // 监听文件选择事件
+      input.onchange = async (event) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (file) {
+          try {
+            // 上传文件
+            await organizationTypeApi.uploadOrganizationTypeImage(type.id, file);
+
+            // 上传成功，显示提示
+            message.success('图片上传成功');
+
+            // 重新获取组织类型列表，更新图片
+            fetchOrganizationTypes();
+          } catch (error) {
+            // 上传失败，显示错误提示
+            message.error('图片上传失败');
+            console.error('Failed to upload image:', error);
+          }
+        }
+      };
+
+      // 触发文件选择对话框
+      input.click();
+    },
+    [fetchOrganizationTypes],
+  );
 
   return (
     <div className={styles.container}>
@@ -85,21 +166,18 @@ const OrganizationType: React.FC = () => {
                 <div className={styles.cardContent}>
                   {type.imageUrl ? (
                     <img
+                      // src="https://p3.toutiaoimg.com/img/tos-cn-i-qvj2lq49k0/90f66eee5d3045268e064485ad4b5926~tplv-tt-shrink:640:0.image"
                       src={type.imageUrl}
                       alt={type.typeName}
                       className={styles.cardBackground}
                     />
                   ) : (
-                    <img
-                      src="/src/assets/images/org-type/org-type-tree.png"
-                      alt={type.typeName}
-                      className={styles.defaultImage}
-                    />
+                    <img src={orgTypeTree} alt={type.typeName} className={styles.defaultImage} />
                   )}
                   <div className={styles.typeCount}>{type.organizationCount || 1}</div>
                   <div className={styles.topRightIconContainer}>
                     <img
-                      src="/src/assets/images/org-type/upload.png"
+                      src={uploadIcon}
                       alt={type.typeName}
                       className={styles.orgIcon}
                       onClick={(e) => handleUploadClick(e, type)}
@@ -109,15 +187,11 @@ const OrganizationType: React.FC = () => {
 
                 <div className={styles.cardFooter}>
                   <div className={styles.flexCenter}>
-                    <img
-                      src="/src/assets/images/org-type/vector.png"
-                      alt={type.typeName}
-                      className={styles.orgIcon}
-                    />
+                    <img src={vectorIcon} alt={type.typeName} className={styles.orgIcon} />
                     <div className={styles.typeName}>{type.typeName}</div>
                   </div>
                   <img
-                    src="/src/assets/images/org-type/edit.png"
+                    src={editIcon}
                     alt={type.typeName}
                     className={styles.orgIcon}
                     onClick={(e) => handleEditClick(e, type)}
@@ -130,7 +204,7 @@ const OrganizationType: React.FC = () => {
       )}
 
       {/* 组织类型详情弹窗 */}
-      {detailVisible && (
+      {detailVisible && selectedType && (
         <OrganizationTypeDetail
           visible={detailVisible}
           onCancel={() => setDetailVisible(false)}
