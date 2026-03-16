@@ -534,17 +534,58 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
           }}
           batchActions={[
             {
-              key: 'batch-delete',
-              label: 'Delete',
-              icon: undefined,
-              danger: true,
-              onClick: handleBatchDelete,
+              key: 'batch-edit',
+              label: 'Editor',
+              icon: (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M7.51738 1.60043C8.06967 0.643847 9.29285 0.316096 10.2494 0.868381C11.206 1.42067 11.5338 2.64385 10.9815 3.60043L7.64202 9.38455C7.55195 9.54056 7.4214 9.66935 7.26417 9.75729L4.38649 11.367C4.25422 11.4409 4.09093 11.3467 4.08887 11.1951L4.04404 7.89815C4.04159 7.71801 4.08784 7.54056 4.17792 7.38455L7.51738 1.60043Z"
+                    stroke="#191B1F"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M0.600098 13.3965H13.4"
+                    stroke="#33C2C8"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
+              onClick: handleBatchEdit,
             },
             {
-              key: 'batch-edit',
-              label: 'Edit',
-              icon: undefined,
-              onClick: handleBatchEdit,
+              key: 'batch-delete',
+              label: 'Delete',
+              icon: (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.0001 2.6001V1.6001C10.0001 1.04781 9.55238 0.600098 9.00009 0.600098H5.00009C4.44781 0.600098 4.00009 1.04781 4.00009 1.6001V2.6001M0.600098 3.0001H13.4001M2.00009 3.0001H12.0001V11.4001C12.0001 12.5047 11.1047 13.4001 10.0001 13.4001H4.00009C2.89552 13.4001 2.00009 12.5047 2.00009 11.4001V3.0001Z"
+                    stroke="#191B1F"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M5.5 6V10.4M8.5 6V10.4"
+                    stroke="#F45858"
+                    strokeWidth="1.2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ),
+              onClick: handleBatchDelete,
             },
           ]}
           operations={[
