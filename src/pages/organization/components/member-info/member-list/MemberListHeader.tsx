@@ -1,7 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useRef } from 'react';
 import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { AntButton, AntInput, AntSegmented, AntTooltip } from '@shared/components';
-import { debounce } from 'lodash-es';
+import { AntButton, AntInput, AntTooltip } from '@shared/components';
+import type { SegmentedValue } from 'antd/es/segmented';
+
+import { Segmented } from '@/components';
 
 import styles from './MemberList.module.scss';
 
@@ -14,7 +16,7 @@ interface MemberListHeaderProps {
   /** 当前搜索关键词 */
   keyword: string;
   /** 状态变更回调函数 */
-  onStatusChange: (status: string) => void;
+  onStatusChange: (value: SegmentedValue) => void;
   /** 重置回调函数 */
   onReset: () => void;
   /** 关键词变更回调函数 */
@@ -22,6 +24,14 @@ interface MemberListHeaderProps {
   /** 新增成员回调函数 */
   onAdd: () => void;
 }
+/** 状态选项配置 */
+const statusOptions = [
+  { value: '', label: 'All' },
+  { value: 'NORMAL', label: 'Normal' },
+  { value: 'WAITING', label: 'Waiting' },
+  { value: 'REJECTED', label: 'Rejected' },
+  { value: 'LOCKED', label: 'Locked' },
+];
 
 /**
  * 成员列表头部组件
@@ -35,35 +45,23 @@ const MemberListHeader: React.FC<MemberListHeaderProps> = ({
   onKeywordChange,
   onAdd,
 }) => {
-  /** 状态选项配置 */
-  const statusOptions = [
-    { value: '', label: 'All' },
-    { value: 'NORMAL', label: 'Normal' },
-    { value: 'WAITING', label: 'Waiting' },
-    { value: 'REJECTED', label: 'Rejected' },
-    { value: 'LOCKED', label: 'Locked' },
-  ];
+  const ref = useRef<HTMLDivElement>(null);
   return (
     <div className={styles.header}>
       {/* 状态筛选 Segmented 组件 */}
-      <div className={styles.statusTabs}>
-        <AntSegmented
-          options={statusOptions}
-          value={status}
-          onChange={onStatusChange}
-          style={{ width: 'auto' }}
-        />
-      </div>
+      <Segmented value={status} options={statusOptions} onChange={onStatusChange} />
 
       {/* 操作区域：搜索框、新增按钮、重置按钮 */}
-      <div className={styles.actions}>
+      <div className={styles.actions} ref={ref}>
         <AntTooltip
           placement="bottomLeft"
+          className={styles.tooltip}
+          getPopupContainer={() => ref.current || document.body}
           title={
-            <div>
-              <div>Support searchable fields:</div>
-              <div>1. User name</div>
-              <div>2. UID</div>
+            <div className={styles.tooltipContent}>
+              <div className={styles.tooltipTitle}>Support searchable fields:</div>
+              <div className={styles.tooltipItem}>1. User name</div>
+              <div className={styles.tooltipItem}>2. UID</div>
             </div>
           }
         >

@@ -52,9 +52,23 @@ const RoleField: React.FC<RoleFieldProps> = ({
           options: options,
           placeholder: 'role',
           onChange: (value) => {
-            form.setFieldsValue({ role: value });
-            onChange?.(value);
-            console.log(value);
+            if (value?.length) {
+              form.setFields([
+                {
+                  name: 'role',
+                  errors: [],
+                },
+              ]);
+              form.setFieldsValue({ role: value });
+              onChange?.(value);
+            } else {
+              form.setFields([
+                {
+                  name: 'role',
+                  errors: ['Please select at least one role'],
+                },
+              ]);
+            }
           },
         }}
       />

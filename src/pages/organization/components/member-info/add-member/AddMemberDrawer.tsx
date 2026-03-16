@@ -4,6 +4,8 @@ import { OrganizationInfo } from '@pages/organization/components';
 import type { AddMemberFormData, TreeNodeData } from '@pages/organization/dto';
 import { AntButton, AntDrawer, AntForm, AntSteps } from '@shared/components';
 
+import { useOrganizationForm } from '@/pages/organization/hooks';
+
 import AddMemberAssignRoles from './AddMemberAssignRoles';
 import AddMemberAssociatePlants from './AddMemberAssociatePlants';
 import AddMemberBasicInfo from './AddMemberBasicInfo';
@@ -24,6 +26,8 @@ interface AddMemberDrawerProps {
   orgId: string;
   /** 父组织节点数据 */
   parentNodeData: TreeNodeData | null;
+  /** 当前节点数据 */
+  currentParentNode?: TreeNodeData;
 }
 
 /**
@@ -39,17 +43,19 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   onSuccess,
   orgId,
   parentNodeData,
+  currentParentNode,
 }) => {
   /** 当前步骤 */
   const [currentStep, setCurrentStep] = useState(0);
   /** 表单数据 */
   const [formData, setFormData] = useState<AddMemberFormData>({
     basicInfo: { orgEmail: '', orgUsername: '', orgPhone: '' },
-    roles: { roleId: '', roleName: '' },
+    roles: [],
     plants: { organizationKeys: [], plantKeys: [] },
   });
   /** 表单实例 */
   const [form] = AntForm.useForm();
+  const { existingUsername, existingPhone, verifyEmail } = useOrganizationForm(currentParentNode);
 
   /** 步骤配置 */
   const steps = [
@@ -61,14 +67,26 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   /**
    * 处理基本信息提交
    */
-  const handleBasicInfoSubmit = (values: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      basicInfo: values,
-    }));
+  const handleBasicInfoSubmit = async (values: any) => {
+    const emailResult = await verifyEmail?.(values.orgEmail);
+    const { userExists, existingUsername = '', existingPhone = '' } = emailResult || {};
+    if (userExists) {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: {
+          ...values,
+          orgUsername: existingUsername,
+          orgPhone: existingPhone,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: values,
+      }));
+    }
     setCurrentStep(1);
   };
-
   /**
    * 处理角色分配提交
    */
@@ -109,7 +127,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
     setCurrentStep(0);
     setFormData({
       basicInfo: { orgEmail: '', orgUsername: '', orgPhone: '' },
-      roles: { roleId: '', roleName: '' },
+      roles: [],
       plants: { organizationKeys: [], plantKeys: [] },
     });
     onClose();
@@ -121,7 +139,15 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <AddMemberBasicInfo form={form} onSubmit={handleBasicInfoSubmit} />;
+        return (
+          <AddMemberBasicInfo
+            form={form}
+            onSubmit={handleBasicInfoSubmit}
+            verifyEmail={verifyEmail}
+            existingPhone={existingPhone}
+            existingUsername={existingUsername}
+          />
+        );
       case 1:
         return <AddMemberAssignRoles form={form} onSubmit={handleRolesSubmit} orgId={orgId} />;
       case 2:
@@ -137,6 +163,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       open={visible}
       onClose={handleCancel}
       placement="right"
+      destroyOnHidden
       size="60%"
       footer={
         <div className={styles.actions}>
@@ -171,7 +198,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       <div className={styles.stepsContainer}>
         {/* 左侧步骤条 */}
         <div className={styles.stepsSidebar}>
-          <AntSteps current={currentStep} direction="vertical" items={steps} />
+          <AntSteps current={currentStep} items={steps} orientation="vertical" />
         </div>
 
         {/* 右侧步骤内容 */}

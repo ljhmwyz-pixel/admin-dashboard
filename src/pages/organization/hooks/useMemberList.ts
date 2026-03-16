@@ -1,6 +1,7 @@
 import { type SetStateAction, useCallback, useEffect, useState } from 'react';
 import type { Member } from '@pages/organization/dto';
 import { loadMembers } from '@pages/organization/services/organizationService';
+import type { SegmentedValue } from 'antd/es/segmented';
 
 /**
  * useMemberList Hook 参数接口
@@ -29,7 +30,7 @@ interface UseMemberListReturn {
   /** 搜索关键词 */
   keyword: string;
   /** 状态变更处理函数 */
-  handleStatusChange: (newStatus: string) => void;
+  handleStatusChange: (value: SegmentedValue) => void;
   /** 关键词变更处理函数 */
   handleKeywordChange: (keyword: string) => void;
   /** 搜索处理函数 */
@@ -92,10 +93,10 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
 
   /**
    * 处理状态筛选变更
-   * @param newStatus - 新的状态值
+   * @param value - 新的状态值
    */
-  const handleStatusChange = useCallback((newStatus: string) => {
-    setStatus(newStatus);
+  const handleStatusChange = useCallback((value: SegmentedValue) => {
+    setStatus(value as string);
     setCurrent(1); // 重置页码到第一页
   }, []);
 
