@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { changeLanguage as setAppFont } from '@/i18n';
 import type { LanguageKey } from '@/i18n/types';
 
 interface SimpleUseLanguageReturn {
@@ -55,12 +56,10 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
     setError(null);
 
     try {
-      // 执行语言切换
-      if (i18n && i18n.changeLanguage) {
-        await i18n.changeLanguage(lng);
-      }
+      // 执行语言切换并设置字体
+      await setAppFont(lng);
 
-      // 保存到localStorage
+      // 保存到 localStorage
       localStorage.setItem('i18nextLng', lng);
 
       // 更新状态
@@ -72,9 +71,7 @@ export const useLanguage = (): SimpleUseLanguageReturn => {
 
       // 如果切换失败，尝试回滚到默认语言
       try {
-        if (i18n && i18n.changeLanguage) {
-          await i18n.changeLanguage('zh-CN');
-        }
+        await setAppFont('zh-CN');
         setCurrentLanguage('zh-CN');
       } catch (rollbackError) {
         console.error('Rollback to default language failed:', rollbackError);

@@ -1,5 +1,7 @@
 import type { ThemeConfig } from 'antd';
 
+import { getCurrentLanguage, type LanguageKey } from '@/i18n';
+
 // 颜色主题配置
 export const colorSchemes = {
   turquoise: {
@@ -95,6 +97,7 @@ export const darkTheme: ThemeConfig = {
     colorBorder: '#424242',
     colorBorderSecondary: '#303030',
     colorFillQuaternary: 'rgba(255, 255, 255, 0.04)',
+    // fontFamily 不再在这里设置，由 CSS 变量 --app-font 统一管理
   },
 };
 

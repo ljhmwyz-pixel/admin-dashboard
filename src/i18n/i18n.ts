@@ -144,13 +144,32 @@ i18n
 // 语言切换函数
 export const changeLanguage = async (lng: LanguageKey): Promise<void> => {
   try {
-    // 先保存到localStorage，确保检测器能读取到
+    // 先保存到 localStorage，确保检测器能读取到
     localStorage.setItem('i18nextLng', lng);
     // 再执行语言切换
     await i18n.changeLanguage(lng);
+
+    // 定义字体映射（统一格式，英文不带引号，中文带引号）
+    const fontMap: Record<string, string> = {
+      // 只有英文用 Montserrat
+      'en-US': 'Montserrat',
+      // 中文
+      'zh-CN': '"PingFang SC", "Microsoft YaHei"',
+      // 日文
+      'ja-JP': '"Noto Sans JP"',
+      // 德语
+      'de-DE': '"Segoe UI", Roboto',
+      // 意大利语
+      'it-IT': '"Segoe UI", Roboto',
+    };
+
+    // 设置 CSS 变量
+    document.documentElement.style.setProperty('--app-font', fontMap[lng] || 'Montserrat');
+
+    // 同时更新 body 的 font-family，确保立即生效
+    document.body.style.fontFamily = `${fontMap[lng] || 'Montserrat'}, sans-serif`;
   } catch (error) {
     console.error('Failed to change language:', error);
-
     throw error;
   }
 };

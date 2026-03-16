@@ -2,10 +2,12 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
 
-import { FormDrawer, FormInput, FormTabs } from '@/components';
+import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea } from '@/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
+import { useLanguage } from '@/shared/hooks';
 
 import OrganizationInfo from '../../organization-info/OrganizationInfo';
+import RolePermissions from './RolePermissions';
 
 import styles from './AddRole.module.scss';
 
@@ -29,7 +31,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     currentParentNode,
     treeData,
     title = '',
-    width = '60%',
+    width = '1130',
     onSuccess,
     destroyOnClose = true,
   } = props;
@@ -41,6 +43,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
   const recordRef = useRef<AddRoleRef>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
+  const { t } = useLanguage();
   // 获取父节点信息
   const parentNode =
     currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
@@ -100,6 +103,10 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
               <FormInput
                 name="xx"
                 label="Role Name"
+                rules={[{ required: true, message: 'Please enter a role name' }]}
+                inputProps={{
+                  placeholder: 'Please enter a role name',
+                }}
                 prefixIcon={
                   <svg
                     width="15"
@@ -123,6 +130,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
               <FormInput
                 name="xxx"
                 label="Status"
+                inputProps={{
+                  disabled: true,
+                }}
                 prefixIcon={
                   <svg
                     width="14"
@@ -142,6 +152,63 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 }
               />
             </AntCol>
+          </AntRow>
+          <AntRow gutter={30}>
+            <AntCol span={12}>
+              <FormInput
+                name="xxxx"
+                label="Number of Members"
+                inputProps={{
+                  disabled: true,
+                }}
+                prefixIcon={
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7.99961 12.2001V12.8001H9.19961V12.2001H8.59961H7.99961ZM0.99961 12.2001V12.8001H2.19961V12.2001H1.59961H0.99961ZM11.7996 12.2001V12.8001H12.9996V12.2001H12.3996H11.7996ZM4.79961 4.40012C4.79961 4.73149 5.06824 5.00012 5.39961 5.00012C5.73098 5.00012 5.99961 4.73149 5.99961 4.40012H5.39961H4.79961ZM0.599609 12.8001C0.268239 12.8001 -0.000390649 13.0687 -0.000390649 13.4001C-0.000390649 13.7315 0.268239 14.0001 0.599609 14.0001V13.4001V12.8001ZM13.3996 14.0001C13.731 14.0001 13.9996 13.7315 13.9996 13.4001C13.9996 13.0687 13.731 12.8001 13.3996 12.8001V13.4001V14.0001ZM8.59961 10.3001H7.99961V12.2001H8.59961H9.19961V10.3001H8.59961ZM1.59961 12.2001H2.19961V10.3001H1.59961H0.99961V12.2001H1.59961ZM5.09961 6.80013V7.40013C6.70124 7.40013 7.99961 8.6985 7.99961 10.3001H8.59961H9.19961C9.19961 8.03576 7.36398 6.20013 5.09961 6.20013V6.80013ZM5.09961 6.80013V6.20013C2.83524 6.20013 0.99961 8.03576 0.99961 10.3001H1.59961H2.19961C2.19961 8.6985 3.49798 7.40013 5.09961 7.40013V6.80013ZM12.3996 4.1001H11.7996V12.2001H12.3996H12.9996V4.1001H12.3996ZM5.39961 4.40012H5.99961V4.1001H5.39961H4.79961V4.40012H5.39961ZM8.89961 0.600098V1.2001C10.5012 1.2001 11.7996 2.49847 11.7996 4.1001H12.3996H12.9996C12.9996 1.83573 11.164 9.76324e-05 8.89961 9.76324e-05V0.600098ZM8.89961 0.600098V9.76324e-05C6.63524 9.76324e-05 4.79961 1.83573 4.79961 4.1001H5.39961H5.99961C5.99961 2.49847 7.29798 1.2001 8.89961 1.2001V0.600098ZM0.599609 13.4001V14.0001H13.3996V13.4001V12.8001H0.599609V13.4001Z"
+                      fill="#191B1F"
+                      fillOpacity="0.6"
+                    />
+                  </svg>
+                }
+              />
+            </AntCol>
+          </AntRow>
+          <AntRow gutter={30}>
+            <AntCol span={24}>
+              <FormTextArea
+                name="xxxx"
+                label="Description"
+                inputProps={{
+                  placeholder: 'Please enter description',
+                }}
+                prefixIcon={
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0.599609 13.4001H13.3995M4.38626 11.3704L7.26394 9.76071C7.42117 9.67277 7.55172 9.54398 7.64179 9.38797L10.9813 3.60385C11.5335 2.64726 11.2058 1.42408 10.2492 0.871799C9.29262 0.319514 8.06944 0.647265 7.51715 1.60385L4.17769 7.38797C4.08761 7.54398 4.04136 7.72143 4.04381 7.90156L4.08864 11.1985C4.0907 11.3501 4.25399 11.4444 4.38626 11.3704Z"
+                      stroke="#191B1F"
+                      strokeOpacity="0.6"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                }
+              />
+            </AntCol>
+          </AntRow>
+          <AntRow gutter={30}>
+            <RolePermissions />
           </AntRow>
         </div>
       ),
@@ -167,6 +234,14 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         };
       }}
       // onOk={() => form.submit()}
+      footer={
+        <div className={styles.footer}>
+          <FormButton color="default">{t('common.action.cancel')}</FormButton>
+          <FormButton color="primary" variant="solid" onClick={() => form.submit()}>
+            {t('common.action.confirm')}
+          </FormButton>
+        </div>
+      }
     >
       <AntForm form={form} layout="vertical" onFinish={handleFinish}>
         {/* 组织基本信息 */}

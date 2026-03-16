@@ -3,6 +3,22 @@
 @use './shared/styles/mixins' as *;
 @use './shared/styles/globals' as *;
 
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 // 全局CSS变量（兼容现有系统）
 :root {
   --background: $color-bg-base;
@@ -25,10 +41,13 @@
   --destructive-foreground: white;
   --ring: $color-primary;
   --radius: $border-radius;
+
+  /* 字体 */
+  --app-font: 'Montserrat';
 }
 
 // 暗色主题变量
-[data-theme="dark"],
+[data-theme='dark'],
 .dark {
   --background: $dark-color-bg-base;
   --foreground: $dark-color-text-primary;
@@ -62,13 +81,20 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: $line-height-normal;
   color: var(--foreground);
   background-color: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
+  font-family: var(--app-font), sans-serif;
+}
+
+.ant-table,
+body {
+  font-variant-numeric: tabular-nums;
 }
 
 /* 自定义滚动条 */
@@ -89,4 +115,18 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsla(var(--muted-foreground), 0.5);
+}
+
+/* antd 必须继承字体 */
+.ant-typography,
+.ant-btn,
+.ant-input,
+.ant-table,
+.ant-select,
+.ant-modal,
+.ant-drawer,
+.ant-tabs,
+.ant-menu,
+.ant-tree {
+  font-family: inherit !important;
 }
