@@ -89,49 +89,58 @@
       color: #8c8c8c;
     }
 
-    &.errData {
-      color: red;
-    }
-  }
-
-  .refreshBtn {
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
-    background-color: #191b1f0a;
-    border: none;
-  }
-
-  .refreshBtn:hover {
-    background-color: #191b1f0a !important;
-    border: none !important;
-  }
-
-  // 编辑模式的表格行样式
-  .editRow {
-    :global(.ant-table-cell) {
-      padding: 10px 8px !important;
-    }
-  }
-
-  // 只读模式的表格行样式
-  .readOnlyRow {
-    :global(.ant-table-cell) {
-      padding: 16px 16px !important;
+    &.active {
+      font-weight: 600;
+      background: #33C2C80F;
+      color: var(--ant-color-primary);
+      border-right: 2px solid var(--ant-color-primary);
     }
   }
 }
+
+&.errData {
+  color: red;
+}
+
 .refreshBtn {
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
-    background-color: #191b1f0a;
-    border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background-color: #191b1f0a;
+  border: none;
+}
+
+.refreshBtn:hover {
+  background-color: #191b1f0a !important;
+  border: none !important;
+}
+
+// 编辑模式的表格行样式
+.editRow {
+  :global(.ant-table-cell) {
+    padding: 10px 8px !important;
   }
-  .refreshBtn:hover {
-    background-color: #191b1f0a !important;
-    border: none !important;
+}
+
+// 只读模式的表格行样式
+.readOnlyRow {
+  :global(.ant-table-cell) {
+    padding: 16px 16px !important;
   }
+}
+
+.refreshBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background-color: #191b1f0a;
+  border: none;
+}
+
+.refreshBtn:hover {
+  background-color: #191b1f0a !important;
+  border: none !important;
+}
 
 // 编辑模式的表格行样式
 .editRow {
