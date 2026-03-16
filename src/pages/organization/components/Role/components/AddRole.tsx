@@ -1,8 +1,9 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
+import { Tag, Tooltip } from 'antd';
 
-import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea } from '@/components';
+import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -216,7 +217,100 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     {
       key: 'Record',
       label: <div className={styles.tabItems}>Record</div>,
-      children: <div>Record</div>,
+      children: (
+        <div className={styles.recordContainer}>
+          <Table
+            rowKey="key"
+            columns={[
+              {
+                title: 'No.',
+                dataIndex: 'no',
+                width: 70,
+              },
+              {
+                title: 'Change Type',
+                dataIndex: 'type',
+                width: 140,
+                render: (type: any) => {
+                  const map: any = {
+                    add: { color: 'green', text: 'Add' },
+                    modify: { color: 'blue', text: 'Modify' },
+                    delete: { color: 'red', text: 'Deleted' },
+                  };
+
+                  return <Tag color={map[type].color}>{map[type].text}</Tag>;
+                },
+              },
+              {
+                title: 'Changed By',
+                dataIndex: 'changedBy',
+                width: 180,
+              },
+              {
+                title: 'Changed Content',
+                dataIndex: 'content',
+                ellipsis: true,
+                render: (text: string) => (
+                  <Tooltip title={text}>
+                    <div style={{ maxWidth: 420 }}>{text}</div>
+                  </Tooltip>
+                ),
+              },
+              {
+                title: 'Changed Time',
+                dataIndex: 'time',
+                width: 200,
+                render: (_: any, record) => (
+                  <div>
+                    <div>{record.time}</div>
+                    <div style={{ color: '#999', fontSize: 12 }}>{record.date}</div>
+                  </div>
+                ),
+              },
+            ]}
+            dataSource={[
+              {
+                key: '1',
+                no: 1,
+                type: 'delete',
+                changedBy: 'USR-H6Q8-T9W3',
+                content: 'Delete Role',
+                time: '09:11:12 UTC+08:00',
+                date: '2026/01/22',
+              },
+              {
+                key: '2',
+                no: 2,
+                type: 'modify',
+                changedBy: 'USR-H6Q8-T9W3',
+                content: 'Update: Role Name, [Organization Admin] → [Admin]; Add Permissions: ...',
+                time: '09:11:12 UTC+08:00',
+                date: '2026/01/22',
+              },
+              {
+                key: '3',
+                no: 3,
+                type: 'add',
+                changedBy: 'USR-H6Q8-T9W3',
+                content:
+                  'Update: Role Name, [Organization Admin] → [Admin]\nAdd Permissions: [Web] → [Role Management]\nRemove Permissions: [App] → [All]',
+                time: '09:11:12 UTC+08:00',
+                date: '2026/01/22',
+              },
+              {
+                key: '4',
+                no: 4,
+                type: 'delete',
+                changedBy: 'USR-H6Q8-T9W3',
+                content: 'Delete Role',
+                time: '09:11:12 UTC+08:00',
+                date: '2026/01/22',
+              },
+            ]}
+            pagination={false}
+          />
+        </div>
+      ),
     },
   ];
 

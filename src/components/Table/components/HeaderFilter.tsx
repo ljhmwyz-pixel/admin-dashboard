@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Checkbox, Dropdown } from 'antd';
 import classNames from 'classnames';
 
@@ -11,21 +12,57 @@ interface Props {
 }
 
 export default function HeaderFilter({ title, value, config, onChange }: Props) {
-  const overlay = (
-    <div className={styles.menu}>
-      <Checkbox.Group options={config.options} value={value} onChange={onChange} />
-    </div>
-  );
+  const [open, setOpen] = useState(false);
+
   const isFilterActive = (val: any) => {
     if (Array.isArray(val)) return val.length > 0;
     return val !== undefined && val !== null && val !== '';
   };
+
+  // 处理单选变化
+  const handleSingleChange = (selectedValue: any) => {
+    if (onChange) {
+      onChange(selectedValue);
+    }
+    // 单选模式下，选择后关闭弹框
+    setOpen(false);
+  };
+
+  const overlay =
+    config.mode === 'multiple' ? (
+      <div className={styles.menu}>
+        <Checkbox.Group options={config.options} value={value} onChange={onChange} />
+      </div>
+    ) : (
+      <div className={styles.menu}>
+        {config.options.map((item: any) => {
+          const isSelected = value === item.value;
+          return (
+            <div
+              key={item.value}
+              className={`${styles.optionItem} ${isSelected ? styles.optionItemSelected : ''}`}
+              onClick={() => handleSingleChange(item.value)}
+            >
+              {item.label}
+            </div>
+          );
+        })}
+      </div>
+    );
+
   return (
-    <Dropdown popupRender={() => overlay} trigger={['click']} placement="bottomLeft">
+    <Dropdown
+      open={open}
+      onOpenChange={setOpen}
+      popupRender={() => overlay}
+      trigger={['click']}
+      placement="bottom"
+    >
       <div
         className={classNames(styles.trigger, {
           [styles.active]: isFilterActive(value),
         })}
+        onClick={() => setOpen(!open)}
       >
         {title}
         <svg width="6" height="4" viewBox="0 0 6 4" fill="none" xmlns="http://www.w3.org/2000/svg">
