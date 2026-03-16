@@ -18,6 +18,9 @@ export interface OrganizationTypeApi {
 
   /** 查询组织类型变更记录 */
   getOrganizationTypeRecords: (typeCode: string) => Promise<OrganizationTypeRecordResponse>;
+
+  /** 上传组织类型图片 */
+  uploadOrganizationTypeImage: (typeId: string, image: File) => Promise<any>;
 }
 
 /**
@@ -73,6 +76,22 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
    */
   async updateOrganizationTypePermissions(orgTypeCode: string, data: any): Promise<any> {
     return apiClient.put(`/api/v1/org-types/${orgTypeCode}/permissions`, data);
+  }
+
+  /**
+   * 上传组织类型图片
+   * @param typeId 组织类型ID
+   * @param image 图片文件
+   */
+  async uploadOrganizationTypeImage(typeId: string, image: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', image);
+
+    return apiClient.post(`/api/v1/organization/organization-types/${typeId}/image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 }
 
