@@ -9,7 +9,7 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { Empty, Spin, Typography } from 'antd';
+import { Empty, message, Spin, Typography } from 'antd';
 
 // 引入图标资源
 import editIcon from '@/assets/images/org-type/edit.png';
@@ -45,10 +45,23 @@ const OrganizationType: React.FC = () => {
    * 存储API调用过程中发生的错误信息
    */
   const [error, setError] = useState<string | null>(null);
+
+  /**
+   * 详情弹窗可见性
+   * 控制组织类型详情弹窗的显示和隐藏
+   */
   const [detailVisible, setDetailVisible] = useState(false);
-  const [selectedType, setSelectedType] = useState<OrganizationTypeItem>(
-    {} as OrganizationTypeItem,
-  );
+
+  /**
+   * 选中的组织类型
+   * 存储当前选中的组织类型数据，用于详情弹窗显示
+   */
+  const [selectedType, setSelectedType] = useState<OrganizationTypeItem | null>(null);
+
+  /**
+   * 是否为编辑模式
+   * 控制详情弹窗的模式：查看模式或编辑模式
+   */
   const [isEditMode, setIsEditMode] = useState(false);
 
   /**
