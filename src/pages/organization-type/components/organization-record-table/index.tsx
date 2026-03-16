@@ -3,6 +3,7 @@
  * 用于展示组织类型的变更记录
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
 import { Tooltip } from 'antd';
 
