@@ -9,7 +9,11 @@ import {
   OrgPostalCodeField,
   OrgTypeField,
   OrgUsernameField,
+  RoleField,
+  StatusField,
+  UidField,
 } from './form-fields';
+import { MemberList } from './member-info';
 import OrganizationInfo from './organization-info/OrganizationInfo';
 import OrganizationView from './organization-info/OrganizationView';
 import OrganizationDetailPanel from './organization-tab/OrganizationDetailPanel';
@@ -25,6 +29,7 @@ export {
   AddOrganizationDrawer,
   AddressPickerAutoComplete,
   DeleteConfirmInput,
+  MemberList,
   OrgAddressField,
   OrganizationDetailPanel,
   OrganizationInfo,
@@ -38,8 +43,11 @@ export {
   OrgPostalCodeField,
   OrgTypeField,
   OrgUsernameField,
+  RoleField,
   RoleFooter,
   RoleHeader,
   RoleInfo,
+  StatusField,
   TreeNodeTitle,
+  UidField,
 };

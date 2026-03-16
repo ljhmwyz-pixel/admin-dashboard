@@ -1,0 +1,92 @@
+.container {
+  width: 100%;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #262626;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: #595959;
+  margin-bottom: 24px;
+}
+
+.form {
+  margin-bottom: 32px;
+}
+
+.formItem {
+  margin-bottom: 16px;
+}
+
+.select {
+  width: 100%;
+  max-width: 400px;
+}
+
+.permissionsSection {
+  margin-top: 24px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.permissionsHeader {
+  padding: 16px 24px;
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.permissionsTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #262626;
+  margin: 0;
+}
+
+.permissionTabs {
+  display: flex;
+  gap: 16px;
+}
+
+.tabCheckbox {
+  font-size: 14px;
+  color: #595959;
+}
+
+.permissionsTable {
+  :global {
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 500;
+      color: #262626;
+    }
+
+    .ant-table-tbody > tr > td {
+      font-size: 14px;
+      color: #595959;
+    }
+  }
+}
+
+.rolesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.roleTag {
+  padding: 2px 8px;
+  background: #e6f7ff;
+  color: #1890ff;
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid #91d5ff;
+}

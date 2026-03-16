@@ -134,6 +134,15 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
   const handleSubmit = useCallback(
     async (values: OrganizationFormData) => {
       try {
+        if (!values.orgCountryRegion) {
+          form.setFields([
+            {
+              name: 'orgAddress',
+              errors: ['Please select correct country/region to create organization.'],
+            },
+          ]);
+          return { success: false, reason: 'validation_failed' };
+        }
         setSpinning(true);
         setLoading(true);
         const verifyData = await verifyOrganizationByUpdate({ ...values, orgId });
@@ -162,7 +171,7 @@ const OrganizationView: React.FC<OrganizationViewIProps> = ({
         setSpinning(false);
       }
     },
-    [setLoading, verifyOrganizationByUpdate, orgId, handleUpdateOrganization],
+    [form, handleUpdateOrganization, orgId, setLoading, verifyOrganizationByUpdate],
   );
 
   const onSave = () => {

@@ -170,9 +170,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
                 existingPhone={existingPhone}
               />
             </AntRow>
-            {/* <AntRow gutter={30}>
-          <OrgBDCountryRegionField form={form} parentOrgType={currentParentNode?.type} />
-        </AntRow> */}
 
             <AntRow gutter={30}>
               {/* 描述字段 */}

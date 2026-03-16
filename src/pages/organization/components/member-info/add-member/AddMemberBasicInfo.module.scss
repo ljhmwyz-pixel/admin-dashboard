@@ -1,0 +1,56 @@
+.container {
+  width: 100%;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #262626;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: #595959;
+  margin-bottom: 24px;
+}
+
+.form {
+  margin-bottom: 24px;
+}
+
+.formItem {
+  margin-bottom: 16px;
+}
+
+.input {
+  width: 100%;
+  max-width: 400px;
+}
+
+.checkEmailBtn {
+  color: #1890ff;
+  font-size: 14px;
+
+  &:hover {
+    color: #40a9ff;
+  }
+}
+
+.info {
+  margin-top: 32px;
+  padding: 16px;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  border-radius: 4px;
+}
+
+.infoText {
+  font-size: 14px;
+  color: #52c41a;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

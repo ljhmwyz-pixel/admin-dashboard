@@ -8,12 +8,16 @@ import { FormInput } from '@/components';
 type OrgUsernameFieldProps = FieldProps & {
   existingUsername?: string;
   canEdit?: boolean;
+  required?: boolean;
+  span?: number;
 };
 
 const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   form,
   existingUsername,
   canEdit = true,
+  required = true,
+  span = 12,
 }) => {
   const { t } = useLanguage();
 
@@ -33,7 +37,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
   }, [existingUsername, form]);
 
   return (
-    <AntCol span={12}>
+    <AntCol span={span}>
       <FormInput
         name="orgUsername"
         label={t('org.field.username')}
@@ -54,7 +58,7 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
             />
           </svg>
         }
-        rules={[{ required: true, message: t('org.placeholder.enter_username') }]}
+        rules={required ? [{ required: true, message: t('org.placeholder.enter_username') }] : []}
         inputProps={{
           placeholder: t('org.placeholder.enter_username'),
           maxLength: 100,

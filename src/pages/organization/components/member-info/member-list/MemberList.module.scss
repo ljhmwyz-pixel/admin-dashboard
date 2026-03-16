@@ -1,0 +1,40 @@
+.container {
+  width: 100%;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.statusTabs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  justify-content: flex-end;
+}
+
+.switch-container {
+  cursor: pointer;
+  padding: 4px;
+  display: inline-block;
+}
+
+.role {
+  text-decoration: underline;
+  color: #33C2C8;
+  cursor: pointer;
+}

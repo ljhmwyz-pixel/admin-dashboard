@@ -22,6 +22,12 @@ export const ORGANIZATION_ENDPOINTS = {
   UPDATE: (orgId: string) => `/api/v1/organization/organizations/${orgId}`,
   /** 获取组织详情 */
   DETAIL: (orgId: string) => `/api/v1/organization/organizations/${orgId}`,
+  /** 获取组织成员列表 */
+  MEMBERS: '/api/v1/organization/members',
+  /** 获取组织成员详情 */
+  MEMBER_DETAIL: (memberId: string) => `/api/v1/organization/members/${memberId}`,
+  /** 更新组织成员信息 */
+  MEMBER_UPDATE: (memberId: string) => `/api/v1/organization/members/${memberId}`,
   /** 验证邮箱是否存在 */
   VERIFY_EMAIL: ' /api/v1/organization/users/lookup-by-email',
   /** 验证组织信息（创建时） */

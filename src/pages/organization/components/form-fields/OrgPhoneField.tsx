@@ -9,6 +9,8 @@ type OrgPhoneFieldProps = FieldProps & {
   existingPhone?: string;
   verifyResult?: VerifyOrganization;
   canEdit?: boolean;
+  span?: number;
+  required?: boolean;
 };
 
 const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
@@ -16,6 +18,8 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   existingPhone,
   verifyResult = {} as VerifyOrganization,
   canEdit = true,
+  span = 12,
+  required = false,
 }) => {
   const { t } = useLanguage();
 
@@ -100,10 +104,11 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
   }, [verifyResult.isPhoneExists, form, t]);
 
   return (
-    <AntCol span={12}>
+    <AntCol span={span}>
       <FormInput
         name="orgPhone"
         label={t('org.field.phone')}
+        required={required}
         prefixIcon={
           <svg
             width="14"
@@ -120,6 +125,16 @@ const OrgPhoneField: React.FC<OrgPhoneFieldProps> = ({
               strokeLinecap="round"
             />
           </svg>
+        }
+        rules={
+          required
+            ? [
+                {
+                  required: true,
+                  message: 'error msg',
+                },
+              ]
+            : []
         }
         inputProps={{
           type: 'text',
