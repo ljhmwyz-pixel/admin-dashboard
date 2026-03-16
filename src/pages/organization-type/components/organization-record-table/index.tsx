@@ -1,168 +1,158 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+/**
+ * 组织变更记录表格组件
+ * 用于展示组织类型的变更记录
+ */
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
-import { Input, Segmented, Spin, Table } from 'antd';
 
+// 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
+//导入常量
+import { RECORD_PLATFORM_OPTIONS } from '../../constants';
+// 导入hooks
+import { useApiCall } from '../../hooks/useApiCall';
+// 导入共用组件
+import SearchHeader from '../common/SearchHeader';
+import TableContainer from '../common/TableContainer';
+
+// 导入样式
 import styles from './index.module.scss';
 
+/**
+ * 组织变更记录表格组件属性
+ */
 interface OrganizationRecordTableProps {
+  /** 组织类型编码 */
   typeCode: string;
 }
 
 const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeCode }) => {
+  /** 当前选中的标签（Organization、Members或Plants） */
   const [activeTab, setActiveTab] = useState('DATA_ORGANIZATION'); // 默认选中Organization标签
-  const [records, setRecords] = useState<OrganizationTypeRecordItem[]>([]); // 变更记录数据
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [searchText, setSearchText] = useState(''); // 搜索关键词
-  const [debouncedSearchText, setDebouncedSearchText] = useState(''); // 防抖后的搜索关键词
 
-  // 获取组织类型-变更记录数据
-  const fetchRecords = useCallback(
-    async (keyword?: string) => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
-          recordType: activeTab,
-          keyword,
-        });
-        const recordPage = response.data || {};
-        const recordData = recordPage.records || [];
+  /** 变更记录数据 */
+  const [records, setRecords] = useState<OrganizationTypeRecordItem[]>([]);
 
-        // 设置变更记录数据
-        setRecords(recordData);
-      } catch (err) {
-        console.error('Failed to fetch records:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch records');
-      } finally {
-        setLoading(false);
-      }
+  /**
+   * 获取组织类型-变更记录数据
+   */
+  const {
+    loading,
+    error,
+    callApi: fetchRecords,
+  } = useApiCall(async (keyword?: string) => {
+    const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
+      recordType: activeTab,
+      keyword,
+    });
+    const recordPage = response.data || {};
+    const recordData = recordPage.records || [];
+
+    // 设置变更记录数据
+    setRecords(recordData);
+    return recordData;
+  });
+
+  /**
+   * 处理搜索
+   */
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      fetchRecords(keyword);
     },
-    [typeCode, activeTab],
+    [fetchRecords],
   );
 
-  // 初始加载变更记录
+  /**
+   * 处理刷新
+   */
+  const handleRefresh = useCallback(() => {
+    fetchRecords();
+  }, [fetchRecords]);
+
+  /**
+   * 初始加载和切换tab时获取变更记录
+   */
   useEffect(() => {
-    fetchRecords(debouncedSearchText);
-  }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
+    fetchRecords();
+  }, [typeCode, fetchRecords, activeTab]);
 
-  // 处理搜索
-  const handleSearch = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  // 处理刷新
-  const handleRefresh = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  // 防抖处理
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchText(searchText);
-    }, 500); // 500ms防抖
-
-    return () => clearTimeout(timer);
-  }, [searchText]);
-
-  const columns = [
-    {
-      title: 'No.',
-      dataIndex: 'no',
-      key: 'no',
-      width: 60,
-    },
-    {
-      title: 'Change Type',
-      dataIndex: 'changeType',
-      key: 'changeType',
-      width: 180,
-      render: (text: string) => <span className={styles.changeType}>{text}</span>,
-    },
-    {
-      title: 'Changed By',
-      dataIndex: 'changedBy',
-      key: 'changedBy',
-      width: 180,
-    },
-    {
-      title: 'Changed Content',
-      dataIndex: 'changeContent',
-      key: 'changeContent',
-    },
-    {
-      title: 'Changed Time',
-      dataIndex: 'changeTime',
-      key: 'changeTime',
-      width: 200,
-      render: (text: string) => {
-        // 解析时间字符串，提取日期和时间部分
-        const [date, time] = text.split(' ');
-        return (
-          <div className={styles.changeTimeContainer}>
-            <div className={styles.time}>{time}</div>
-            <div className={styles.date}>{date}</div>
-          </div>
-        );
+  /**
+   * 表格列配置
+   * 使用useMemo优化，避免重复创建
+   */
+  const columns = useMemo(
+    () => [
+      {
+        title: 'No.',
+        dataIndex: 'no',
+        key: 'no',
+        width: 60,
       },
-      align: 'right' as const,
-    },
-  ];
+      {
+        title: 'Change Type',
+        dataIndex: 'changeType',
+        key: 'changeType',
+        width: 180,
+        render: (text: string) => <span className={styles.changeType}>{text}</span>,
+      },
+      {
+        title: 'Changed By',
+        dataIndex: 'changedBy',
+        key: 'changedBy',
+        width: 180,
+      },
+      {
+        title: 'Changed Content',
+        dataIndex: 'changeContent',
+        key: 'changeContent',
+      },
+      {
+        title: 'Changed Time',
+        dataIndex: 'changeTime',
+        key: 'changeTime',
+        width: 200,
+        render: (text: string) => {
+          // 解析时间字符串，提取日期和时间部分
+          const [date, time] = text.split(' ');
+          return (
+            <div className={styles.changeTimeContainer}>
+              <div className={styles.time}>{time}</div>
+              <div className={styles.date}>{date}</div>
+            </div>
+          );
+        },
+        align: 'right' as const,
+      },
+    ],
+    [],
+  );
 
+  /**
+   * 渲染组件
+   */
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div className={styles.topSearchContainer}>
-        <Segmented
-          options={[
-            { label: 'Organization', value: 'DATA_ORGANIZATION' },
-            { label: 'Members', value: 'DATA_USER' },
-            { label: 'Plants', value: 'DATA_PLANT' },
-          ]}
-          value={activeTab}
-          onChange={setActiveTab}
-        />
-        <div className={styles.searchContainer}>
-          <Input
-            placeholder="Please enter role name"
-            prefix={<SearchOutlined />}
-            style={{ width: 200 }}
-            value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            onPressEnter={handleSearch}
-          />
-          <div className={styles.refreshIcon} onClick={handleRefresh}>
-            <ReloadOutlined />
-          </div>
-        </div>
-      </div>
+    <div className={styles.container}>
+      {/* 顶部搜索容器 */}
+      <SearchHeader
+        options={RECORD_PLATFORM_OPTIONS}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchPlaceholder="Please enter role name"
+        onSearch={handleSearch}
+        onRefresh={handleRefresh}
+      />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Table
-          className={styles.table}
-          dataSource={loading ? [] : records}
+      {/* 表格内容 */}
+      <div className={styles.tableContainer}>
+        <TableContainer
+          loading={loading}
+          error={error}
+          dataSource={records}
           columns={columns}
-          pagination={false}
           rowKey="no"
-          loading={{ spinning: loading, indicator: <Spin size="large" /> }}
         />
-        {error && (
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: 'red',
-            }}
-          >
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );

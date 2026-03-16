@@ -15,7 +15,7 @@ import { Input, Segmented, Select, Spin, Table } from 'antd';
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 // 导入常量
-import { PERMISSION_OPTIONS, PLATFORM_OPTIONS } from './constants';
+import { FUNCTIONAL_PERMISSION_OPTIONS, PLATFORM_OPTIONS } from '../../constants';
 
 // 导入样式
 import styles from './index.module.scss';
@@ -44,16 +44,14 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
 }) => {
   /** 当前选中的平台（Web或App） */
   const [activeTab, setActiveTab] = useState('WEB'); // 默认选中web端权限
-  /** 原始权限数据，用于比较是否有修改 */
+  /** 原始权限数据 */
   const [originalData, setOriginalData] = useState<OrganizationTypePermissionItem[]>([]);
-  /** 修改的权限数据 */
-  const [modifiedData, setModifiedData] = useState<any>({});
-  /** 左侧面板一级节点列表数据 */
-  const [firstLevelNodes, setFirstLevelNodes] = useState<
-    Omit<OrganizationTypePermissionItem, 'children'>[]
-  >([]);
-  /** 当前选中的一级节点 */
+  /** 第一级权限节点 */
+  const [firstLevelNodes, setFirstLevelNodes] = useState<OrganizationTypePermissionItem[]>([]);
+  /** 选中的权限编码 */
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  /** 修改后的权限数据 */
+  const [modifiedData, setModifiedData] = useState<any>({});
   /** 加载状态 */
   const [loading, setLoading] = useState(false);
   /** 错误信息 */
@@ -172,7 +170,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       }
       return null;
     },
-    [],
+    [], // 空依赖数组，因为函数内部没有使用外部变量
   );
 
   /**
@@ -328,60 +326,81 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         dataIndex: 'thisOrganization',
         key: 'thisOrganization',
         width: 170,
-        render: (text: string, record: any) => (
-          <Select
-            value={text}
-            style={{ width: 132 }}
-            onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
-            disabled={!isEditMode}
-          >
-            {PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
-              <Option key={item.value} value={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: (text: string, record: any) => {
+          // 不可编辑时显示文本，可编辑时显示Select组件
+          if (!isEditMode) {
+            // 根据值获取对应的标签
+            const option = FUNCTIONAL_PERMISSION_OPTIONS.find((item) => item.value === text);
+            return option ? option.label : text;
+          }
+          return (
+            <Select
+              value={text}
+              style={{ width: 132 }}
+              onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
+            >
+              {FUNCTIONAL_PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
+                <Option key={item.value} value={item.value}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
       },
       {
         title: 'Direct Sub-Organizations',
         dataIndex: 'directSubOrganizations',
         key: 'directSubOrganizations',
         width: 220,
-        render: (text: string, record: any) => (
-          <Select
-            value={text}
-            style={{ width: 132 }}
-            onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
-            disabled={!isEditMode}
-          >
-            {PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
-              <Option key={item.value} value={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: (text: string, record: any) => {
+          // 不可编辑时显示文本，可编辑时显示Select组件
+          if (!isEditMode) {
+            // 根据值获取对应的标签
+            const option = FUNCTIONAL_PERMISSION_OPTIONS.find((item) => item.value === text);
+            return option ? option.label : text;
+          }
+          return (
+            <Select
+              value={text}
+              style={{ width: 132 }}
+              onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
+            >
+              {FUNCTIONAL_PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
+                <Option key={item.value} value={item.value}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
       },
       {
         title: 'Indirect Sub-Organizations',
         dataIndex: 'indirectSubOrganizations',
         key: 'indirectSubOrganizations',
         width: 220,
-        render: (text: string, record: any) => (
-          <Select
-            value={text}
-            style={{ width: 132 }}
-            onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
-            disabled={!isEditMode}
-          >
-            {PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
-              <Option key={item.value} value={item.value}>
-                {item.label}
-              </Option>
-            ))}
-          </Select>
-        ),
+        render: (text: string, record: any) => {
+          // 不可编辑时显示文本，可编辑时显示Select组件
+          if (!isEditMode) {
+            // 根据值获取对应的标签
+            const option = FUNCTIONAL_PERMISSION_OPTIONS.find((item) => item.value === text);
+            return option ? option.label : text;
+          }
+          return (
+            <Select
+              value={text}
+              style={{ width: 132 }}
+              onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
+            >
+              {FUNCTIONAL_PERMISSION_OPTIONS.map((item: { label: string; value: string }) => (
+                <Option key={item.value} value={item.value}>
+                  {item.label}
+                </Option>
+              ))}
+            </Select>
+          );
+        },
       },
     ],
     [handlePermissionChange, isEditMode],
@@ -392,7 +411,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
    */
   const renderLeftPannel = () => {
     return (
-      <div style={{ width: 184, background: '#ffffff', overflow: 'auto' }}>
+      <div className={styles.leftContainer} style={{ width: 184 }}>
         {firstLevelNodes.map((node) => (
           <div
             key={node.permissionCode}
@@ -415,7 +434,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
    */
   const renderTable = () => {
     return (
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className={styles.tableContainer}>
         <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
           <Table
             dataSource={tableDataForDisplay}
@@ -423,6 +442,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             pagination={false}
             rowKey="key"
             locale={{ emptyText: '无数据' }}
+            scroll={{ y: window.innerHeight - 410 }}
           />
         </div>
       </div>
