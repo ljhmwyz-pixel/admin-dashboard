@@ -3,19 +3,15 @@
  * 用于展示和编辑组织类型的数据权限
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Select } from 'antd';
+import { Input, Segmented, Select, Spin, Table } from 'antd';
 
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 // 导入常量
 import { DATA_PERMISSION_OPTIONS, DATA_PLATFORM_OPTIONS } from '../../constants';
-// 导入hooks
-import { useApiCall } from '../../hooks/useApiCall';
-// 导入共用组件
-import SearchHeader from '../common/SearchHeader';
-import TableContainer from '../common/TableContainer';
 
 // 导入样式
 import styles from './index.module.scss';
@@ -51,49 +47,73 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   /** 修改的数据权限数据 */
   const [modifiedData, setModifiedData] = useState<any>({});
 
+  /** 加载状态 */
+  const [loading, setLoading] = useState(false);
+
+  /** 错误信息 */
+  const [error, setError] = useState<string | null>(null);
+
+  /** 搜索关键词 */
+  const [searchText, setSearchText] = useState('');
+
+  /** 防抖后的搜索关键词 */
+  const [debouncedSearchText, setDebouncedSearchText] = useState('');
+
   /**
-   * 获取组织类型-数据权限数据
+   * 防抖处理，避免频繁搜索
+   * 当searchText变化时，300ms后更新debouncedSearchText
+   * 用于优化搜索性能，避免频繁调用API
    */
-  const {
-    loading,
-    error,
-    callApi: fetchDataPermissions,
-  } = useApiCall(async (keyword?: string) => {
-    const response = await organizationTypeApi.getOrganizationTypePermissions(typeCode, {
-      permissionType: 'DATA',
-      resourceType: activeTab,
-      permissionKeyword: keyword,
-    });
-    const dataPermissions: OrganizationTypeDataItem[] = response.data.dataPermissions || [];
-    setOriginalData(dataPermissions);
-    // 重置修改数据
-    setModifiedData({});
-    return dataPermissions;
-  });
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300); // 300ms防抖
+    return () => clearTimeout(timer);
+  }, [searchText]);
 
   /**
    * 处理搜索
    */
-  const handleSearch = useCallback(
-    (keyword: string) => {
-      fetchDataPermissions(keyword);
-    },
-    [fetchDataPermissions],
-  );
+  const handleSearch = () => {
+    setDebouncedSearchText(searchText);
+  };
 
   /**
    * 处理刷新
    */
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = () => {
     fetchDataPermissions();
-  }, [fetchDataPermissions]);
+  };
+
+  /**
+   * 获取组织类型-数据权限数据
+   */
+  const fetchDataPermissions = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await organizationTypeApi.getOrganizationTypePermissions(typeCode, {
+        permissionType: 'DATA',
+        resourceType: activeTab,
+        permissionKeyword: debouncedSearchText,
+      });
+      const dataPermissions: OrganizationTypeDataItem[] = response.data.dataPermissions || [];
+      setOriginalData(dataPermissions);
+      // 重置修改数据
+      setModifiedData({});
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch data permissions');
+    } finally {
+      setLoading(false);
+    }
+  }, [typeCode, activeTab, debouncedSearchText]);
 
   /**
    * 初始加载和切换tab时获取数据权限
    */
   useEffect(() => {
     fetchDataPermissions();
-  }, [activeTab, typeCode, fetchDataPermissions]);
+  }, [activeTab, typeCode, fetchDataPermissions, debouncedSearchText]);
 
   /**
    * 处理权限级别变更
@@ -263,29 +283,64 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
     [handlePermissionChange, isEditMode],
   );
 
-  return (
-    <div className={styles.container}>
-      {/* 顶部搜索容器 */}
-      <SearchHeader
-        options={DATA_PLATFORM_OPTIONS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        searchPlaceholder="Please enter data field"
-        onSearch={handleSearch}
-        onRefresh={handleRefresh}
-      />
+  /**
+   * 渲染内容区域
+   */
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className={styles.statusContainer}>
+          <Spin size="large" />
+        </div>
+      );
+    }
 
-      {/* 表格内容 */}
+    if (error) {
+      return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
+    }
+
+    if (originalData.length === 0) {
+      return <div className={`${styles.statusContainer} ${styles.noData}`}>无数据</div>;
+    }
+
+    return (
       <div className={styles.tableContainer}>
-        <TableContainer
-          loading={loading}
-          error={error}
+        <Table
           dataSource={tableDataForDisplay}
           columns={columns}
+          pagination={false}
           rowKey="key"
+          locale={{ emptyText: '无数据' }}
           scroll={{ y: window.innerHeight - 200 }}
         />
       </div>
+    );
+  };
+
+  return (
+    <div className={styles.container}>
+      {/* 顶部搜索容器 */}
+      <div className={styles.topSearchContainer}>
+        <Segmented options={DATA_PLATFORM_OPTIONS} value={activeTab} onChange={setActiveTab} />
+        <div className={styles.searchContainer}>
+          <Input
+            placeholder="Please enter data field"
+            prefix={<SearchOutlined />}
+            style={{ width: 200 }}
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+            onPressEnter={handleSearch}
+          />
+          <div className={styles.refreshIcon} onClick={handleRefresh}>
+            <ReloadOutlined />
+          </div>
+        </div>
+      </div>
+
+      {/* 内容区域 */}
+      {renderContent()}
     </div>
   );
 };

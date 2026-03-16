@@ -3,18 +3,15 @@
  * 用于展示组织类型的变更记录
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
+import { Input, Segmented, Spin, Table } from 'antd';
 
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 //导入常量
 import { RECORD_PLATFORM_OPTIONS } from '../../constants';
-// 导入hooks
-import { useApiCall } from '../../hooks/useApiCall';
-// 导入共用组件
-import SearchHeader from '../common/SearchHeader';
-import TableContainer from '../common/TableContainer';
 
 // 导入样式
 import styles from './index.module.scss';
@@ -34,49 +31,73 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
   /** 变更记录数据 */
   const [records, setRecords] = useState<OrganizationTypeRecordItem[]>([]);
 
-  /**
-   * 获取组织类型-变更记录数据
-   */
-  const {
-    loading,
-    error,
-    callApi: fetchRecords,
-  } = useApiCall(async (keyword?: string) => {
-    const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
-      recordType: activeTab,
-      keyword,
-    });
-    const recordPage = response.data || {};
-    const recordData = recordPage.records || [];
+  /** 加载状态 */
+  const [loading, setLoading] = useState(false);
 
-    // 设置变更记录数据
-    setRecords(recordData);
-    return recordData;
-  });
+  /** 错误信息 */
+  const [error, setError] = useState<string | null>(null);
+
+  /** 搜索关键词 */
+  const [searchText, setSearchText] = useState('');
+
+  /** 防抖后的搜索关键词 */
+  const [debouncedSearchText, setDebouncedSearchText] = useState('');
+
+  /**
+   * 防抖处理，避免频繁搜索
+   * 当searchText变化时，300ms后更新debouncedSearchText
+   * 用于优化搜索性能，避免频繁调用API
+   */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 300); // 300ms防抖
+    return () => clearTimeout(timer);
+  }, [searchText]);
 
   /**
    * 处理搜索
    */
-  const handleSearch = useCallback(
-    (keyword: string) => {
-      fetchRecords(keyword);
-    },
-    [fetchRecords],
-  );
+  const handleSearch = () => {
+    setDebouncedSearchText(searchText);
+  };
 
   /**
    * 处理刷新
    */
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = () => {
     fetchRecords();
-  }, [fetchRecords]);
+  };
+
+  /**
+   * 获取组织类型-变更记录数据
+   */
+  const fetchRecords = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
+        recordType: activeTab,
+        keyword: debouncedSearchText,
+      });
+      const recordPage = response.data || {};
+      const recordData = recordPage.records || [];
+
+      // 设置变更记录数据
+      setRecords(recordData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch records');
+    } finally {
+      setLoading(false);
+    }
+  }, [typeCode, activeTab, debouncedSearchText]);
 
   /**
    * 初始加载和切换tab时获取变更记录
    */
   useEffect(() => {
     fetchRecords();
-  }, [typeCode, fetchRecords, activeTab]);
+  }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
   /**
    * 表格列配置
@@ -130,30 +151,65 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
   );
 
   /**
+   * 渲染内容区域
+   */
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className={styles.statusContainer}>
+          <Spin size="large" />
+        </div>
+      );
+    }
+
+    if (error) {
+      return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
+    }
+
+    if (records.length === 0) {
+      return <div className={`${styles.statusContainer} ${styles.noData}`}>无数据</div>;
+    }
+
+    return (
+      <div className={styles.tableContainer}>
+        <Table
+          dataSource={records}
+          columns={columns}
+          pagination={false}
+          rowKey="no"
+          locale={{ emptyText: '无数据' }}
+        />
+      </div>
+    );
+  };
+
+  /**
    * 渲染组件
    */
   return (
     <div className={styles.container}>
       {/* 顶部搜索容器 */}
-      <SearchHeader
-        options={RECORD_PLATFORM_OPTIONS}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        searchPlaceholder="Please enter role name"
-        onSearch={handleSearch}
-        onRefresh={handleRefresh}
-      />
+      <div className={styles.topSearchContainer}>
+        <Segmented options={RECORD_PLATFORM_OPTIONS} value={activeTab} onChange={setActiveTab} />
+        <div className={styles.searchContainer}>
+          <Input
+            placeholder="Please enter role name"
+            prefix={<SearchOutlined />}
+            style={{ width: 200 }}
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+            onPressEnter={handleSearch}
+          />
+          <div className={styles.refreshIcon} onClick={handleRefresh}>
+            <ReloadOutlined />
+          </div>
+        </div>
+      </div>
 
       {/* 表格内容 */}
-      <div className={styles.tableContainer}>
-        <TableContainer
-          loading={loading}
-          error={error}
-          dataSource={records}
-          columns={columns}
-          rowKey="no"
-        />
-      </div>
+      {renderContent()}
     </div>
   );
 };
