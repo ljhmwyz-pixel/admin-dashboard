@@ -56,6 +56,12 @@ const OrganizationType: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   /**
+   * 上传loading状态
+   * 用于控制全局上传过程中的loading显示
+   */
+  const [uploading, setUploading] = useState(false);
+
+  /**
    * 获取组织类型列表
    */
   const fetchOrganizationTypes = useCallback(async () => {
@@ -120,6 +126,9 @@ const OrganizationType: React.FC = () => {
 
         if (file) {
           try {
+            // 设置上传loading状态
+            setUploading(true);
+
             // 上传文件
             await organizationTypeApi.uploadOrganizationTypeImage(type.id, file);
 
@@ -132,6 +141,9 @@ const OrganizationType: React.FC = () => {
             // 上传失败，显示错误提示
             message.error('图片上传失败');
             console.error('Failed to upload image:', error);
+          } finally {
+            // 无论成功失败，都关闭loading状态
+            setUploading(false);
           }
         }
       };
@@ -200,6 +212,38 @@ const OrganizationType: React.FC = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* 全局上传loading */}
+      {uploading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              padding: '20px',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Spin size="large" />
+            <div style={{ marginTop: '16px' }}>正在上传图片...</div>
+          </div>
         </div>
       )}
 
