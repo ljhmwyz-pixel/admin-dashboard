@@ -10,32 +10,32 @@
   --color-warning: $color-warning;
   --color-error: $color-error;
   --color-info: $color-info;
-  
+
   /* 中性色 */
   --color-text-primary: $color-text-primary;
   --color-text-secondary: $color-text-secondary;
   --color-text-tertiary: $color-text-tertiary;
   --color-text-quaternary: $color-text-quaternary;
-  
+
   /* 背景色 */
   --color-bg-base: $color-bg-base;
   --color-bg-container: $color-bg-container;
   --color-bg-elevated: $color-bg-elevated;
   --color-bg-spotlight: $color-bg-spotlight;
-  
+
   /* 边框色 */
   --color-border: $color-border;
   --color-border-secondary: $color-border-secondary;
-  
+
   /* 阴影 */
   --box-shadow: $box-shadow;
   --box-shadow-secondary: $box-shadow-secondary;
-  
+
   /* 圆角 */
   --border-radius: $border-radius;
   --border-radius-sm: $border-radius-sm;
   --border-radius-lg: $border-radius-lg;
-  
+
   /* 间距 */
   --spacing-xs: $spacing-xs;
   --spacing-sm: $spacing-sm;
@@ -43,7 +43,7 @@
   --spacing-lg: $spacing-lg;
   --spacing-xl: $spacing-xl;
   --spacing-xxl: $spacing-xxl;
-  
+
   /* 字体大小 */
   --font-size-xs: $font-size-xs;
   --font-size-sm: $font-size-sm;
@@ -51,7 +51,7 @@
   --font-size-lg: $font-size-lg;
   --font-size-xl: $font-size-xl;
   --font-size-xxl: $font-size-xxl;
-  
+
   /* 行高 */
   --line-height-tight: $line-height-tight;
   --line-height-normal: $line-height-normal;
@@ -59,16 +59,16 @@
 }
 
 /* 暗色主题变量 */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-text-primary: $dark-color-text-primary;
   --color-text-secondary: $dark-color-text-secondary;
   --color-text-tertiary: $dark-color-text-tertiary;
   --color-text-quaternary: $dark-color-text-quaternary;
-  
+
   --color-bg-base: $dark-color-bg-base;
   --color-bg-container: $dark-color-bg-container;
   --color-bg-elevated: $dark-color-bg-elevated;
-  
+
   --color-border: $dark-color-border;
   --color-border-secondary: $dark-color-border-secondary;
 }
