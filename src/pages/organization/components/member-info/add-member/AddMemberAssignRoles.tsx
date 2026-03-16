@@ -104,6 +104,23 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
     }
   }, [form, handleRoleChange]);
 
+  const loadRolesData = useCallback(async () => {
+    if (!orgId) return;
+    const roleList = await loadRoles({
+      orgId: orgId,
+      pageNum: 1,
+      pageSize: 1000,
+    });
+    if (roleList?.data?.records) {
+      setRoleList(roleList.data.records);
+    }
+  }, [orgId]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadRolesData();
+  }, [loadRolesData]);
+
   return (
     <AntForm form={form} onFinish={onSubmit} className={styles.form} layout="vertical">
       <div className={styles.stepContent}>
