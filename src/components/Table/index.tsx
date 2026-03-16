@@ -33,7 +33,6 @@ function BaseTable<RecordType extends object = any>({
       const key = col.dataIndex || col.key;
 
       if (!filterConfig?.[key]) return col;
-
       return {
         ...col,
         title: (

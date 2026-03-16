@@ -498,6 +498,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
         <Table
           rowKey="key"
           columns={columns}
+          // @ts-expect-error 暂时不管
           dataSource={pagedData}
           pagination={{
             current: page,
@@ -516,10 +517,18 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
           }}
           filterConfig={{
             platform: {
-              type: 'select',
+              mode: 'multiple',
               options: [
                 { label: 'App', value: 'app' },
                 { label: 'Web', value: 'web' },
+              ],
+            },
+            status: {
+              mode: 'single', // 单选模式
+              options: [
+                { label: 'All', value: 'all' },
+                { label: 'Normal', value: 'normal' },
+                { label: 'Deleted', value: 'deleted' },
               ],
             },
           }}

@@ -48,12 +48,11 @@ export interface PaginationState {
 
 /** 单列过滤配置 */
 export type ColumnFilterConfig<T = any> = {
-  type: 'select';
+  mode: 'multiple' | 'single';
   options: {
     label: React.ReactNode;
     value: any;
   }[];
-  multiple?: boolean;
   allowClear?: boolean;
   onFilter?: (value: any, record: T) => boolean;
 };
