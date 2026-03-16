@@ -30,6 +30,22 @@
   flex: 1;
   display: flex;
   flex-direction: row;
+  overflow: auto;
+}
+.leftContainer {
+  background: '#ffffff';
+  overflow: 'auto';
+  border: 1px solid #191b1f0f;
+
+}
+.tableContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: '#ffffff';
+  overflow: 'auto';
+  border: 1px solid #191b1f0f;
+
 }
 
 // 树节点样式
