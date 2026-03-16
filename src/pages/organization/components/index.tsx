@@ -1,5 +1,6 @@
 import {
   AddressPickerAutoComplete,
+  ApplyReasonField,
   OrgAddressField,
   OrgCountryRegionField,
   OrgDescriptionField,
@@ -28,6 +29,7 @@ import RoleHeader from './Role/components/RoleHeader';
 export {
   AddOrganizationDrawer,
   AddressPickerAutoComplete,
+  ApplyReasonField,
   DeleteConfirmInput,
   MemberList,
   OrgAddressField,

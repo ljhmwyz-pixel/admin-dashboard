@@ -40,11 +40,52 @@
 .tree {
   :global {
     .ant-tree-treenode {
-      padding: 4px 0;
+      height: 34px;
+      margin: 0 !important;
+      display: flex;
+      align-items: center;
+      width: 100%;
+
+      &::before {
+        display: none;
+      }
+
+      .ant-tree-switcher {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 6px;
+
+        &::before {
+          top: 5px;
+        }
+      }
+
+      .ant-tree-node-selected {
+        background-color: transparent;
+
+
+      }
+
+      .ant-tree-node-content-wrapper {
+        &:hover {
+          background-color: transparent;
+        }
+      }
     }
 
     .ant-tree-checkbox {
-      margin-right: 8px;
+      order: 999;
+    }
+
+    .ant-splitter-panel {
+      padding: 0;
+    }
+
+    .ant-tree-indent-unit::before,
+    .ant-tree-switcher-leaf-line::before,
+    .ant-tree-switcher-leaf-line:after {
+      display: none;
     }
   }
 }

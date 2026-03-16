@@ -26,6 +26,17 @@ export const ORGANIZATION_ENDPOINTS = {
   MEMBERS: '/api/v1/organization/members',
   /** 获取组织成员详情 */
   MEMBER_DETAIL: (memberId: string) => `/api/v1/organization/members/${memberId}`,
+  /** 预览组织成员权限 */
+  PERMISSION_PREVIEW: '/api/v1/organization/members/permission-preview',
+  /** 获取组织成员权限 */
+  PERMISSIONS: (memberId: string) => `/api/v1/organization/members/${memberId}/permissions`,
+  /** 获取组织成员应用权限 */
+  APPLICATION_PERMISSIONS: (applicationId: string) =>
+    `/api/v1/organization/member-applications/${applicationId}`,
+  /** 获取组织成员变更日志 */
+  CHANGE_LOGS: (memberId: string) => `/api/v1/organization/members/${memberId}/change-logs`,
+  /** 成员列表 */
+  ROLES: '/api/v1/organization/roles',
   /** 更新组织成员信息 */
   MEMBER_UPDATE: (memberId: string) => `/api/v1/organization/members/${memberId}`,
   /** 验证邮箱是否存在 */

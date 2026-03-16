@@ -80,9 +80,9 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       setEditMember(false);
       return;
     }
-    setInfoModalVisible(false);
     setEditMember(false);
     setSelectedMember(null);
+    setInfoModalVisible(false);
   };
 
   /**
@@ -116,17 +116,19 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     if (!infoModalVisible) {
       setInfoModalVisible(true);
     }
-    setEditMember(true);
+    if (!member?.isOwner) {
+      setEditMember(true);
+    }
   };
 
   /**
    * 处理模态框中的保存操作
    */
-  const handleSaveMember = async (member: Member) => {
+  const handleSaveMember = async (member: Member, roleIds: string[]) => {
     try {
       // 调用更新接口
-      const { memberId, status, roleId } = member;
-      const result = await updateMember(memberId, { status, roleId });
+      const { memberId, status } = member;
+      const result = await updateMember(memberId, { status, roleIds });
       if (result.success) {
         AntMessage.success('更新成功');
         setEditMember(false);
@@ -145,7 +147,10 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 限制组织所有者不可被删除
    */
   const handleDelete = (member: Member) => {
-    if (member.roleName.includes('Organization Owner')) {
+    const isOrganizationOwner = member.roleList.some((role) =>
+      role.roleName.includes('Organization Owner'),
+    );
+    if (isOrganizationOwner) {
       AntMessage.error('Organization owner cannot be deleted');
       return;
     }
@@ -256,6 +261,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onSuccess={handleAddSuccess}
         orgId={orgId}
         parentNodeData={parentNodeData}
+        currentParentNode={currentParentNode}
       />
     </div>
   );

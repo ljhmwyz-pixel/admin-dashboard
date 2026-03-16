@@ -262,6 +262,7 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
           <div className={styles.viewSection}>
             <OrgTreeSelector
               treeData={treeData}
+              title="Selected Organization"
               selectedKeys={selectedOrgKeys}
               onChange={handleTreeChange}
               editable={false}

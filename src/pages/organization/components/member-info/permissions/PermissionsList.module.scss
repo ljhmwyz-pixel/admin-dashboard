@@ -1,0 +1,38 @@
+.segmentedContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    .segmentedLabel {
+        font-weight: 600;
+        font-style: SemiBold;
+        font-size: 14px;
+        line-height: 14px;
+        letter-spacing: 0%;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: #191B1F66;
+
+        &.active {
+            color: #31C47F;
+
+            path {
+                stroke: #31C47F;
+                stroke-opacity: 1;
+            }
+        }
+
+
+    }
+}
+
+.table {
+    :global {
+        .ant-table-row-expand-icon {
+            display: none;
+        }
+    }
+}

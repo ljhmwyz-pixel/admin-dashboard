@@ -54,7 +54,7 @@ const Segmented: React.FC<Props> = ({ options, className, value, ...rest }) => {
         } as React.CSSProperties
       }
     >
-      <AntSegmented {...rest} options={formattedOptions} />
+      <AntSegmented {...rest} options={formattedOptions} value={value} />
     </div>
   );
 };
