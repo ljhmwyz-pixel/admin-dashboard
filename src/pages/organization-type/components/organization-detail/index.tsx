@@ -5,6 +5,7 @@ import { message, Modal } from 'antd';
 
 import { FormTabs } from '@/components';
 import { FormButton, FormDrawer } from '@/components';
+import { useThemeModal } from '@/components/Modal';
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
 import OrganizationDataTable from '../organization-data-table';
@@ -64,11 +65,10 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
 
     setDataPermissions(formattedData);
   }, []);
-
+  const { success: ModalSuccess } = useThemeModal();
   // 处理保存
   const handleSave = async () => {
     if (!organizationType) return;
-
     try {
       setLoading(true);
 
@@ -83,7 +83,9 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
         organizationType.typeCode,
         requestData,
       );
-
+      ModalSuccess({
+        content: '保存成功',
+      });
       message.success('保存成功');
       setHasChanges(false);
       setIsEditMode(false);
