@@ -1,0 +1,168 @@
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+
+.container {
+    padding: 24px;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+}
+
+.error {
+    color: $color-error;
+    text-align: center;
+    padding: 40px;
+}
+
+.flexContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    width: 258px;
+    height: 199px;
+    border-radius: $border-radius;
+    border: 1px solid $color-border;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        cursor: pointer;
+        box-shadow: 0px 4px 8px 0px #191B1F1F;
+        border: 1px solid #191B1F1F;
+        transform: translateY(-8px);
+
+        .topRightIconContainer {
+            opacity: 1;
+        }
+
+        .cardFooter img:last-child {
+            opacity: 1;
+        }
+    }
+}
+
+.cardContent {
+    height: 145px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+     background-color: $color-border;
+}
+
+.cardBackground {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+.defaultImage {
+    width: 64px;
+    height: 64px;
+}
+
+
+.iconContainer {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+
+.cardFooter {
+    height: 54px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1;
+
+    img:last-child {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+}
+
+.typeName {
+    font-size: 14px;
+    font-weight: 600;
+    color:$color-text-primary ;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 20px;
+    white-space: nowrap; /* 禁止换行 */
+}
+
+.typeCount {
+    height: 22px;
+    border-radius: 22px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #191B1F66;
+    color: #fff;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+   
+}
+
+.infoIcon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.orgIcon{
+    width: 14px;
+    height: 14px;
+}
+.flexCenter{
+    display: flex;
+    align-items: center;
+}
+.topRightIconContainer{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: $border-radius;
+    background: #191B1F66;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
