@@ -1,5 +1,7 @@
 import type { ThemeConfig } from 'antd';
 
+import { getCurrentLanguage, type LanguageKey } from '@/i18n';
+
 // 颜色主题配置
 export const colorSchemes = {
   turquoise: {
