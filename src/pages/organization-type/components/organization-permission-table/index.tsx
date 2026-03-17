@@ -8,9 +8,9 @@ import type {
   OrganizationTypeDetailFunctionalResponse, // 组织类型权限响应
   OrganizationTypePermissionItem, // 组织类型权限项
 } from '@shared/types/organizationType';
-import { Select, Spin, Table } from 'antd';
+import { Select, Spin } from 'antd';
 
-import { FormButton, SearchInput, Segmented } from '@/components';
+import { FormButton, SearchInput, Segmented, Table } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -441,12 +441,10 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       <div className={styles.tableContainer}>
         <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
           <Table
-            dataSource={tableDataForDisplay}
-            columns={columns}
-            pagination={false}
             rowKey="key"
-            locale={{ emptyText: '无数据' }}
-            scroll={{ y: window.innerHeight - 410 }}
+            columns={columns}
+            dataSource={tableDataForDisplay}
+            pagination={false}
             expandedRowKeys={expandedRowKeys}
             onExpandedRowsChange={(expandedKeys) => setExpandedRowKeys(expandedKeys as string[])}
           />

@@ -3,11 +3,10 @@
  * 用于展示组织类型的变更记录
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
-import { Input, Spin, Table } from 'antd';
+import { Spin, Tooltip } from 'antd';
 
-import { FormButton, SearchInput, Segmented } from '@/components';
+import { FormButton, SearchInput, Segmented, Table } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -43,6 +42,14 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
 
   /** 防抖后的搜索关键词 */
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  // 表格相关参数
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const handlePageChange = (p: number, ps: number) => {
+    setPage(p);
+    setPageSize(ps);
+  };
 
   /**
    * 防抖处理，避免频繁搜索
@@ -52,21 +59,18 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchText(searchText);
+      // 搜索时重置到第一页
+      setPage(1);
     }, 300); // 300ms防抖
     return () => clearTimeout(timer);
   }, [searchText]);
 
   /**
-   * 处理搜索
-   */
-  const handleSearch = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  /**
    * 处理刷新
    */
   const handleRefresh = () => {
+    // 刷新时重置到第一页
+    setPage(1);
     fetchRecords();
   };
 
@@ -80,9 +84,12 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
       const response = await organizationTypeApi.getOrganizationTypeRecords(typeCode, {
         recordType: activeTab,
         keyword: debouncedSearchText,
+        pageNum: page,
+        pageSize: pageSize,
       });
       const recordPage = response.data || {};
       const recordData = recordPage.records || [];
+      setTotal(recordPage.total || 0);
 
       // 设置变更记录数据
       setRecords(recordData);
@@ -91,12 +98,14 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
     } finally {
       setLoading(false);
     }
-  }, [typeCode, activeTab, debouncedSearchText]);
+  }, [typeCode, activeTab, debouncedSearchText, page, pageSize]);
 
   /**
    * 初始加载和切换tab时获取变更记录
    */
   useEffect(() => {
+    // 切换tab时重置到第一页
+    setPage(1);
     fetchRecords();
   }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
@@ -129,6 +138,11 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         title: 'Changed Content',
         dataIndex: 'changeContent',
         key: 'changeContent',
+        render: (text: string) => (
+          <Tooltip title={text} placement="top">
+            <div className={styles.changeContent}>{text}</div>
+          </Tooltip>
+        ),
       },
       {
         title: 'Changed Time',
@@ -136,11 +150,22 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         key: 'changeTime',
         width: 200,
         render: (text: string) => {
-          // 解析时间字符串，提取日期和时间部分
-          const [date, time] = text.split(' ');
+          // 将输入的时间字符串解析为UTC+0时区的时间
+          // 首先将格式从 "YYYY-MM-DD HH:mm:ss" 转换为 ISO 格式 "YYYY-MM-DDTHH:mm:ssZ"
+          const isoString = text.replace(' ', 'T') + 'Z';
+          const utcDate = new Date(isoString);
+
+          // 转换为UTC+8时区的时间
+          const utc8Timestamp = utcDate.getTime() + 8 * 60 * 60 * 1000;
+          const utc8Date = new Date(utc8Timestamp);
+
+          // 提取日期和时间部分
+          const date = utc8Date.toISOString().split('T')[0];
+          const time = utc8Date.toISOString().split('T')[1].substring(0, 8);
+
           return (
             <div className={styles.changeTimeContainer}>
-              <div className={styles.time}>{time}</div>
+              <div className={styles.time}>{time} UTC+08:00</div>
               <div className={styles.date}>{date}</div>
             </div>
           );
@@ -167,18 +192,19 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
       return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
     }
 
-    if (records.length === 0) {
-      return <div className={`${styles.statusContainer} ${styles.noData}`}>无数据</div>;
-    }
-
     return (
       <div className={styles.tableContainer}>
         <Table
           dataSource={records}
           columns={columns}
-          pagination={false}
           rowKey="no"
           locale={{ emptyText: '无数据' }}
+          pagination={{
+            current: page,
+            pageSize,
+            total: total,
+            onChange: handlePageChange,
+          }}
         />
       </div>
     );

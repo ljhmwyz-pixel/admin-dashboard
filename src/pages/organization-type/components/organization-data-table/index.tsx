@@ -3,11 +3,10 @@
  * 用于展示和编辑组织类型的数据权限
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Input, Select, Spin, Table } from 'antd';
+import { Select, Spin } from 'antd';
 
-import { FormButton, SearchInput, Segmented } from '@/components';
+import { FormButton, SearchInput, Segmented, Table } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -60,6 +59,15 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   /** 防抖后的搜索关键词 */
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
 
+  // 表格相关参数
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const handlePageChange = (p: number, ps: number) => {
+    setPage(p);
+    setPageSize(ps);
+  };
+
   /**
    * 防抖处理，避免频繁搜索
    * 当searchText变化时，300ms后更新debouncedSearchText
@@ -68,21 +76,18 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchText(searchText);
+      // 搜索时重置到第一页
+      setPage(1);
     }, 300); // 300ms防抖
     return () => clearTimeout(timer);
   }, [searchText]);
 
   /**
-   * 处理搜索
-   */
-  const handleSearch = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  /**
    * 处理刷新
    */
   const handleRefresh = () => {
+    // 刷新时重置到第一页
+    setPage(1);
     fetchDataPermissions();
   };
 
@@ -95,10 +100,14 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       setError(null);
       const response = await organizationTypeApi.getOrganizationTypeDataPermissions(typeCode, {
         resourceType: activeTab,
-        permissionKeyword: debouncedSearchText,
+        dataKeyword: debouncedSearchText,
+        pageNum: page,
+        pageSize: pageSize,
       });
       const dataPermissions: OrganizationTypeDataItem[] = response.data.records || [];
       setOriginalData(dataPermissions);
+      setTotal(response.data.total || 0);
+      setPage(response.data.pages || 1);
       // 重置修改数据
       setModifiedData({});
     } catch (err) {
@@ -106,7 +115,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [typeCode, activeTab, debouncedSearchText]);
+  }, [typeCode, activeTab, debouncedSearchText, page, pageSize]);
 
   /**
    * 初始加载和切换tab时获取数据权限
@@ -299,16 +308,17 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
     }
 
-    if (originalData.length === 0) {
-      return <div className={`${styles.statusContainer} ${styles.noData}`}>无数据</div>;
-    }
-
     return (
       <div className={styles.tableContainer}>
         <Table
           dataSource={tableDataForDisplay}
           columns={columns}
-          pagination={false}
+          pagination={{
+            current: page,
+            pageSize,
+            total: total,
+            onChange: handlePageChange,
+          }}
           rowKey="key"
           locale={{ emptyText: '无数据' }}
           scroll={{ y: window.innerHeight - 200 }}
