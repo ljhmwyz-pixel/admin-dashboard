@@ -23,7 +23,7 @@ interface AddMemberDrawerProps {
   onClose: () => void;
   /** 新增成功回调 */
   onSuccess: (formData: AddMemberFormData) => void;
-  /** 组织ID */
+  /** 组织 ID */
   orgId: string;
   /** 父组织节点数据 */
   parentNodeData: TreeNodeData | null;
@@ -37,6 +37,12 @@ interface AddMemberDrawerProps {
  * 1. 基本信息（邮箱、用户名、电话）
  * 2. 分配角色
  * 3. 关联电站
+ *
+ * 功能特性：
+ * - 支持分步表单提交
+ * - 支持步骤导航（上一步/下一步）
+ * - 支持表单数据状态管理
+ * - 支持邮箱查重和用户类型判断
  */
 const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   visible,
