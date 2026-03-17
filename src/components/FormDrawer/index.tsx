@@ -9,6 +9,7 @@ import styles from './index.module.scss';
 
 interface AppDrawerProps extends DrawerProps {
   headerExtra?: React.ReactNode;
+  footerAbsolute?: boolean;
 }
 
 const AppDrawer: React.FC<AppDrawerProps> = ({
@@ -16,6 +17,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
   title,
   closeIcon,
   children,
+  footerAbsolute = false,
   ...rest
 }) => {
   const [isOverflow, setIsOverflow] = useState(false);
@@ -54,6 +56,7 @@ const AppDrawer: React.FC<AppDrawerProps> = ({
           <div
             className={classNames(styles.footer, {
               [styles.footerOverflow]: isOverflow,
+              [styles.footerAbsolute]: footerAbsolute,
             })}
           >
             {rest.footer}
