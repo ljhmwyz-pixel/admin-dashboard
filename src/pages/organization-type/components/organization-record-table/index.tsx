@@ -3,7 +3,6 @@
  * 用于展示组织类型的变更记录
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
 import { Tooltip } from 'antd';
 
@@ -105,6 +104,8 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
    * 初始加载和切换tab时获取变更记录
    */
   useEffect(() => {
+    // 切换tab时重置到第一页
+    setPage(1);
     fetchRecords();
   }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
