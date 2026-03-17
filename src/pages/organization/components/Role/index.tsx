@@ -1,106 +1,42 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
 import type { RoleRecord } from '@pages/organization/dto';
 import type { TreeNodeData } from '@pages/organization/dto';
-import type { TableColumnsType, TableProps } from 'antd';
 
-import { FormButton, FormDrawer, Table } from '@/components';
+import { Table } from '@/components';
+import { useThemeModal } from '@/components/Modal';
 import type { OptionItem } from '@/components/Segmented';
-import type { BatchAction, OperationAction } from '@/components/Table/dto';
-import { AntDrawer, AntForm, AntSpace } from '@/shared/components';
+import OrgRoleApi, {
+  type DeleteOrgRoleReq,
+  type GetOrgRoleDTO,
+  type GetOrgRoleListReq,
+  type GetOrgRoleListRes,
+} from '@/services/modules/organization/organizationRoleApi';
+import { AntMessage, AntSpin } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
 import AddRole, { type AddRoleRef } from './components/AddRole';
-import RoleFooter from './components/RoleFooter';
 import RoleHeader from './components/RoleHeader';
 
 import styles from './index.module.scss';
 
-// 生成大量模拟数据的方法
-const generateMockData = (count: number): RoleRecord[] => {
-  const roleNames = [
-    'Organization Owner',
-    'FAE',
-    'Electrician',
-    'CED',
-    'Administrator',
-    'Manager',
-    'Supervisor',
-    'Operator',
-  ];
-  const descriptions = [
-    'System default role: Organization administrator, granted all permissions.',
-    'Custom role with limited access to specific modules.',
-    'Read-only role for viewing reports and dashboards.',
-    'Field service role with mobile app access.',
-    'Management role with team oversight capabilities.',
-  ];
-
-  return Array.from({ length: count }, (_, index) => {
-    const no = index + 1;
-    const roleName = roleNames[index % roleNames.length];
-    const description = descriptions[index % descriptions.length];
-
-    // 随机生成平台配置
-    const platformConfigurations = [
-      { app: true, web: false },
-      { app: false, web: true },
-      { app: true, web: true },
-      { app: false, web: false },
-    ];
-    const platform = platformConfigurations[index % platformConfigurations.length];
-
-    // 随机生成成员数量 (1-50)
-    const members = Math.floor(Math.random() * 50) + 1;
-
-    // 随机生成状态 (70% Normal, 30% Deleted)
-    const status = Math.random() > 0.3 ? 'Normal' : 'Deleted';
-
-    return {
-      key: String(no),
-      no,
-      roleName,
-      platform,
-      members,
-      status,
-      description,
-    };
-  });
-};
-
-// 使用生成的方法创建模拟数据
-const mockData = generateMockData(20);
-
 interface RoleInfoProps {
   currentParentNode: TreeNodeData;
   treeData: TreeNodeData[];
-  onAdd?: () => void;
-  onEdit?: (record: RoleRecord) => void;
-  onView?: (record: RoleRecord) => void;
-  onDelete?: (record: RoleRecord) => void;
   onBatchEdit?: (records: RoleRecord[]) => void;
   onBatchDelete?: (records: RoleRecord[]) => void;
 }
 
-const RoleInfo: React.FC<RoleInfoProps> = ({
-  currentParentNode,
-  treeData,
-  onEdit,
-  onView,
-  onDelete,
-  onBatchEdit,
-  onBatchDelete,
-}) => {
+const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   // const { t } = useLanguage();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [form] = AntForm.useForm();
+  const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
   const roleModalRef = useRef<AddRoleRef>(null);
+  const { confirm: themeModalConfirm } = useThemeModal();
   const handlePageChange = (p: number, ps: number) => {
     setPage(p);
     setPageSize(ps);
   };
-
   // 状态筛选：'all' | 'normal' | 'deleted'
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
   const statusList: OptionItem[] = [
@@ -175,29 +111,37 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     return result;
   }, [statusFilter, platformFilter, tableData]);
 
-  // 加载数据（模拟接口调用）
+  // 加载数据
   const loadData = useCallback(async () => {
+    if (!currentParentNode.key) return;
     setLoading(true);
     try {
-      // 模拟接口延迟 500ms
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // 模拟接口返回数据
-      const data = mockData;
-      const total = mockData.length;
-
-      // 更新表格数据和分页信息
-      setTableData(data);
-      setPagination((prev) => ({
-        ...prev,
-        total: total,
-      }));
+      const reqParams: GetOrgRoleListReq = {
+        orgId: currentParentNode.key,
+      };
+      const {
+        data: { current, records, size },
+      }: GetOrgRoleListRes = await OrgRoleApi.getOrgRoleList(reqParams);
+      // 增加No列，自增1
+      records.forEach((item, index) => {
+        item.no = (current - 1) * size + index + 1;
+      });
+      setDataSource(records);
+      setPage(current);
+      setPageSize(size);
     } catch (error) {
-      console.error('❌ 加载数据失败:', error);
+      console.error('error====:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentParentNode.key]);
+
+  /**
+   * 获取数据
+   */
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // 刷新 - 重置所有筛选条件
   const handleRefresh = useCallback(() => {
@@ -234,208 +178,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     [],
   );
 
-  // 处理全选
-  const handleSelectAll = useCallback((selected: boolean, selectedRows: RoleRecord[]) => {
-    if (selected) {
-      const keys = selectedRows.map((row) => row.key.toString());
-      setSelectedKeys(keys);
-      setSelectedRecords(selectedRows);
-    } else {
-      setSelectedKeys([]);
-      setSelectedRecords([]);
-    }
-  }, []);
-
-  // 处理批量编辑
-  const handleBatchEdit = useCallback(() => {
-    onBatchEdit?.(selectedRecords);
-  }, [onBatchEdit, selectedRecords]);
-
-  // 处理批量删除
-  const handleBatchDelete = useCallback(() => {
-    onBatchDelete?.(selectedRecords);
-  }, [onBatchDelete, selectedRecords]);
-
-  const handleTableChange = useCallback(
-    (newPagination: { current?: number; pageSize?: number }) => {
-      setPagination((prev) => ({
-        ...prev,
-        current: newPagination.current || prev.current,
-        pageSize: newPagination.pageSize || prev.pageSize,
-      }));
-    },
-    [],
-  );
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const dataSource = [
-    {
-      key: '1',
-      no: 1,
-      roleName: 'Organization Owner',
-      platform: 'App, Web',
-      members: 3,
-      status: 'Normal',
-      description: 'System default role: Organization administrator, granted all permissions.',
-    },
-    {
-      key: '2',
-      no: 2,
-      roleName: 'FAE',
-      platform: 'App',
-      members: 12,
-      status: 'Normal',
-      description: 'Field application engineer with mobile app access.',
-    },
-    {
-      key: '3',
-      no: 3,
-      roleName: 'Electrician',
-      platform: 'App, Web',
-      members: 25,
-      status: 'Normal',
-      description: 'Custom role with limited access to specific modules.',
-    },
-    {
-      key: '4',
-      no: 4,
-      roleName: 'CED',
-      platform: 'Web',
-      members: 8,
-      status: 'Deleted',
-      description: 'Read-only role for viewing reports and dashboards.',
-    },
-    {
-      key: '5',
-      no: 5,
-      roleName: 'Administrator',
-      platform: 'App, Web',
-      members: 50,
-      status: 'Normal',
-      description: 'Management role with team oversight capabilities.',
-    },
-    {
-      key: '6',
-      no: 6,
-      roleName: 'Manager',
-      platform: 'Web',
-      members: 18,
-      status: 'Normal',
-      description: 'Management role with department level permissions.',
-    },
-    {
-      key: '7',
-      no: 7,
-      roleName: 'Supervisor',
-      platform: 'App',
-      members: 7,
-      status: 'Deleted',
-      description: 'Supervision role with monitoring capabilities.',
-    },
-    {
-      key: '8',
-      no: 8,
-      roleName: 'Operator',
-      platform: 'App, Web',
-      members: 32,
-      status: 'Normal',
-      description: 'Basic operator role with standard operational permissions.',
-    },
-    {
-      key: '9',
-      no: 9,
-      roleName: 'Technical Lead',
-      platform: 'Web',
-      members: 15,
-      status: 'Normal',
-      description: 'Technical leadership role with architecture oversight.',
-    },
-    {
-      key: '10',
-      no: 10,
-      roleName: 'QA Engineer',
-      platform: 'App, Web',
-      members: 22,
-      status: 'Normal',
-      description: 'Quality assurance role with testing permissions.',
-    },
-    {
-      key: '11',
-      no: 11,
-      roleName: 'DevOps Engineer',
-      platform: 'Web',
-      members: 9,
-      status: 'Normal',
-      description: 'Infrastructure and deployment management role.',
-    },
-    {
-      key: '12',
-      no: 12,
-      roleName: 'Business Analyst',
-      platform: 'App, Web',
-      members: 14,
-      status: 'Deleted',
-      description: 'Business analysis and reporting role.',
-    },
-    {
-      key: '13',
-      no: 13,
-      roleName: 'Project Manager',
-      platform: 'Web',
-      members: 28,
-      status: 'Normal',
-      description: 'Project coordination and team management role.',
-    },
-    {
-      key: '14',
-      no: 14,
-      roleName: 'UX Designer',
-      platform: 'App',
-      members: 11,
-      status: 'Normal',
-      description: 'User experience design and research role.',
-    },
-    {
-      key: '15',
-      no: 15,
-      roleName: 'Security Officer',
-      platform: 'Web',
-      members: 6,
-      status: 'Normal',
-      description: 'Security compliance and monitoring role.',
-    },
-    {
-      key: '16',
-      no: 16,
-      roleName: 'Data Analyst',
-      platform: 'App, Web',
-      members: 19,
-      status: 'Normal',
-      description: 'Data analysis and insights generation role.',
-    },
-    {
-      key: '17',
-      no: 17,
-      roleName: 'Support Specialist',
-      platform: 'App',
-      members: 35,
-      status: 'Deleted',
-      description: 'Customer support and service role.',
-    },
-    {
-      key: '18',
-      no: 18,
-      roleName: 'Compliance Manager',
-      platform: 'Web',
-      members: 10,
-      status: 'Normal',
-      description: 'Regulatory compliance and audit management role.',
-    },
-  ];
-
   const columns = [
     {
       title: 'No.',
@@ -454,8 +196,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
     },
     {
       title: 'Number of Members',
-      dataIndex: 'members',
-      key: 'members',
+      dataIndex: 'memberCount',
+      key: 'memberCount',
     },
     {
       title: 'Status',
@@ -468,220 +210,200 @@ const RoleInfo: React.FC<RoleInfoProps> = ({
       key: 'description',
     },
   ];
-  const pagedData = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return dataSource.slice(start, start + pageSize);
-  }, [dataSource, page, pageSize]);
-
   /**
-   *添加角色
+   *点击添加角色
    */
-  const onAdd = () => {
-    roleModalRef.current?.open();
+  const onAdd = (record?: GetOrgRoleDTO, opt?: 'add' | 'edit' | 'view') => {
+    roleModalRef.current?.open(record, opt);
   };
-  const handleCancel = () => {};
-
+  /**
+   *点击删除角色
+   */
+  const onDelete = (record: GetOrgRoleDTO) => {
+    themeModalConfirm({
+      title: 'Confirm Deletion !',
+      content: (
+        <div className={styles.deleteConfirmInput}>
+          <div className={styles.confirmText}>
+            {' '}
+            Are you sure delete this Role?
+            <br />
+            This action cannot be undone.
+          </div>
+          <div className={styles.confirmContent}>
+            <div className={styles.confirmItems}>
+              <div className={styles.confirmItem}>
+                <span>Role Name</span>
+                <span className={styles.confirmItemValue}>CED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+      okText: t('common.action.delete'),
+      cancelText: t('common.action.cancel'),
+      onOk: async () => {
+        try {
+          setLoading(true);
+          const reqParams: DeleteOrgRoleReq = {
+            roleId: record.roleId || '',
+          };
+          OrgRoleApi.deleteOrgRole(reqParams).then((res: any) => {
+            AntMessage.success('Delete role successfully');
+          });
+        } catch (error) {
+          console.error('error====:', error);
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
+  /**
+   * 保存角色
+   * @param values
+   */
+  const handleAddRole = (values: any) => {
+    console.log('Received values of form: ', values);
+  };
   return (
-    <div className={styles.roleInfo}>
-      {/* 顶部操作栏 */}
-      <RoleHeader
-        statusFilter={statusFilter}
-        onStatusChange={handleStatusChange}
-        searchKeyword={searchKeyword}
-        onSearchKeywordChange={setSearchKeyword}
-        onAdd={onAdd}
-        onRefresh={handleRefresh}
-        statusList={statusList}
-      />
-      {/* 数据表格 */}
-      <div className={styles.tableContainer}>
-        <Table
-          rowKey="key"
-          columns={columns}
-          // @ts-expect-error 暂时不管
-          dataSource={pagedData}
-          pagination={{
-            current: page,
-            pageSize,
-            total: dataSource.length,
-            onChange: handlePageChange,
-          }}
-          rowSelection={{
-            onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-              console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-            },
-            getCheckboxProps: (record: any) => ({
-              disabled: record.name === 'Disabled User', // Column configuration not to be checked
-              name: record.name,
-            }),
-          }}
-          filterConfig={{
-            platform: {
-              mode: 'multiple',
-              options: [
-                { label: 'App', value: 'app' },
-                { label: 'Web', value: 'web' },
-              ],
-            },
-            status: {
-              mode: 'single', // 单选模式
-              options: [
-                { label: 'All', value: 'all' },
-                { label: 'Normal', value: 'normal' },
-                { label: 'Deleted', value: 'deleted' },
-              ],
-            },
-          }}
-          batchActions={[
-            {
-              key: 'batch-edit',
-              label: 'Editor',
-              icon: (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M7.51738 1.60043C8.06967 0.643847 9.29285 0.316096 10.2494 0.868381C11.206 1.42067 11.5338 2.64385 10.9815 3.60043L7.64202 9.38455C7.55195 9.54056 7.4214 9.66935 7.26417 9.75729L4.38649 11.367C4.25422 11.4409 4.09093 11.3467 4.08887 11.1951L4.04404 7.89815C4.04159 7.71801 4.08784 7.54056 4.17792 7.38455L7.51738 1.60043Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M0.600098 13.3965H13.4"
-                    stroke="#33C2C8"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-              onClick: handleBatchEdit,
-            },
-            {
-              key: 'batch-delete',
-              label: 'Delete',
-              icon: (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10.0001 2.6001V1.6001C10.0001 1.04781 9.55238 0.600098 9.00009 0.600098H5.00009C4.44781 0.600098 4.00009 1.04781 4.00009 1.6001V2.6001M0.600098 3.0001H13.4001M2.00009 3.0001H12.0001V11.4001C12.0001 12.5047 11.1047 13.4001 10.0001 13.4001H4.00009C2.89552 13.4001 2.00009 12.5047 2.00009 11.4001V3.0001Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M5.5 6V10.4M8.5 6V10.4"
-                    stroke="#F45858"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-              onClick: handleBatchDelete,
-            },
-          ]}
-          operations={[
-            {
-              key: 'view',
-              label: 'View',
-              onClick: (record: RoleRecord) => onView?.(record),
-              icon: (
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M15.3141 7.99979C15.3141 8.78297 12.0394 13.1426 7.99983 13.1426C3.96026 13.1426 0.685547 8.78297 0.685547 7.99979C0.685547 7.21661 3.96026 2.85693 7.99983 2.85693C12.0394 2.85693 15.3141 7.21661 15.3141 7.99979Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M10.2858 8.00007C10.2858 9.26243 9.26243 10.2858 8.00007 10.2858C6.7377 10.2858 5.71436 9.26243 5.71436 8.00007C5.71436 6.7377 6.7377 5.71436 8.00007 5.71436"
-                    stroke="#33C2C8"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-            },
-            {
-              key: 'edit',
-              label: 'Edit',
-              onClick: (record: RoleRecord) => onEdit?.(record),
-              icon: (
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M8.59171 1.82879C9.22289 0.735546 10.6208 0.360973 11.7141 0.992156C12.8073 1.62334 13.1819 3.02126 12.5507 4.1145L8.73416 10.7249C8.63121 10.9032 8.48202 11.0504 8.30233 11.1509L5.01355 12.9905C4.86239 13.0751 4.67577 12.9673 4.67342 12.7941L4.62218 9.02617C4.61938 8.82031 4.67224 8.61751 4.77518 8.4392L8.59171 1.82879Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M0.685547 15.3105H15.314"
-                    stroke="#33C2C8"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-            },
-            {
-              key: 'delete',
-              label: 'Delete',
-              danger: true,
-              onClick: (record: RoleRecord) => onDelete?.(record),
-              icon: (
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11.4289 2.97126V1.8284C11.4289 1.19722 10.9172 0.685547 10.286 0.685547H5.7146C5.08342 0.685547 4.57174 1.19722 4.57174 1.8284V2.97126M0.686035 3.42841H15.3146M2.28603 3.42841H13.7146V13.0284C13.7146 14.2908 12.6912 15.3141 11.4289 15.3141H4.57174C3.30938 15.3141 2.28603 14.2908 2.28603 13.0284V3.42841Z"
-                    stroke="#191B1F"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M6.28564 6.85693V11.8855M9.71422 6.85693V11.8855"
-                    stroke="#F45858"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-            },
-          ]}
+    <AntSpin spinning={loading}>
+      <div className={styles.roleInfo}>
+        {/* 顶部操作栏 */}
+        <RoleHeader
+          statusFilter={statusFilter}
+          onStatusChange={handleStatusChange}
+          searchKeyword={searchKeyword}
+          onSearchKeywordChange={setSearchKeyword}
+          onAdd={() => onAdd(undefined, 'add')}
+          onRefresh={handleRefresh}
+          statusList={statusList}
+        />
+        {/* 数据表格 */}
+        <div className={styles.tableContainer}>
+          <Table
+            rowKey="roleId"
+            columns={columns}
+            dataSource={dataSource}
+            pagination={{
+              current: page,
+              pageSize,
+              total: dataSource.length,
+              onChange: handlePageChange,
+            }}
+            filterConfig={{
+              platform: {
+                mode: 'multiple',
+                options: [
+                  { label: 'App', value: 'app' },
+                  { label: 'Web', value: 'web' },
+                ],
+              },
+              status: {
+                mode: 'single', // 单选模式
+                options: [
+                  { label: 'All', value: 'all' },
+                  { label: 'Normal', value: 'normal' },
+                  { label: 'Deleted', value: 'deleted' },
+                ],
+              },
+            }}
+            operations={[
+              {
+                key: 'view',
+                label: 'View',
+                onClick: (record: GetOrgRoleDTO) => onAdd(record, 'view'),
+                icon: (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15.3141 7.99979C15.3141 8.78297 12.0394 13.1426 7.99983 13.1426C3.96026 13.1426 0.685547 8.78297 0.685547 7.99979C0.685547 7.21661 3.96026 2.85693 7.99983 2.85693C12.0394 2.85693 15.3141 7.21661 15.3141 7.99979Z"
+                      stroke="#191B1F"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M10.2858 8.00007C10.2858 9.26243 9.26243 10.2858 8.00007 10.2858C6.7377 10.2858 5.71436 9.26243 5.71436 8.00007C5.71436 6.7377 6.7377 5.71436 8.00007 5.71436"
+                      stroke="#33C2C8"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                key: 'edit',
+                label: 'Edit',
+                onClick: (record: GetOrgRoleDTO) => onAdd(record, 'edit'),
+                icon: (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8.59171 1.82879C9.22289 0.735546 10.6208 0.360973 11.7141 0.992156C12.8073 1.62334 13.1819 3.02126 12.5507 4.1145L8.73416 10.7249C8.63121 10.9032 8.48202 11.0504 8.30233 11.1509L5.01355 12.9905C4.86239 13.0751 4.67577 12.9673 4.67342 12.7941L4.62218 9.02617C4.61938 8.82031 4.67224 8.61751 4.77518 8.4392L8.59171 1.82879Z"
+                      stroke="#191B1F"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M0.685547 15.3105H15.314"
+                      stroke="#33C2C8"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                ),
+              },
+              {
+                key: 'delete',
+                label: 'Delete',
+                danger: true,
+                onClick: (record: GetOrgRoleDTO) => onDelete?.(record),
+                icon: (
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.4289 2.97126V1.8284C11.4289 1.19722 10.9172 0.685547 10.286 0.685547H5.7146C5.08342 0.685547 4.57174 1.19722 4.57174 1.8284V2.97126M0.686035 3.42841H15.3146M2.28603 3.42841H13.7146V13.0284C13.7146 14.2908 12.6912 15.3141 11.4289 15.3141H4.57174C3.30938 15.3141 2.28603 14.2908 2.28603 13.0284V3.42841Z"
+                      stroke="#191B1F"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M6.28564 6.85693V11.8855M9.71422 6.85693V11.8855"
+                      stroke="#F45858"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                ),
+              },
+            ]}
+            operationWidth={120}
+          />
+        </div>
+        {/* 新增角色 */}
+        <AddRole
+          ref={roleModalRef}
+          currentParentNode={currentParentNode}
+          treeData={treeData}
+          onOk={handleAddRole}
         />
       </div>
-      {/* 新增角色 */}
-      <AddRole
-        ref={roleModalRef}
-        title="新增角色"
-        currentParentNode={currentParentNode}
-        treeData={treeData}
-      />
-    </div>
+    </AntSpin>
   );
 };
 
