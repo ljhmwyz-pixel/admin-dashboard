@@ -104,8 +104,6 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
    * 初始加载和切换tab时获取变更记录
    */
   useEffect(() => {
-    // 切换tab时重置到第一页
-    setPage(1);
     fetchRecords();
   }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
