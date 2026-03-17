@@ -25,8 +25,6 @@ interface AddMemberDrawerProps {
   onSuccess: (formData: AddMemberFormData) => void;
   /** 组织 ID */
   orgId: string;
-  /** 父组织节点数据 */
-  parentNodeData: TreeNodeData | null;
   /** 当前节点数据 */
   currentParentNode?: TreeNodeData;
 }
@@ -49,7 +47,6 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   onClose,
   onSuccess,
   orgId,
-  parentNodeData,
   currentParentNode,
 }) => {
   /** 当前步骤 */
@@ -213,11 +210,11 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
         </div>
       }
     >
-      {parentNodeData && (
+      {currentParentNode && (
         <OrganizationInfo
-          orgName={parentNodeData?.title}
-          orgType={parentNodeData?.type}
-          orgId={parentNodeData?.key}
+          orgName={currentParentNode?.title}
+          orgType={currentParentNode?.type}
+          orgId={currentParentNode?.key}
         />
       )}
       {/* 步骤容器 */}
