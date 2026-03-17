@@ -188,7 +188,7 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
     }
 
     return (
-      <div className={styles.tableContainer}>
+      <div className={`${styles.tableContainer} ${styles.recordTable}`}>
         <Table
           dataSource={records}
           columns={columns}
