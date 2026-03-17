@@ -3,7 +3,6 @@
  * 用于展示和编辑组织类型的数据权限
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
 import { Input, Select, Spin } from 'antd';
 

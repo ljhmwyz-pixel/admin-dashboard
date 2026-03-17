@@ -90,7 +90,9 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
     orgTypeCode: string,
     params?: {
       resourceType?: string; // 资源类型，可选值：ORGANIZATION, USER, PLANT
-      permissionKeyword?: string;
+      dataKeyword?: string;
+      pageNum?: number;
+      pageSize?: number;
     },
   ): Promise<OrganizationTypeDetailDataResponse> {
     return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions/data`, { params });
