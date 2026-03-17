@@ -5,8 +5,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
-import { Input, Segmented, Spin, Table } from 'antd';
+import { Input, Spin, Table } from 'antd';
 
+import { SearchInput, Segmented } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -190,7 +191,11 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
     <div className={styles.container}>
       {/* 顶部搜索容器 */}
       <div className={styles.topSearchContainer}>
-        <Segmented options={RECORD_PLATFORM_OPTIONS} value={activeTab} onChange={setActiveTab} />
+        <Segmented
+          options={RECORD_PLATFORM_OPTIONS}
+          value={activeTab}
+          onChange={(value) => setActiveTab(value as string)}
+        />
         <div className={styles.searchContainer}>
           <Input
             placeholder="Please enter role name"

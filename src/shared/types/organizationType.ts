@@ -55,12 +55,26 @@ export interface OrganizationTypeListResponse {
   timestamp: Date; // 响应时间
 }
 /**
- * 组织类型详情响应体
+ * 组织类型详情-功能响应体
  */
-export interface OrganizationTypeDetailResponse {
+export interface OrganizationTypeDetailFunctionalResponse {
   code: number;
   data: OrganizationTypeItem & {
-    functionalPermissions?: OrganizationTypePermissionItem[]; // 功能权限列表
+    functionalPermissions: OrganizationTypePermissionItem[]; // 功能权限列表
+  };
+  timestamp: Date; // 响应时间
+}
+/**
+ * 组织类型详情-数据响应体
+ */
+export interface OrganizationTypeDetailDataResponse {
+  code: number;
+  data: OrganizationTypeItem & {
+    records: OrganizationTypeDataItem[]; // 数据权限列表
+    total: number; // 总记录数
+    size: number; // 每页大小
+    current: number; // 当前页码
+    pages: number; // 总页数
   };
   timestamp: Date; // 响应时间
 }
