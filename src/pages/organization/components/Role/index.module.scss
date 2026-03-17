@@ -1,9 +1,17 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
+
 .roleInfo {
   display: flex;
   flex-direction: column;
   background: #fff;
   border-radius: 8px;
   margin-left: -10px;
+  background-color: $color-bg-container;
+  @include dark-theme {
+    background-color: $dark-color-bg-container;
+  }
 }
 
 // 表格容器

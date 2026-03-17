@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Checkbox } from 'antd';
 
+import { useLanguage } from '@/shared/hooks';
+
 import TreeCheckList from './TreeCheckList';
 
 import styles from './RolePermissions.module.scss';
@@ -10,6 +12,7 @@ interface IRolePermissions {
 }
 
 const RolePermissions: React.FC<IRolePermissions> = () => {
+  const { t } = useLanguage();
   // 为每个平台维护独立的选中状态
   const [checkedKeysMap, setCheckedKeysMap] = useState<Record<string, string[]>>({
     Web: [],
@@ -159,7 +162,7 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
             />
           </svg>
         </div>
-        <div className={styles.rolePermissionsTitleText}>Role Permissions</div>
+        <div className={styles.rolePermissionsTitleText}>{t('role.field.permissions')}</div>
       </div>
       <div className={styles.rolePermissionsBodyContainer}>
         {permissionsPlatform.map((item, index) => {
