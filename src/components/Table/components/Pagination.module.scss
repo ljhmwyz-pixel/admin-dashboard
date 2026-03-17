@@ -67,6 +67,25 @@
     border: none !important;
     background: transparent;
     transform: translateY(1px);
+
+    // 禁用状态
+    &.disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+
+      &:hover {
+        background: transparent !important;
+      }
+
+      svg {
+        cursor: not-allowed;
+
+        path,
+        rect {
+          stroke-opacity: 0.4 !important;
+        }
+      }
+    }
   }
 
   // ===== 所有分页元素高度统一为 20px =====
@@ -101,9 +120,7 @@
     // @include dark-theme {
     //   color: $dark-color-text-primary;
     // }
-
   }
-
 
   :global(.ant-pagination-options-quick-jumper) {
     color: rgba(25, 27, 31, 0.6);
@@ -169,7 +186,6 @@
   }
 
   :global(.ant-select-suffix) {
-    transform: translate(1px, -1px)
+    transform: translate(1px, -1px);
   }
-
 }

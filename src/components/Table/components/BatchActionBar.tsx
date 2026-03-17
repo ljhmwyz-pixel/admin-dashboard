@@ -1,6 +1,6 @@
 import React from 'react';
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Space } from 'antd';
+
+import { AntSpace } from '@/shared/components';
 
 import styles from './BatchActionBar.module.scss';
 
@@ -24,7 +24,7 @@ const BatchActionBar: React.FC<Props> = ({ selectedKeys, actions, onClear, selec
 
   return (
     <div className={styles.batchBar}>
-      <Space size={20} separator="|">
+      <AntSpace size={20} separator="|">
         <span className={styles.selectedText}>{getText(selectedKeys.length)}</span>
 
         {actions?.map((action) => (
@@ -37,7 +37,7 @@ const BatchActionBar: React.FC<Props> = ({ selectedKeys, actions, onClear, selec
             <span className={styles.actionLabel}>{action.label}</span>
           </div>
         ))}
-      </Space>
+      </AntSpace>
 
       <div className={styles.closeWrap} onClick={onClear}>
         <svg

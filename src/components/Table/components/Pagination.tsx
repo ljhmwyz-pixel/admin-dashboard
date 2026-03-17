@@ -1,6 +1,7 @@
 import React from 'react';
-import type { PaginationProps } from 'antd';
-import { Button, Pagination } from 'antd';
+
+import { AntButton, AntPagination } from '@/shared/components';
+import type { PaginationProps } from '@/shared/components/antd-imports';
 
 import styles from './Pagination.module.scss';
 
@@ -29,10 +30,10 @@ const BasePagination: React.FC<BasePaginationProps> = ({
 
       {/* 中间分页区 */}
       <div className={styles.centerPager}>
-        <Button
+        <AntButton
           size="small"
           disabled={isFirst}
-          className={styles.iconBtn}
+          className={`${styles.iconBtn} ${isFirst ? styles.disabled : ''}`}
           onClick={() => onChange?.(1, pageSize)}
           icon={
             <svg
@@ -62,7 +63,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           title="First Page"
         />
 
-        <Pagination
+        <AntPagination
           current={current}
           total={total}
           pageSize={pageSize}
@@ -75,10 +76,10 @@ const BasePagination: React.FC<BasePaginationProps> = ({
             // 自定义上一页按钮
             if (type === 'prev') {
               return (
-                <Button
+                <AntButton
                   size="small"
                   disabled={isFirst}
-                  className={styles.iconBtn}
+                  className={`${styles.iconBtn} ${isFirst ? styles.disabled : ''}`}
                   onClick={() => onChange?.(current - 1, pageSize)}
                   icon={
                     <svg
@@ -103,10 +104,10 @@ const BasePagination: React.FC<BasePaginationProps> = ({
             // 自定义下一页按钮
             if (type === 'next') {
               return (
-                <Button
+                <AntButton
                   size="small"
                   disabled={isLast}
-                  className={styles.iconBtn}
+                  className={`${styles.iconBtn} ${isLast ? styles.disabled : ''}`}
                   onClick={() => onChange?.(current + 1, pageSize)}
                   icon={
                     <svg
@@ -133,10 +134,10 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           }}
         />
         {/* 末页按钮 */}
-        <Button
+        <AntButton
           size="small"
           disabled={isLast}
-          className={styles.iconBtn}
+          className={`${styles.iconBtn} ${isLast ? styles.disabled : ''}`}
           onClick={() => onChange?.(lastPage, pageSize)}
           icon={
             <svg
@@ -169,7 +170,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
 
       {/* 右侧 options */}
       <div className={styles.optionsWrap}>
-        <Pagination
+        <AntPagination
           className={styles.optionPagination}
           current={current}
           total={total}

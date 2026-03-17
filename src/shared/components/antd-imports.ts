@@ -12,6 +12,7 @@ export type { InputProps, SearchProps } from 'antd/es/input';
 export { default as AntInput } from 'antd/es/input';
 export { default as AntInputNumber } from 'antd/es/input-number';
 export { default as AntdModal } from 'antd/es/modal';
+export type { PaginationProps } from 'antd/es/pagination';
 export { default as AntRadio } from 'antd/es/radio';
 export { default as AntRate } from 'antd/es/rate';
 export { default as AntSelect } from 'antd/es/select';
@@ -19,6 +20,7 @@ export { default as AntSlider } from 'antd/es/slider';
 export { default as AntSwitch } from 'antd/es/switch';
 export { default as AntTimePicker } from 'antd/es/time-picker';
 export type { TooltipProps } from 'antd/es/tooltip';
+export type { TreeProps } from 'antd/es/tree';
 
 // 布局组件
 export { default as AntCard } from 'antd/es/card';

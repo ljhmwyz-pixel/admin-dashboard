@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
-import { Tag, Tooltip } from 'antd';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
@@ -18,6 +17,7 @@ import {
   type GetOrgRolePermissionRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
+import { AntTag, AntTooltip } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -312,7 +312,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                     delete: { color: 'red', text: 'Deleted' },
                   };
 
-                  return <Tag color={map[type].color}>{map[type].text}</Tag>;
+                  return <AntTag color={map[type].color}>{map[type].text}</AntTag>;
                 },
               },
               {
@@ -325,9 +325,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 dataIndex: 'content',
                 ellipsis: true,
                 render: (text: string) => (
-                  <Tooltip title={text}>
+                  <AntTooltip title={text}>
                     <div style={{ maxWidth: 420 }}>{text}</div>
-                  </Tooltip>
+                  </AntTooltip>
                 ),
               },
               {

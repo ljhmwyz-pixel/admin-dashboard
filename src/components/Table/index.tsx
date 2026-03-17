@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Table as AntTable } from 'antd';
 import classNames from 'classnames';
 import { t } from 'i18next';
 
-import { AntSpace } from '@/shared/components';
+import { AntSpace, AntTable } from '@/shared/components';
 
 import BatchActionBar from './components/BatchActionBar';
 import HeaderFilter from './components/HeaderFilter';
@@ -64,12 +63,7 @@ function BaseTable<RecordType extends object = any>({
             <AntSpace size={20}>
               {operations.map((op) => {
                 const hidden = typeof op.hidden === 'function' ? op.hidden(record) : op.hidden;
-
                 if (hidden) return null;
-
-                // const disabled =
-                //   typeof op.disabled === 'function' ? op.disabled(record) : op.disabled;
-
                 return (
                   <div
                     key={op.key}

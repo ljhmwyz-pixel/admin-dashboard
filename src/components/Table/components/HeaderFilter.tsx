@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Checkbox, Dropdown } from 'antd';
 import classNames from 'classnames';
+
+import { AntCheckbox, AntDropdown } from '@/shared/components';
 
 import styles from './HeaderFilter.module.scss';
 
@@ -31,7 +32,7 @@ export default function HeaderFilter({ title, value, config, onChange }: Props) 
   const overlay =
     config.mode === 'multiple' ? (
       <div className={styles.menu}>
-        <Checkbox.Group options={config.options} value={value} onChange={onChange} />
+        <AntCheckbox.Group options={config.options} value={value} onChange={onChange} />
       </div>
     ) : (
       <div className={styles.menu}>
@@ -51,7 +52,7 @@ export default function HeaderFilter({ title, value, config, onChange }: Props) 
     );
 
   return (
-    <Dropdown
+    <AntDropdown
       open={open}
       onOpenChange={setOpen}
       popupRender={() => overlay}
@@ -72,6 +73,6 @@ export default function HeaderFilter({ title, value, config, onChange }: Props) 
           />
         </svg>
       </div>
-    </Dropdown>
+    </AntDropdown>
   );
 }
