@@ -487,8 +487,8 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         />
         <div className={styles.searchContainer}>
           <SearchInput
-            allowClear={false}
-            placeholder="Please enter role name"
+            allowClear={true}
+            placeholder="Please enter permission"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
