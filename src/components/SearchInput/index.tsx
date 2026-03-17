@@ -30,7 +30,7 @@ const SearchInput: React.FC<Props> = ({
         <svg width="14" height="14" style={{ marginRight: 2 }} viewBox="0 0 15 15" fill="none">
           <path
             d="M13.6001 13.6L10.1001 10.1M11.6001 6.1C11.6001 9.13757 9.13766 11.6 6.1001 11.6C3.06253 11.6 0.600098 9.13757 0.600098 6.1C0.600098 3.06243 3.06253 0.6 6.1001 0.6C9.13766 0.6 11.6001 3.06243 11.6001 6.1Z"
-            stroke="#191B1F"
+            stroke="currentColor"
             strokeOpacity="0.4"
             strokeWidth="1.2"
             strokeLinecap="round"
