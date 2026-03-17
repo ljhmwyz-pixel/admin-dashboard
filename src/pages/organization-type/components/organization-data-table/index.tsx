@@ -4,9 +4,9 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Select, Spin } from 'antd';
+import { Select } from 'antd';
 
-import { FormButton, SearchInput, Segmented, Table } from '@/components';
+import { FormButton, SearchInput, Segmented, Table, TableSelect } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -220,7 +220,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
@@ -230,7 +230,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -247,7 +247,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
@@ -257,7 +257,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -274,7 +274,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
@@ -284,7 +284,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -315,6 +315,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
           locale={{ emptyText: '无数据' }}
           scroll={{ y: window.innerHeight - 200 }}
           loading={loading}
+          rowClassName={() => (isEditMode ? styles.editRow : styles.readOnlyRow)}
         />
       </div>
     );

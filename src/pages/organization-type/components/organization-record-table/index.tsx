@@ -131,6 +131,11 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         dataIndex: 'changedBy',
         key: 'changedBy',
         width: 180,
+        render: (text: string) => (
+          <Tooltip title={text} placement="top">
+            <div className={styles.changeContent}>{text}</div>
+          </Tooltip>
+        ),
       },
       {
         title: 'Changed Content',

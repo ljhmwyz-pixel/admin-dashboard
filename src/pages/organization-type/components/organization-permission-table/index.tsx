@@ -10,7 +10,7 @@ import type {
 } from '@shared/types/organizationType';
 import { Select, Spin } from 'antd';
 
-import { FormButton, SearchInput, Segmented, Table } from '@/components';
+import { FormButton, SearchInput, Segmented, Table, TableSelect } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -332,7 +332,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
@@ -342,7 +342,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -359,7 +359,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
@@ -369,7 +369,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -386,7 +386,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
@@ -396,7 +396,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -442,6 +442,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             expandedRowKeys={expandedRowKeys}
             scroll={{ y: window.innerHeight - 365 }}
             onExpandedRowsChange={(expandedKeys) => setExpandedRowKeys(expandedKeys as string[])}
+            rowClassName={() => (isEditMode ? styles.editRow : styles.readOnlyRow)}
           />
         </div>
       </div>
