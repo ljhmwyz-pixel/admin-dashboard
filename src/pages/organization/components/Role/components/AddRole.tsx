@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
-import { Tag, Tooltip } from 'antd';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {

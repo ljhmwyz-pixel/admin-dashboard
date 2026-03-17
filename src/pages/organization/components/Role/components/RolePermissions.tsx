@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { AntCheckbox } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
-import { useLanguage } from '@/shared/hooks';
-
 import TreeCheckList from './TreeCheckList';
 
 import styles from './RolePermissions.module.scss';
