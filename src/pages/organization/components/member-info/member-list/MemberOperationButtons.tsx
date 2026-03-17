@@ -5,8 +5,6 @@ import { PermissionCode } from '@shared/constants/permissions';
 
 import { Permission } from '@/components/Permission';
 
-import styles from './MemberList.module.scss';
-
 /**
  * 操作按钮图标组件
  */
@@ -142,11 +140,11 @@ const OperationButton = ({
 }: {
   children: React.ReactNode;
   onClick: () => void;
-  title: string | ReactNode;
+  title: string;
   permission: string;
 }) => (
   <Permission value={permission}>
-    <AntTooltip title={title} placement="bottom">
+    <AntTooltip title={title}>
       <span onClick={onClick}>{children}</span>
     </AntTooltip>
   </Permission>

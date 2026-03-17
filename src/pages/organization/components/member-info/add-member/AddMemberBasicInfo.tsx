@@ -2,7 +2,7 @@ import React from 'react';
 import { OrgEmailField, OrgPhoneField, OrgUsernameField } from '@pages/organization/components';
 import { AntForm } from '@shared/components';
 
-import type { FieldProps, OrganizationType } from '@/pages/organization/dto';
+import type { FieldProps } from '@/pages/organization/dto';
 import type { EmailVerifyResult } from '@/pages/organization/hooks/useOrganizationForm';
 
 import styles from './AddMemberBasicInfo.module.scss';
