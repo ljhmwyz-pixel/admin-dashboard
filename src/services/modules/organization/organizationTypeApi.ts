@@ -2,7 +2,6 @@ import type {
   OrganizationTypeDetailDataResponse,
   OrganizationTypeDetailFunctionalResponse,
   OrganizationTypeListResponse,
-  OrganizationTypePermissionResponse,
   OrganizationTypeRecordResponse,
 } from '@shared/types/organizationType';
 
@@ -52,6 +51,22 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
   }
 
   /**
+   * 上传组织类型图片
+   * @param typeId 组织类型ID
+   * @param image 图片文件
+   */
+  async uploadOrganizationTypeImage(typeId: string, image: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', image);
+
+    return apiClient.post(`/api/v1/organization/organization-types/${typeId}/image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  /**
    * 获取组织类型功能权限
    * @param orgTypeCode 组织类型编码
    * @param params 查询参数
@@ -75,46 +90,10 @@ class OrganizationTypeApiImpl implements OrganizationTypeApi {
     orgTypeCode: string,
     params?: {
       resourceType?: string; // 资源类型，可选值：ORGANIZATION, USER, PLANT
-      dataKeyword?: string;
-      pageNum?: number;
-      pageSize?: number;
+      permissionKeyword?: string;
     },
   ): Promise<OrganizationTypeDetailDataResponse> {
     return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions/data`, { params });
-  }
-
-  /**
-   * 上传组织类型图片
-   * @param typeId 组织类型ID
-   * @param image 图片文件
-   */
-  async uploadOrganizationTypeImage(typeId: string, image: File): Promise<any> {
-    const formData = new FormData();
-    formData.append('file', image);
-
-    return apiClient.post(`/api/v1/organization/organization-types/${typeId}/image`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  }
-
-  /**
-   * 获取组织类型权限
-   * @param typeCode 组织类型编码
-   * @param params 查询参数
-   */
-  async getOrganizationTypePermissions(
-    orgTypeCode: string,
-    params?: {
-      permissionType?: string; // 权限类型，可选值：FUNCTIONAL, DATA
-      platform?: string; // 平台类型，可选值：WEB, APP
-      resourceType?: string; // 资源类型，可选值：ORGANIZATION, USER, PLANT
-      permissionKeyword?: string;
-      dataKeyword?: string;
-    },
-  ): Promise<OrganizationTypePermissionResponse> {
-    return apiClient.get(`/api/v1/org-types/${orgTypeCode}/permissions`, { params });
   }
   /**
    * 获取组织类型变更记录
