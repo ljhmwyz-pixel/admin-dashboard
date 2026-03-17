@@ -4,7 +4,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { OrganizationTypeRecordItem } from '@shared/types/organizationType';
-import { Spin, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 
 import { FormButton, SearchInput, Segmented, Table } from '@/components';
 // 导入API
@@ -90,7 +90,7 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
       const recordPage = response.data || {};
       const recordData = recordPage.records || [];
       setTotal(recordPage.total || 0);
-
+      setPage(recordPage.current || 1);
       // 设置变更记录数据
       setRecords(recordData);
     } catch (err) {
@@ -104,8 +104,6 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
    * 初始加载和切换tab时获取变更记录
    */
   useEffect(() => {
-    // 切换tab时重置到第一页
-    setPage(1);
     fetchRecords();
   }, [typeCode, fetchRecords, activeTab, debouncedSearchText]);
 
@@ -180,14 +178,6 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
    * 渲染内容区域
    */
   const renderContent = () => {
-    if (loading) {
-      return (
-        <div className={styles.statusContainer}>
-          <Spin size="large" />
-        </div>
-      );
-    }
-
     if (error) {
       return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
     }
@@ -205,6 +195,7 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
             total: total,
             onChange: handlePageChange,
           }}
+          loading={loading}
         />
       </div>
     );

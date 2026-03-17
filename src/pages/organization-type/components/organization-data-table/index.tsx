@@ -107,7 +107,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
       const dataPermissions: OrganizationTypeDataItem[] = response.data.records || [];
       setOriginalData(dataPermissions);
       setTotal(response.data.total || 0);
-      setPage(response.data.pages || 1);
+      setPage(response.data.current || 1);
       // 重置修改数据
       setModifiedData({});
     } catch (err) {
@@ -296,14 +296,6 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
    * 渲染内容区域
    */
   const renderContent = () => {
-    if (loading) {
-      return (
-        <div className={styles.statusContainer}>
-          <Spin size="large" />
-        </div>
-      );
-    }
-
     if (error) {
       return <div className={`${styles.statusContainer} ${styles.errData}`}>{error}</div>;
     }
@@ -322,6 +314,7 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
           rowKey="key"
           locale={{ emptyText: '无数据' }}
           scroll={{ y: window.innerHeight - 200 }}
+          loading={loading}
         />
       </div>
     );
