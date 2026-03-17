@@ -112,7 +112,9 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
       pageSize: 1000,
     });
     if (roleList?.data?.records) {
-      setRoleList(roleList.data.records);
+      setRoleList(
+        roleList.data.records?.filter((role) => role.roleName !== 'Organization Owner') || [],
+      );
     }
   }, [orgId]);
 
