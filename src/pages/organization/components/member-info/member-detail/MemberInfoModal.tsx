@@ -30,8 +30,8 @@ interface MemberInfoModalProps {
   visible: boolean;
   /** 成员数据 */
   member: Member | null;
-  /** 父组织节点数据 */
-  parentNodeData?: TreeNodeData | null;
+  /** 当前父组织节点数据 */
+  currentParentNode?: TreeNodeData | null;
   /** 保存回调 */
   onSave: (member: Member, roleIds: string[]) => void;
   /** 关闭回调 */
@@ -65,7 +65,7 @@ interface MemberInfoModalProps {
 const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
   visible,
   member,
-  parentNodeData,
+  currentParentNode,
   onClose,
   onDelete,
   onLock,
@@ -203,11 +203,11 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
         />
       }
     >
-      {parentNodeData && (
+      {currentParentNode && (
         <OrganizationInfo
-          orgName={parentNodeData?.title}
-          orgType={parentNodeData?.type}
-          orgId={parentNodeData?.key}
+          orgName={currentParentNode?.title}
+          orgType={currentParentNode?.type}
+          orgId={currentParentNode?.key}
         />
       )}
       <AntTabs

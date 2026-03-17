@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organization/dto';
 import { useMemberList } from '@pages/organization/hooks';
 import {
@@ -13,6 +13,7 @@ import { useThemeModal } from '@/components/Modal';
 import { useLanguage } from '@/shared/hooks';
 
 import DeleteConfirmInput from '../../organization-tree/DeleteConfirmInput';
+import AddRole, { type AddRoleRef } from '../../Role/components/AddRole';
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
 import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
@@ -27,9 +28,9 @@ interface MemberListProps {
   /** 组织 ID，用于查询成员列表 */
   orgId: string;
   /** 当前节点 */
-  currentParentNode?: TreeNodeData;
+  currentParentNode: TreeNodeData;
   /** 树数据 */
-  treeData?: TreeNodeData[];
+  treeData: TreeNodeData[];
 }
 
 /**
@@ -76,6 +77,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
 
   const { warning, confirm, success, error } = useThemeModal();
+  const roleModalRef = useRef<AddRoleRef>(null);
   const { t } = useLanguage();
 
   // 获取父节点信息
@@ -351,6 +353,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onApprove={handleApprove}
         onReject={handleReject}
         onTableChange={handleTableChange}
+        roleModalRef={roleModalRef as React.RefObject<AddRoleRef>}
       />
 
       {/* 成员信息模态框 */}
@@ -364,7 +367,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onApprove={handleApprove}
         onReject={handleReject}
         onSave={handleSaveMember}
-        parentNodeData={parentNodeData}
+        currentParentNode={currentParentNode}
         editMember={editMember}
       />
 
@@ -374,9 +377,10 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         onClose={() => setAddDrawerVisible(false)}
         onSuccess={handleAddSuccess}
         orgId={orgId}
-        parentNodeData={parentNodeData}
         currentParentNode={currentParentNode}
       />
+
+      <AddRole ref={roleModalRef} currentParentNode={currentParentNode} treeData={treeData} />
     </div>
   );
 };

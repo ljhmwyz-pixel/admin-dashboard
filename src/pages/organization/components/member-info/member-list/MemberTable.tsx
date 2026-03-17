@@ -1,9 +1,10 @@
 import React from 'react';
 import type { Member } from '@pages/organization/dto';
-import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
+import { AntSpin, AntTable, AntTag } from '@shared/components';
 import type { TableColumnsType, TablePaginationConfig } from 'antd';
 import { uniqueId } from 'lodash-es';
 
+import type { AddRoleRef } from '../../Role/components/AddRole';
 import MemberOperationButtons from './MemberOperationButtons';
 
 import styles from './MemberList.module.scss';
@@ -38,6 +39,8 @@ interface MemberTableProps {
   onReject: (member: Member) => void;
   /** 表格变更回调 */
   onTableChange: (pagination: TablePaginationConfig, sorter: any) => void;
+  /** 角色详情实例 */
+  roleModalRef: React.RefObject<AddRoleRef>;
 }
 
 /**
@@ -69,9 +72,10 @@ const MemberTable: React.FC<MemberTableProps> = ({
   onApprove,
   onReject,
   onTableChange,
+  roleModalRef,
 }) => {
   const handleClickRole = (role: { roleId: string; roleName: string }) => {
-    console.log(role);
+    roleModalRef?.current?.open({ roleId: role?.roleId }, 'view');
   };
   /** 表格列定义 */
   const columns: TableColumnsType<Member> = [
