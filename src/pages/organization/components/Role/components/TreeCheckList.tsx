@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import type { CheckboxProps, TreeProps } from 'antd';
-import { Checkbox, Tree } from 'antd';
+
+import { AntTree } from '@/shared/components';
+import type { TreeProps } from '@/shared/components/antd-imports';
 
 import styles from './TreeCheckList.module.scss';
 
@@ -51,7 +52,7 @@ const TreeCheckList: React.FC<TreeCheckListProps> = ({
 
   return (
     <div className={`${styles.treeCheckList} ${styles.customCheckbox}`}>
-      <Tree
+      <AntTree
         checkable
         checkedKeys={checkedKeys}
         onCheck={handleCheck}

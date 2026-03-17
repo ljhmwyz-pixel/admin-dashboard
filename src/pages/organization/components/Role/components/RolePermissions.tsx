@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Checkbox } from 'antd';
 
+import { AntCheckbox } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
 import TreeCheckList from './TreeCheckList';
@@ -192,7 +192,7 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
               </div>
               <div className={styles.footer}>
                 <span className={styles.selectAll}>Select All</span>
-                <Checkbox
+                <AntCheckbox
                   checked={isAllChecked}
                   indeterminate={!isAllChecked && currentCheckedKeys.length > 0}
                   onChange={handleSelectAll(item.label)}
