@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organization/dto';
 import { useMemberList } from '@pages/organization/hooks';
 import {
@@ -12,7 +12,7 @@ import { AntMessage } from '@shared/components';
 import { useThemeModal } from '@/components/Modal';
 import { useLanguage } from '@/shared/hooks';
 
-import DeleteConfirmInput from '../../orginization-tree/DeleteConfirmInput';
+import DeleteConfirmInput from '../../organization-tree/DeleteConfirmInput';
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
 import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
@@ -78,15 +78,15 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理查看成员详情操作
    * 完整展示成员的基本信息、平台权限范围和数据权限范围
    */
-  const handleView = (member: Member) => {
+  const handleView = useCallback((member: Member) => {
     setSelectedMember(member);
     setInfoModalVisible(true);
-  };
+  }, []);
 
   /**
    * 处理成员信息模态框关闭
    */
-  const handleInfoModalClose = () => {
+  const handleInfoModalClose = useCallback(() => {
     if (editMember) {
       setEditMember(false);
       return;
@@ -94,7 +94,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
-  };
+  }, [editMember]);
 
   /**
    * 处理模态框中的删除操作
@@ -122,166 +122,199 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理编辑成员信息操作
    * 支持修改基本信息、平台权限范围和数据权限范围
    */
-  const handleEdit = (member: Member) => {
-    setSelectedMember(member);
-    if (!infoModalVisible) {
-      setInfoModalVisible(true);
-    }
-    if (!member?.isOwner) {
-      setEditMember(true);
-    }
-  };
+  const handleEdit = useCallback(
+    (member: Member) => {
+      setSelectedMember(member);
+      if (!infoModalVisible) {
+        setInfoModalVisible(true);
+      }
+      if (!member?.isOwner) {
+        setEditMember(true);
+      }
+    },
+    [infoModalVisible],
+  );
 
   /**
    * 处理模态框中的保存操作
    */
-  const handleSaveMember = async (member: Member, roleIds: string[]) => {
-    try {
-      // 调用更新接口
-      const { memberId, status } = member;
-      const result = await updateMember(memberId, { status, roleIds });
-      if (result.success) {
-        AntMessage.success('更新成功');
-        setEditMember(false);
-        handleSearch();
-      } else {
-        AntMessage.error(result.message || '更新失败');
+  const handleSaveMember = useCallback(
+    async (member: Member, roleIds: string[]) => {
+      try {
+        // 调用更新接口
+        const { memberId, status } = member;
+        const result = await updateMember(memberId, { status, roleIds });
+        if (result.success) {
+          AntMessage.success('更新成功');
+          setEditMember(false);
+          handleSearch();
+        } else {
+          AntMessage.error(result.message || '更新失败');
+        }
+      } catch (error) {
+        console.error('Error updating member:', error);
+        AntMessage.error('更新失败');
       }
-    } catch (error) {
-      console.error('Error updating member:', error);
-      AntMessage.error('更新失败');
-    }
-  };
+    },
+    [handleSearch],
+  );
 
   /**
    * 处理删除成员操作
    * 限制组织所有者不可被删除
    */
-  const handleDelete = async (member: Member) => {
-    const isOrganizationOwner = member.roleList.some((role) =>
-      role.roleName.includes('Organization Owner'),
-    );
-    if (isOrganizationOwner) {
-      warning({
-        title: 'Error !',
-        content: 'You can’t disable your own account.',
-      });
-      return;
-    }
-    let confirmUid = '';
-    const modalInstance = confirm({
-      title: 'Confirm Removal !',
-      content: (
-        <DeleteConfirmInput
-          placeholder="Please enter UID to confirm removal"
-          onChange={(value) => {
-            confirmUid = value;
-            if (modalInstance) {
-              modalInstance.update({
-                okButtonProps: {
-                  danger: true,
-                  disabled: value !== member.userId,
-                  className: styles.okConfirm,
-                },
+  const handleDelete = useCallback(
+    async (member: Member) => {
+      const isOrganizationOwner = member.roleList.some((role) =>
+        role.roleName.includes('Organization Owner'),
+      );
+      if (isOrganizationOwner) {
+        warning({
+          title: 'Error !',
+          content: 'You can’t disable your own account.',
+        });
+        return;
+      }
+      let confirmUid = '';
+      const modalInstance = confirm({
+        title: 'Confirm Removal !',
+        content: (
+          <DeleteConfirmInput
+            placeholder="Please enter UID to confirm removal"
+            onChange={(value) => {
+              confirmUid = value;
+              if (modalInstance) {
+                modalInstance.update({
+                  okButtonProps: {
+                    danger: true,
+                    disabled: value !== member.userId,
+                    className: styles.okConfirm,
+                  },
+                });
+              }
+            }}
+            confirmText="Are you sure you want to remove this member? This action cannot be undone."
+            member={member}
+          />
+        ),
+        okText: t('common.action.delete'),
+        cancelText: t('common.action.cancel'),
+        okButtonProps: {
+          danger: true,
+          disabled: true,
+        },
+        onOk: async () => {
+          try {
+            // 调用删除接口
+            const result = await deleteMember(member.memberId, { confirmUid });
+            if (result?.code === 200) {
+              success({
+                title: 'Success !',
+                content: 'Member removed successfully.',
+              });
+              handleSearch();
+            } else {
+              error({
+                title: 'Error !',
+                content: result?.message || 'Failed to remove member.',
               });
             }
-          }}
-          confirmText="Are you sure you want to remove this member? This action cannot be undone."
-          member={member}
-        />
-      ),
-      okText: t('common.action.delete'),
-      cancelText: t('common.action.cancel'),
-      okButtonProps: {
-        danger: true,
-        disabled: true,
-      },
-      onOk: async () => {
-        // 调用删除接口
-        const result = await deleteMember(member.memberId, { confirmUid });
-        if (result?.code === 200) {
-          success({
-            title: 'Success !',
-            content: 'Member removed successfully.',
-          });
-          handleSearch();
-        } else {
-          error({
-            title: 'Error !',
-            content: result?.message || 'Failed to remove member.',
-          });
-        }
-      },
-    });
-  };
+          } catch (err) {
+            console.error('Error deleting member:', err);
+            error({
+              title: 'Error !',
+              content: 'Failed to remove member.',
+            });
+          }
+        },
+      });
+    },
+    [warning, confirm, success, error, t, handleSearch],
+  );
 
   /**
    * 处理禁用成员操作
    * 禁用后成员无法登录系统及使用相关功能
    */
-  const handleDisable = (member: Member) => {
+  const handleDisable = useCallback((member: Member) => {
     AntMessage.info(`Disabling member: ${member.username}`);
     // TODO: 实现禁用功能并记录操作日志
-  };
+  }, []);
 
   /**
    * 处理启用成员操作
    * 启用后恢复正常访问权限
    */
-  const handleEnable = (member: Member) => {
+  const handleEnable = useCallback((member: Member) => {
     AntMessage.info(`Enabling member: ${member.username}`);
     // TODO: 实现启用功能并记录操作日志
-  };
+  }, []);
 
   /**
    * 处理通过加入组织申请操作
    * 审批通过后需将成员状态更新为正常，并分配默认权限
    */
-  const handleApprove = (member: Member) => {
+  const handleApprove = useCallback((member: Member) => {
     AntMessage.info(`Approving member: ${member.username}`);
     // TODO: 实现审批通过功能，更新状态为正常并分配默认权限
-  };
+  }, []);
 
   /**
    * 处理拒绝加入组织申请操作
    * 拒绝时需填写拒绝原因（可选），操作后将成员状态更新为拒绝状态并通知申请人
    */
-  const handleReject = (member: Member) => {
+  const handleReject = useCallback((member: Member) => {
     AntMessage.info(`Rejecting member: ${member.username}`);
     // TODO: 实现拒绝功能，填写拒绝原因并更新状态
-  };
+  }, []);
 
   /**
    * 处理新增成员按钮点击
    */
-  const handleAdd = () => {
+  const handleAdd = useCallback(() => {
     setAddDrawerVisible(true);
-  };
+  }, []);
 
   /**
    * 处理新增成员成功
    */
-  const handleAddSuccess = async (formData: AddMemberFormData) => {
-    if (!currentParentNode?.key) return;
-    if (!formData.role?.length) return;
-    const { basicInfo, plants, role } = formData || {};
-    const requestParams = {
-      email: basicInfo?.orgEmail || '',
-      username: basicInfo?.orgUsername || '',
-      phone: basicInfo?.orgPhone || '',
-      roleIds: role || [],
-      orgId: currentParentNode.key,
-    };
-    const result = await addMember(requestParams);
-    if (result?.code === 200) {
-      setAddDrawerVisible(false);
-      handleSearch();
-      success({
-        title: 'Success !',
-        content: 'The user has been successfully added.',
-      });
-    }
-  };
+  const handleAddSuccess = useCallback(
+    async (formData: AddMemberFormData) => {
+      if (!currentParentNode?.key) return;
+      if (!formData.role?.length) return;
+      try {
+        const { basicInfo, role } = formData || {};
+        const requestParams = {
+          email: basicInfo?.orgEmail || '',
+          username: basicInfo?.orgUsername || '',
+          phone: basicInfo?.orgPhone || '',
+          roleIds: role || [],
+          orgId: currentParentNode.key,
+        };
+        const result = await addMember(requestParams);
+        if (result?.code === 200) {
+          setAddDrawerVisible(false);
+          handleSearch();
+          success({
+            title: 'Success !',
+            content: 'The user has been successfully added.',
+          });
+        } else {
+          error({
+            title: 'Error !',
+            content: result?.message || 'Failed to add member.',
+          });
+        }
+      } catch (err) {
+        console.error('Error adding member:', err);
+        error({
+          title: 'Error !',
+          content: 'Failed to add member.',
+        });
+      }
+    },
+    [currentParentNode, handleSearch, success, error],
+  );
 
   return (
     <div className={styles.container}>
