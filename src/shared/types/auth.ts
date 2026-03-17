@@ -27,6 +27,7 @@ export interface UserInfo {
   createdAt: string;
   updatedAt: string;
   userType?: string;
+  userId?: string;
 }
 
 export interface PersonalIdentity {

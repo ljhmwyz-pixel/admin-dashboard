@@ -89,3 +89,21 @@
     cursor: not-allowed;
   }
 }
+
+.operationButtonTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.operationButtonTitleStatus {
+  font-size: 12px;
+  line-height: 12px;
+  color: #FFFFFF99
+}
+
+.operationButtonTitleClick {
+  font-size: 14px;
+  line-height: 14px;
+}

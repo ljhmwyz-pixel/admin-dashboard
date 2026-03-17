@@ -11,6 +11,7 @@ import type {
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
+  ReviewMemberApplicationResponse,
   RoleListResponse,
   TreeNodeData,
 } from '@pages/organization/dto';
@@ -468,6 +469,12 @@ export const loadMemberChangeLogs = async (
   }
 };
 
+/**
+ *
+ * @param data
+ * @param withLoading
+ * @returns
+ */
 export const addMember = async (
   data: AddMemberRequest,
   withLoading?: <T>(
@@ -496,6 +503,13 @@ export const addMember = async (
   }
 };
 
+/**
+ * 删除组织成员
+ * @param memberId 成员ID
+ * @param data 确认删除数据
+ * @param withLoading 全局 loading 包装函数
+ * @returns 删除响应数据
+ */
 export const deleteMember = async (
   memberId: string,
   data: { confirmUid: string },
@@ -521,6 +535,78 @@ export const deleteMember = async (
     return await deleteMemberLogic();
   } catch (error) {
     console.error('Failed to delete member:', error);
+    return undefined;
+  }
+};
+
+/**
+ *
+ * @param applicationId
+ * @param data
+ * @param withLoading
+ * @returns
+ */
+export const reviewMemberApplication = async (
+  applicationId: string,
+  data: { status: string; reason?: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<ReviewMemberApplicationResponse | undefined> => {
+  const reviewMemberApplicationLogic = async (): Promise<ReviewMemberApplicationResponse> => {
+    const response = await organizationApi.reviewMemberApplication(applicationId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(reviewMemberApplicationLogic, {
+      onError: (error) => {
+        console.error('Review member application error:', error);
+      },
+    });
+  }
+
+  try {
+    return await reviewMemberApplicationLogic();
+  } catch (error) {
+    console.error('Failed to review member application:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 变更组织成员状态
+ * @param memberId 成员ID
+ * @param data 变更状态数据
+ * @param withLoading 全局 loading 包装函数
+ * @returns 删除响应数据
+ */
+export const changeMemberStatus = async (
+  memberId: string,
+  data: { status: string; confirmUid: string; reason?: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteResponse | undefined> => {
+  const changeMemberStatusLogic = async (): Promise<DeleteResponse> => {
+    const response = await organizationApi.changeMemberStatus(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(changeMemberStatusLogic, {
+      onError: (error) => {
+        console.error('Change member status error:', error);
+      },
+    });
+  }
+
+  try {
+    return await changeMemberStatusLogic();
+  } catch (error) {
+    console.error('Failed to change member status:', error);
     return undefined;
   }
 };
