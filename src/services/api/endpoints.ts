@@ -138,4 +138,15 @@ export const ORG_ROLE_ENDPOINTS = {
   PLATFORM: `/api/v1/platform/platforms`,
 } as const;
 
+// 组织管理角色相关（符合需求文档规范）
+export const ORG_ROLE_ENDPOINTS = {
+  /** 获取组织列表 */
+  LIST: '/api/v1/organization/roles',
+  CREATE: '/api/v1/organization/roles',
+  DETAIL: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
+  DELETE: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
+  LOG: (roleId: string) => `/api/v1/xxx/xxx/${roleId}`,
+  PERMISSIONS: (roleId: string) => `/api/v1/permission/roles/${roleId}/data-permissions`,
+} as const;
+
 export default API_ENDPOINTS;
