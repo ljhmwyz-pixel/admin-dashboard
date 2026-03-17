@@ -144,7 +144,7 @@ const OperationButton = ({
   permission: string;
 }) => (
   <Permission value={permission}>
-    <AntTooltip title={title}>
+    <AntTooltip title={title} placement="bottom">
       <span onClick={onClick}>{children}</span>
     </AntTooltip>
   </Permission>
