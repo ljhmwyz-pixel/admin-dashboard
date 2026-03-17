@@ -124,7 +124,7 @@ function BaseTable<RecordType extends object = any>({
         rowSelection={finalRowSelection}
         columns={finalColumns}
         dataSource={filteredData}
-        size="small"
+        size="large"
         className={classNames(styles.baseTable, className)}
         pagination={false}
       />

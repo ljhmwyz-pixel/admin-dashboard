@@ -39,8 +39,8 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.5;
-  max-height: 3em; // 2行 * 1.5行高
+  line-height: 1;
+  max-height: 2em; // 2行 * 1.5行高
 }
 
 .changeTimeContainer {
@@ -111,4 +111,7 @@
   .refreshBtn:hover {
     background-color: #191b1f0a !important;
     border: none !important;
+  }
+:global(.ant-table-cell) {
+    padding: 4px 16px !important;
   }
