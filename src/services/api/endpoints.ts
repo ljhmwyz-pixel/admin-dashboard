@@ -89,12 +89,6 @@ export const UPLOAD_ENDPOINTS = {
   AVATAR: '/upload/avatar',
 } as const;
 
-// 组织类型管理相关
-export const ORGANIZATIONTYPE_ENDPOINTS = {
-  /** 获取组织类型列表 */
-  ORGANIZATION_TYPES: '/api/v1/organization/organization-types',
-} as const;
-
 // 导出所有端点
 export const API_ENDPOINTS = {
   AUTH: AUTH_ENDPOINTS,
@@ -103,7 +97,6 @@ export const API_ENDPOINTS = {
   DASHBOARD: DASHBOARD_ENDPOINTS,
   SYSTEM: SYSTEM_ENDPOINTS,
   UPLOAD: UPLOAD_ENDPOINTS,
-  ORGANIZATIONTYPE: ORGANIZATIONTYPE_ENDPOINTS,
 } as const;
 
 // 组织管理角色相关（符合需求文档规范）
