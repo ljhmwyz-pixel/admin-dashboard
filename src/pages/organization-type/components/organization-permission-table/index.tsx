@@ -76,15 +76,6 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   }, [searchText]);
 
   /**
-   * 处理搜索按钮点击
-   * 当用户点击搜索按钮时，触发搜索操作
-   * 直接更新防抖搜索文本，触发前端搜索
-   */
-  const handleSearch = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  /**
    * 处理刷新按钮点击
    * 当用户点击刷新按钮时，触发重新获取权限数据操作
    * 不需要传递搜索关键词，直接刷新所有数据
@@ -127,7 +118,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         setLoading(false);
       }
     },
-    [typeCode, activeTab],
+    [typeCode, activeTab, selectedKey],
   );
 
   /**
