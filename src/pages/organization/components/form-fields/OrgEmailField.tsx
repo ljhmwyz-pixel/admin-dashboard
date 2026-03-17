@@ -6,10 +6,11 @@ import { useLanguage } from '@shared/hooks';
 import { FormInput } from '@/components';
 
 type OrgEmailFieldProps = FieldProps & {
-  onCheckEmailExists?: (email: string, withGlobalLoading?: boolean) => void;
+  onCheckEmailExists?: (email: string, withGlobalLoading?: boolean, onCancel?: () => void) => void;
   canEdit?: boolean;
   required?: boolean;
   span?: number;
+  onCancel?: () => void;
 };
 // 邮箱格式正则：^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -20,6 +21,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
   canEdit = true,
   required = true,
   span = 12,
+  onCancel,
 }) => {
   const { t } = useLanguage();
 
@@ -50,7 +52,7 @@ const OrgEmailField: React.FC<OrgEmailFieldProps> = ({
 
     // 格式校验通过后才调用外部验证
     if (onCheckEmailExists) {
-      onCheckEmailExists(value, true);
+      onCheckEmailExists(value, true, onCancel);
     }
   };
 

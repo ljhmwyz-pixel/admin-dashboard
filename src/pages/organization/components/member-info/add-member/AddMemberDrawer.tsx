@@ -4,6 +4,7 @@ import { OrganizationInfo } from '@pages/organization/components';
 import type { AddMemberFormData, TreeNodeData } from '@pages/organization/dto';
 import { AntButton, AntDrawer, AntForm, AntSteps } from '@shared/components';
 
+import { useThemeModal } from '@/components/Modal';
 import { useOrganizationForm } from '@/pages/organization/hooks';
 
 import AddMemberAssignRoles from './AddMemberAssignRoles';
@@ -21,7 +22,7 @@ interface AddMemberDrawerProps {
   /** 关闭抽屉回调 */
   onClose: () => void;
   /** 新增成功回调 */
-  onSuccess: () => void;
+  onSuccess: (formData: AddMemberFormData) => void;
   /** 组织ID */
   orgId: string;
   /** 父组织节点数据 */
@@ -50,11 +51,12 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   /** 表单数据 */
   const [formData, setFormData] = useState<AddMemberFormData>({
     basicInfo: { orgEmail: '', orgUsername: '', orgPhone: '' },
-    roles: [],
+    role: [],
     plants: { organizationKeys: [], plantKeys: [] },
   });
   /** 表单实例 */
   const [form] = AntForm.useForm();
+  const { warning } = useThemeModal();
   const { existingUsername, existingPhone, verifyEmail } = useOrganizationForm(currentParentNode);
 
   /** 步骤配置 */
@@ -67,9 +69,26 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   /**
    * 处理基本信息提交
    */
-  const handleBasicInfoSubmit = async (values: any) => {
+  const handleBasicInfoSubmit = async (values: AddMemberFormData['basicInfo']) => {
     const emailResult = await verifyEmail?.(values.orgEmail);
-    const { userExists, existingUsername = '', existingPhone = '' } = emailResult || {};
+    const {
+      userExists,
+      existingUsername = '',
+      existingPhone = '',
+      userType = '',
+    } = emailResult || {};
+    // 内部用户或者访客用户不能新增
+    if (userType === 'GUEST' || userType === 'INTERNAL') {
+      warning({
+        title: 'Email Exists !',
+        content: 'This email address is already in ues.',
+        onOk: () => {
+          handleCancel();
+        },
+      });
+
+      return;
+    }
     if (userExists) {
       setFormData((prev) => ({
         ...prev,
@@ -87,13 +106,14 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
     }
     setCurrentStep(1);
   };
+
   /**
    * 处理角色分配提交
    */
-  const handleRolesSubmit = (values: any) => {
+  const handleRolesSubmit = (values: AddMemberFormData['role']) => {
     setFormData((prev) => ({
       ...prev,
-      roles: values,
+      ...values,
     }));
     setCurrentStep(2);
   };
@@ -101,14 +121,13 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   /**
    * 处理电站关联提交
    */
-  const handlePlantsSubmit = (values: any) => {
+  const handlePlantsSubmit = (values: AddMemberFormData['plants']) => {
     setFormData((prev) => ({
       ...prev,
       plants: values,
     }));
     // 这里可以调用新增成员的API
-    console.log('Form Data:', formData);
-    onSuccess();
+    onSuccess({ ...formData, plants: values });
   };
 
   /**
@@ -127,7 +146,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
     setCurrentStep(0);
     setFormData({
       basicInfo: { orgEmail: '', orgUsername: '', orgPhone: '' },
-      roles: [],
+      role: [],
       plants: { organizationKeys: [], plantKeys: [] },
     });
     onClose();
@@ -146,6 +165,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
             verifyEmail={verifyEmail}
             existingPhone={existingPhone}
             existingUsername={existingUsername}
+            onCancel={handleCancel}
           />
         );
       case 1:

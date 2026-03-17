@@ -35,6 +35,10 @@ export const ORGANIZATION_ENDPOINTS = {
     `/api/v1/organization/member-applications/${applicationId}`,
   /** 获取组织成员变更日志 */
   CHANGE_LOGS: (memberId: string) => `/api/v1/organization/members/${memberId}/change-logs`,
+  /** 新增组织成员 */
+  MEMBER_ADD: '/api/v1/organization/members',
+  /** 删除组织成员 */
+  MEMBER_DELETE: (memberId: string) => `/api/v1/organization/members/${memberId}`,
   /** 成员列表 */
   ROLES: '/api/v1/organization/roles',
   /** 更新组织成员信息 */

@@ -1,5 +1,8 @@
 import type {
+  AddMemberData,
   AddMemberFormData,
+  AddMemberRequest,
+  AddMemberResponse,
   ListItem,
   Member,
   MemberDetail,
@@ -33,7 +36,14 @@ import type { DefaultOptionType } from 'antd/es/select';
  * - OWNER: 所有者
  * - GUEST: 访客
  */
-export type OrganizationType = 'PYLONTECH' | 'BD' | 'DEALER' | 'INSTALLER' | 'OWNER' | 'GUEST';
+export type OrganizationType =
+  | 'PYLONTECH'
+  | 'BD'
+  | 'DEALER'
+  | 'INSTALLER'
+  | 'OWNER'
+  | 'GUEST'
+  | 'INTERNAL';
 
 /**
  * 组织树节点数据结构
@@ -336,7 +346,7 @@ export interface VerifyEmail {
   /** 电话 */
   phone: string;
   /** 用户类型 */
-  userType: string;
+  userType?: OrganizationType;
   /** 允许扩展其他字段 */
   [key: string]: any;
 }
@@ -594,7 +604,10 @@ export interface Pagination {
  * 用于展示组织成员列表
  */
 export type {
+  AddMemberData,
   AddMemberFormData,
+  AddMemberRequest,
+  AddMemberResponse,
   ListItem,
   Member,
   MemberDetail,

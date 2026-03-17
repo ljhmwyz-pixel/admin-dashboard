@@ -2,7 +2,7 @@ import React from 'react';
 import { OrgEmailField, OrgPhoneField, OrgUsernameField } from '@pages/organization/components';
 import { AntForm } from '@shared/components';
 
-import type { FieldProps } from '@/pages/organization/dto';
+import type { FieldProps, OrganizationType } from '@/pages/organization/dto';
 import type { EmailVerifyResult } from '@/pages/organization/hooks/useOrganizationForm';
 
 import styles from './AddMemberBasicInfo.module.scss';
@@ -16,11 +16,17 @@ interface AddMemberBasicInfoProps {
   /** 提交回调 */
   onSubmit: (values: any) => void;
   /** 验证邮箱是否存在 */
-  verifyEmail?: (email: string) => Promise<EmailVerifyResult>;
+  verifyEmail?: (
+    email: string,
+    withGlobalLoading?: boolean,
+    onCancel?: () => void,
+  ) => Promise<EmailVerifyResult>;
   /** 存在用户电话 */
   existingPhone?: string;
   /** 存在用户名 */
   existingUsername?: string;
+  /** 取消回调 */
+  onCancel?: () => void;
 }
 
 /**
@@ -33,11 +39,18 @@ const AddMemberBasicInfo: React.FC<AddMemberBasicInfoProps> = ({
   verifyEmail,
   existingPhone,
   existingUsername,
+  onCancel,
 }) => {
   return (
     <AntForm form={form} onFinish={onSubmit} layout="vertical">
       <div className={styles.stepContent}>
-        <OrgEmailField form={form} canEdit span={24} onCheckEmailExists={verifyEmail} />
+        <OrgEmailField
+          form={form}
+          canEdit
+          span={24}
+          onCheckEmailExists={verifyEmail}
+          onCancel={onCancel}
+        />
         <OrgUsernameField form={form} span={24} canEdit existingUsername={existingUsername} />
         <OrgPhoneField
           form={form}

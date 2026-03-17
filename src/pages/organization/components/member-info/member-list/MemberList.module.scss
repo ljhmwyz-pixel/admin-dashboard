@@ -60,3 +60,32 @@
     margin-right: 0;
   }
 }
+
+
+.okConfirm {
+  width: 90px;
+  height: 42px;
+  border-radius: 6px;
+  background: #f45858;
+  border-color: #f45858;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-left: 0 !important;
+
+  &:hover {
+    background: #f45858 !important;
+    border-color: #f45858 !important;
+    color: #fff !important;
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    background: #f45858 !important;
+    border-color: #f45858 !important;
+    color: #fff !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -301,7 +301,7 @@ export interface AddMemberFormData {
     orgPhone: string;
   };
   /** 角色信息 */
-  roles: Role[];
+  role: string[];
   /** 电站信息 */
   plants: {
     /** 组织ID列表 */
@@ -408,4 +408,48 @@ export interface RecordList {
   operatorName: string;
   changedAt: string;
   batchId: string;
+}
+
+export interface AddMemberRequest {
+  orgId: string;
+  email: string;
+  username: string;
+  phone: string;
+  roleIds: string[];
+}
+
+export interface AddMemberResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: AddMemberData;
+  timestamp: string;
+  traceId: string;
+}
+
+export interface AddMemberData {
+  memberId: string;
+  orgId: string;
+  orgName: string;
+  orgCode: string;
+  orgType: string;
+  uid: string;
+  userId: string;
+  username: string;
+  email: string;
+  phone: string;
+  userType: string;
+  roleList: RoleList[];
+  status: string;
+  isOwner: boolean;
+  applicationId: string;
+  joinedAt: Date;
+  createTime: Date;
+  updateTime: Date;
+  availableActions: string;
+}
+
+export interface RoleList {
+  roleId: string;
+  roleName: string;
 }

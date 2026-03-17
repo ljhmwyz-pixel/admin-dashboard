@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import type { Member, TreeNodeData } from '@pages/organization/dto';
+import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organization/dto';
 import { useMemberList } from '@pages/organization/hooks';
-import { updateMember } from '@pages/organization/services/organizationService';
+import {
+  addMember,
+  deleteMember,
+  updateMember,
+} from '@pages/organization/services/organizationService';
 import { getParentNode } from '@pages/organization/utils';
 import { AntMessage } from '@shared/components';
 
+import { useThemeModal } from '@/components/Modal';
+import { useLanguage } from '@/shared/hooks';
+
+import DeleteConfirmInput from '../../orginization-tree/DeleteConfirmInput';
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
 import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
@@ -58,6 +66,9 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
 
   /** 新增成员抽屉状态 */
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
+
+  const { warning, confirm, success, error } = useThemeModal();
+  const { t } = useLanguage();
 
   // 获取父节点信息
   const parentNodeData =
@@ -146,16 +157,62 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理删除成员操作
    * 限制组织所有者不可被删除
    */
-  const handleDelete = (member: Member) => {
+  const handleDelete = async (member: Member) => {
     const isOrganizationOwner = member.roleList.some((role) =>
       role.roleName.includes('Organization Owner'),
     );
     if (isOrganizationOwner) {
-      AntMessage.error('Organization owner cannot be deleted');
+      warning({
+        title: 'Error !',
+        content: 'You can’t disable your own account.',
+      });
       return;
     }
-    // TODO: 实现确认对话框，提示删除后的数据处理规则及不可恢复性
-    AntMessage.info(`Deleting member: ${member.username}`);
+    let confirmUid = '';
+    const modalInstance = confirm({
+      title: 'Confirm Removal !',
+      content: (
+        <DeleteConfirmInput
+          placeholder="Please enter UID to confirm removal"
+          onChange={(value) => {
+            confirmUid = value;
+            if (modalInstance) {
+              modalInstance.update({
+                okButtonProps: {
+                  danger: true,
+                  disabled: value !== member.userId,
+                  className: styles.okConfirm,
+                },
+              });
+            }
+          }}
+          confirmText="Are you sure you want to remove this member? This action cannot be undone."
+          member={member}
+        />
+      ),
+      okText: t('common.action.delete'),
+      cancelText: t('common.action.cancel'),
+      okButtonProps: {
+        danger: true,
+        disabled: true,
+      },
+      onOk: async () => {
+        // 调用删除接口
+        const result = await deleteMember(member.memberId, { confirmUid });
+        if (result?.code === 200) {
+          success({
+            title: 'Success !',
+            content: 'Member removed successfully.',
+          });
+          handleSearch();
+        } else {
+          error({
+            title: 'Error !',
+            content: result?.message || 'Failed to remove member.',
+          });
+        }
+      },
+    });
   };
 
   /**
@@ -204,10 +261,26 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   /**
    * 处理新增成员成功
    */
-  const handleAddSuccess = () => {
-    setAddDrawerVisible(false);
-    handleSearch();
-    AntMessage.success('新增成员成功');
+  const handleAddSuccess = async (formData: AddMemberFormData) => {
+    if (!currentParentNode?.key) return;
+    if (!formData.role?.length) return;
+    const { basicInfo, plants, role } = formData || {};
+    const requestParams = {
+      email: basicInfo?.orgEmail || '',
+      username: basicInfo?.orgUsername || '',
+      phone: basicInfo?.orgPhone || '',
+      roleIds: role || [],
+      orgId: currentParentNode.key,
+    };
+    const result = await addMember(requestParams);
+    if (result?.code === 200) {
+      setAddDrawerVisible(false);
+      handleSearch();
+      success({
+        title: 'Success !',
+        content: 'The user has been successfully added.',
+      });
+    }
   };
 
   return (
