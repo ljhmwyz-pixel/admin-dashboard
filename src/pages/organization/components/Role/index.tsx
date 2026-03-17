@@ -27,9 +27,9 @@ interface RoleInfoProps {
 }
 
 const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
-  // const { t } = useLanguage();
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(1);
+  const [total, setTotal] = useState(1);
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
   const roleModalRef = useRef<AddRoleRef>(null);
   const { confirm: themeModalConfirm } = useThemeModal();
@@ -37,17 +37,19 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     setPage(p);
     setPageSize(ps);
   };
+  const { t } = useLanguage();
+
   // 状态筛选：'all' | 'normal' | 'deleted'
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
   const statusList: OptionItem[] = [
-    { label: 'All', value: 'all', color: '#33C2C8' },
+    { label: t('common.tab.all'), value: 'all', color: '#33C2C8' },
     {
-      label: 'Normal',
+      label: t('common.status.normal'),
       value: 'normal',
       color: '#31C47F',
     },
     {
-      label: 'Deleted',
+      label: t('common.status.deleted'),
       value: 'deleted',
       color: '#F45858',
     },
@@ -65,52 +67,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   // 加载中状态
   const [loading, setLoading] = useState(false);
 
-  // 分页
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 20,
-    total: 0,
-  });
-
-  const [tableData, setTableData] = useState<RoleRecord[]>([]);
-
-  // 选中的记录
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const [selectedRecords, setSelectedRecords] = useState<RoleRecord[]>([]);
-  const { t } = useLanguage();
-  // 根据筛选条件过滤数据
-  const filteredData = useMemo(() => {
-    const result = tableData.filter((item) => {
-      // 状态筛选
-      if (statusFilter === 'normal' && item.status !== 'Normal') return false;
-      if (statusFilter === 'deleted' && item.status !== 'Deleted') return false;
-
-      // Platform 筛选逻辑
-      const hasApp = platformFilter.app === true;
-      const hasWeb = platformFilter.web === true;
-
-      // 如果两个平台都未选中，不显示任何数据
-      if (!hasApp && !hasWeb) {
-        return false;
-      }
-
-      // 如果只选中 App，只显示有 App 的数据
-      if (hasApp && !hasWeb && !item.platform.app) {
-        return false;
-      }
-
-      // 如果只选中 Web，只显示有 Web 的数据
-      if (!hasApp && hasWeb && !item.platform.web) {
-        return false;
-      }
-
-      // 如果两个都选中（hasApp && hasWeb），显示所有数据
-      return true;
-    });
-
-    return result;
-  }, [statusFilter, platformFilter, tableData]);
-
   // 加载数据
   const loadData = useCallback(async () => {
     if (!currentParentNode.key) return;
@@ -118,9 +74,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     try {
       const reqParams: GetOrgRoleListReq = {
         orgId: currentParentNode.key,
+        pageNum: page,
+        pageSize,
       };
       const {
-        data: { current, records, size },
+        data: { current, records, size, total },
       }: GetOrgRoleListRes = await OrgRoleApi.getOrgRoleList(reqParams);
       // 增加No列，自增1
       records.forEach((item, index) => {
@@ -129,12 +87,13 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       setDataSource(records);
       setPage(current);
       setPageSize(size);
+      setTotal(total);
     } catch (error) {
       console.error('error====:', error);
     } finally {
       setLoading(false);
     }
-  }, [currentParentNode.key]);
+  }, [currentParentNode.key, page, pageSize]);
 
   /**
    * 获取数据
@@ -148,9 +107,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     setStatusFilter('all');
     setPlatformFilter({ app: true, web: true });
     setSearchKeyword('');
-    setPagination((prev) => ({ ...prev, current: 1 }));
-    setSelectedKeys([]);
-    setSelectedRecords([]);
     loadData();
   }, [loadData]);
 
@@ -160,52 +116,41 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       app: checkedValues.includes('app'),
       web: checkedValues.includes('web'),
     });
-    setPagination((prev) => ({ ...prev, current: 1 }));
   }, []);
 
   // 状态筛选
   const handleStatusChange = useCallback((status: 'all' | 'normal' | 'deleted') => {
     setStatusFilter(status);
-    setPagination((prev) => ({ ...prev, current: 1 }));
   }, []);
-
-  // 处理选中变化
-  const handleSelectChange = useCallback(
-    (selectedRowKeys: string[], selectedRows: RoleRecord[]) => {
-      setSelectedKeys(selectedRowKeys);
-      setSelectedRecords(selectedRows);
-    },
-    [],
-  );
 
   const columns = [
     {
-      title: 'No.',
+      title: t('role.col.no'),
       dataIndex: 'no',
       key: 'no',
     },
     {
-      title: 'Role Name',
+      title: t('role.col.name'),
       dataIndex: 'roleName',
       key: 'roleName',
     },
     {
-      title: 'Platform',
+      title: t('role.col.platform'),
       dataIndex: 'platform',
       key: 'platform',
     },
     {
-      title: 'Number of Members',
+      title: t('role.col.members'),
       dataIndex: 'memberCount',
       key: 'memberCount',
     },
     {
-      title: 'Status',
+      title: t('role.col.status'),
       dataIndex: 'status',
       key: 'status',
     },
     {
-      title: 'Description',
+      title: t('role.col.description'),
       dataIndex: 'description',
       key: 'description',
     },
@@ -288,7 +233,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
             pagination={{
               current: page,
               pageSize,
-              total: dataSource.length,
+              total,
               onChange: handlePageChange,
             }}
             filterConfig={{

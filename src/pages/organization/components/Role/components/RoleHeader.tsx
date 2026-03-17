@@ -44,7 +44,7 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
         <AntSpace size={20}>
           <SearchInput
             allowClear={false}
-            placeholder="Please enter role name"
+            placeholder={t('role.placeholder.search')}
             // 此字段决定是否展示Tooltip
             searchFields={['Role name']}
             value={searchKeyword}
@@ -72,7 +72,7 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
             onClick={onAdd}
             className={styles.addBtn}
           >
-            Add
+            {t('common.action.add')}
           </FormButton>
           <FormButton
             className={styles.refreshBtn}

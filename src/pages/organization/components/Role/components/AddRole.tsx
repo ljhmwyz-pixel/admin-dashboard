@@ -138,7 +138,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         <AntCol span={12}>
           <FormInput
             name="roleName"
-            label="Role Name"
+            label={t('role.col.name')}
             rules={[{ required: true, message: 'Please enter a role name' }]}
             inputProps={{
               placeholder: 'Please enter a role name',
@@ -167,7 +167,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           <AntCol span={12}>
             <FormInput
               name="status"
-              label="Status"
+              label={t('role.col.status')}
               inputProps={{
                 disabled: opt === 'view' || opt === 'edit',
               }}
@@ -197,7 +197,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           <AntCol span={12}>
             <FormInput
               name="memberCount"
-              label="Number of Members"
+              label={t('role.col.members')}
               inputProps={{
                 disabled: opt === 'view' || opt === 'edit',
               }}
@@ -224,7 +224,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         <AntCol span={24}>
           <FormTextArea
             name="description"
-            label="Description"
+            label={t('role.col.description')}
             inputProps={{
               placeholder: 'Please enter description',
               disabled: opt === 'view',
@@ -285,12 +285,12 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const tabItems = [
     {
       key: 'Infomation',
-      label: <div className={styles.tabItems}>Infomation</div>,
+      label: <div className={styles.tabItems}>{t('role.info.title')}</div>,
       children: formFields(),
     },
     {
       key: 'Record',
-      label: <div className={styles.tabItems}>Record</div>,
+      label: <div className={styles.tabItems}>{t('role.record.title')}</div>,
       children: (
         <div className={styles.recordContainer}>
           <Table
@@ -390,7 +390,13 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
 
   return (
     <FormDrawer
-      title={opt === 'view' ? '查看角色' : opt === 'edit' ? '编辑角色' : '新增角色'}
+      title={
+        opt === 'view'
+          ? t('role.info.title')
+          : opt === 'edit'
+            ? t('role.edit.title')
+            : t('role.add.title')
+      }
       open={open}
       onClose={() => setOpen(false)}
       destroyOnHidden={destroyOnClose}

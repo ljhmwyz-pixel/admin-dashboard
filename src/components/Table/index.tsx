@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Button, Space, Table as AntTable } from 'antd';
+import { Table as AntTable } from 'antd';
 import classNames from 'classnames';
+import { t } from 'i18next';
 
 import { AntSpace } from '@/shared/components';
 
@@ -53,7 +54,7 @@ function BaseTable<RecordType extends object = any>({
 
     if (operations?.length) {
       cols.push({
-        title: 'Operation',
+        title: t('role.col.operation'),
         key: '__operation',
         width: operationWidth || 180,
         fixed: 'right',

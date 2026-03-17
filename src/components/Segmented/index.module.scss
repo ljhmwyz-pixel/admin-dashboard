@@ -21,6 +21,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    // color: $color-text-secondary !important;
+    // @include dark-theme {
+    //   color: $dark-color-text-secondary;
+    // }
     .icon {
       display: flex;
       flex-direction: row;
@@ -33,7 +37,7 @@
   :global {
     // 强制覆盖 Ant Design 的 CSS 变量
     .ant-segmented {
-      --ant-segmented-item-hover-color: transparent !important;
+      --ant-segmented-item-hover-color: $color-text-primary !important;
       --ant-segmented-item-hover-bg: transparent !important;
       --ant-segmented-item-active-color: transparent !important;
       --ant-segmented-item-active-bg: transparent !important;
@@ -51,7 +55,7 @@
       border-radius: 4px !important;
       font-size: 14px;
       font-weight: 500;
-      color: rgba(25, 27, 31, 0.4);
+      // color: rgba(25, 27, 31, 0.4);
       min-width: 80px;
       display: flex !important;
       align-items: center !important;
