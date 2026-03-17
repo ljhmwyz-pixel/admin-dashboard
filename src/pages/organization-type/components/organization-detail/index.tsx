@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@shared/hooks/useLanguage';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { message, Modal } from 'antd';
 
 import { FormTabs } from '@/components';
 import { FormButton, FormDrawer } from '@/components';
@@ -65,7 +64,11 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
 
     setDataPermissions(formattedData);
   }, []);
-  const { success: ModalSuccess, error: ModalError } = useThemeModal();
+  const {
+    success: ModalSuccess,
+    error: ModalError,
+    warningConfirm: ModalWarning,
+  } = useThemeModal();
   // 处理保存
   const handleSave = async () => {
     if (!organizationType) return;
@@ -88,6 +91,9 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
           content: '保存成功',
         });
         setHasChanges(false);
+        // 重置权限修改数据
+        setFunctionalPermissions([]);
+        setDataPermissions([]);
       } else {
         ModalError({
           content: response.message || '保存失败',
@@ -103,23 +109,28 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
   // 处理取消修改
   const handleCancelEdit = () => {
     setIsEditMode(false);
+    setHasChanges(false);
+    // 重置权限修改数据
+    setFunctionalPermissions([]);
+    setDataPermissions([]);
   };
   // 处理修改
   const handleModify = () => {
     setIsEditMode(true);
+    // 进入编辑模式时，重置修改状态
+    setHasChanges(false);
   };
 
   // 处理取消
   const handleCancel = () => {
     if (hasChanges) {
-      // 提示用户有未保存的数据
-      Modal.confirm({
-        title: '确认取消',
+      ModalWarning({
+        title: t('org.dialog.unsaved.title'),
         content: '您有未保存的修改，确定要取消吗？',
+        okText: '确认',
         onOk: () => {
           onCancel();
         },
-        onCancel: () => {},
       });
     } else {
       onCancel();
@@ -129,7 +140,10 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
   // 处理子组件的修改通知
   const handleHasChanges = useCallback((changes: boolean) => {
     // 只要有一个子组件有修改，就设置为有修改
-    setHasChanges(changes);
+    // 这里我们需要确保只要有任何一个子组件有修改，hasChanges就为true
+    if (changes) {
+      setHasChanges(true);
+    }
   }, []);
   // Tab内容配置
   const tabItems = [
@@ -164,6 +178,16 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
     },
   ];
 
+  // 当组件重新可见时，重置状态
+  useEffect(() => {
+    if (visible) {
+      setIsEditMode(isDefaultEditMode);
+      setHasChanges(false);
+      setFunctionalPermissions([]);
+      setDataPermissions([]);
+    }
+  }, [visible, isDefaultEditMode]);
+
   return (
     <FormDrawer
       title={organizationType.typeName}
@@ -172,7 +196,7 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       placement="right"
       closable={{ placement: 'end' }}
       open={visible}
-      onClose={onCancel}
+      onClose={handleCancel}
       styles={{
         body: { padding: '0px', display: 'flex', flexDirection: 'column' },
       }}
