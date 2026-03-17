@@ -4,6 +4,7 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
   width: 100%;
   max-height: 400px;
   background: #fff;
+  border-radius: 6px;
 
   :global {
     .ant-tree {
@@ -87,7 +88,7 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
       }
 
       .ant-tree-checkbox-indeterminate:after {
-        content: '~';
+        content: '';
         content: '';
         position: absolute;
         top: 50%;

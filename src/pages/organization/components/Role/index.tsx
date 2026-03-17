@@ -28,7 +28,7 @@ interface RoleInfoProps {
 
 const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
   const roleModalRef = useRef<AddRoleRef>(null);
