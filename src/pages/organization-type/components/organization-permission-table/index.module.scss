@@ -58,6 +58,7 @@
     transition: all 0.3s ease;
     
     &:hover {
+      cursor: pointer;
       background: #33C2C80F;
       color: var(--ant-color-primary);
     }

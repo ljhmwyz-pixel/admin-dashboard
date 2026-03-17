@@ -55,21 +55,21 @@ export const DATA_PLATFORM_OPTIONS: OptionItem[] = [
 export const RECORD_PLATFORM_OPTIONS = [
   {
     label: 'Organization',
-    value: 'ORGANIZATION',
+    value: 'DATA_ORGANIZATION',
     color: '#31C47F',
     icon: <OrganizationOutlined color="#191B1F66" />,
     iconSelected: <OrganizationOutlined color="#31C47F" />,
   },
   {
     label: 'Members',
-    value: 'USER',
+    value: 'DATA_USER',
     color: '#F4AA58',
     icon: <UserOutlined color="#191B1F66" />,
     iconSelected: <UserOutlined color="#F4AA58" />,
   },
   {
     label: 'Plants',
-    value: 'PLANT',
+    value: 'DATA_PLANT',
     color: '#33C2C8',
     icon: <PlantOutlined color="#191B1F66" />,
     iconSelected: <PlantOutlined color="#33C2C8" />,
