@@ -95,6 +95,11 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       setLoading(false);
     }
   };
+
+  // 处理取消修改
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+  };
   // 处理修改
   const handleModify = () => {
     setIsEditMode(true);
@@ -167,19 +172,27 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       styles={{
         body: { padding: '0px', display: 'flex', flexDirection: 'column' },
       }}
+      footerAbsolute={true}
       footer={
         <div className={styles.footerDiv}>
-          <FormButton color="default" onClick={handleCancel}>
-            {t('common.action.cancel')}
-          </FormButton>
           {isEditMode ? (
-            <FormButton color="primary" variant="solid" onClick={handleSave} loading={loading}>
-              {t('common.action.save')}
-            </FormButton>
+            <>
+              <FormButton color="default" onClick={handleCancelEdit}>
+                {t('common.action.cancel')}
+              </FormButton>
+              <FormButton color="primary" variant="solid" onClick={handleSave} loading={loading}>
+                {t('common.action.save')}
+              </FormButton>
+            </>
           ) : (
-            <FormButton color="primary" onClick={handleModify}>
-              {t('common.action.modify')}
-            </FormButton>
+            <>
+              <FormButton color="default" onClick={handleCancel}>
+                {t('common.action.cancel')}
+              </FormButton>
+              <FormButton color="primary" onClick={handleModify}>
+                {t('common.action.modify')}
+              </FormButton>
+            </>
           )}
         </div>
       }

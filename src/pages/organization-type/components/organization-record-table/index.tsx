@@ -195,6 +195,7 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
             total: total,
             onChange: handlePageChange,
           }}
+          scroll={{ y: window.innerHeight - 365 }}
           loading={loading}
         />
       </div>

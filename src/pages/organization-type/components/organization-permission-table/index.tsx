@@ -77,56 +77,52 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
 
   /**
    * 处理刷新按钮点击
-   * 当用户点击刷新按钮时，触发重新获取权限数据操作
-   * 不需要传递搜索关键词，直接刷新所有数据
    */
   const handleRefresh = () => {
+    // 重新请求数据
     fetchPermissions();
   };
 
   /**
    * 获取组织类型-权限数据
-   * @param keyword 搜索关键词
+   * @param keyword 搜索关键词（不再使用，搜索在前端进行）
    */
-  const fetchPermissions = useCallback(
-    async (keyword?: string) => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response: OrganizationTypeDetailFunctionalResponse =
-          await organizationTypeApi.getOrganizationTypeFunctionalPermissions(typeCode, {
-            platform: activeTab,
-            permissionKeyword: keyword,
-          });
-        // 确保functionalPermissions是数组，防止空指针错误
-        const functionalPermissions: OrganizationTypePermissionItem[] =
-          response.data.functionalPermissions || [];
+  const fetchPermissions = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response: OrganizationTypeDetailFunctionalResponse =
+        await organizationTypeApi.getOrganizationTypeFunctionalPermissions(typeCode, {
+          platform: activeTab,
+          // 不再传递搜索关键词，搜索在前端进行
+        });
+      // 确保functionalPermissions是数组，防止空指针错误
+      const functionalPermissions: OrganizationTypePermissionItem[] =
+        response.data.functionalPermissions || [];
 
-        // 设置权限的原始数据
-        setOriginalData(functionalPermissions);
-        // 提取第一级节点，排除children属性
-        const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
-        setFirstLevelNodes(firstLevel);
+      // 设置权限的原始数据
+      setOriginalData(functionalPermissions);
+      // 提取第一级节点，排除children属性
+      const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
+      setFirstLevelNodes(firstLevel);
 
-        // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
-        if (!selectedKey || !firstLevel.some((node) => node.permissionCode === selectedKey)) {
-          setSelectedKey(firstLevel[0]?.permissionCode || null);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
-      } finally {
-        setLoading(false);
+      // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
+      if (!selectedKey || !firstLevel.some((node) => node.permissionCode === selectedKey)) {
+        setSelectedKey(firstLevel[0]?.permissionCode || null);
       }
-    },
-    [typeCode, activeTab, selectedKey],
-  );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
+    } finally {
+      setLoading(false);
+    }
+  }, [typeCode, activeTab]);
 
   /**
-   * 当debouncedSearchText变化时，重新获取权限数据
+   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
    */
   useEffect(() => {
-    fetchPermissions(debouncedSearchText);
-  }, [debouncedSearchText, fetchPermissions]);
+    // 搜索只在前端进行，不重新请求后端接口
+  }, [debouncedSearchText]);
 
   /**
    * 初始加载权限数据或当切换tab时重新获取权限数据
@@ -444,6 +440,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             dataSource={tableDataForDisplay}
             pagination={false}
             expandedRowKeys={expandedRowKeys}
+            scroll={{ y: window.innerHeight - 365 }}
             onExpandedRowsChange={(expandedKeys) => setExpandedRowKeys(expandedKeys as string[])}
           />
         </div>
