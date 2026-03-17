@@ -65,7 +65,7 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
 
     setDataPermissions(formattedData);
   }, []);
-  const { success: ModalSuccess } = useThemeModal();
+  const { success: ModalSuccess, error: ModalError } = useThemeModal();
   // 处理保存
   const handleSave = async () => {
     if (!organizationType) return;
@@ -79,18 +79,22 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       };
 
       // 调用API保存权限配置
-      await organizationTypeApi.updateOrganizationTypePermissions(
+      const response = await organizationTypeApi.updateOrganizationTypePermissions(
         organizationType.typeCode,
         requestData,
       );
-      ModalSuccess({
-        content: '保存成功',
-      });
-      message.success('保存成功');
-      setHasChanges(false);
-      setIsEditMode(false);
+      if (response.success) {
+        ModalSuccess({
+          content: '保存成功',
+        });
+        setHasChanges(false);
+      } else {
+        ModalError({
+          content: response.message || '保存失败',
+        });
+      }
     } catch (error) {
-      message.error(error instanceof Error ? error.message : '保存失败');
+      console.error(error);
     } finally {
       setLoading(false);
     }
