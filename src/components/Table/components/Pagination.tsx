@@ -177,7 +177,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           onChange={onChange}
           showQuickJumper
           showSizeChanger={{
-            options: [10, 20, 50, 100].map((size) => ({
+            options: [1, 10, 20, 50, 100].map((size) => ({
               label: size,
               value: size,
             })),

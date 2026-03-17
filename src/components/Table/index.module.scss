@@ -1,3 +1,6 @@
+@use '@/shared/styles/variables' as *;
+@use '@/shared/styles/mixins' as *;
+@use 'sass:color';
 .baseTable {
   border-radius: 6px;
 
@@ -6,6 +9,10 @@
     font-weight: 600;
     font-size: 14px;
     color: #191b1f99;
+    color: $color-text-secondary;
+    @include dark-theme {
+      color: $dark-color-text-secondary;
+    }
   }
   .operationButtonItem {
     cursor: pointer;
