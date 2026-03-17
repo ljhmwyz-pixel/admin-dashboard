@@ -125,11 +125,11 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   }, [debouncedSearchText]);
 
   /**
-   * 当debouncedSearchText变化时，重新获取权限数据
+   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
    */
   useEffect(() => {
-    fetchPermissions(debouncedSearchText);
-  }, [debouncedSearchText, fetchPermissions]);
+    // 搜索只在前端进行，不重新请求后端接口
+  }, [debouncedSearchText]);
 
   /**
    * 初始加载权限数据或当切换tab时重新获取权限数据
