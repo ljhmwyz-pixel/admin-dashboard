@@ -73,15 +73,14 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
           >
             {member.status === 'LOCKED' ? 'Unlock' : 'Lock'}
           </AntButton>,
-          <AntButton
-            key="modify"
-            type="primary"
-            disabled={member?.isOwner}
-            onClick={() => handleButtonClick(onModify)}
-          >
-            Modify
-          </AntButton>,
         );
+        if (!member?.isOwner) {
+          buttons.push(
+            <AntButton key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
+              Modify
+            </AntButton>,
+          );
+        }
       } else {
         buttons.push(
           <AntButton key="save" type="primary" onClick={() => form.submit()}>

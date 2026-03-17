@@ -33,6 +33,11 @@ export const ORGANIZATION_ENDPOINTS = {
   /** 获取组织成员应用权限 */
   APPLICATION_PERMISSIONS: (applicationId: string) =>
     `/api/v1/organization/member-applications/${applicationId}`,
+  /** 审核组织成员申请 */
+  APPLICATION_REVIEW: (applicationId: string) =>
+    `/api/v1/organization/member-applications/${applicationId}/review`,
+  /** 改变成员状态 */
+  CHANGE_STATUS: (memberId: string) => `/api/v1/organization/members/${memberId}/status`,
   /** 获取组织成员变更日志 */
   CHANGE_LOGS: (memberId: string) => `/api/v1/organization/members/${memberId}/change-logs`,
   /** 新增组织成员 */

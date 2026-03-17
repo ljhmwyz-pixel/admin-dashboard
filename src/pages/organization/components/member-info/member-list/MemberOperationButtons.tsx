@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import type { Member } from '@pages/organization/dto';
 import { AntSpace, AntTooltip } from '@shared/components';
 import { PermissionCode } from '@shared/constants/permissions';
 
 import { Permission } from '@/components/Permission';
+
+import styles from './MemberList.module.scss';
 
 /**
  * 操作按钮图标组件
@@ -140,7 +142,7 @@ const OperationButton = ({
 }: {
   children: React.ReactNode;
   onClick: () => void;
-  title: string;
+  title: string | ReactNode;
   permission: string;
 }) => (
   <Permission value={permission}>
@@ -204,6 +206,11 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
       </OperationButton>,
     );
 
+    // 组织所有者只展示查看按钮
+    if (member?.isOwner) {
+      return buttons;
+    }
+
     switch (member.status) {
       case 'NORMAL':
         // Normal 状态：编辑、禁用、删除
@@ -219,7 +226,12 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="toggleStatus"
             onClick={() => onDisable(member)}
-            title="Unlock"
+            title={
+              <div className={styles.operationButtonTitle}>
+                <span className={styles.operationButtonTitleStatus}>status: Enable</span>
+                <span className={styles.operationButtonTitleClick}>Click to Disable</span>
+              </div>
+            }
             permission={PermissionCode.MEMBER_DISABLE}
           >
             <EnableIcon />
@@ -249,7 +261,12 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="toggleStatus"
             onClick={() => onEnable(member)}
-            title="Lock"
+            title={
+              <div className={styles.operationButtonTitle}>
+                <span className={styles.operationButtonTitleStatus}>status: Disable</span>
+                <span className={styles.operationButtonTitleClick}>Click to Enable</span>
+              </div>
+            }
             permission={PermissionCode.MEMBER_ENABLE}
           >
             <DisableIcon />

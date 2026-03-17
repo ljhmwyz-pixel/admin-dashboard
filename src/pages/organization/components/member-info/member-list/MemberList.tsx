@@ -1,15 +1,17 @@
 import React, { useCallback, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organization/dto';
 import { useMemberList } from '@pages/organization/hooks';
 import {
   addMember,
+  changeMemberStatus,
   deleteMember,
+  reviewMemberApplication,
   updateMember,
 } from '@pages/organization/services/organizationService';
-import { getParentNode } from '@pages/organization/utils';
-import { AntMessage } from '@shared/components';
 
 import { useThemeModal } from '@/components/Modal';
+import { selectCurrentUser } from '@/core/store/slices/authSlice';
 import { useLanguage } from '@/shared/hooks';
 
 import DeleteConfirmInput from '../../organization-tree/DeleteConfirmInput';
@@ -76,13 +78,10 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   /** 新增成员抽屉状态 */
   const [addDrawerVisible, setAddDrawerVisible] = useState(false);
 
-  const { warning, confirm, success, error } = useThemeModal();
+  const { warning, confirm, success, error, warningConfirm } = useThemeModal();
   const roleModalRef = useRef<AddRoleRef>(null);
   const { t } = useLanguage();
-
-  // 获取父节点信息
-  const parentNodeData =
-    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
+  const user = useSelector(selectCurrentUser);
 
   /**
    * 处理查看成员详情操作
@@ -104,6 +103,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
+    setAddDrawerVisible(false);
   }, [editMember]);
 
   /**
@@ -155,18 +155,23 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         const { memberId, status } = member;
         const result = await updateMember(memberId, { status, roleIds });
         if (result.success) {
-          AntMessage.success('更新成功');
-          setEditMember(false);
+          success({
+            title: 'Success !',
+            content: 'Member modify successfully.',
+          });
           handleSearch();
+          handleInfoModalClose();
         } else {
-          AntMessage.error(result.message || '更新失败');
+          error({
+            title: 'Error !',
+            content: result.message || '更新失败',
+          });
         }
       } catch (error) {
         console.error('Error updating member:', error);
-        AntMessage.error('更新失败');
       }
     },
-    [handleSearch],
+    [handleInfoModalClose, handleSearch, success, error],
   );
 
   /**
@@ -175,10 +180,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    */
   const handleDelete = useCallback(
     async (member: Member) => {
-      const isOrganizationOwner = member.roleList.some((role) =>
-        role.roleName.includes('Organization Owner'),
-      );
-      if (isOrganizationOwner) {
+      if (user?.userId === member.userId) {
         warning({
           title: 'Error !',
           content: 'You can’t disable your own account.',
@@ -239,44 +241,264 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         },
       });
     },
-    [warning, confirm, success, error, t, handleSearch],
+    [user, confirm, t, warning, success, handleSearch, error],
   );
 
   /**
    * 处理禁用成员操作
    * 禁用后成员无法登录系统及使用相关功能
    */
-  const handleDisable = useCallback((member: Member) => {
-    AntMessage.info(`Disabling member: ${member.username}`);
-    // TODO: 实现禁用功能并记录操作日志
-  }, []);
+  const handleDisable = useCallback(
+    (member: Member) => {
+      let reason = '';
+      let confirmUid = '';
+      const modalInstance = warningConfirm({
+        title: 'Confirm Disable !',
+        content: (
+          <DeleteConfirmInput
+            textAreaPlaceholder="Please enter reason"
+            placeholder="Please enter UID to confirm disable"
+            confirmText="Are you sure you want to lock this member?"
+            member={member}
+            showTextArea={true}
+            onTextAreaChange={(value) => {
+              reason = value;
+            }}
+            onChange={(value) => {
+              confirmUid = value;
+              if (modalInstance) {
+                modalInstance.update({
+                  okButtonProps: {
+                    disabled: value !== member?.userId,
+                    className: styles.okConfirm,
+                  },
+                });
+              }
+            }}
+          />
+        ),
+        okText: 'Lock',
+        cancelText: 'Cancel',
+        onOk: async () => {
+          if (!member.memberId) return;
+          try {
+            const result = await changeMemberStatus(member.memberId, {
+              status: 'INACTIVE',
+              confirmUid,
+              reason,
+            });
+            if (result?.code === 200) {
+              success({
+                title: 'Success !',
+                content: 'Member disabled successfully.',
+              });
+              handleSearch();
+              handleInfoModalClose();
+            } else {
+              error({
+                title: 'Error !',
+                content: result?.message || 'Failed to disable member.',
+              });
+            }
+          } catch (err) {
+            console.error('Error disable member:', err);
+            error({
+              title: 'Error !',
+              content: 'Failed to disable member.',
+            });
+          }
+        },
+      });
+    },
+    [warningConfirm, success, handleSearch, handleInfoModalClose, error],
+  );
 
   /**
    * 处理启用成员操作
    * 启用后恢复正常访问权限
    */
-  const handleEnable = useCallback((member: Member) => {
-    AntMessage.info(`Enabling member: ${member.username}`);
-    // TODO: 实现启用功能并记录操作日志
-  }, []);
+  const handleEnable = useCallback(
+    (member: Member) => {
+      let reason = '';
+      let confirmUid = '';
+      const modalInstance = warningConfirm({
+        title: 'Confirm Disable !',
+        content: (
+          <DeleteConfirmInput
+            textAreaPlaceholder="Please enter reason"
+            placeholder="Please enter UID to confirm disable"
+            confirmText="Are you sure you want to lock this member?"
+            member={member}
+            showTextArea={true}
+            onTextAreaChange={(value) => {
+              reason = value;
+            }}
+            onChange={(value) => {
+              confirmUid = value;
+              if (modalInstance) {
+                modalInstance.update({
+                  okButtonProps: {
+                    disabled: value !== member?.userId,
+                    className: styles.okConfirm,
+                  },
+                });
+              }
+            }}
+          />
+        ),
+        okText: 'UnLock',
+        cancelText: 'Cancel',
+        onOk: async () => {
+          if (!member.memberId) return;
+          try {
+            const result = await changeMemberStatus(member.memberId, {
+              status: 'ACTIVE',
+              confirmUid,
+              reason,
+            });
+            if (result?.code === 200) {
+              success({
+                title: 'Success !',
+                content: 'Member disabled successfully.',
+              });
+              handleSearch();
+              handleInfoModalClose();
+            } else {
+              error({
+                title: 'Error !',
+                content: result?.message || 'Failed to disable member.',
+              });
+            }
+          } catch (err) {
+            console.error('Error disable member:', err);
+            error({
+              title: 'Error !',
+              content: 'Failed to disable member.',
+            });
+          }
+        },
+      });
+    },
+    [warningConfirm, success, handleSearch, handleInfoModalClose, error],
+  );
 
   /**
    * 处理通过加入组织申请操作
    * 审批通过后需将成员状态更新为正常，并分配默认权限
    */
-  const handleApprove = useCallback((member: Member) => {
-    AntMessage.info(`Approving member: ${member.username}`);
-    // TODO: 实现审批通过功能，更新状态为正常并分配默认权限
-  }, []);
+  const handleApprove = useCallback(
+    (member: Member) => {
+      warningConfirm({
+        title: 'Confirm Approval !',
+        content: (
+          <DeleteConfirmInput
+            placeholder="Please enter UID to confirm removal"
+            showInput={false}
+            showUid={false}
+            confirmText="Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role."
+            member={member}
+          />
+        ),
+        okText: 'Approve',
+        cancelText: 'Cancel',
+        onOk: async () => {
+          if (!member.applicationId) return;
+          try {
+            const result = await reviewMemberApplication(member.applicationId, {
+              status: member?.status,
+            });
+            if (result?.code === 200) {
+              success({
+                title: 'Success !',
+                content: 'Member approved successfully.',
+              });
+              handleSearch();
+              handleInfoModalClose();
+            } else {
+              error({
+                title: 'Error !',
+                content: result?.message || 'Failed to approve member.',
+              });
+            }
+          } catch (err) {
+            console.error('Error approving member:', err);
+            error({
+              title: 'Error !',
+              content: 'Failed to approve member.',
+            });
+          }
+        },
+      });
+    },
+    [error, handleInfoModalClose, handleSearch, success, warningConfirm],
+  );
 
   /**
    * 处理拒绝加入组织申请操作
    * 拒绝时需填写拒绝原因（可选），操作后将成员状态更新为拒绝状态并通知申请人
    */
-  const handleReject = useCallback((member: Member) => {
-    AntMessage.info(`Rejecting member: ${member.username}`);
-    // TODO: 实现拒绝功能，填写拒绝原因并更新状态
-  }, []);
+  const handleReject = useCallback(
+    (member: Member) => {
+      let confirmValue = '';
+      const modalInstance = confirm({
+        title: 'Confirm Rejection !',
+        content: (
+          <DeleteConfirmInput
+            textAreaPlaceholder="Please enter UID to confirm removal"
+            showInput={false}
+            showUid={false}
+            confirmText="Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role."
+            member={member}
+            showTextArea={true}
+            onTextAreaChange={(value) => {
+              confirmValue = value;
+              if (modalInstance) {
+                modalInstance.update({
+                  okButtonProps: {
+                    danger: true,
+                    disabled: !value,
+                    className: styles.okConfirm,
+                  },
+                });
+              }
+            }}
+          />
+        ),
+        okText: 'Reject',
+        cancelText: 'Cancel',
+        onOk: async () => {
+          if (!member.applicationId) return;
+          try {
+            // 调用审核接口
+            const result = await reviewMemberApplication(member.applicationId, {
+              status: member?.status,
+              reason: confirmValue,
+            });
+            if (result?.code === 200) {
+              success({
+                title: 'Success !',
+                content: 'Member rejected successfully.',
+              });
+              handleSearch();
+              handleInfoModalClose();
+            } else {
+              error({
+                title: 'Error !',
+                content: result?.message || 'Failed to reject member.',
+              });
+            }
+          } catch (err) {
+            console.error('Error rejecting member:', err);
+            error({
+              title: 'Error !',
+              content: 'Failed to reject member.',
+            });
+          }
+        },
+      });
+    },
+    [confirm, success, handleSearch, handleInfoModalClose, error],
+  );
 
   /**
    * 处理新增成员按钮点击
@@ -303,12 +525,12 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         };
         const result = await addMember(requestParams);
         if (result?.code === 200) {
-          setAddDrawerVisible(false);
-          handleSearch();
           success({
             title: 'Success !',
             content: 'The user has been successfully added.',
           });
+          handleSearch();
+          setAddDrawerVisible(false);
         } else {
           error({
             title: 'Error !',

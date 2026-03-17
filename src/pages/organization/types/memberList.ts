@@ -453,3 +453,22 @@ export interface RoleList {
   roleId: string;
   roleName: string;
 }
+
+export interface ReviewMemberApplicationResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: {
+    applicationId: string;
+    status: string;
+    reviewedAt: {
+      dateTime: string;
+      offset: {
+        totalSeconds: number;
+      };
+    };
+    message: string;
+  };
+  timestamp: string;
+  traceId: string;
+}

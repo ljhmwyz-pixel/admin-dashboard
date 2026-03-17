@@ -13,6 +13,7 @@ import type {
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
+  ReviewMemberApplicationResponse,
   RoleListResponse,
   VerifyDeleteResponse,
   VerifyEmailRequest,
@@ -92,6 +93,17 @@ export interface OrganizationApi {
 
   /** 删除组织成员 */
   deleteMember: (memberId: string, data: { confirmUid: string }) => Promise<DeleteResponse>;
+
+  /** 审核组织成员 */
+  reviewMemberApplication: (
+    applicationId: string,
+    data: { status: string; reason?: string },
+  ) => Promise<ReviewMemberApplicationResponse>;
+
+  changeMemberStatus: (
+    memberId: string,
+    data: { status: string; confirmUid: string; reason?: string },
+  ) => Promise<DeleteResponse>;
 }
 
 /**
@@ -283,6 +295,32 @@ class OrganizationApiImpl implements OrganizationApi {
     return apiClient.delete(ORGANIZATION_ENDPOINTS.MEMBER_DELETE(memberId), {
       data,
     });
+  }
+
+  /**
+   * 审核组织成员
+   * @param applicationId - 申请ID
+   * @param data - 审核数据（包含状态、原因）
+   * @returns 审核结果
+   */
+  async reviewMemberApplication(
+    applicationId: string,
+    data: { status: string; reason?: string | undefined },
+  ): Promise<ReviewMemberApplicationResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.APPLICATION_REVIEW(applicationId), data);
+  }
+
+  /**
+   * 改变组织成员状态
+   * @param memberId - 成员 ID
+   * @param data - 状态更新请求数据（包含 status）
+   * @returns 更新结果
+   */
+  async changeMemberStatus(
+    memberId: string,
+    data: { status: string; confirmUid: string; reason?: string },
+  ): Promise<DeleteResponse> {
+    return apiClient.patch(ORGANIZATION_ENDPOINTS.CHANGE_STATUS(memberId), data);
   }
 }
 

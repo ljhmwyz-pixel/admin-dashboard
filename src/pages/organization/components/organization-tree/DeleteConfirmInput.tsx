@@ -9,6 +9,8 @@ import styles from './DeleteConfirmInput.module.scss';
 interface DeleteConfirmInputProps {
   /** 输入值变化时的回调 */
   onChange?: (value: string) => void;
+  /** 输入值变化时的回调 */
+  onTextAreaChange?: (value: string) => void;
   /** 输入框的 placeholder */
   placeholder?: string;
   /** 是否禁用 */
@@ -19,6 +21,10 @@ interface DeleteConfirmInputProps {
   confirmText?: string;
   nodeData?: TreeNodeData;
   member?: Member;
+  showInput?: boolean;
+  showUid?: boolean;
+  showTextArea?: boolean;
+  textAreaPlaceholder?: string;
 }
 
 /**
@@ -27,20 +33,32 @@ interface DeleteConfirmInputProps {
  */
 const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
   onChange,
+  onTextAreaChange,
+  textAreaPlaceholder,
   placeholder,
   disabled = false,
   className = '',
   confirmText = '',
   nodeData = {} as TreeNodeData,
   member,
+  showInput = true,
+  showUid = true,
+  showTextArea = false,
 }) => {
   const { t } = useLanguage();
   const [inputValue, setInputValue] = useState('');
+  const [textAreaValue, setTextAreaValue] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
     onChange?.(value);
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setTextAreaValue(value);
+    onTextAreaChange?.(value);
   };
 
   return (
@@ -66,13 +84,13 @@ const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
               <span className={styles.confirmItemValue}>{member.username}</span>
             </div>
           )}
-          {member?.userId && (
+          {member?.userId && showUid && (
             <div className={styles.confirmItem}>
               <span>{'UID'}</span>
               <span className={styles.confirmItemValue}>{member.userId}</span>
             </div>
           )}
-          {member?.roleList?.length && (
+          {member?.roleList && member.roleList.length > 0 && (
             <div className={styles.confirmItem}>
               <span>{'Role'}</span>
               <span className={styles.confirmItemValue}>
@@ -84,15 +102,28 @@ const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
           )}
         </div>
       </div>
-      <AntInput
-        value={inputValue}
-        name="confirmCode"
-        onChange={handleChange}
-        placeholder={placeholder || t('org.dialog.confirm_delete.placeholder.code')}
-        disabled={disabled}
-        className={styles.input}
-        size="large"
-      />
+      {showTextArea && (
+        <AntInput.TextArea
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          value={textAreaValue}
+          name="confirmCode"
+          onChange={handleTextAreaChange}
+          placeholder={textAreaPlaceholder || t('org.dialog.confirm_delete.placeholder.code')}
+          disabled={disabled}
+          className={styles.textArea}
+        />
+      )}
+      {showInput && (
+        <AntInput
+          value={inputValue}
+          name="confirmCode"
+          onChange={handleChange}
+          placeholder={placeholder || t('org.dialog.confirm_delete.placeholder.code')}
+          disabled={disabled}
+          className={styles.input}
+          size="large"
+        />
+      )}
     </div>
   );
 };
