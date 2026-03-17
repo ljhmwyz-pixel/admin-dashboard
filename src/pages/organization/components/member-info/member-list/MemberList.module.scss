@@ -62,7 +62,7 @@
 }
 
 
-.okConfirm {
+.okConfirm, .okWarningConfirm {
   width: 90px;
   height: 42px;
   border-radius: 6px;
@@ -85,6 +85,25 @@
     background: #f45858 !important;
     border-color: #f45858 !important;
     color: #fff !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.okWarningConfirm {
+  background: #F4AA58;
+  border-color: #F4AA58;
+  
+
+  &:hover {
+    background: #F4AA58 !important;
+    border-color: #F4AA58 !important;
+  }
+
+  &:disabled,
+  &.ant-btn-disabled {
+    background: #F4AA58 !important;
+    border-color: #F4AA58 !important;
     opacity: 0.5;
     cursor: not-allowed;
   }

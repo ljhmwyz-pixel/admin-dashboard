@@ -9,6 +9,7 @@ import {
   reviewMemberApplication,
   updateMember,
 } from '@pages/organization/services/organizationService';
+import cls from 'classnames';
 
 import { useThemeModal } from '@/components/Modal';
 import { selectCurrentUser } from '@/core/store/slices/authSlice';
@@ -270,7 +271,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
                 modalInstance.update({
                   okButtonProps: {
                     disabled: value !== member?.userId,
-                    className: styles.okConfirm,
+                    className: cls(styles.okConfirm, styles.okWarningConfirm),
                   },
                 });
               }
@@ -283,7 +284,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
           if (!member.memberId) return;
           try {
             const result = await changeMemberStatus(member.memberId, {
-              status: 'INACTIVE',
+              status: member?.status,
               confirmUid,
               reason,
             });
@@ -339,7 +340,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
                 modalInstance.update({
                   okButtonProps: {
                     disabled: value !== member?.userId,
-                    className: styles.okConfirm,
+                    className: cls(styles.okConfirm, styles.okWarningConfirm),
                   },
                 });
               }
@@ -352,7 +353,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
           if (!member.memberId) return;
           try {
             const result = await changeMemberStatus(member.memberId, {
-              status: 'ACTIVE',
+              status: member?.status,
               confirmUid,
               reason,
             });
