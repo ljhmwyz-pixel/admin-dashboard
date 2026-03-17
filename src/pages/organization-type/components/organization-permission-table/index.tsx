@@ -60,6 +60,8 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   const [searchText, setSearchText] = useState('');
   /** 防抖后的搜索关键词 */
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  /** 展开的行的key */
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
   /**
    * 防抖处理，避免频繁搜索
@@ -114,8 +116,11 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         // 提取第一级节点，排除children属性
         const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
         setFirstLevelNodes(firstLevel);
-        // 直接使用firstLevel设置selectedKey，而不是依赖状态更新
-        setSelectedKey(firstLevel[0]?.permissionCode || null);
+
+        // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
+        if (!selectedKey || !firstLevel.some((node) => node.permissionCode === selectedKey)) {
+          setSelectedKey(firstLevel[0]?.permissionCode || null);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
       } finally {
@@ -442,6 +447,8 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             rowKey="key"
             locale={{ emptyText: '无数据' }}
             scroll={{ y: window.innerHeight - 410 }}
+            expandedRowKeys={expandedRowKeys}
+            onExpandedRowsChange={(expandedKeys) => setExpandedRowKeys(expandedKeys as string[])}
           />
         </div>
       </div>
