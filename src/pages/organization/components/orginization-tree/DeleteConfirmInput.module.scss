@@ -16,7 +16,7 @@
 
     .confirmContent {
         margin: 0 -20px;
-        height: 180px;
+        min-height: 180px;
         border-top: 1px solid #191B1F0F;
         display: flex;
         align-items: center;
@@ -26,11 +26,11 @@
         overflow: hidden;
 
         .confirmItems {
-            height: 100%;
+            min-height: 180px;
+            padding: 20px;
             width: 240px;
             background: url('@/assets/images/form/Subtract.png') no-repeat;
-            background-size: 240px 220px;
-            background-position: 0 -40px;
+            background-size: 240px 100%;
             display: flex;
             align-items: center;
             justify-content: center;

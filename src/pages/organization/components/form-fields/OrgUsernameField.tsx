@@ -32,7 +32,11 @@ const OrgUsernameField: React.FC<OrgUsernameFieldProps> = ({
     if (existingUsername) {
       form.setFieldValue('orgUsername', existingUsername);
     } else {
-      form.setFieldValue('orgUsername', '');
+      if (form.getFieldValue('orgUsername')) {
+        form.setFieldValue('orgUsername', form.getFieldValue('orgUsername'));
+      } else {
+        form.setFieldValue('orgUsername', '');
+      }
     }
   }, [existingUsername, form]);
 

@@ -1,7 +1,8 @@
 // 组织服务API
-import { transformOrganizationToTreeData } from '@pages/organization/utils';
-
 import type {
+  AddMemberRequest,
+  AddMemberResponse,
+  DeleteResponse,
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
@@ -12,7 +13,9 @@ import type {
   RecordListResponse,
   RoleListResponse,
   TreeNodeData,
-} from '@/pages/organization/dto';
+} from '@pages/organization/dto';
+import { transformOrganizationToTreeData } from '@pages/organization/utils';
+
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 
 // 删除验证结果类型
@@ -461,6 +464,63 @@ export const loadMemberChangeLogs = async (
     return await loadMemberChangeLogsLogic();
   } catch (error) {
     console.error('Failed to load member change logs:', error);
+    return undefined;
+  }
+};
+
+export const addMember = async (
+  data: AddMemberRequest,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<AddMemberResponse | undefined> => {
+  const addMemberLogic = async (): Promise<AddMemberResponse> => {
+    const response = await organizationApi.addMember(data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(addMemberLogic, {
+      onError: (error) => {
+        console.error('Add member error:', error);
+      },
+    });
+  }
+
+  try {
+    return await addMemberLogic();
+  } catch (error) {
+    console.error('Failed to add member:', error);
+    return undefined;
+  }
+};
+
+export const deleteMember = async (
+  memberId: string,
+  data: { confirmUid: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteResponse | undefined> => {
+  const deleteMemberLogic = async (): Promise<DeleteResponse> => {
+    const response = await organizationApi.deleteMember(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(deleteMemberLogic, {
+      onError: (error) => {
+        console.error('Delete member error:', error);
+      },
+    });
+  }
+
+  try {
+    return await deleteMemberLogic();
+  } catch (error) {
+    console.error('Failed to delete member:', error);
     return undefined;
   }
 };

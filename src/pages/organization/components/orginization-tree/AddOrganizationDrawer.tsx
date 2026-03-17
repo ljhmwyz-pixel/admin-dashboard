@@ -49,7 +49,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = AntForm.useForm();
   const { t } = useLanguage();
-  const { warningConfirm, error } = useThemeModal();
+  const { warningConfirm, error, warning } = useThemeModal();
 
   const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
     useOrganizationForm(currentParentNode);
@@ -82,6 +82,21 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         },
       ]);
     }
+    // 内部用户error
+    if (!result.success && result.reason === 'user_type_mismatch') {
+      warning({
+        title: 'Email Exists !',
+        content: 'This email address is already in use.',
+        onOk: () => {
+          handleClose();
+        },
+      });
+    }
+  };
+
+  const handleClose = () => {
+    form.resetFields();
+    onChange?.(false);
   };
 
   const handleCancel = () => {
@@ -164,7 +179,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
             <AntRow gutter={30}>
               {/* 邮箱字段 */}
-              <OrgEmailField form={form} onCheckEmailExists={verifyEmail} />
+              <OrgEmailField form={form} onCheckEmailExists={verifyEmail} onCancel={handleClose} />
             </AntRow>
             <AntRow gutter={30}>
               {/* 用户名字段 */}

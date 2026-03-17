@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { TreeNodeData } from '@pages/organization/dto';
+import type { Member, TreeNodeData } from '@pages/organization/dto';
 import { AntInput } from '@shared/components';
 import { useLanguage } from '@shared/hooks';
 import classNames from 'classnames';
@@ -18,6 +18,7 @@ interface DeleteConfirmInputProps {
 
   confirmText?: string;
   nodeData?: TreeNodeData;
+  member?: Member;
 }
 
 /**
@@ -31,6 +32,7 @@ const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
   className = '',
   confirmText = '',
   nodeData = {} as TreeNodeData,
+  member,
 }) => {
   const { t } = useLanguage();
   const [inputValue, setInputValue] = useState('');
@@ -46,14 +48,40 @@ const DeleteConfirmInput: React.FC<DeleteConfirmInputProps> = ({
       <div className={styles.confirmText}>{confirmText}</div>
       <div className={styles.confirmContent}>
         <div className={styles.confirmItems}>
-          <div className={styles.confirmItem}>
-            <span>{t('org.field.name')}</span>
-            <span className={styles.confirmItemValue}>{nodeData.title}</span>
-          </div>
-          <div className={styles.confirmItem}>
-            <span>{t('org.field.code')}</span>
-            <span className={styles.confirmItemValue}>{nodeData.key}</span>
-          </div>
+          {nodeData.title && (
+            <div className={styles.confirmItem}>
+              <span>{t('org.field.name')}</span>
+              <span className={styles.confirmItemValue}>{nodeData.title}</span>
+            </div>
+          )}
+          {nodeData.key && (
+            <div className={styles.confirmItem}>
+              <span>{t('org.field.code')}</span>
+              <span className={styles.confirmItemValue}>{nodeData.key}</span>
+            </div>
+          )}
+          {member?.username && (
+            <div className={styles.confirmItem}>
+              <span>{t('org.field.username')}</span>
+              <span className={styles.confirmItemValue}>{member.username}</span>
+            </div>
+          )}
+          {member?.userId && (
+            <div className={styles.confirmItem}>
+              <span>{'UID'}</span>
+              <span className={styles.confirmItemValue}>{member.userId}</span>
+            </div>
+          )}
+          {member?.roleList?.length && (
+            <div className={styles.confirmItem}>
+              <span>{'Role'}</span>
+              <span className={styles.confirmItemValue}>
+                {member.roleList.map((role) => (
+                  <span key={role?.roleId}>{role.roleName}</span>
+                ))}
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <AntInput

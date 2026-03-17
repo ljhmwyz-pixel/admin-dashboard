@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import type { FieldProps, PreviewMemberPermissionData, Record } from '@pages/organization/dto';
-import { loadRoles } from '@pages/organization/services/organizationService';
+import type {
+  AddMemberFormData,
+  FieldProps,
+  PreviewMemberPermissionData,
+  Record,
+} from '@pages/organization/dto';
+import { loadMemberPermissions, loadRoles } from '@pages/organization/services/organizationService';
 import { AntForm } from '@shared/components';
 
 import { RoleField } from '../../form-fields';
@@ -15,7 +20,7 @@ interface AddMemberAssignRolesProps {
   /** 表单实例 */
   form: FieldProps['form'];
   /** 提交回调 */
-  onSubmit: (values: any) => void;
+  onSubmit: (values: AddMemberFormData['role']) => void;
   /** 组织ID */
   orgId: string;
 }
@@ -29,8 +34,11 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
   const [roleList, setRoleList] = useState<Record[]>([]);
 
   /** 处理角色选择变化 */
-  const handleRoleChange = (values: string[]) => {
-    // setRoleNamesList(values);
+  const handleRoleChange = async (roleIds: string[]) => {
+    const res = await loadMemberPermissions({ roleIds });
+    if (res?.data) {
+      setPermissionList(res.data);
+    }
   };
 
   const loadRolesData = useCallback(async () => {
@@ -41,7 +49,9 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
       pageSize: 1000,
     });
     if (roleList?.data?.records) {
-      setRoleList(roleList.data.records);
+      setRoleList(
+        roleList.data.records?.filter((role) => role.roleName !== 'Organization Owner') || [],
+      );
     }
   }, [orgId]);
 
@@ -64,7 +74,7 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
           onChange={handleRoleChange}
         />
 
-        {/* <PermissionsList permissionList={permissionList} /> */}
+        <PermissionsList permissionList={permissionList} />
       </div>
     </AntForm>
   );

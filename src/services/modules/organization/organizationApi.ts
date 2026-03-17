@@ -1,4 +1,6 @@
 import type {
+  AddMemberRequest,
+  AddMemberResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   DeleteResponse,
@@ -84,6 +86,12 @@ export interface OrganizationApi {
 
   /** 删除组织 */
   delete: (data: { orgId: string | number }) => Promise<DeleteResponse>;
+
+  /** 新增组织成员 */
+  addMember: (data: AddMemberRequest) => Promise<AddMemberResponse>;
+
+  /** 删除组织成员 */
+  deleteMember: (memberId: string, data: { confirmUid: string }) => Promise<DeleteResponse>;
 }
 
 /**
@@ -254,6 +262,27 @@ class OrganizationApiImpl implements OrganizationApi {
    */
   async getMemberApplicationDetail(applicationId: string): Promise<MemberDetailResponse> {
     return apiClient.get(ORGANIZATION_ENDPOINTS.APPLICATION_PERMISSIONS(applicationId));
+  }
+
+  /**
+   * 新增组织成员
+   * @param data - 新增数据（包含基本信息、角色列表、电站列表）
+   * @returns 新增结果
+   */
+  async addMember(data: AddMemberRequest): Promise<AddMemberResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.MEMBER_ADD, data);
+  }
+
+  /**
+   * 删除组织成员
+   * @param memberId - 成员ID
+   * @param data - 删除确认参数（包含确认用户ID）
+   * @returns 删除结果
+   */
+  async deleteMember(memberId: string, data: { confirmUid: string }): Promise<DeleteResponse> {
+    return apiClient.delete(ORGANIZATION_ENDPOINTS.MEMBER_DELETE(memberId), {
+      data,
+    });
   }
 }
 
