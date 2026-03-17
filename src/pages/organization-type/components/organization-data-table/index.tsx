@@ -5,7 +5,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Input, Segmented, Select, Spin, Table } from 'antd';
+import { Input, Select, Spin } from 'antd';
 
 import { FormButton, SearchInput, Segmented, Table, TableSelect } from '@/components';
 // 导入API
