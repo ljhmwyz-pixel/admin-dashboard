@@ -21,9 +21,9 @@ interface AddMemberBasicInfoProps {
     withGlobalLoading?: boolean,
     onCancel?: () => void,
   ) => Promise<EmailVerifyResult>;
-  /** 存在用户电话 */
+  /** 已存在用户的电话 */
   existingPhone?: string;
-  /** 存在用户名 */
+  /** 已存在用户的用户名 */
   existingUsername?: string;
   /** 取消回调 */
   onCancel?: () => void;
@@ -32,6 +32,12 @@ interface AddMemberBasicInfoProps {
 /**
  * 新增成员第一步：基本信息
  * 收集用户的邮箱、用户名和电话号码
+ *
+ * 功能特性：
+ * - 支持邮箱验证和查重
+ * - 支持用户名自动填充（用户已存在时）
+ * - 支持电话号码自动填充（用户已存在时）
+ * - 支持表单验证
  */
 const AddMemberBasicInfo: React.FC<AddMemberBasicInfoProps> = ({
   form,

@@ -13,7 +13,6 @@ import type {
   MemberDetail,
   PreviewMemberPermissionData,
   Record,
-  Role,
 } from '@pages/organization/dto';
 
 import { AntForm, AntRow } from '@/shared/components';

@@ -144,7 +144,7 @@ const OperationButton = ({
   permission: string;
 }) => (
   <Permission value={permission}>
-    <AntTooltip title={title}>
+    <AntTooltip title={title} placement="bottom">
       <span onClick={onClick}>{children}</span>
     </AntTooltip>
   </Permission>
@@ -197,7 +197,7 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
       <OperationButton
         key="view"
         onClick={() => onView(member)}
-        title="View details"
+        title="View"
         permission={PermissionCode.MEMBER_VIEW}
       >
         <ViewIcon />
@@ -211,10 +211,18 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="edit"
             onClick={() => onEdit(member)}
-            title="Edit info"
+            title="Edit"
             permission={PermissionCode.MEMBER_EDIT}
           >
             <EditIcon />
+          </OperationButton>,
+          <OperationButton
+            key="toggleStatus"
+            onClick={() => onDisable(member)}
+            title="Unlock"
+            permission={PermissionCode.MEMBER_DISABLE}
+          >
+            <EnableIcon />
           </OperationButton>,
           <OperationButton
             key="delete"
@@ -223,14 +231,6 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
             permission={PermissionCode.MEMBER_DELETE}
           >
             <DeleteIcon />
-          </OperationButton>,
-          <OperationButton
-            key="toggleStatus"
-            onClick={() => onDisable(member)}
-            title="Disable"
-            permission={PermissionCode.MEMBER_DISABLE}
-          >
-            <DisableIcon />
           </OperationButton>,
         );
         break;
@@ -241,10 +241,18 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="edit"
             onClick={() => onEdit(member)}
-            title="Edit info"
+            title="Edit"
             permission={PermissionCode.MEMBER_EDIT}
           >
             <EditIcon />
+          </OperationButton>,
+          <OperationButton
+            key="toggleStatus"
+            onClick={() => onEnable(member)}
+            title="Lock"
+            permission={PermissionCode.MEMBER_ENABLE}
+          >
+            <DisableIcon />
           </OperationButton>,
           <OperationButton
             key="delete"
@@ -253,14 +261,6 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
             permission={PermissionCode.MEMBER_DELETE}
           >
             <DeleteIcon />
-          </OperationButton>,
-          <OperationButton
-            key="toggleStatus"
-            onClick={() => onEnable(member)}
-            title="Enable"
-            permission={PermissionCode.MEMBER_ENABLE}
-          >
-            <EnableIcon />
           </OperationButton>,
         );
         break;
@@ -271,7 +271,7 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="approve"
             onClick={() => onApprove(member)}
-            title="Approve request"
+            title="Approve"
             permission={PermissionCode.MEMBER_APPROVE}
           >
             <ApproveIcon />
@@ -279,7 +279,7 @@ const MemberOperationButtons: React.FC<MemberOperationButtonsProps> = ({
           <OperationButton
             key="reject"
             onClick={() => onReject(member)}
-            title="Reject request"
+            title="Reject"
             permission={PermissionCode.MEMBER_REJECT}
           >
             <RejectIcon />

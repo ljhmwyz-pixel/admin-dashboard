@@ -24,9 +24,9 @@ import styles from './MemberList.module.scss';
  * MemberList 组件属性接口
  */
 interface MemberListProps {
-  /** 组织ID，用于查询成员列表 */
+  /** 组织 ID，用于查询成员列表 */
   orgId: string;
-  /** 当前节点*/
+  /** 当前节点 */
   currentParentNode?: TreeNodeData;
   /** 树数据 */
   treeData?: TreeNodeData[];
@@ -41,6 +41,14 @@ interface MemberListProps {
  * - 使用 MemberListHeader 组件展示筛选和操作区域
  * - 使用 MemberTable 组件展示成员列表表格
  * - 处理具体的业务操作（查看、编辑、删除等）
+ *
+ * 功能特性：
+ * - 支持成员列表分页查询
+ * - 支持按状态和关键词筛选
+ * - 支持新增成员（三步流程）
+ * - 支持查看/编辑/删除成员
+ * - 支持锁定/解锁成员
+ * - 支持审批加入申请
  */
 const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeData }) => {
   /** 使用自定义 Hook 管理成员列表的状态和数据加载 */
