@@ -5,8 +5,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { OrganizationTypeDataItem } from '@shared/types/organizationType';
-import { Input, Segmented, Select, Spin, Table } from 'antd';
+import { Input, Select, Spin, Table } from 'antd';
 
+import { SearchInput, Segmented } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -92,12 +93,11 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const response = await organizationTypeApi.getOrganizationTypePermissions(typeCode, {
-        permissionType: 'DATA',
+      const response = await organizationTypeApi.getOrganizationTypeDataPermissions(typeCode, {
         resourceType: activeTab,
         permissionKeyword: debouncedSearchText,
       });
-      const dataPermissions: OrganizationTypeDataItem[] = response.data.dataPermissions || [];
+      const dataPermissions: OrganizationTypeDataItem[] = response.data.records || [];
       setOriginalData(dataPermissions);
       // 重置修改数据
       setModifiedData({});
@@ -321,7 +321,11 @@ const OrganizationDataTable: React.FC<OrganizationDataTableProps> = ({
     <div className={styles.container}>
       {/* 顶部搜索容器 */}
       <div className={styles.topSearchContainer}>
-        <Segmented options={DATA_PLATFORM_OPTIONS} value={activeTab} onChange={setActiveTab} />
+        <Segmented
+          options={DATA_PLATFORM_OPTIONS}
+          value={activeTab}
+          onChange={(value) => setActiveTab(value as string)}
+        />
         <div className={styles.searchContainer}>
           <Input
             placeholder="Please enter data field"
