@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@shared/hooks/useLanguage';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
-import { message, Modal } from 'antd';
 
 import { FormTabs } from '@/components';
 import { FormButton, FormDrawer } from '@/components';
@@ -65,7 +64,11 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
 
     setDataPermissions(formattedData);
   }, []);
-  const { success: ModalSuccess } = useThemeModal();
+  const {
+    success: ModalSuccess,
+    error: ModalError,
+    warningConfirm: ModalWarning,
+  } = useThemeModal();
   // 处理保存
   const handleSave = async () => {
     if (!organizationType) return;
@@ -79,38 +82,55 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       };
 
       // 调用API保存权限配置
-      await organizationTypeApi.updateOrganizationTypePermissions(
+      const response = await organizationTypeApi.updateOrganizationTypePermissions(
         organizationType.typeCode,
         requestData,
       );
-      ModalSuccess({
-        content: '保存成功',
-      });
-      message.success('保存成功');
-      setHasChanges(false);
-      setIsEditMode(false);
+      if (response.success) {
+        ModalSuccess({
+          content: '保存成功',
+        });
+        setHasChanges(false);
+        // 重置权限修改数据
+        setFunctionalPermissions([]);
+        setDataPermissions([]);
+      } else {
+        ModalError({
+          content: response.message || '保存失败',
+        });
+      }
     } catch (error) {
-      message.error(error instanceof Error ? error.message : '保存失败');
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
+
+  // 处理取消修改
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setHasChanges(false);
+    // 重置权限修改数据
+    setFunctionalPermissions([]);
+    setDataPermissions([]);
+  };
   // 处理修改
   const handleModify = () => {
     setIsEditMode(true);
+    // 进入编辑模式时，重置修改状态
+    setHasChanges(false);
   };
 
   // 处理取消
   const handleCancel = () => {
     if (hasChanges) {
-      // 提示用户有未保存的数据
-      Modal.confirm({
-        title: '确认取消',
+      ModalWarning({
+        title: t('org.dialog.unsaved.title'),
         content: '您有未保存的修改，确定要取消吗？',
+        okText: '确认',
         onOk: () => {
           onCancel();
         },
-        onCancel: () => {},
       });
     } else {
       onCancel();
@@ -120,7 +140,10 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
   // 处理子组件的修改通知
   const handleHasChanges = useCallback((changes: boolean) => {
     // 只要有一个子组件有修改，就设置为有修改
-    setHasChanges(changes);
+    // 这里我们需要确保只要有任何一个子组件有修改，hasChanges就为true
+    if (changes) {
+      setHasChanges(true);
+    }
   }, []);
   // Tab内容配置
   const tabItems = [
@@ -155,6 +178,16 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
     },
   ];
 
+  // 当组件重新可见时，重置状态
+  useEffect(() => {
+    if (visible) {
+      setIsEditMode(isDefaultEditMode);
+      setHasChanges(false);
+      setFunctionalPermissions([]);
+      setDataPermissions([]);
+    }
+  }, [visible, isDefaultEditMode]);
+
   return (
     <FormDrawer
       title={organizationType.typeName}
@@ -163,23 +196,31 @@ const OrganizationTypeDetail: React.FC<OrganizationTypeDetailProps> = ({
       placement="right"
       closable={{ placement: 'end' }}
       open={visible}
-      onClose={onCancel}
+      onClose={handleCancel}
       styles={{
         body: { padding: '0px', display: 'flex', flexDirection: 'column' },
       }}
+      footerAbsolute={true}
       footer={
         <div className={styles.footerDiv}>
-          <FormButton color="default" onClick={handleCancel}>
-            {t('common.action.cancel')}
-          </FormButton>
           {isEditMode ? (
-            <FormButton color="primary" variant="solid" onClick={handleSave} loading={loading}>
-              {t('common.action.save')}
-            </FormButton>
+            <>
+              <FormButton color="default" onClick={handleCancelEdit}>
+                {t('common.action.cancel')}
+              </FormButton>
+              <FormButton color="primary" variant="solid" onClick={handleSave} loading={loading}>
+                {t('common.action.save')}
+              </FormButton>
+            </>
           ) : (
-            <FormButton color="primary" onClick={handleModify}>
-              {t('common.action.modify')}
-            </FormButton>
+            <>
+              <FormButton color="default" onClick={handleCancel}>
+                {t('common.action.cancel')}
+              </FormButton>
+              <FormButton color="primary" onClick={handleModify}>
+                {t('common.action.modify')}
+              </FormButton>
+            </>
           )}
         </div>
       }

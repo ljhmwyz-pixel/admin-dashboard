@@ -1,0 +1,44 @@
+@use '@shared/styles/variables' as *;
+@use '@shared/styles/mixins' as *;
+
+.input {
+  height: 34px !important;
+  border-radius: 3px;
+  transition: all 0.2s;
+  padding: 6px 8px;
+  color: $color-text-primary;
+
+  @include dark-theme {
+    color: $dark-color-text-secondary;
+  }
+
+  :global(.ant-select-selector) {
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  :global(.ant-select-selection-placeholder) {
+    line-height: 34px !important;
+  }
+
+  :global(.ant-select-selection-item) {
+    line-height: 28px !important;
+  }
+}
+
+
+// 下拉选项的样式
+:global(.ant-select-dropdown .ant-select-item-option) {
+  color: $color-text-secondary !important;
+}
+
+// 选中项的样式 - 匹配浏览器实际的 CSS 类结构
+:global(.ant-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled)) {
+  color: var(--ant-color-primary) !important;
+}
+
+// 鼠标悬停时的样式
+:global(.ant-select-dropdown .ant-select-item-option:hover:not(.ant-select-item-option-disabled)) {
+  color: var(--ant-color-primary) !important;
+}

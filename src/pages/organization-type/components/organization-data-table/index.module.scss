@@ -87,3 +87,28 @@
     color: red;
   }
 }
+.refreshBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background-color: #191b1f0a;
+    border: none;
+  }
+  .refreshBtn:hover {
+    background-color: #191b1f0a !important;
+    border: none !important;
+  }
+
+// 编辑模式的表格行样式
+.editRow {
+  :global(.ant-table-cell) {
+    padding: 10px 8px !important;
+  }
+}
+
+// 只读模式的表格行样式
+.readOnlyRow {
+  :global(.ant-table-cell) {
+    padding: 16px 16px !important;
+  }
+}

@@ -3,14 +3,14 @@
  * 用于展示和编辑组织类型的功能权限
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 // 引入类型定义
 import type {
+  OrganizationTypeDetailFunctionalResponse, // 组织类型权限响应
   OrganizationTypePermissionItem, // 组织类型权限项
-  OrganizationTypePermissionResponse, // 组织类型权限响应
 } from '@shared/types/organizationType';
-import { Input, Segmented, Select, Spin, Table } from 'antd';
+import { Select, Spin } from 'antd';
 
+import { FormButton, SearchInput, Segmented, Table, TableSelect } from '@/components';
 // 导入API
 import organizationTypeApi from '@/services/modules/organization/organizationTypeApi';
 
@@ -60,6 +60,8 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   const [searchText, setSearchText] = useState('');
   /** 防抖后的搜索关键词 */
   const [debouncedSearchText, setDebouncedSearchText] = useState('');
+  /** 展开的行的key */
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
   /**
    * 防抖处理，避免频繁搜索
@@ -74,57 +76,53 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   }, [searchText]);
 
   /**
-   * 处理搜索按钮点击
-   * 当用户点击搜索按钮时，触发搜索操作
-   * 直接更新防抖搜索文本，触发前端搜索
-   */
-  const handleSearch = () => {
-    setDebouncedSearchText(searchText);
-  };
-
-  /**
    * 处理刷新按钮点击
-   * 当用户点击刷新按钮时，触发重新获取权限数据操作
-   * 不需要传递搜索关键词，直接刷新所有数据
    */
   const handleRefresh = () => {
+    // 重新请求数据
     fetchPermissions();
   };
 
   /**
    * 获取组织类型-权限数据
-   * @param keyword 搜索关键词
+   * @param keyword 搜索关键词（不再使用，搜索在前端进行）
    */
-  const fetchPermissions = useCallback(
-    async (keyword?: string) => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response: OrganizationTypePermissionResponse =
-          await organizationTypeApi.getOrganizationTypePermissions(typeCode, {
-            permissionType: 'FUNCTIONAL',
-            platform: activeTab,
-            permissionKeyword: keyword,
-          });
-        // 确保functionalPermissions是数组，防止空指针错误
-        const functionalPermissions: OrganizationTypePermissionItem[] =
-          response.data.functionalPermissions || [];
+  const fetchPermissions = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response: OrganizationTypeDetailFunctionalResponse =
+        await organizationTypeApi.getOrganizationTypeFunctionalPermissions(typeCode, {
+          platform: activeTab,
+          // 不再传递搜索关键词，搜索在前端进行
+        });
+      // 确保functionalPermissions是数组，防止空指针错误
+      const functionalPermissions: OrganizationTypePermissionItem[] =
+        response.data.functionalPermissions || [];
 
-        // 设置权限的原始数据
-        setOriginalData(functionalPermissions);
-        // 提取第一级节点，排除children属性
-        const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
-        setFirstLevelNodes(firstLevel);
-        // 直接使用firstLevel设置selectedKey，而不是依赖状态更新
+      // 设置权限的原始数据
+      setOriginalData(functionalPermissions);
+      // 提取第一级节点，排除children属性
+      const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
+      setFirstLevelNodes(firstLevel);
+
+      // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
+      if (!selectedKey || !firstLevel.some((node) => node.permissionCode === selectedKey)) {
         setSelectedKey(firstLevel[0]?.permissionCode || null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
-      } finally {
-        setLoading(false);
       }
-    },
-    [typeCode, activeTab],
-  );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
+    } finally {
+      setLoading(false);
+    }
+  }, [typeCode, activeTab]);
+
+  /**
+   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
+   */
+  useEffect(() => {
+    // 搜索只在前端进行，不重新请求后端接口
+  }, [debouncedSearchText]);
 
   /**
    * 初始加载权限数据或当切换tab时重新获取权限数据
@@ -334,7 +332,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'SELF', value)}
@@ -344,7 +342,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -361,7 +359,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'DIRECT_CHILD', value)}
@@ -371,7 +369,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -388,7 +386,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
             return option ? option.label : text;
           }
           return (
-            <Select
+            <TableSelect
               value={text}
               style={{ width: 132 }}
               onChange={(value) => handlePermissionChange(record.key, 'NON_DIRECT_CHILD', value)}
@@ -398,7 +396,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
                   {item.label}
                 </Option>
               ))}
-            </Select>
+            </TableSelect>
           );
         },
       },
@@ -437,12 +435,14 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       <div className={styles.tableContainer}>
         <div style={{ flex: 1, padding: '16px', overflow: 'auto' }}>
           <Table
-            dataSource={tableDataForDisplay}
-            columns={columns}
-            pagination={false}
             rowKey="key"
-            locale={{ emptyText: '无数据' }}
-            scroll={{ y: window.innerHeight - 410 }}
+            columns={columns}
+            dataSource={tableDataForDisplay}
+            pagination={false}
+            expandedRowKeys={expandedRowKeys}
+            scroll={{ y: window.innerHeight - 365 }}
+            onExpandedRowsChange={(expandedKeys) => setExpandedRowKeys(expandedKeys as string[])}
+            rowClassName={() => (isEditMode ? styles.editRow : styles.readOnlyRow)}
           />
         </div>
       </div>
@@ -481,21 +481,41 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     <div className={styles.container}>
       {/* 顶部搜索容器 */}
       <div className={styles.topSearchContainer}>
-        <Segmented options={PLATFORM_OPTIONS} value={activeTab} onChange={setActiveTab} />
+        <Segmented
+          options={PLATFORM_OPTIONS}
+          value={activeTab}
+          onChange={(value) => setActiveTab(value as string)}
+        />
         <div className={styles.searchContainer}>
-          <Input
-            placeholder="Search permissions"
-            prefix={<SearchOutlined />}
-            style={{ width: 200 }}
+          <SearchInput
+            allowClear={true}
+            placeholder="Please enter permission"
             value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-            }}
-            onPressEnter={handleSearch}
+            onChange={(e) => setSearchText(e.target.value)}
           />
-          <div className={styles.refreshIcon} onClick={handleRefresh}>
-            <ReloadOutlined />
-          </div>
+
+          <FormButton
+            className={styles.refreshBtn}
+            icon={
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.4001 7.0001C13.4001 3.46548 10.5347 0.600098 7.0001 0.600098C3.46548 0.600098 0.600098 3.46548 0.600098 7.0001C0.600098 10.5347 3.46548 13.4001 7.0001 13.4001C8.51148 13.4001 9.90051 12.8762 10.9955 12.0001M10.9955 12.0001L9.80049 11.5001M10.9955 12.0001L10.7706 13.4001M8.00049 7.0001C8.00049 7.55238 7.55277 8.0001 7.00049 8.0001C6.4482 8.0001 6.00049 7.55238 6.00049 7.0001C6.00049 6.44781 6.4482 6.0001 7.00049 6.0001C7.55277 6.0001 8.00049 6.44781 8.00049 7.0001Z"
+                  stroke="#191B1F"
+                  strokeOpacity="0.4"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            }
+            onClick={() => handleRefresh()}
+            title="Refresh"
+          />
         </div>
       </div>
 
