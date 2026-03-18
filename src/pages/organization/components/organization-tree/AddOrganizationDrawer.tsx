@@ -66,9 +66,11 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
         title: 'Error !',
         content: (
           <div className={styles.errorList}>
-            {result?.reason?.map((item: string) => (
-              <span key={item}>{item}</span>
-            ))}
+            {Array.isArray(result?.reason) ? (
+              result?.reason?.map((item: string) => <span key={item}>{item}</span>)
+            ) : (
+              <span>{result?.reason}</span>
+            )}
           </div>
         ),
       });
@@ -83,7 +85,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       ]);
     }
     // 内部用户error
-    if (!result.success && result.reason === 'user_type_mismatch') {
+    if (!result.success && result.code === 424) {
       warning({
         title: 'Email Exists !',
         content: 'This email address is already in use.',
