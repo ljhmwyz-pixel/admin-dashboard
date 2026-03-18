@@ -8,10 +8,11 @@ import TreeCheckList from './TreeCheckList';
 import styles from './RolePermissions.module.scss';
 
 interface IRolePermissions {
-  test?: string;
+  rolePermissionData?: any;
+  onChange?: (selectedKeys: Record<string, string[]>) => void; // 返回选中的节点 key 集合
 }
 
-const RolePermissions: React.FC<IRolePermissions> = () => {
+const RolePermissions: React.FC<IRolePermissions> = ({ rolePermissionData, onChange }) => {
   const { t } = useLanguage();
   // 为每个平台维护独立的选中状态
   const [checkedKeysMap, setCheckedKeysMap] = useState<Record<string, string[]>>({
@@ -19,60 +20,9 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
     Phone: [],
   });
 
-  const treeData = [
-    {
-      id: '1',
-      title: 'Organization Management',
-      children: [
-        {
-          id: '1-1',
-          title: 'Organization List',
-          children: [
-            {
-              id: '1-1-1',
-              title: 'Organization Information',
-              children: [{ id: '1-1-1-1', title: 'Modify Organization' }],
-            },
-          ],
-        },
-        {
-          id: '1-2',
-          title: 'Role List',
-          children: [
-            { id: '1-2-1', title: 'View Role' },
-            { id: '1-2-2', title: 'Edit Role' },
-          ],
-        },
-        {
-          id: '1-3',
-          title: 'User List',
-          children: [
-            { id: '1-3-1', title: 'View User' },
-            { id: '1-3-2', title: 'Edit User' },
-          ],
-        },
-        {
-          id: '1-4',
-          title: 'Department List',
-          children: [
-            { id: '1-4-1', title: 'View Department' },
-            { id: '1-4-2', title: 'Edit Department' },
-          ],
-        },
-        {
-          id: '1-5',
-          title: 'Position List',
-          children: [
-            { id: '1-5-1', title: 'View Position' },
-            { id: '1-5-2', title: 'Edit Position' },
-          ],
-        },
-      ],
-    },
-  ];
   const permissionsPlatform = [
     {
-      treeData: treeData,
+      treeData: rolePermissionData || [],
       label: 'Web',
       color: 'rgba(49, 196, 127, 1)',
       icon: (
@@ -93,7 +43,7 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
       ),
     },
     {
-      treeData: treeData,
+      treeData: rolePermissionData || [],
       label: 'Phone',
       color: '#33C2C8',
       icon: (
@@ -117,10 +67,12 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
 
   // 获取所有 checkbox 的 keys（包括所有层级）
   const getAllKeys = (nodes: any[]): string[] => {
+    if (!nodes || !Array.isArray(nodes)) return [];
+
     const keys: string[] = [];
     const traverse = (nodes: any[]) => {
       nodes.forEach((node) => {
-        keys.push(node.id);
+        keys.push(node.permissionId);
         if (node.children) {
           traverse(node.children);
         }
@@ -136,10 +88,12 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
       permissionsPlatform.find((item) => item.label === platform)?.treeData || [];
     const allKeys = getAllKeys(platformTreeData);
 
-    setCheckedKeysMap((prev) => ({
-      ...prev,
+    const newCheckedKeysMap = {
+      ...checkedKeysMap,
       [platform]: checked ? allKeys : [],
-    }));
+    };
+    setCheckedKeysMap(newCheckedKeysMap);
+    onChange?.(newCheckedKeysMap);
   };
 
   return (
@@ -167,7 +121,7 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
       <div className={styles.rolePermissionsBodyContainer}>
         {permissionsPlatform.map((item, index) => {
           const currentCheckedKeys = checkedKeysMap[item.label] || [];
-          const allKeys = getAllKeys(item.treeData);
+          const allKeys = getAllKeys(item.treeData || []);
           const isAllChecked = currentCheckedKeys.length === allKeys.length;
 
           return (
@@ -183,10 +137,12 @@ const RolePermissions: React.FC<IRolePermissions> = () => {
                   data={item.treeData}
                   checkedKeys={currentCheckedKeys}
                   onChange={(keys) => {
-                    setCheckedKeysMap((prev) => ({
-                      ...prev,
+                    const newCheckedKeysMap = {
+                      ...checkedKeysMap,
                       [item.label]: keys,
-                    }));
+                    };
+                    setCheckedKeysMap(newCheckedKeysMap);
+                    onChange?.(newCheckedKeysMap);
                   }}
                 />
               </div>

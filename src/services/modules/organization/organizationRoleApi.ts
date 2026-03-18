@@ -33,14 +33,24 @@ export interface GetOrgRoleListReq {
   /** 组织ID */
   orgId?: string;
 
-  /** 关键词 */
+  /** 关键词（角色名称）*/
   keyword?: string;
+  /**
+   * 平台筛选
+   */
+  platform?: ('APP' | 'WEB')[];
 
   /** 排序字段 */
   sortBy?: 'name' | 'createdAt';
 
   /** 排序顺序 */
   sortOrder?: 'asc' | 'desc';
+  /**
+   * 状态筛选
+   */
+  status?: string;
+
+  [key: string]: any;
 }
 
 /**
@@ -258,7 +268,7 @@ export interface GetOrgRolePermissionReq {
   /**
    * 角色ID
    */
-  roleId: string;
+  roleId?: string;
   [key: string]: any;
 }
 /**
@@ -397,7 +407,7 @@ class OrgRoleApiImpl implements OrgRoleService {
    * 获取组织角色权限
    */
   async getOrgRolePermission(params: GetOrgRolePermissionReq): Promise<GetOrgRolePermissionRes> {
-    return apiClient.get(ORG_ROLE_ENDPOINTS.PERMISSIONS(params.roleId), { params });
+    return apiClient.get(ORG_ROLE_ENDPOINTS.PERMISSIONS, { params });
   }
 
   /**

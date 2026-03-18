@@ -100,7 +100,6 @@ $requireIcon: '@/assets/images/form/require_icon.png';
 
   /* 每个 tag */
   :global(.ant-select-selection-item) {
-    background: #fff !important;
     border: 1px solid $color-border !important;
     border-radius: 6px !important;
     height: 34px;
@@ -112,6 +111,7 @@ $requireIcon: '@/assets/images/form/require_icon.png';
     /* 防止撑爆 */
     overflow: hidden;
     text-overflow: ellipsis;
+    background: #fff !important;
   }
 
   /* 右侧 +N 不压缩 */
@@ -133,6 +133,10 @@ $requireIcon: '@/assets/images/form/require_icon.png';
 }
 
 .multiSelectDisabledStyle {
+  :global(.ant-select-selection-item) {
+    background-color: rgba(25, 27, 31, 0.06) !important;
+  }
+
   :global(.ant-select-selection-item-content) {
     font-size: 14px;
     font-weight: 500;
