@@ -49,6 +49,7 @@ export {
   RoleFooter,
   RoleHeader,
   RoleInfo,
+  StatusField,
   TreeNodeTitle,
   UidField,
 };
