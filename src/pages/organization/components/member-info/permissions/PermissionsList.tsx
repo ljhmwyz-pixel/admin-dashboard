@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
 import type { SegmentedValue } from 'antd/es/segmented';
 import cls from 'classnames';

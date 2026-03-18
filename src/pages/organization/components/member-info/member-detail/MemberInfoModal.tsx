@@ -173,6 +173,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
     } else {
       // 关闭模态框或没有成员数据时，清空详情
       setMemberDetail(null);
+      setPermissionList(undefined);
     }
   }, [visible, member, loadMemberInfo]);
 

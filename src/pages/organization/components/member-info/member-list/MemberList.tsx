@@ -97,15 +97,11 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理成员信息模态框关闭
    */
   const handleInfoModalClose = useCallback(() => {
-    if (editMember) {
-      setEditMember(false);
-      return;
-    }
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
     setAddDrawerVisible(false);
-  }, [editMember]);
+  }, []);
 
   /**
    * 处理模态框中的删除操作
@@ -280,6 +276,9 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         ),
         okText: 'Lock',
         cancelText: 'Cancel',
+        okButtonProps: {
+          disabled: true,
+        },
         onOk: async () => {
           if (!member.memberId) return;
           try {
@@ -349,6 +348,9 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         ),
         okText: 'UnLock',
         cancelText: 'Cancel',
+        okButtonProps: {
+          disabled: true,
+        },
         onOk: async () => {
           if (!member.memberId) return;
           try {
