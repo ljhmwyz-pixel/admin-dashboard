@@ -59,9 +59,20 @@ const OrgPostalCodeField: React.FC<OrgPostalCodeFieldProps> = ({ form, canEdit =
             setTimeout(() => {
               const value = form.getFieldValue('orgPostalCode') || '';
 
-              // 未输入或长度<3，显示错误
-              if (!value || value.trim() === '' || value.length < 3) {
+              // 完全没输入（空字符串），设置为空
+              if (!value || value.trim() === '') {
                 form.setFieldValue('orgPostalCode', '');
+                return;
+              }
+
+              // 输入了但长度<3，显示格式错误
+              if (value.length < 3) {
+                form.setFields([
+                  {
+                    name: 'orgPostalCode',
+                    errors: [t('org.validation.postal.required')],
+                  },
+                ]);
                 return;
               }
 
