@@ -70,7 +70,6 @@ export function useOrganizationTree() {
   // 关闭添加抽屉
   const closeAddDrawer = useCallback(() => {
     setAddDrawerVisible(false);
-    setCurrentParentNode({} as TreeNodeData);
   }, []);
 
   // 展开/收起节点

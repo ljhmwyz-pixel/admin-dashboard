@@ -62,12 +62,13 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
     valid: false,
     isCountryInScope: true,
-    isOwnerTypeValid: false,
-    isOrgTypeAllowed: false,
+    isOwnerTypeValid: true,
+    isOrgTypeAllowed: true,
     isBdScopesAvailable: false,
     isOrganizationExists: false,
     isOrganizationSimilar: false,
     isPhoneExists: false,
+    failReasons: [],
     timestamp: 0,
   });
 
@@ -160,12 +161,13 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       const defaultResult: VerifyOrganization = {
         valid: false,
         isCountryInScope: true,
-        isOwnerTypeValid: false,
-        isOrgTypeAllowed: false,
+        isOwnerTypeValid: true,
+        isOrgTypeAllowed: true,
         isBdScopesAvailable: false,
         isOrganizationExists: false,
         isOrganizationSimilar: false,
         isPhoneExists: false,
+        failReasons: [],
         timestamp: Date.now(),
       };
 
@@ -190,9 +192,9 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const verifyOrganizationByUpdate = useCallback(
     async (values: OrganizationFormData) => {
       const defaultResult: VerifyOrganization = {
-        isOwnerTypeValid: false,
-        isOrgTypeAllowed: false,
-        isBdScopesAvailable: false,
+        isOwnerTypeValid: true,
+        isOrgTypeAllowed: true,
+        isBdScopesAvailable: true,
         isOrganizationNotFound: false,
         isPylontech: false,
         isOrganizationExists: false,
@@ -265,7 +267,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
         // 如果验证失败，直接返回
         if (!verifyData.valid) {
-          return { success: false, reason: 'validation_failed', verifyData };
+          return { success: false, reason: verifyData?.failReasons, code: 423 };
         }
 
         // ===== 第二步：验证邮箱 =====
@@ -331,12 +333,13 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     setVerifyResult({
       valid: false,
       isCountryInScope: true,
-      isOwnerTypeValid: false,
-      isOrgTypeAllowed: false,
-      isBdScopesAvailable: false,
+      isOwnerTypeValid: true,
+      isOrgTypeAllowed: true,
+      isBdScopesAvailable: true,
       isOrganizationExists: false,
       isOrganizationSimilar: false,
       isPhoneExists: false,
+      failReasons: [],
       timestamp: 0,
     });
   }, []);

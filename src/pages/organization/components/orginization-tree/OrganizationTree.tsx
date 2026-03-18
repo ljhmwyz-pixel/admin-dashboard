@@ -159,7 +159,7 @@ const OrganizationTree: React.FC<OrganizationTreeProps> = ({
             className={styles.treeSearchInput}
             prefixCls={styles.treeSearchIcon}
             name="search"
-            placeholder={t('role.placeholder.search')}
+            placeholder={t('org.validation.name.required')}
             variant="filled"
             prefix={
               <svg

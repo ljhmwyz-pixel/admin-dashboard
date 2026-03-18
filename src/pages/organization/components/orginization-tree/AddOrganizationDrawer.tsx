@@ -13,7 +13,6 @@ import {
 import { OrganizationInfo } from '@pages/organization/components';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { useOrganizationForm } from '@pages/organization/hooks';
-import { getParentNode } from '@pages/organization/utils';
 import { AntForm, AntRow } from '@shared/components';
 import { useLanguage } from '@shared/hooks';
 import { Spin } from 'antd';
@@ -40,10 +39,6 @@ interface AddOrganizationProps {
    * 加载数据
    */
   loadData?: () => void;
-  /**
-   * 树形数据
-   */
-  treeData?: TreeNodeData[]; // 添加树形数据参数
 }
 
 const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
@@ -51,18 +46,13 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   onChange,
   currentParentNode,
   loadData,
-  treeData,
 }) => {
   const [form] = AntForm.useForm();
   const { t } = useLanguage();
-  const { warningConfirm } = useThemeModal();
+  const { warningConfirm, error } = useThemeModal();
 
   const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
     useOrganizationForm(currentParentNode);
-
-  // 获取父节点信息
-  const parentNode =
-    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
 
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
@@ -70,6 +60,19 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       onChange?.(false);
       loadData?.();
     });
+
+    if (!result.success && result.code === 423) {
+      error({
+        title: 'Error !',
+        content: (
+          <div className={styles.errorList}>
+            {result?.reason?.map((item: string) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        ),
+      });
+    }
 
     if (!result.success && result.code === 422) {
       form.setFields([
@@ -111,7 +114,11 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       closable={{ placement: 'end' }}
       onClose={handleCancel}
       styles={{
-        body: { padding: '0 30px' },
+        body: {
+          padding: '0',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        },
       }}
       open={visible}
       title={t('org.add.title')}
@@ -127,9 +134,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       }
     >
       <Spin spinning={loading}>
-        {parentNode && (
+        {currentParentNode && (
           <div className={styles.info}>
-            <OrganizationInfo orgName={parentNode?.title} orgId={parentNode?.key} />
+            <OrganizationInfo orgName={currentParentNode?.title} orgId={currentParentNode?.key} />
           </div>
         )}
         <div className={styles.form}>

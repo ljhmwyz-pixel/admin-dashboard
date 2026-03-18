@@ -34,6 +34,9 @@ const OrgTypeField: React.FC<OrgTypeFieldProps> = ({ form, parentOrgType, canEdi
       case 'OWNER':
         options = [{ value: 'Owner', label: 'Owner' }];
         break;
+      case 'GUEST':
+        options = [{ value: 'Guest', label: 'Guest' }];
+        break;
       default:
         options = [{ value: 'Installer', label: 'Installer' }];
     }

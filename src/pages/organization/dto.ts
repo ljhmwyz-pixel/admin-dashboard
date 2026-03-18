@@ -115,6 +115,7 @@ export interface VerifyOrganization {
   isOwnerTypeValid: boolean;
   isOrgTypeAllowed: boolean;
   isBdScopesAvailable: boolean;
+  failReasons?: string[];
   timestamp?: number;
   [key: string]: any; // 允许扩展其他字段
 }
