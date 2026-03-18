@@ -3,6 +3,7 @@ import type { TreeNodeData } from '@pages/organization/dto';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
+  type CreateOrgRoleRes,
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
   type GetOrgRoleLogRes,
@@ -151,7 +152,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     },
 
     close() {
-      setOpen(false);
+      handleClose();
     },
 
     submit() {
@@ -234,6 +235,18 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       }
     });
   };
+
+  /**
+   * 关闭弹窗并重置表单
+   */
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    form.resetFields();
+    setSelectedPermissions({
+      Web: [],
+      Phone: [],
+    });
+  }, [form]);
 
   /**
    * 表单内容
@@ -480,10 +493,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             : t('role.add.title')
       }
       open={open}
-      onClose={() => setOpen(false)}
-      destroyOnHidden={destroyOnClose}
+      onClose={handleClose}
+      destroyOnHidden
       size={width}
-      loading={loading}
       styles={() => {
         return {
           body: { padding: 0 },
