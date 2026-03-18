@@ -295,7 +295,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         // 关键判断：只有当 userExists 为 true 时才使用已存在用户
 
         if (emailResult.userType === 'INTERNAL' || emailResult.userType === 'GUEST') {
-          return { success: false, reason: 'user_type_mismatch', emailResult };
+          return { success: false, reason: 'user_type_mismatch', code: 424 };
         }
 
         if (emailResult?.userExists) {
