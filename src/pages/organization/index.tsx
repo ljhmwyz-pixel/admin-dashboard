@@ -130,7 +130,6 @@ const OrganizationList: React.FC = () => {
           onChange={closeAddDrawer}
           currentParentNode={currentParentNode}
           loadData={loadTreeData}
-          treeData={treeData}
         />
       )}
     </div>
