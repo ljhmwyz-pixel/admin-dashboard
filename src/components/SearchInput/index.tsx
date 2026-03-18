@@ -10,21 +10,23 @@ interface Props extends Omit<InputProps, 'prefix' | 'onPressEnter'> {
   searchFields?: string[];
   tooltipTitle?: React.ReactNode;
   tooltipProps?: TooltipProps;
+  inputRef?: React.RefObject<any>; // 输入框的 ref
 }
 
 const SearchInput: React.FC<Props> = ({
   className,
   onSearch,
-  onChange,
   searchFields,
   tooltipTitle = 'Support searchable fields',
   tooltipProps,
+  inputRef,
   ...rest
 }) => {
   const inputNode = (
     <AntInput
       allowClear
       {...rest}
+      ref={inputRef} // 传递 ref
       className={classNames(styles.searchInput, className)}
       prefix={
         <svg width="14" height="14" style={{ marginRight: 2 }} viewBox="0 0 15 15" fill="none">
@@ -37,8 +39,10 @@ const SearchInput: React.FC<Props> = ({
           />
         </svg>
       }
-      onChange={(e) => onChange?.(e)}
-      onPressEnter={(e) => onSearch?.((e.target as HTMLInputElement).value)}
+      onPressEnter={() => {
+        const value = inputRef?.current?.input?.value || '';
+        onSearch?.(value);
+      }}
     />
   );
 
