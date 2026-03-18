@@ -49,7 +49,7 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 }) => {
   const [form] = AntForm.useForm();
   const { t } = useLanguage();
-  const { warningConfirm } = useThemeModal();
+  const { warningConfirm, error } = useThemeModal();
 
   const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
     useOrganizationForm(currentParentNode);
@@ -60,6 +60,19 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       onChange?.(false);
       loadData?.();
     });
+
+    if (!result.success && result.code === 423) {
+      error({
+        title: 'Error !',
+        content: (
+          <div className={styles.errorList}>
+            {result?.reason?.map((item: string) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        ),
+      });
+    }
 
     if (!result.success && result.code === 422) {
       form.setFields([

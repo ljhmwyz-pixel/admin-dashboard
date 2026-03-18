@@ -248,7 +248,7 @@ export interface VerifyOrganization {
   isOrgTypeAllowed: boolean;
   /** BD范围是否可用 */
   isBdScopesAvailable: boolean;
-  /** 时间戳 */
+  failReasons?: string[];
   timestamp?: number;
   /** 允许扩展其他字段 */
   [key: string]: any;
