@@ -13,7 +13,6 @@ import {
 import { OrganizationInfo } from '@pages/organization/components';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { useOrganizationForm } from '@pages/organization/hooks';
-import { getParentNode } from '@pages/organization/utils';
 import { AntForm, AntRow } from '@shared/components';
 import { useLanguage } from '@shared/hooks';
 import { Spin } from 'antd';
@@ -40,10 +39,6 @@ interface AddOrganizationProps {
    * 加载数据
    */
   loadData?: () => void;
-  /**
-   * 树形数据
-   */
-  treeData?: TreeNodeData[]; // 添加树形数据参数
 }
 
 const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
@@ -51,7 +46,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
   onChange,
   currentParentNode,
   loadData,
-  treeData,
 }) => {
   const [form] = AntForm.useForm();
   const { t } = useLanguage();
@@ -59,10 +53,6 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
 
   const { existingUsername, existingPhone, verifyResult, verifyEmail, handleSubmit, loading } =
     useOrganizationForm(currentParentNode);
-
-  // 获取父节点信息
-  const parentNode =
-    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
 
   const onFinish = async (values: any) => {
     const result = await handleSubmit(values, () => {
@@ -111,7 +101,11 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       closable={{ placement: 'end' }}
       onClose={handleCancel}
       styles={{
-        body: { padding: '0 30px' },
+        body: {
+          padding: '0',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        },
       }}
       open={visible}
       title={t('org.add.title')}
@@ -127,9 +121,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       }
     >
       <Spin spinning={loading}>
-        {parentNode && (
+        {currentParentNode && (
           <div className={styles.info}>
-            <OrganizationInfo orgName={parentNode?.title} orgId={parentNode?.key} />
+            <OrganizationInfo orgName={currentParentNode?.title} orgId={currentParentNode?.key} />
           </div>
         )}
         <div className={styles.form}>

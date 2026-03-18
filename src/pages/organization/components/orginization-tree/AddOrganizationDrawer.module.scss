@@ -1,8 +1,5 @@
 .drawer {
   background-color: transparent !important;
-  .info {
-    margin: 0 -15px;
-  }
 
   .footer {
     display: flex;
@@ -13,5 +10,6 @@
 
   .form {
     margin-top: 30px;
+    padding: 0 30px;
   }
 }
