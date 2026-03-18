@@ -131,7 +131,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       title: t('role.col.no'),
       dataIndex: 'no',
       key: 'index',
-      render: (_, __, index) => (current - 1) * pageSize + index + 1,
     },
     {
       title: t('role.col.name'),
