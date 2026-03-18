@@ -36,14 +36,15 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
   const searchInputRef = useRef<any>(null);
   const roleModalRef = useRef<AddRoleRef>(null);
+  const { t } = useLanguage();
   const { confirm: themeModalConfirm } = useThemeModal();
+  // 加载中状态
+  const [loading, setLoading] = useState(false);
   const handlePageChange = (p: number, ps: number) => {
     setPage(p);
     setPageSize(ps);
   };
-  const { t } = useLanguage();
-
-  // 状态筛选：'all' | 'normal' | 'deleted'
+  // 状态筛选
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
   const statusList: OptionItem[] = [
     { label: t('common.tab.all'), value: 'all', color: '#33C2C8' },
@@ -58,36 +59,37 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       color: '#F45858',
     },
   ];
-
-  // Platform 筛选
-  const [platformFilter, setPlatformFilter] = useState<{
-    app?: boolean;
-    web?: boolean;
-  }>({ app: true, web: true });
-
-  // 加载中状态
-  const [loading, setLoading] = useState(false);
+  // Platform 筛选（使用 Table filterConfig 的状态）
+  const [platformFilter, setPlatformFilter] = useState<{ App?: boolean; Web?: boolean }>({
+    App: false,
+    Web: false,
+  });
 
   // 加载数据
   const loadData = useCallback(async () => {
     if (!currentParentNode.key) return;
     setLoading(true);
     try {
+      // 构建 platform 参数：根据筛选状态返回对应的平台数组
+      const platform = Object.entries(platformFilter)
+        .filter(([_, enabled]) => enabled)
+        .map(([platform]) => platform.toUpperCase()) as ('APP' | 'WEB')[];
+
       const reqParams: GetOrgRoleListReq = {
         orgId: currentParentNode.key,
         pageNum: page,
         pageSize,
+        status: statusFilter === 'all' ? '' : statusFilter,
         keyword: searchInputRef.current?.input?.value || '',
+        platform: platform.length === 2 ? ['APP', 'WEB'] : platform,
       };
       const {
         data: { current, records, size, total },
       }: GetOrgRoleListRes = await OrgRoleApi.getOrgRoleList(reqParams);
-      // 增加 No 列，自增 1
       records.forEach((item, index) => {
         item.no = (current - 1) * size + index + 1;
       });
       setDataSource(records);
-      setPage(current);
       setPageSize(size);
       setTotal(total);
     } catch (error) {
@@ -95,10 +97,18 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     } finally {
       setLoading(false);
     }
-  }, [currentParentNode.key, page, pageSize]);
+  }, [currentParentNode.key, page, pageSize, platformFilter, statusFilter]);
 
   /**
-   * 获取数据
+   * 监听筛选条件变化，触发数据加载
+   */
+  useEffect(() => {
+    // platformFilter 变化时，重置到第一页并加载数据
+    setPage(1);
+  }, [platformFilter]);
+
+  /**
+   * 获取数据 - 当 page、statusFilter 等变化时加载数据
    */
   useEffect(() => {
     loadData();
@@ -107,24 +117,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   // 刷新 - 重置所有筛选条件
   const handleRefresh = useCallback(() => {
     setStatusFilter('all');
-    setPlatformFilter({ app: true, web: true });
+    setPlatformFilter({ App: false, Web: false });
     if (searchInputRef.current?.input) {
       searchInputRef.current.input.value = ''; // 清空输入框
     }
     setPage(1);
-  }, []);
-
-  // Platform 筛选变化
-  const handlePlatformChange = useCallback((checkedValues: (string | number)[]) => {
-    setPlatformFilter({
-      app: checkedValues.includes('app'),
-      web: checkedValues.includes('web'),
-    });
-  }, []);
-
-  // 状态筛选
-  const handleStatusChange = useCallback((status: 'all' | 'normal' | 'deleted') => {
-    setStatusFilter(status);
   }, []);
 
   const columns: ColumnsType = [
@@ -132,26 +129,79 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       title: t('role.col.no'),
       dataIndex: 'no',
       key: 'index',
+      width: 70,
+      minWidth: 70,
     },
     {
       title: t('role.col.name'),
       dataIndex: 'roleName',
       key: 'roleName',
+      ellipsis: true,
+      minWidth: 140,
     },
     {
       title: t('role.col.platform'),
       dataIndex: 'platform',
       key: 'platform',
+      minWidth: 150,
+      render(value) {
+        return (
+          <div className={styles.platformContainer}>
+            <div
+              className={`${styles.platformLabelContainer} ${value.includes('APP') ? '' : styles.platformLabelContainerDisabled}`}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 8.4001V2.6001C12 1.49553 11.1046 0.600098 10 0.600098H4C2.89543 0.600098 2 1.49553 2 2.6001V8.4001M12 8.4001V11.4001C12 12.5047 11.1046 13.4001 10 13.4001H4C2.89543 13.4001 2 12.5047 2 11.4001V8.4001M12 8.4001H2M6.5 11.0001H7.5"
+                  stroke="#33C2C8"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className={styles.platformAPPStyle}>APP</span>
+            </div>
+            <div
+              className={`${styles.platformLabelContainer} ${value.includes('WEB') ? '' : styles.platformLabelContainerDisabled}`}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.0001 6H13.0001M3.0001 4H3.1001M5.09971 4H5.19971M7.19932 4H7.29932M2.6001 12H11.4001C12.5047 12 13.4001 11.1046 13.4001 10V4C13.4001 2.89543 12.5047 2 11.4001 2H2.6001C1.49553 2 0.600098 2.89543 0.600098 4V10C0.600098 11.1046 1.49553 12 2.6001 12Z"
+                  stroke="#31C47F"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <span className={styles.platformWEBStyle}>WEB</span>
+            </div>
+          </div>
+        );
+      },
     },
     {
       title: t('role.col.members'),
-      dataIndex: 'memberCount',
-      key: 'memberCount',
+      dataIndex: 'userCount',
+      key: 'userCount',
+      width: 90,
+      minWidth: 90,
     },
     {
       title: t('role.col.status'),
       dataIndex: 'status',
       key: 'status',
+      width: 90,
+      minWidth: 90,
       render(value) {
         if (value === 'Normal') return <Tag preset={PRESET_TAGS.NORMAL} />;
         if (value === 'Delete') return <Tag preset={PRESET_TAGS.DELETED} />;
@@ -161,6 +211,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       title: t('role.col.description'),
       dataIndex: 'description',
       key: 'description',
+      ellipsis: true,
+      minWidth: 140,
     },
   ];
   /**
@@ -211,20 +263,15 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       },
     });
   };
-  /**
-   * 保存角色
-   * @param values
-   */
-  const handleAddRole = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
   return (
     <AntSpin spinning={loading}>
       <div className={styles.roleInfo}>
         {/* 顶部操作栏 */}
         <RoleHeader
           statusFilter={statusFilter}
-          onStatusChange={handleStatusChange}
+          onStatusChange={(status: 'all' | 'normal' | 'deleted') => {
+            setStatusFilter(status);
+          }}
           searchInputRef={searchInputRef}
           onPressEnter={() => {
             setPage(1);
@@ -250,18 +297,20 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
               platform: {
                 mode: 'multiple',
                 options: [
-                  { label: 'App', value: 'app' },
-                  { label: 'Web', value: 'web' },
+                  { label: 'App', value: 'App' },
+                  { label: 'Web', value: 'Web' },
                 ],
               },
-              // status: {
-              //   mode: 'single', // 单选模式
-              //   options: [
-              //     { label: 'All', value: 'all' },
-              //     { label: 'Normal', value: 'normal' },
-              //     { label: 'Deleted', value: 'deleted' },
-              //   ],
-              // },
+            }}
+            onFilterChange={(filters) => {
+              // 监听筛选器变化
+              if (filters.platform !== undefined) {
+                const platformValues = Array.isArray(filters.platform) ? filters.platform : [];
+                setPlatformFilter({
+                  App: platformValues.includes('App'),
+                  Web: platformValues.includes('Web'),
+                });
+              }
             }}
             operations={[
               {
@@ -351,12 +400,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
           />
         </div>
         {/* 新增角色 */}
-        <AddRole
-          ref={roleModalRef}
-          currentParentNode={currentParentNode}
-          treeData={treeData}
-          onOk={handleAddRole}
-        />
+        <AddRole ref={roleModalRef} currentParentNode={currentParentNode} treeData={treeData} />
       </div>
     </AntSpin>
   );

@@ -11,13 +11,14 @@ import { getParentNode } from '@pages/organization/utils';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
+  type CreateOrgRoleRes,
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
   type GetOrgRolePermissionReq,
   type GetOrgRolePermissionRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
-import { AntTag, AntTooltip } from '@/shared/components';
+import { AntMessage, AntTag, AntTooltip } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -37,18 +38,21 @@ interface AddRoleProps<T = any> {
   treeData: TreeNodeData[];
   title?: string;
   width?: number | string;
-  destroyOnClose?: boolean;
-  onOk?: (values: any, record?: T) => void;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
-  const { currentParentNode, treeData, width = '1130', destroyOnClose = true, onOk } = props;
+  const { currentParentNode, treeData, width = '1130' } = props;
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
+  const [rolePermissionData, setRolePermissionData] = useState();
+  const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({
+    Web: [],
+    Phone: [],
+  });
   const recordRef = useRef<AddRoleRef>(null);
   const [currentRecord, setCurrentRecord] = useState<{ roleId?: string } | null>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
@@ -57,15 +61,12 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const parentNode =
     currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
   // 获取角色权限
-  const getRolePermission = async () => {
+  const getRolePermission = async (roleId: string) => {
     setLoading(true);
     try {
-      // const reqParams: GetOrgRolePermissionReq = {
-      //   roleId,
-      // };
-      // const {
-      //   data: { current, records, size },
-      // }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission(reqParams);
+      const reqParams: GetOrgRolePermissionReq = {};
+      const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission(reqParams);
+      setRolePermissionData(data || []);
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
@@ -104,7 +105,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         getRoleDetail(record.roleId);
       }
       // 获取角色权限
-      getRolePermission();
+      getRolePermission(record?.roleId || '');
       setOpen(true);
       return new Promise((resolve) => {
         resolverRef.current = resolve;
@@ -112,7 +113,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     },
 
     close() {
-      setOpen(false);
+      handleClose();
     },
 
     submit() {
@@ -124,10 +125,49 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
    * 保存提交
    */
   const handleFinish = async () => {
-    form.validateFields().then((values) => {
-      onOk?.(values);
+    form.validateFields().then(async (values) => {
+      setLoading(true);
+      try {
+        const webPermissions = selectedPermissions?.Web || [];
+        const appPermissions = selectedPermissions?.Phone || [];
+
+        const platform = [];
+        if (webPermissions.length > 0) {
+          platform.push('WEB');
+        }
+        if (appPermissions.length > 0) {
+          platform.push('APP');
+        }
+        const reqParams = {
+          ...values,
+          orgId: parentNode?.key,
+          platform,
+          webPermissions,
+          appPermissions,
+        };
+        const { data }: CreateOrgRoleRes = await OrgRoleApi.createOrgRole(reqParams);
+        // 提交成功后关闭弹窗
+        handleClose();
+      } catch (error) {
+        console.error('创建角色失败:', error);
+        AntMessage.error('创建角色失败，请重试');
+      } finally {
+        setLoading(false);
+      }
     });
   };
+
+  /**
+   * 关闭弹窗并重置表单
+   */
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    form.resetFields();
+    setSelectedPermissions({
+      Web: [],
+      Phone: [],
+    });
+  }, [form]);
 
   /**
    * 表单内容
@@ -250,7 +290,10 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         </AntCol>
       </AntRow>
       <AntRow gutter={30}>
-        <RolePermissions />
+        <RolePermissions
+          rolePermissionData={rolePermissionData}
+          onChange={(selectedPermissions) => setSelectedPermissions(selectedPermissions)}
+        />
       </AntRow>
     </div>
   );
@@ -398,10 +441,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             : t('role.add.title')
       }
       open={open}
-      onClose={() => setOpen(false)}
-      destroyOnHidden={destroyOnClose}
+      onClose={handleClose}
+      destroyOnHidden
       size={width}
-      loading={loading}
       styles={() => {
         return {
           body: { padding: 0 },
@@ -409,10 +451,16 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       }}
       footer={
         <div className={styles.footer}>
-          <FormButton color="default" onClick={() => setOpen(false)}>
+          <FormButton color="default" onClick={handleClose} disabled={loading}>
             {t('common.action.cancel')}
           </FormButton>
-          <FormButton color="primary" variant="solid" onClick={handleFinish}>
+          <FormButton
+            color="primary"
+            variant="solid"
+            onClick={handleFinish}
+            loading={loading}
+            disabled={loading}
+          >
             {t('common.action.confirm')}
           </FormButton>
         </div>

@@ -122,3 +122,31 @@
     font-weight: 500;
   }
 }
+
+.platformContainer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  .platformLabelContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .platformAPPStyle {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 14px;
+      color: rgba(51, 194, 200, 1);
+      margin-left: 6px;
+    }
+    .platformWEBStyle {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 14px;
+      color: rgba(49, 196, 127, 1);
+      margin-left: 6px;
+    }
+  }
+  .platformLabelContainerDisabled {
+    opacity: 0.2;
+  }
+}

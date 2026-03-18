@@ -4,6 +4,28 @@
 
 /* 全局样式 */
 :root {
+  /* 字体家族 - 中英文混排优化 */
+  --font-family-base: 
+    'Montserrat',           // 英文字体（字重完整）
+    'PingFang SC',          // macOS 中文简体
+    'Hiragino Sans GB',     // macOS 中文繁体/日文
+    'Microsoft YaHei',      // Windows 中文
+    'Noto Sans CJK SC',     // Linux/Android 中文简体
+    'Noto Sans CJK TC',     // Linux/Android 中文繁体
+    -apple-system,           // iOS/macOS 系统字体
+    BlinkMacSystemFont,      // macOS Chrome
+    'Segoe UI',             // Windows 系统字体
+    'Roboto',               // Android 系统字体
+    'Helvetica Neue',       // 经典西文字体
+    Arial,                 // 通用西文字体
+    sans-serif;            // 无衬线字体兜底
+
+  /* 字重 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-extrabold: 800;
+
   /* 基础颜色 */
   --color-primary: $color-primary;
   --color-success: $color-success;

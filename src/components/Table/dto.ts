@@ -93,4 +93,7 @@ export interface BaseTableProps<T> extends Omit<TableProps<T>, 'pagination' | 's
   selectedCountText?: (count: number) => string;
 
   filterConfig?: TableFilterConfig<T>;
+
+  /** 筛选条件变化时的回调 */
+  onFilterChange?: (filters: Record<string, any>) => void;
 }

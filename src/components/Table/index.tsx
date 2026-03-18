@@ -17,6 +17,7 @@ function BaseTable<RecordType extends object = any>({
   columns = [],
   dataSource = [],
   filterConfig,
+  onFilterChange,
   operations,
   operationWidth,
   ...props
@@ -40,12 +41,17 @@ function BaseTable<RecordType extends object = any>({
             title={col.title}
             value={filters[key]}
             config={filterConfig[key]}
-            onChange={(val) =>
+            onChange={(val) => {
               setFilters((prev) => ({
                 ...prev,
                 [key]: val,
-              }))
-            }
+              }));
+              // 通知父组件筛选条件变化
+              onFilterChange?.({
+                ...filters,
+                [key]: val,
+              });
+            }}
           />
         ),
       };
@@ -81,28 +87,7 @@ function BaseTable<RecordType extends object = any>({
     }
 
     return cols;
-  }, [columns, filters, filterConfig, operations, operationWidth]);
-  // 自动过滤数据
-  const filteredData = useMemo(() => {
-    return dataSource.filter((row: any) => {
-      return Object.keys(filters).every((key) => {
-        const filterVal = filters[key];
-        if (!filterVal || filterVal.length === 0) return true;
-
-        const cellVal = row[key];
-
-        // 多选 AND
-        if (Array.isArray(filterVal)) {
-          return filterVal.every((v) =>
-            String(cellVal).toLowerCase().includes(String(v).toLowerCase()),
-          );
-        }
-
-        // input
-        return String(cellVal).toLowerCase().includes(String(filterVal).toLowerCase());
-      });
-    });
-  }, [dataSource, filters]);
+  }, [columns, filters, filterConfig, operations, operationWidth, onFilterChange]);
 
   const finalRowSelection = props.rowSelection
     ? {
@@ -123,7 +108,7 @@ function BaseTable<RecordType extends object = any>({
         {...props}
         rowSelection={finalRowSelection}
         columns={finalColumns}
-        dataSource={filteredData}
+        dataSource={dataSource}
         size="large"
         className={classNames(styles.baseTable, className)}
         pagination={false}

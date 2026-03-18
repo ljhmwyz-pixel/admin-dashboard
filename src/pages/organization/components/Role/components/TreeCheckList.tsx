@@ -6,8 +6,8 @@ import type { TreeProps } from '@/shared/components/antd-imports';
 import styles from './TreeCheckList.module.scss';
 
 export interface TreeItem {
-  id: string;
-  title: string;
+  permissionId: string;
+  permissionName: string;
   children?: TreeItem[];
   checked?: boolean;
   indeterminate?: boolean;
@@ -29,11 +29,28 @@ const TreeCheckList: React.FC<TreeCheckListProps> = ({
   // 如果父组件传递了 checkedKeys，则使用父组件的值（受控模式），否则使用内部状态
   const checkedKeys = parentCheckedKeys !== undefined ? parentCheckedKeys : internalCheckedKeys;
 
+  // 计算所有需要展开的 key
+  const getAllKeys = (items: TreeItem[]): string[] => {
+    const keys: string[] = [];
+    const traverse = (nodes: TreeItem[]) => {
+      nodes.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          keys.push(node.permissionId);
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(items);
+    return keys;
+  };
+
+  const expandedKeys = getAllKeys(data);
+
   // 将数据转换为 Ant Design Tree 需要的格式
   const transformData = (items: TreeItem[]): any[] => {
     return items.map((item) => ({
-      key: item.id,
-      title: <span className={styles.treeNodeTitle}>{item.title}</span>,
+      key: item.permissionId,
+      title: <span className={styles.treeNodeTitle}>{item.permissionName}</span>,
       children: item.children ? transformData(item.children) : null,
       isLeaf: !item.children || item.children.length === 0,
     }));
@@ -60,7 +77,7 @@ const TreeCheckList: React.FC<TreeCheckListProps> = ({
         showIcon={false}
         blockNode
         showLine
-        defaultExpandAll
+        expandedKeys={expandedKeys}
       />
     </div>
   );
