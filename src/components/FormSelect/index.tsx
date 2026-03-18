@@ -37,6 +37,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         maxTagCount="responsive"
         getPopupContainer={(triggerNode) => triggerNode.parentElement}
         {...selectProps}
+        placeholder={selectProps?.disabled ? '' : selectProps?.placeholder}
         className={`
               ${styles.input}
               ${selectProps?.className || ''}

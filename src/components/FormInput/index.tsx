@@ -33,6 +33,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       <AntInput
         autoComplete="off"
         {...inputProps}
+        placeholder={inputProps?.disabled ? '' : inputProps?.placeholder}
         className={`
               ${styles.input}
               ${inputProps?.className || ''}
