@@ -222,7 +222,7 @@ const OrganizationRecordTable: React.FC<OrganizationRecordTableProps> = ({ typeC
         <div className={styles.searchContainer}>
           <SearchInput
             allowClear={true}
-            placeholder="Please enter role name"
+            placeholder="Please enter change content"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
