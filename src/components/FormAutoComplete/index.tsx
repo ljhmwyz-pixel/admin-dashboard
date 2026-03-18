@@ -32,6 +32,7 @@ const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
     >
       <AntAutoComplete
         {...autoCompleteProps}
+        placeholder={autoCompleteProps?.disabled ? '' : autoCompleteProps?.placeholder}
         className={classNames(
           styles.input,
           autoCompleteProps?.className,

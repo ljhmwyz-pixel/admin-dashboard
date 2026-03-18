@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { RoleRecord } from '@pages/organization/dto';
 import type { TreeNodeData } from '@pages/organization/dto';
+import type { ColumnsType } from 'antd/es/table';
 
 import { Table } from '@/components';
 import { useThemeModal } from '@/components/Modal';
 import type { OptionItem } from '@/components/Segmented';
+import Tag from '@/components/Tag';
+import { PRESET_TAGS } from '@/components/Tag/constants';
 import OrgRoleApi, {
   type DeleteOrgRoleReq,
   type GetOrgRoleDTO,
@@ -123,7 +126,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     setStatusFilter(status);
   }, []);
 
-  const columns = [
+  const columns: ColumnsType = [
     {
       title: t('role.col.no'),
       dataIndex: 'no',
@@ -148,6 +151,9 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       title: t('role.col.status'),
       dataIndex: 'status',
       key: 'status',
+      render(value, record, index) {
+        return <Tag preset={PRESET_TAGS.DELETED} />;
+      },
     },
     {
       title: t('role.col.description'),
@@ -244,14 +250,14 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
                   { label: 'Web', value: 'web' },
                 ],
               },
-              status: {
-                mode: 'single', // 单选模式
-                options: [
-                  { label: 'All', value: 'all' },
-                  { label: 'Normal', value: 'normal' },
-                  { label: 'Deleted', value: 'deleted' },
-                ],
-              },
+              // status: {
+              //   mode: 'single', // 单选模式
+              //   options: [
+              //     { label: 'All', value: 'all' },
+              //     { label: 'Normal', value: 'normal' },
+              //     { label: 'Deleted', value: 'deleted' },
+              //   ],
+              // },
             }}
             operations={[
               {
