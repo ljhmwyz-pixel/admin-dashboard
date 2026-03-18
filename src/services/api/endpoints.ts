@@ -61,6 +61,8 @@ export const ORGANIZATION_ENDPOINTS = {
     `/api/v1/organization/organizations/${id}/validate-delete`,
   /** 获取组织类型列表 */
   ORGANIZATION_TYPES: '/api/v1/organization/organization-types',
+  /** 获取查询电站树 */
+  PLANT_TREE: '/api/v1/organization/plants/tree',
 } as const;
 
 // 用户管理相关

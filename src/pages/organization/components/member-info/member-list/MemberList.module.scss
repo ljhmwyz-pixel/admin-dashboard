@@ -42,12 +42,25 @@
   align-items: center;
   gap: 20px;
   justify-content: flex-end;
-}
 
-.switch-container {
-  cursor: pointer;
-  padding: 4px;
-  display: inline-block;
+  .searchInput {
+    width: 260px;
+    background-color: #191B1F0F;
+    height: 34px;
+  }
+
+  .addButton{
+    width: 74px;
+    height: 34px;
+    cursor: pointer;
+  }
+
+  .resetButton {
+    background-color: #191B1F0A;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+  }
 }
 
 .role {

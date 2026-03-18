@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AntForm } from '@shared/components';
 
 import type { ListItem, TreeNode } from '@/pages/organization/dto';
+import { getPlantTree } from '@/pages/organization/services/organizationService';
 
 import OrgTreeSelector from '../org-tree/OrgTreeSelector';
 import SelectedList from '../org-tree/SelectedList';
 
-import styles from './AddMember.module.scss';
+import styles from './AddMemberAssociatePlants.module.scss';
 
 /**
  * 模拟组织树数据
@@ -62,7 +63,11 @@ interface AddMemberAssociatePlantsProps {
  * 新增成员第三步：关联电站
  * 使用 OrgTreeSelector 和 SelectedList 组件实现组织和电站的选择
  */
-const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({ form, onSubmit }) => {
+const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
+  form,
+  onSubmit,
+  orgId,
+}) => {
   /** 左侧搜索关键词 */
   const [leftSearchValue, setLeftSearchValue] = useState('');
   /** 右侧搜索关键词 */
@@ -167,16 +172,31 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({ for
     [selectedOrgKeys, selectedPlantKeys],
   );
 
+  const loadPlants = useCallback(async () => {
+    if (!orgId) return;
+    try {
+      const response = await getPlantTree({
+        orgId: orgId,
+        keyword: leftSearchValue,
+      });
+      console.log(response, '111');
+    } catch (error) {
+      console.error('Failed to get plant tree:', error);
+    }
+  }, [orgId, leftSearchValue]);
+
+  useEffect(() => {
+    loadPlants();
+  }, [loadPlants]);
+
   return (
     <AntForm
+      className={styles.form}
       form={form}
       onFinish={() => onSubmit({ organizationKeys: selectedOrgKeys, plantKeys: selectedPlantKeys })}
       layout="vertical"
     >
       <div className={styles.stepContent}>
-        <h3>Associate Plants</h3>
-        <p>Please select the plants that the new member can access.</p>
-
         <div className={styles.plantsContainer}>
           {/* 左侧组织树选择器 */}
           <div className={styles.treeSelector}>
@@ -188,9 +208,68 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({ for
               onSearch={setLeftSearchValue}
               editable
               showSearch
-              searchPlaceholder="Search organizations or plants..."
+              searchPlaceholder="Please enter organization name or ID"
               showSelectAll
             />
+          </div>
+          <div className={styles.arrowIcon}>
+            <svg
+              width="34"
+              height="34"
+              viewBox="0 0 34 34"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g filter="url(#filter0_d_4474_87601)">
+                <path
+                  d="M4 4C4 2.89543 4.89543 2 6 2H28C29.1046 2 30 2.89543 30 4V26C30 27.1046 29.1046 28 28 28H6C4.89543 28 4 27.1046 4 26V4Z"
+                  fill="#33C2C8"
+                />
+              </g>
+              <path
+                d="M13.0195 12L15.9488 14.9293C15.9879 14.9683 15.9879 15.0317 15.9488 15.0707L13.0195 18M18.0195 12L20.9488 14.9293C20.9879 14.9683 20.9879 15.0317 20.9488 15.0707L18.0195 18"
+                stroke="white"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+              <defs>
+                <filter
+                  id="filter0_d_4474_87601"
+                  x="0"
+                  y="0"
+                  width="34"
+                  height="34"
+                  filterUnits="userSpaceOnUse"
+                  colorInterpolationFilters="sRGB"
+                >
+                  <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix
+                    in="SourceAlpha"
+                    type="matrix"
+                    values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                    result="hardAlpha"
+                  />
+                  <feOffset dy="2" />
+                  <feGaussianBlur stdDeviation="2" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix
+                    type="matrix"
+                    values="0 0 0 0 0.0980392 0 0 0 0 0.105882 0 0 0 0 0.121569 0 0 0 0.06 0"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in2="BackgroundImageFix"
+                    result="effect1_dropShadow_4474_87601"
+                  />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="effect1_dropShadow_4474_87601"
+                    result="shape"
+                  />
+                </filter>
+              </defs>
+            </svg>
           </div>
 
           {/* 右侧已选列表 */}

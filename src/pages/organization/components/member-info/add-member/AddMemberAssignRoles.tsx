@@ -91,6 +91,19 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
     loadRolesData();
   }, [orgId]);
 
+  /**
+   * 监听表单中角色字段的变化
+   * 当组件重新渲染时，根据当前选中的角色重新加载权限列表
+   */
+  useEffect(() => {
+    const currentRoleIds = form.getFieldValue('role');
+    if (currentRoleIds && currentRoleIds.length > 0) {
+      setTimeout(() => {
+        handleRoleChange(currentRoleIds);
+      }, 0);
+    }
+  }, [form, handleRoleChange]);
+
   return (
     <AntForm form={form} onFinish={onSubmit} layout="vertical">
       <div className={styles.stepContent}>

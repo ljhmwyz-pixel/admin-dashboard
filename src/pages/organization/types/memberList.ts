@@ -472,3 +472,34 @@ export interface ReviewMemberApplicationResponse {
   timestamp: string;
   traceId: string;
 }
+
+/**
+ * 电站树请求参数类型
+ * 符合需求文档规范
+ */
+export interface PlantTreeParams {
+  /** 电站ID */
+  orgId: string;
+  /** 组织名称关键词（模糊搜索） */
+  keyword?: string;
+}
+
+export interface PlantTreeResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: PlantTreeDatum[];
+  timestamp: string;
+  traceId: string;
+}
+
+export interface PlantTreeDatum {
+  nodeId: string;
+  nodeName: string;
+  nodeType: string;
+  parentId: string;
+  plantId: string;
+  plantStatus: string;
+  hasOrgScope: boolean;
+  children: PlantTreeDatum[];
+}

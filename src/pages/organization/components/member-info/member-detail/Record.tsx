@@ -24,7 +24,6 @@ const Record: React.FC<RecordProps> = ({ member }) => {
     try {
       setLoading(true);
       const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
-      console.log(res, 'res');
       if (res) {
         setRecordData(res.data);
         setTotal(res.data.total);

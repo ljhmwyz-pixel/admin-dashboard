@@ -8,6 +8,8 @@ import type {
   MemberListResponse,
   MemberUpdateResponse,
   OrganizationListParams,
+  PlantTreeParams,
+  PlantTreeResponse,
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
@@ -607,6 +609,40 @@ export const changeMemberStatus = async (
     return await changeMemberStatusLogic();
   } catch (error) {
     console.error('Failed to change member status:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取电站树
+ * @param params - 查询参数（电站ID、组织名称关键词）
+ * @param withLoading - 全局 loading 包装函数
+ * @returns 电站树数据
+ */
+export const getPlantTree = async (
+  params?: PlantTreeParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<PlantTreeResponse | undefined> => {
+  const getPlantTreeLogic = async (): Promise<PlantTreeResponse> => {
+    const response = await organizationApi.getPlantTree(params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(getPlantTreeLogic, {
+      onError: (error) => {
+        console.error('Get plant tree error:', error);
+      },
+    });
+  }
+
+  try {
+    return await getPlantTreeLogic();
+  } catch (error) {
+    console.error('Failed to get plant tree:', error);
     return undefined;
   }
 };

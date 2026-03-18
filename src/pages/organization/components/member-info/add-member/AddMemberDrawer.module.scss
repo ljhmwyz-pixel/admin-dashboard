@@ -1,105 +1,112 @@
-.drawer {
-  :global {
-    .ant-drawer-body {
-      padding: 0;
-    }
-  }
-}
-
-.header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #e8e8e8;
-  background: #fafafa;
-}
-
-.orgInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.orgName {
-  font-size: 16px;
-  font-weight: 500;
-  color: #262626;
-}
-
-.parentOrg {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #595959;
-}
-
-.label {
-  font-weight: 400;
-}
-
-.value {
-  font-weight: 500;
-  color: #1890ff;
-}
-
-.orgCode {
-  font-size: 12px;
-  color: #8c8c8c;
-}
-
 .stepsContainer {
   display: flex;
-  height: calc(100vh - 200px);
-}
+  height: 100%;
 
-.stepsSidebar {
-  width: 200px;
-  padding: 24px 0;
-  border-right: 1px solid #e8e8e8;
-  background: #fafafa;
-}
+  .stepsSidebar {
+    padding: 20px;
+    width: 260px;
+    height: 100%;
+    border: 1px solid #191B1F0F;
+    flex-shrink: 0;
 
-.steps {
-  :global {
-    .ant-steps-item-title {
-      font-size: 14px;
-      font-weight: 500;
-    }
+    // 自定义步骤条样式
+    :global {
+      .ant-steps-vertical {
+        .ant-steps-item {
+          padding: 0px 0 100px 0;
+          min-height: 60px;
+        }
 
-    .ant-steps-item-description {
-      font-size: 12px;
-      color: #8c8c8c;
-      margin-top: 4px;
-    }
+        .ant-steps-item-title {
+          font-size: 14px;
+          font-weight: 500;
+          margin-left: 16px;
+        }
 
-    .ant-steps-item-icon {
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
-      font-size: 12px;
+        .ant-steps-item {
+          .ant-steps-item-wrapper {
+            column-gap: 4px;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .ant-steps-item-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .ant-steps-item-rail {
+            top: 48px;
+            left: 14px;
+            height: 60px;
+          }
+        }
+
+        .ant-steps-item-process {
+          .ant-steps-item-icon {
+            font-weight: 600;
+            box-shadow: 0 0 0 10px #33C2C80F;
+
+          }
+
+          .ant-steps-item-title {
+            font-weight: 600;
+            color: #33C2C8;
+            position: relative;
+
+            &::after {
+              content: '';
+              position: absolute;
+              top: calc(50% - 7px);
+              right: -24px;
+              width: 14px;
+              height: 14px;
+              background-color: #33C2C80F;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background-image: url('data:image/svg+xml;charset=utf-8;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNyIgY3k9IjciIHI9IjciIGZpbGw9IiMzM0MyQzgiIGZpbGwtb3BhY2l0eT0iMC4wNiIvPgo8cGF0aCBkPSJNNiA0TDguOTM1OTkgNi44NUM5LjAyMTM0IDYuOTMyODQgOS4wMjEzNCA3LjA2NzE2IDguOTM1OTkgNy4xNUw2IDEwIiBzdHJva2U9IiMzM0MyQzgiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cg==');
+            }
+          }
+        }
+
+        .ant-steps-item-finish {
+          .ant-steps-item-icon {
+            background-color: #fff;
+            border-color: #33C2C8;
+          }
+        }
+
+
+      }
     }
   }
-}
 
-.stepsContent {
-  flex: 1;
-  padding: 32px 40px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
+  .stepRight {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
-.actions {
-  margin-top: 32px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 24px;
-  border-top: 1px solid #e8e8e8;
-}
+  .stepsContent {
+    flex: 1;
+    padding: 30px 30px 0;
+    width: 100%;
+    flex: 1;
+  }
 
-.cancelBtn {
-  min-width: 80px;
-}
+  .actions {
+    flex-shrink: 0;
+    padding: 60px 0;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    gap: 30px;
 
 .previousBtn {
   min-width: 80px;

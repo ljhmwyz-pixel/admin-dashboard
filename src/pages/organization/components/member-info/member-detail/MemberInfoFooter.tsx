@@ -56,7 +56,7 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
     ];
 
     // 如果没有成员数据，只返回取消按钮
-    if (!member) {
+    if (!member || member?.isOwner) {
       return buttons;
     }
 

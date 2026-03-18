@@ -10,6 +10,8 @@ import type {
   MemberUpdateResponse,
   OrganizationListParams,
   OrganizationListResponse,
+  PlantTreeParams,
+  PlantTreeResponse,
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
@@ -104,6 +106,9 @@ export interface OrganizationApi {
     memberId: string,
     data: { status: string; confirmUid: string; reason?: string },
   ) => Promise<DeleteResponse>;
+
+  /** 获取电站树 */
+  getPlantTree: (params?: PlantTreeParams) => Promise<PlantTreeResponse>;
 }
 
 /**
@@ -321,6 +326,15 @@ class OrganizationApiImpl implements OrganizationApi {
     data: { status: string; confirmUid: string; reason?: string },
   ): Promise<DeleteResponse> {
     return apiClient.patch(ORGANIZATION_ENDPOINTS.CHANGE_STATUS(memberId), data);
+  }
+
+  /**
+   * 获取电站树
+   * @param params - 查询参数（分页、搜索、状态等）
+   * @returns 电站树数据
+   */
+  async getPlantTree(params?: PlantTreeParams): Promise<PlantTreeResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.PLANT_TREE, { params });
   }
 }
 

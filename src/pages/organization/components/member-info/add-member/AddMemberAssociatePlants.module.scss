@@ -1,0 +1,39 @@
+.form {
+  height: 100%;
+}
+
+.stepContent {
+  height: 100%;
+
+  .plantsContainer {
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    .treeSelector {
+      height: 100%;
+      width: calc((100% - 24px)/2);
+    }
+
+    .selectedList {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .selectedOrgSection {
+        flex: 1;
+      }
+
+      .selectedPlantSection {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: flex-end;
+}

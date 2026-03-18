@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { ApartmentOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import type { OrgTreeSelectorProps, TreeNode } from '@pages/organization/dto';
-import { AntButton, AntInput, AntTree } from '@shared/components';
+import { AntButton, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
 import type { TreeProps } from 'antd/es/tree';
+import clx from 'classnames';
 
 import styles from './OrgTreeSelector.module.scss';
 
@@ -169,48 +170,19 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
   /**
    * 默认标题渲染
    */
-  const defaultTitleRender = useCallback(
-    (node: TreeNode) => {
-      const isPlant = node.isPlant;
-      const icon = isPlant ? (
-        <ThunderboltOutlined className={styles.plantIcon} />
-      ) : (
-        <ApartmentOutlined className={styles.orgIcon} />
-      );
-
-      if (searchValue && node.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        const index = node.title.toLowerCase().indexOf(searchValue.toLowerCase());
-        const before = node.title.slice(0, index);
-        const match = node.title.slice(index, index + searchValue.length);
-        const after = node.title.slice(index + searchValue.length);
-
-        return (
-          <span className={styles.treeNodeTitle}>
-            {icon}
-            <span>
-              {before}
-              <span className={styles.highlight}>{match}</span>
-              {after}
-            </span>
-          </span>
-        );
-      }
-
-      return (
-        <span className={styles.treeNodeTitle}>
-          {icon}
-          <span>{node.title}</span>
-        </span>
-      );
-    },
-    [searchValue],
-  );
+  const defaultTitleRender = useCallback((node: TreeNode) => {
+    return (
+      <span className={styles.treeNode}>
+        <span className={styles.treeNodeTitle}>{node.title}</span>
+      </span>
+    );
+  }, []);
 
   /**
    * 渲染编辑态
    */
   const renderEditable = () => (
-    <div className={`${styles.editableContainer} ${className}`} style={style}>
+    <div className={clx(styles.editableContainer, className)} style={style}>
       {showSearch && (
         <div className={styles.searchHeader}>
           <AntInput
@@ -224,24 +196,24 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
         </div>
       )}
       <div className={styles.treeContainer}>
-        {loading ? (
-          <div className={styles.loading}>Loading...</div>
-        ) : filteredTreeData.length === 0 ? (
-          <div className={styles.empty}>{emptyText}</div>
-        ) : (
-          <AntTree
-            checkable
-            showLine
-            treeData={filteredTreeData as any}
-            checkedKeys={selectedKeys}
-            expandedKeys={expandedKeys}
-            onCheck={handleTreeCheck}
-            onExpand={handleExpand}
-            titleRender={(node) => defaultTitleRender(node as TreeNode)}
-            className={styles.tree}
-            defaultExpandAll={defaultExpandAll}
-          />
-        )}
+        <AntSpin spinning={loading}>
+          {filteredTreeData.length === 0 ? (
+            <AntEmpty />
+          ) : (
+            <AntTree
+              checkable
+              showLine
+              treeData={filteredTreeData as any}
+              checkedKeys={selectedKeys}
+              expandedKeys={expandedKeys}
+              onCheck={handleTreeCheck}
+              onExpand={handleExpand}
+              titleRender={(node) => defaultTitleRender(node as TreeNode)}
+              className={styles.tree}
+              defaultExpandAll={defaultExpandAll}
+            />
+          )}
+        </AntSpin>
       </div>
       {showSelectAll && editable && (
         <div className={styles.footer}>
@@ -272,7 +244,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
     findNodes(treeData);
 
     return (
-      <div className={`${styles.readonlyContainer} ${className}`} style={style}>
+      <div className={clx(styles.readonlyContainer, className)} style={style}>
         <div className={styles.title}>{title}</div>
         {showSearch && (
           <div className={styles.searchHeader}>
