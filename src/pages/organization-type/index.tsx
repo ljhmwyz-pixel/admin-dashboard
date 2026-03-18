@@ -1,3 +1,12 @@
+/**
+ * 组织类型页面 所有组织类型均可由超级管理员编辑
+ * Pylontech
+ * Dealer经销商
+ * Installer 安装商
+ * Owner 业主
+ * Guest 访客
+ * BD 销售大区
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import type { OrganizationTypeItem } from '@shared/types/organizationType';
 import { Empty, message, Spin, Typography } from 'antd';
