@@ -12,8 +12,8 @@ import styles from './RoleHeader.module.scss';
 interface RoleHeaderProps {
   statusFilter: StatusFilter;
   onStatusChange: (status: StatusFilter) => void;
-  searchKeyword: string;
-  onSearchKeywordChange: (keyword: string) => void;
+  searchInputRef?: React.RefObject<any>; // 搜索框 ref
+  onPressEnter: () => void;
   onAdd: (() => void) | undefined;
   onRefresh: () => void;
   statusList: OptionItem[];
@@ -22,8 +22,8 @@ interface RoleHeaderProps {
 const RoleHeader: React.FC<RoleHeaderProps> = ({
   statusFilter,
   onStatusChange,
-  searchKeyword,
-  onSearchKeywordChange,
+  searchInputRef,
+  onPressEnter,
   onAdd,
   onRefresh,
   statusList,
@@ -45,10 +45,10 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
           <SearchInput
             allowClear={false}
             placeholder={t('role.placeholder.search')}
-            // 此字段决定是否展示Tooltip
+            // 此字段决定是否展示 Tooltip
             searchFields={['Role name']}
-            value={searchKeyword}
-            onChange={(e) => onSearchKeywordChange(e.target.value)}
+            inputRef={searchInputRef}
+            onSearch={() => onPressEnter()}
           />
           <FormButton
             color="primary"

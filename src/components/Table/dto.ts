@@ -75,7 +75,7 @@ export interface BaseTableProps<T> extends Omit<TableProps<T>, 'pagination' | 's
   showPagination?: boolean;
 
   /** 分页状态配置 */
-  pagination?: PaginationState | boolean;
+  pagination?: PaginationProps | boolean;
 
   /** 表格标题 */
   tableTitle?: React.ReactNode;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { RoleRecord } from '@pages/organization/dto';
 import type { TreeNodeData } from '@pages/organization/dto';
 import type { ColumnsType } from 'antd/es/table';
@@ -34,6 +34,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
+  const searchInputRef = useRef<any>(null);
   const roleModalRef = useRef<AddRoleRef>(null);
   const { confirm: themeModalConfirm } = useThemeModal();
   const handlePageChange = (p: number, ps: number) => {
@@ -64,9 +65,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     web?: boolean;
   }>({ app: true, web: true });
 
-  // 搜索关键词
-  const [searchKeyword, setSearchKeyword] = useState('');
-
   // 加载中状态
   const [loading, setLoading] = useState(false);
 
@@ -79,11 +77,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
         orgId: currentParentNode.key,
         pageNum: page,
         pageSize,
+        keyword: searchInputRef.current?.input?.value || '',
       };
       const {
         data: { current, records, size, total },
       }: GetOrgRoleListRes = await OrgRoleApi.getOrgRoleList(reqParams);
-      // 增加No列，自增1
+      // 增加 No 列，自增 1
       records.forEach((item, index) => {
         item.no = (current - 1) * size + index + 1;
       });
@@ -109,9 +108,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   const handleRefresh = useCallback(() => {
     setStatusFilter('all');
     setPlatformFilter({ app: true, web: true });
-    setSearchKeyword('');
-    loadData();
-  }, [loadData]);
+    if (searchInputRef.current?.input) {
+      searchInputRef.current.input.value = ''; // 清空输入框
+    }
+    setPage(1);
+  }, []);
 
   // Platform 筛选变化
   const handlePlatformChange = useCallback((checkedValues: (string | number)[]) => {
@@ -151,8 +152,9 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       title: t('role.col.status'),
       dataIndex: 'status',
       key: 'status',
-      render(value, record, index) {
-        return <Tag preset={PRESET_TAGS.DELETED} />;
+      render(value) {
+        if (value === 'Normal') return <Tag preset={PRESET_TAGS.NORMAL} />;
+        if (value === 'Delete') return <Tag preset={PRESET_TAGS.DELETED} />;
       },
     },
     {
@@ -176,7 +178,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
       content: (
         <div className={styles.deleteConfirmInput}>
           <div className={styles.confirmText}>
-            {' '}
             Are you sure delete this Role?
             <br />
             This action cannot be undone.
@@ -224,8 +225,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
         <RoleHeader
           statusFilter={statusFilter}
           onStatusChange={handleStatusChange}
-          searchKeyword={searchKeyword}
-          onSearchKeywordChange={setSearchKeyword}
+          searchInputRef={searchInputRef}
+          onPressEnter={() => {
+            setPage(1);
+            loadData();
+          }}
           onAdd={() => onAdd(undefined, 'add')}
           onRefresh={handleRefresh}
           statusList={statusList}

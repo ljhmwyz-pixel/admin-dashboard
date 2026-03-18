@@ -14,6 +14,8 @@ const BasePagination: React.FC<BasePaginationProps> = ({
   pageSize = 10,
   total = 0,
   onChange,
+  pageSizeOptions = [10, 20, 50, 100],
+  ...otherConfig
 }) => {
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
   const isFirst = current === 1;
@@ -178,7 +180,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           onChange={onChange}
           showQuickJumper
           showSizeChanger={{
-            options: [1, 10, 20, 50, 100].map((size) => ({
+            options: pageSizeOptions.map((size) => ({
               label: size,
               value: size,
             })),
