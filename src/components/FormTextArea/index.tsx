@@ -34,6 +34,7 @@ const CustomTextArea: React.FC<CustomTextAreaProps> = ({
       <AntInput.TextArea
         autoSize={{ minRows: 3, maxRows: 6 }}
         {...inputProps}
+        placeholder={inputProps?.disabled ? '' : inputProps?.placeholder}
         className={`
               ${styles.input}
               ${inputProps?.className || ''}
