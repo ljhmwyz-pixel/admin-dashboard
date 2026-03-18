@@ -36,6 +36,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
   onExpand,
   loading = false,
   emptyText = 'No data available',
+  title = 'Selected Oragnization',
 }) => {
   /** 内部搜索状态 */
   const [internalSearchValue, setInternalSearchValue] = useState('');
@@ -230,6 +231,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
         ) : (
           <AntTree
             checkable
+            showLine
             treeData={filteredTreeData as any}
             checkedKeys={selectedKeys}
             expandedKeys={expandedKeys}
@@ -271,6 +273,7 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
 
     return (
       <div className={`${styles.readonlyContainer} ${className}`} style={style}>
+        <div className={styles.title}>{title}</div>
         {showSearch && (
           <div className={styles.searchHeader}>
             <AntInput

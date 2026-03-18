@@ -1,4 +1,20 @@
 // 组织服务API
+import type {
+  AddMemberRequest,
+  AddMemberResponse,
+  DeleteResponse,
+  MemberDetailResponse,
+  MemberListParams,
+  MemberListResponse,
+  MemberUpdateResponse,
+  OrganizationListParams,
+  PreviewMemberPermissionRequest,
+  PreviewMemberPermissionResponse,
+  RecordListResponse,
+  ReviewMemberApplicationResponse,
+  RoleListResponse,
+  TreeNodeData,
+} from '@pages/organization/dto';
 import { transformOrganizationToTreeData } from '@pages/organization/utils';
 
 import type {
@@ -239,10 +255,10 @@ export const loadMemberDetail = async (
     asyncFn: () => Promise<T>,
     options?: { onError?: (error: unknown) => void },
   ) => Promise<T | undefined>,
-): Promise<MemberDetail | undefined> => {
-  const loadMemberDetailLogic = async (): Promise<MemberDetail> => {
+): Promise<MemberDetailResponse | undefined> => {
+  const loadMemberDetailLogic = async (): Promise<MemberDetailResponse> => {
     const response = await organizationApi.getMemberDetail(memberId);
-    return response.data;
+    return response;
   };
 
   if (withLoading) {
@@ -270,7 +286,7 @@ export const loadMemberDetail = async (
  */
 export const updateMember = async (
   memberId: string,
-  data: { status: string; roleId: string },
+  data: { status: string; roleIds: string[] },
   withLoading?: <T>(
     asyncFn: () => Promise<T>,
     options?: { onError?: (error: unknown) => void },
@@ -305,5 +321,300 @@ export const updateMember = async (
   } catch (error) {
     console.error('Failed to update member:', error);
     return { success: false, message: '更新失败' };
+  }
+};
+
+/**
+ * 获取组织成员权限
+ * @param params 查询参数（角色ID）
+ * @param withLoading 全局 loading 包装函数
+ * @returns 组织成员权限数据
+ */
+export const loadMemberPermissions = async (
+  params: PreviewMemberPermissionRequest,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<PreviewMemberPermissionResponse | undefined> => {
+  const loadMemberPermissionLogic = async (): Promise<PreviewMemberPermissionResponse> => {
+    const response = await organizationApi.previewMemberPermission(params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberPermissionLogic, {
+      onError: (error) => {
+        console.error('Load member permission error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberPermissionLogic();
+  } catch (error) {
+    console.error('Failed to load member permission:', error);
+    return undefined;
+  }
+};
+
+export const loadMemberPermission = async (
+  memberId: string,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<PreviewMemberPermissionResponse | undefined> => {
+  const loadMemberPermissionsLogic = async (): Promise<PreviewMemberPermissionResponse> => {
+    const response = await organizationApi.getMemberPermissions(memberId);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberPermissionsLogic, {
+      onError: (error) => {
+        console.error('Load member permissions error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberPermissionsLogic();
+  } catch (error) {
+    console.error('Failed to load member permissions:', error);
+    return undefined;
+  }
+};
+
+export const loadMemberApplicationDetail = async (
+  applicationId: string,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<MemberDetailResponse | undefined> => {
+  const loadMemberApplicationDetailLogic = async (): Promise<MemberDetailResponse> => {
+    const response = await organizationApi.getMemberApplicationDetail(applicationId);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberApplicationDetailLogic, {
+      onError: (error) => {
+        console.error('Load member application permissions error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberApplicationDetailLogic();
+  } catch (error) {
+    console.error('Failed to load member application detail:', error);
+    return undefined;
+  }
+};
+
+export const loadRoles = async (
+  params: MemberListParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<RoleListResponse | undefined> => {
+  const loadRolesLogic = async (): Promise<RoleListResponse> => {
+    const response = await organizationApi.getRoles(params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadRolesLogic, {
+      onError: (error) => {
+        console.error('Load roles error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadRolesLogic();
+  } catch (error) {
+    console.error('Failed to load roles:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取组织成员变更历史记录
+ * @param memberId 成员ID
+ * @param withLoading 全局 loading 包装函数
+ * @returns 组织成员变更历史记录数据
+ */
+export const loadMemberChangeLogs = async (
+  memberId: string,
+  params: { pageNum: number; pageSize: number },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<RecordListResponse | undefined> => {
+  const loadMemberChangeLogsLogic = async (): Promise<RecordListResponse> => {
+    const response = await organizationApi.getMemberChangeLogs(memberId, params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberChangeLogsLogic, {
+      onError: (error) => {
+        console.error('Load member change logs error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberChangeLogsLogic();
+  } catch (error) {
+    console.error('Failed to load member change logs:', error);
+    return undefined;
+  }
+};
+
+/**
+ *
+ * @param data
+ * @param withLoading
+ * @returns
+ */
+export const addMember = async (
+  data: AddMemberRequest,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<AddMemberResponse | undefined> => {
+  const addMemberLogic = async (): Promise<AddMemberResponse> => {
+    const response = await organizationApi.addMember(data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(addMemberLogic, {
+      onError: (error) => {
+        console.error('Add member error:', error);
+      },
+    });
+  }
+
+  try {
+    return await addMemberLogic();
+  } catch (error) {
+    console.error('Failed to add member:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 删除组织成员
+ * @param memberId 成员ID
+ * @param data 确认删除数据
+ * @param withLoading 全局 loading 包装函数
+ * @returns 删除响应数据
+ */
+export const deleteMember = async (
+  memberId: string,
+  data: { confirmUid: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteResponse | undefined> => {
+  const deleteMemberLogic = async (): Promise<DeleteResponse> => {
+    const response = await organizationApi.deleteMember(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(deleteMemberLogic, {
+      onError: (error) => {
+        console.error('Delete member error:', error);
+      },
+    });
+  }
+
+  try {
+    return await deleteMemberLogic();
+  } catch (error) {
+    console.error('Failed to delete member:', error);
+    return undefined;
+  }
+};
+
+/**
+ *
+ * @param applicationId
+ * @param data
+ * @param withLoading
+ * @returns
+ */
+export const reviewMemberApplication = async (
+  applicationId: string,
+  data: { status: string; reason?: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<ReviewMemberApplicationResponse | undefined> => {
+  const reviewMemberApplicationLogic = async (): Promise<ReviewMemberApplicationResponse> => {
+    const response = await organizationApi.reviewMemberApplication(applicationId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(reviewMemberApplicationLogic, {
+      onError: (error) => {
+        console.error('Review member application error:', error);
+      },
+    });
+  }
+
+  try {
+    return await reviewMemberApplicationLogic();
+  } catch (error) {
+    console.error('Failed to review member application:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 变更组织成员状态
+ * @param memberId 成员ID
+ * @param data 变更状态数据
+ * @param withLoading 全局 loading 包装函数
+ * @returns 删除响应数据
+ */
+export const changeMemberStatus = async (
+  memberId: string,
+  data: { status: string; confirmUid: string; reason?: string },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<DeleteResponse | undefined> => {
+  const changeMemberStatusLogic = async (): Promise<DeleteResponse> => {
+    const response = await organizationApi.changeMemberStatus(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(changeMemberStatusLogic, {
+      onError: (error) => {
+        console.error('Change member status error:', error);
+      },
+    });
+  }
+
+  try {
+    return await changeMemberStatusLogic();
+  } catch (error) {
+    console.error('Failed to change member status:', error);
+    return undefined;
   }
 };

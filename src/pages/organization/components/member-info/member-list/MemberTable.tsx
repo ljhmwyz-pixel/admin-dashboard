@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Member } from '@pages/organization/dto';
-import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
+import { AntSpin, AntTable, AntTag } from '@shared/components';
 import type { TableColumnsType, TablePaginationConfig } from 'antd';
+import { uniqueId } from 'lodash-es';
 
+import type { AddRoleRef } from '../../Role/components/AddRole';
 import MemberOperationButtons from './MemberOperationButtons';
 
 import styles from './MemberList.module.scss';
@@ -37,6 +39,8 @@ interface MemberTableProps {
   onReject: (member: Member) => void;
   /** 表格变更回调 */
   onTableChange: (pagination: TablePaginationConfig, sorter: any) => void;
+  /** 角色详情实例 */
+  roleModalRef: React.RefObject<AddRoleRef>;
 }
 
 /**
@@ -44,10 +48,10 @@ interface MemberTableProps {
  * 将状态码映射为显示文本和颜色
  */
 const statusMap = {
-  NORMAL: { text: 'Normal', color: 'green' },
-  WAITING: { text: 'Waiting', color: 'blue' },
-  LOCKED: { text: 'Locked', color: 'orange' },
-  REJECTED: { text: 'Rejected', color: 'red' },
+  NORMAL: { text: 'Normal', color: '#31C47F' },
+  WAITING: { text: 'Waiting', color: '#4083C6' },
+  LOCKED: { text: 'Locked', color: '#F4AA58' },
+  REJECTED: { text: 'Rejected', color: '#F45858' },
 };
 
 /**
@@ -68,9 +72,10 @@ const MemberTable: React.FC<MemberTableProps> = ({
   onApprove,
   onReject,
   onTableChange,
+  roleModalRef,
 }) => {
-  const handleClickRole = (role: string) => {
-    console.log(role);
+  const handleClickRole = (role: { roleId: string; roleName: string }) => {
+    roleModalRef?.current?.open({ roleId: role?.roleId }, 'view');
   };
   /** 表格列定义 */
   const columns: TableColumnsType<Member> = [
@@ -107,34 +112,31 @@ const MemberTable: React.FC<MemberTableProps> = ({
     },
     {
       title: 'Role',
-      dataIndex: 'roleName',
-      key: 'roleName',
+      dataIndex: 'roleList',
+      key: 'roleList',
+      width: 200,
       render: (roleList) => {
-        // todo 处理角色列表，展示多个角色
-        // return roleList.map((role: string) => (
-        //   <span key={role} className={styles.role} onClick={() => handleClickRole(role)}>
-        //     {role}
-        //   </span>
-        // ));
-        return <div>{roleList}</div>;
+        return roleList.map((role: { roleId: string; roleName: string }) => (
+          <span key={role.roleId} className={styles.role} onClick={() => handleClickRole(role)}>
+            {role.roleName}
+          </span>
+        ));
       },
     },
     {
       title: 'Operation',
       key: 'operation',
       render: (_, member) => (
-        <AntSpace>
-          <MemberOperationButtons
-            member={member}
-            onView={onView}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onDisable={onDisable}
-            onEnable={onEnable}
-            onApprove={onApprove}
-            onReject={onReject}
-          />
-        </AntSpace>
+        <MemberOperationButtons
+          member={member}
+          onView={onView}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onDisable={onDisable}
+          onEnable={onEnable}
+          onApprove={onApprove}
+          onReject={onReject}
+        />
       ),
     },
   ];
@@ -145,7 +147,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
         columns={columns}
         dataSource={members}
         showSorterTooltip={false}
-        rowKey="memberId"
+        rowKey={() => uniqueId('member')}
         pagination={{
           current,
           pageSize,

@@ -1,68 +1,37 @@
-import React from 'react';
+import React, { type SetStateAction, useCallback, useEffect, useState } from 'react';
+import type { MemberDetail, RecordData } from '@pages/organization/dto';
+import { loadMemberChangeLogs } from '@pages/organization/services/organizationService';
 import { AntTable, AntTag } from '@shared/components';
 
 interface RecordProps {
-  member: any;
-}
-
-interface OperationRecord {
-  key: string;
-  no: number;
-  changeType: string;
-  changedBy: string;
-  changedContent: string;
-  changedTime: string;
+  member: MemberDetail;
 }
 
 /**
  * 成员操作记录组件
  * 展示成员的变更历史记录
  */
-const Record: React.FC<RecordProps> = () => {
-  // 模拟操作记录数据
-  const recordData: OperationRecord[] = [
-    {
-      key: '1',
-      no: 1,
-      changeType: 'Add',
-      changedBy: 'USR-HE6B-T9W3',
-      changedContent: 'First time adding member',
-      changedTime: '2026-03-01 10:30:00 UTC+08:00',
-    },
-    {
-      key: '2',
-      no: 2,
-      changeType: 'Application',
-      changedBy: 'USR-HE6B-T9W3',
-      changedContent: 'First application to join the organization',
-      changedTime: '2026-03-01 10:00:00 UTC+08:00',
-    },
-    {
-      key: '3',
-      no: 3,
-      changeType: 'Approve',
-      changedBy: 'USR-HE6B-T9W3',
-      changedContent: 'Approve the member to join the organization',
-      changedTime: '2026-03-01 10:30:00 UTC+08:00',
-    },
-    {
-      key: '4',
-      no: 4,
-      changeType: 'Modify',
-      changedBy: 'USR-HE6B-T9W3',
-      changedContent: 'Update: Role changed from "Guest" to "Electrician"',
-      changedTime: '2026-03-02 14:15:00 UTC+08:00',
-    },
-    {
-      key: '5',
-      no: 5,
-      changeType: 'Lock',
-      changedBy: 'USR-HE6B-T9W3',
-      changedContent: 'Lock the member within the current organization',
-      changedTime: '2026-03-03 09:45:00 UTC+08:00',
-    },
-  ];
+const Record: React.FC<RecordProps> = ({ member }) => {
+  const [recordData, setRecordData] = useState<RecordData>();
+  const [pageNum, setPageNum] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [current, setCurrent] = useState(1);
+  const [total, setTotal] = useState(0);
 
+  const loadRecordList = useCallback(async () => {
+    if (!member?.memberId) return;
+    const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
+    console.log(res, 'res');
+    if (res) {
+      setRecordData(res.data);
+      setTotal(res.data.total);
+    }
+  }, [member, pageNum, pageSize]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadRecordList();
+  }, [loadRecordList]);
   /**
    * 获取变更类型对应的标签颜色
    */
@@ -85,15 +54,23 @@ const Record: React.FC<RecordProps> = () => {
     }
   };
 
+  const handleTableChange = (pagination: {
+    current: React.SetStateAction<number>;
+    pageSize: React.SetStateAction<number>;
+  }) => {
+    if (pagination.current) setCurrent(pagination.current);
+    if (pagination.pageSize) setPageSize(pagination.pageSize);
+  };
   return (
     <div style={{ padding: '0 16px' }}>
       <AntTable
-        dataSource={recordData}
+        dataSource={recordData?.records || []}
         columns={[
           {
             title: 'No.',
             dataIndex: 'no',
-            key: 'no',
+            key: 'index',
+            render: (_, __, index) => (current - 1) * pageSize + index + 1,
           },
           {
             title: 'Change Type',
@@ -105,24 +82,33 @@ const Record: React.FC<RecordProps> = () => {
           },
           {
             title: 'Changed By',
-            dataIndex: 'changedBy',
-            key: 'changedBy',
+            dataIndex: 'operatorName',
+            key: 'operatorName',
           },
           {
             title: 'Changed Content',
-            dataIndex: 'changedContent',
-            key: 'changedContent',
+            dataIndex: 'changeContent',
+            key: 'changeContent',
           },
           {
             title: 'Changed Time',
-            dataIndex: 'changedTime',
-            key: 'changedTime',
+            dataIndex: 'changedAt',
+            key: 'changedAt',
           },
         ]}
         pagination={{
-          defaultPageSize: 10,
+          current,
+          pageSize,
+          total,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50'],
+          showQuickJumper: true,
+          showTotal: (total) => `1-${Math.min(current * pageSize, total)} of ${total} items`,
+        }}
+        onChange={(pagination) => {
+          handleTableChange({
+            current: pagination.current || 1,
+            pageSize: pagination.pageSize || 10,
+          });
         }}
         rowKey="key"
       />

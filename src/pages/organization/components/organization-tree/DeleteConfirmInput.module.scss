@@ -16,21 +16,18 @@
 
     .confirmContent {
         margin: 0 -20px;
-        height: 180px;
         border-top: 1px solid #191B1F0F;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 40px;
         position: relative;
         overflow: hidden;
 
         .confirmItems {
-            height: 100%;
+            padding: 20px;
             width: 240px;
             background: url('@/assets/images/form/Subtract.png') no-repeat;
-            background-size: 240px 220px;
-            background-position: 0 -40px;
+            background-size: 240px 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,6 +87,18 @@
     .input {
         font-size: 14px;
         margin: 0;
+        margin-top: 40px;
+        height: 54px;
+        width: calc(100% - 40px);
+        padding: 20px;
+        color: #191B1F;
+        font-weight: 500;
+    }
+
+    .textArea {
+        font-size: 14px;
+        margin: 0;
+        margin-top: 40px;
         height: 54px;
         width: calc(100% - 40px);
         padding: 20px;

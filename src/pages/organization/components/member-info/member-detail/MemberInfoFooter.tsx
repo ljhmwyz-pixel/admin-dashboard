@@ -47,8 +47,6 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
     }
   };
 
-  console.log(member, editMember);
-
   // 生成按钮数组
   const renderButtons = () => {
     const buttons = [
@@ -75,10 +73,14 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
           >
             {member.status === 'LOCKED' ? 'Unlock' : 'Lock'}
           </AntButton>,
-          <AntButton key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
-            Modify
-          </AntButton>,
         );
+        if (!member?.isOwner) {
+          buttons.push(
+            <AntButton key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
+              Modify
+            </AntButton>,
+          );
+        }
       } else {
         buttons.push(
           <AntButton key="save" type="primary" onClick={() => form.submit()}>
@@ -89,18 +91,18 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
     } else if (member.status === 'WAITING') {
       buttons.push(
         <AntButton
-          key="approve"
-          type="primary"
-          onClick={() => handleButtonClick(onApprove as (member: Member) => void)}
-        >
-          Approve
-        </AntButton>,
-        <AntButton
           key="reject"
           danger
           onClick={() => handleButtonClick(onReject as (member: Member) => void)}
         >
           Reject
+        </AntButton>,
+        <AntButton
+          key="approve"
+          type="primary"
+          onClick={() => handleButtonClick(onApprove as (member: Member) => void)}
+        >
+          Approve
         </AntButton>,
       );
     }

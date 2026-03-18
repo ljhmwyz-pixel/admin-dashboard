@@ -1,5 +1,6 @@
 import {
   AddressPickerAutoComplete,
+  ApplyReasonField,
   OrgAddressField,
   OrgCountryRegionField,
   OrgDescriptionField,
@@ -17,10 +18,10 @@ import { MemberList } from './member-info';
 import OrganizationInfo from './organization-info/OrganizationInfo';
 import OrganizationView from './organization-info/OrganizationView';
 import OrganizationDetailPanel from './organization-tab/OrganizationDetailPanel';
-import AddOrganizationDrawer from './orginization-tree/AddOrganizationDrawer';
-import DeleteConfirmInput from './orginization-tree/DeleteConfirmInput';
-import OrganizationTree from './orginization-tree/OrganizationTree';
-import TreeNodeTitle from './orginization-tree/TreeNodeTitle';
+import AddOrganizationDrawer from './organization-tree/AddOrganizationDrawer';
+import DeleteConfirmInput from './organization-tree/DeleteConfirmInput';
+import OrganizationTree from './organization-tree/OrganizationTree';
+import TreeNodeTitle from './organization-tree/TreeNodeTitle';
 import RoleInfo from './Role';
 import RoleFooter from './Role/components/RoleFooter';
 import RoleHeader from './Role/components/RoleHeader';
@@ -28,6 +29,7 @@ import RoleHeader from './Role/components/RoleHeader';
 export {
   AddOrganizationDrawer,
   AddressPickerAutoComplete,
+  ApplyReasonField,
   DeleteConfirmInput,
   MemberList,
   OrgAddressField,

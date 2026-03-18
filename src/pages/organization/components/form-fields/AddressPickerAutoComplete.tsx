@@ -92,11 +92,29 @@ export default function AddressPickerAutoComplete({
   const handleMainBlur = useCallback(async () => {
     const text = String(form.getFieldValue(fieldMap.address) ?? '').trim();
     if (text.length < minSearchLength) return;
+    // 失焦后检查国家/地区字段是否有值
+    const countryValue = form.getFieldValue(fieldMap.country);
+    console.log(countryValue, 'countryValue');
+    if (!countryValue) {
+      form.setFields([
+        {
+          name: fieldMap.address,
+          errors: ['Please select a specific address with country/region information'],
+        },
+      ]);
+    }
 
     if (draftLocation?.displayAddress === text) return;
 
     await geocodeText(text, { writeAddress: true });
-  }, [draftLocation?.displayAddress, fieldMap.address, form, geocodeText, minSearchLength]);
+  }, [
+    draftLocation?.displayAddress,
+    fieldMap.address,
+    fieldMap.country,
+    form,
+    geocodeText,
+    minSearchLength,
+  ]);
 
   const handlePopupSearch = useCallback(
     (value: string) => {

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ApplyReasonField,
   OrgEmailField,
   OrgPhoneField,
   OrgUsernameField,
@@ -7,7 +8,12 @@ import {
   StatusField,
   UidField,
 } from '@pages/organization/components';
-import type { FieldProps, MemberDetail } from '@pages/organization/dto';
+import type {
+  FieldProps,
+  MemberDetail,
+  PreviewMemberPermissionData,
+  Record,
+} from '@pages/organization/dto';
 
 import { AntForm, AntRow } from '@/shared/components';
 
@@ -17,44 +23,16 @@ interface BasicInfoProps {
   member: MemberDetail;
   loading: boolean;
   editMember?: boolean;
-  onSave?: (member: MemberDetail) => void;
+  onSave?: (member: MemberDetail, roleIds: string[]) => void;
   /** 表单实例 */
   form: FieldProps['form'];
+  /** 角色选项 */
+  roleOptionList?: Record[];
+  /** 权限清单 */
+  permissionList?: PreviewMemberPermissionData;
+  /** 更新权限清单 */
+  updateMemberPreviewPermission?: (roleIds: string[]) => void;
 }
-
-/**
- * 角色接口
- */
-interface Role {
-  /** 角色ID */
-  roleId: string;
-  /** 角色名称 */
-  roleName: string;
-  /** 角色描述 */
-  description: string;
-}
-
-/**
- * 模拟角色数据
- */
-const mockRoles: Role[] = [
-  {
-    roleId: 'Organization Owner',
-    roleName: 'Organization Owner',
-    description: 'Full access to the organization',
-  },
-  {
-    roleId: 'Organization Admin',
-    roleName: 'Organization Admin',
-    description: 'Manage organization members and settings',
-  },
-  {
-    roleId: 'Plant Manager',
-    roleName: 'Plant Manager',
-    description: 'Manage plants and related operations',
-  },
-  { roleId: 'Viewer', roleName: 'Viewer', description: 'View-only access to organization data' },
-];
 
 /**
  * 成员基本信息组件
@@ -66,19 +44,24 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
   editMember = false,
   onSave,
   form,
+  roleOptionList = [],
+  permissionList,
+  updateMemberPreviewPermission,
 }) => {
-  /** 角色列表 */
-  const [roles] = useState<Role[]>(mockRoles);
   /** 当前选择的角色名称 */
-  const [roleNamesList, setRoleNamesList] = useState<string[]>([member.roleName]);
+
   const setFormValues = useCallback(() => {
     form.setFieldsValue({
-      role: [member.roleName],
+      role: member?.roleList?.map((role) => ({
+        value: role.roleId,
+        label: role.roleName,
+      })) || [member?.preAssignedRole],
       status: [member.status],
-      uid: member.userId,
+      uid: member.uid,
       orgUsername: member.username,
       orgEmail: member.email,
       orgPhone: member.phone,
+      applyReason: member?.applyReason,
     });
   }, [form, member]);
 
@@ -100,15 +83,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
           },
         ]);
       }
-      onSave?.(member);
+      onSave?.(member, formValues.role);
     },
     [form, onSave, member],
   );
 
-  /** 处理角色选择变化 */
-  const handleRoleChange = (values: string[]) => {
-    setRoleNamesList(values);
-  };
   useEffect(() => {
     setFormValues();
   }, [member, setFormValues]);
@@ -120,29 +99,36 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
             <RoleField
               form={form}
               canEdit={editMember}
-              options={roles.map((role) => ({
-                value: role.roleId,
-                label: role.roleName,
-              }))}
-              onChange={handleRoleChange}
+              options={roleOptionList
+                ?.filter((role) => role?.roleName !== 'Organization Owner')
+                ?.map((role) => ({
+                  value: role.roleId,
+                  label: role.roleName,
+                }))}
+              onChange={updateMemberPreviewPermission}
             />
             <StatusField form={form} canEdit={false} />
           </AntRow>
 
           <AntRow gutter={30}>
             <UidField form={form} canEdit={false} />
-            <OrgUsernameField form={form} required={false} />
+            <OrgUsernameField form={form} required={false} canEdit={false} />
           </AntRow>
 
           <AntRow gutter={30}>
             <OrgEmailField form={form} required={false} canEdit={false} />
             <OrgPhoneField form={form} canEdit={false} />
           </AntRow>
+          {member?.applyReason && (
+            <AntRow gutter={30}>
+              <ApplyReasonField form={form} canEdit={false} />
+            </AntRow>
+          )}
         </AntForm>
       </div>
 
       {/* 权限清单 */}
-      <PermissionsList roleNamesList={roleNamesList} loading={loading} />
+      <PermissionsList permissionList={permissionList} loading={loading} />
     </div>
   );
 };

@@ -40,7 +40,7 @@ export interface EmailVerifyResult {
   userExists?: boolean;
   existingUsername?: string;
   existingPhone?: string;
-  userType?: string;
+  userType?: OrganizationType;
 }
 
 /**
@@ -49,25 +49,26 @@ export interface EmailVerifyResult {
 export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const { t } = useLanguage();
 
-  const { success } = useThemeModal();
+  const { success, warning } = useThemeModal();
 
   // 邮箱验证状态
   const [userExists, setUserExists] = useState<boolean>(false);
   const [existingUsername, setExistingUsername] = useState<string>('');
   const [existingPhone, setExistingPhone] = useState<string>('');
-  const [userType, setUserType] = useState<string>('');
+  const [userType, setUserType] = useState<OrganizationType>();
   const [loading, setLoading] = useState<boolean>(false);
 
   // 组织验证状态(创建)
   const [verifyResult, setVerifyResult] = useState<VerifyOrganization>({
     valid: false,
     isCountryInScope: true,
-    isOwnerTypeValid: false,
-    isOrgTypeAllowed: false,
+    isOwnerTypeValid: true,
+    isOrgTypeAllowed: true,
     isBdScopesAvailable: false,
     isOrganizationExists: false,
     isOrganizationSimilar: false,
     isPhoneExists: false,
+    failReasons: [],
     timestamp: 0,
   });
 
@@ -111,12 +112,16 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
    * @param withGlobalLoading - 是否显示全局loading，默认为 false
    */
   const verifyEmail = useCallback(
-    async (email: string, withGlobalLoading?: boolean): Promise<EmailVerifyResult> => {
+    async (
+      email: string,
+      withGlobalLoading?: boolean,
+      onCancel?: () => void,
+    ): Promise<EmailVerifyResult> => {
       const defaultResult: EmailVerifyResult = {
         userExists: false,
         existingUsername: '',
         existingPhone: '',
-        userType: '',
+        userType: undefined,
       };
 
       // 根据参数决定是否显示 loading
@@ -129,13 +134,25 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
           userExists: response.data.exists || false,
           existingUsername: response.data.username || '',
           existingPhone: response.data.phone || '',
-          userType: response.data.userType || '',
+          userType: response.data.userType || undefined,
         };
 
-        setUserExists(result.userExists || false);
-        setExistingUsername(result.existingUsername || '');
-        setExistingPhone(result.existingPhone || '');
-        setUserType(result.userType || '');
+        if (response?.data?.userType === 'INTERNAL' || response?.data?.userType === 'GUEST') {
+          if (onCancel) {
+            warning({
+              title: 'Email Exists !',
+              content: 'This email address is already in use.',
+              onOk: () => {
+                onCancel();
+              },
+            });
+          }
+        } else {
+          setUserExists(result.userExists || false);
+          setExistingUsername(result.existingUsername || '');
+          setExistingPhone(result.existingPhone || '');
+          setUserType(result.userType || undefined);
+        }
         return result;
       } catch {
         setUserExists(false);
@@ -149,7 +166,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         }
       }
     },
-    [setLoading],
+    [warning],
   );
 
   /**
@@ -160,12 +177,13 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       const defaultResult: VerifyOrganization = {
         valid: false,
         isCountryInScope: true,
-        isOwnerTypeValid: false,
-        isOrgTypeAllowed: false,
+        isOwnerTypeValid: true,
+        isOrgTypeAllowed: true,
         isBdScopesAvailable: false,
         isOrganizationExists: false,
         isOrganizationSimilar: false,
         isPhoneExists: false,
+        failReasons: [],
         timestamp: Date.now(),
       };
 
@@ -190,9 +208,9 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
   const verifyOrganizationByUpdate = useCallback(
     async (values: OrganizationFormData) => {
       const defaultResult: VerifyOrganization = {
-        isOwnerTypeValid: false,
-        isOrgTypeAllowed: false,
-        isBdScopesAvailable: false,
+        isOwnerTypeValid: true,
+        isOrgTypeAllowed: true,
+        isBdScopesAvailable: true,
         isOrganizationNotFound: false,
         isPylontech: false,
         isOrganizationExists: false,
@@ -265,7 +283,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
 
         // 如果验证失败，直接返回
         if (!verifyData.valid) {
-          return { success: false, reason: 'validation_failed', verifyData };
+          return { success: false, reason: verifyData?.failReasons, code: 423 };
         }
 
         // ===== 第二步：验证邮箱 =====
@@ -275,6 +293,10 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
         let response;
 
         // 关键判断：只有当 userExists 为 true 时才使用已存在用户
+
+        if (emailResult.userType === 'INTERNAL' || emailResult.userType === 'GUEST') {
+          return { success: false, reason: 'user_type_mismatch', code: 424 };
+        }
 
         if (emailResult?.userExists) {
           // 用户已存在，使用现有用户信息创建组织
@@ -311,7 +333,6 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
       }
     },
     [
-      setLoading,
       verifyOrganization,
       verifyEmail,
       handleConfirmWithExistingUser,
@@ -331,12 +352,13 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     setVerifyResult({
       valid: false,
       isCountryInScope: true,
-      isOwnerTypeValid: false,
-      isOrgTypeAllowed: false,
-      isBdScopesAvailable: false,
+      isOwnerTypeValid: true,
+      isOrgTypeAllowed: true,
+      isBdScopesAvailable: true,
       isOrganizationExists: false,
       isOrganizationSimilar: false,
       isPhoneExists: false,
+      failReasons: [],
       timestamp: 0,
     });
   }, []);

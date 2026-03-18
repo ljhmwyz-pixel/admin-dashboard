@@ -1,3 +1,8 @@
+export interface Role {
+  roleId: string;
+  roleName: string;
+}
+
 /**
  * 组织成员列表数据结构
  * 用于展示组织成员列表
@@ -9,22 +14,24 @@ export interface Member {
   orgId: string;
   /** 组织名称 */
   orgName: string;
+  /** 组织类型 */
+  orgType: string;
   /** 用户ID */
   userId: string;
   /** 用户名 */
   username: string;
   /** 邮箱 */
   email: string;
-  /** 角色ID */
-  roleId: string;
-  /** 角色名称 */
-  roleName: string;
+  /** 角色列表 */
+  roleList: Role[];
   /** 成员状态 */
   status: string;
   /** 加入时间 */
   joinedAt: string;
   /** 申请ID */
   applicationId: string | null;
+  /** 是否是组织所有者 */
+  isOwner: boolean;
 }
 
 /**
@@ -40,6 +47,10 @@ export interface MemberDetail {
   orgName: string;
   /** 用户ID */
   userId: string;
+  /** 用户唯一标识 */
+  uid: string;
+  /** 组织类型 */
+  orgType: string;
   /** 用户名 */
   username: string;
   /** 邮箱 */
@@ -48,10 +59,8 @@ export interface MemberDetail {
   phone: string;
   /** 用户类型 */
   userType: string;
-  /** 角色ID */
-  roleId: string;
-  /** 角色名称 */
-  roleName: string;
+  /** 角色列表 */
+  roleList: Role[];
   /** 成员状态 */
   status: string;
   /** 加入时间 */
@@ -62,6 +71,21 @@ export interface MemberDetail {
   createTime: string;
   /** 更新时间 */
   updateTime: string;
+  /** 是否是组织所有者 */
+  isOwner: boolean;
+  /** 申请原因 */
+  applyReason?: string;
+  /** 拒绝原因 */
+  rejectReason?: string;
+  /** 审核人 */
+  reviewedBy?: string;
+  /** 预分配角色 */
+  preAssignedRole?: string;
+  permissions?: {
+    module: string;
+    permissionCode: string;
+    permissionName: string;
+  }[];
 }
 
 /**
@@ -75,6 +99,9 @@ export interface MemberDetailResponse {
   data: MemberDetail;
   /** 时间戳 */
   timestamp: string;
+  message: string;
+  success: boolean;
+  traceId: string;
 }
 
 /**
@@ -256,6 +283,8 @@ export interface OrgTreeSelectorProps {
   loading?: boolean;
   /** 空状态展示 */
   emptyText?: React.ReactNode;
+  /** 标题 */
+  title?: string;
 }
 
 /**
@@ -272,12 +301,7 @@ export interface AddMemberFormData {
     orgPhone: string;
   };
   /** 角色信息 */
-  roles: {
-    /** 角色ID */
-    roleId: string;
-    /** 角色名称 */
-    roleName: string;
-  };
+  role: string[];
   /** 电站信息 */
   plants: {
     /** 组织ID列表 */
@@ -285,4 +309,166 @@ export interface AddMemberFormData {
     /** 电站ID列表 */
     plantKeys: string[];
   };
+}
+
+/**
+ * 预览组织成员权限请求参数类型
+ * 用于提交预览组织成员权限请求
+ */
+export interface PreviewMemberPermissionRequest {
+  /** 角色ID列表 */
+  roleIds: string[];
+}
+
+/**
+ * 预览组织成员权限响应数据类型
+ * 用于返回预览组织成员权限结果
+ */
+export interface PreviewMemberPermissionResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: PreviewMemberPermissionData;
+  timestamp: string;
+  traceId: string;
+}
+
+export interface PreviewMemberPermissionData {
+  webPermissions: Permission[];
+  appPermissions: Permission[];
+}
+
+export interface Permission {
+  permissionId: string;
+  permissionCode: string;
+  permissionName: string;
+  parentId: string;
+  permissionType: string;
+  level: number;
+  sortOrder: number;
+  roles: Role[];
+  children: PreviewMemberPermissionData;
+}
+
+export interface RoleListResponse {
+  code: number;
+  message: string;
+  data: RoleDataList;
+}
+
+export interface RoleDataList {
+  records: Record[];
+  total: number;
+  size: number;
+  current: number;
+}
+
+export interface Record {
+  roleId: string;
+  orgId?: string;
+  roleName: string;
+  description?: string;
+  status: string;
+  memberCount: number;
+  permissionCount: number;
+  createTime?: Date;
+}
+
+export interface RecordListResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: RecordData;
+  timestamp: string;
+  traceId: string;
+}
+
+export interface RecordData {
+  records: RecordList[];
+  total: number;
+  size: number;
+  current: number;
+  orders: Order[];
+  optimizeCountSql: boolean;
+  searchCount: boolean;
+  optimizeJoinOfCountSql: boolean;
+  maxLimit: number;
+  countId: string;
+}
+
+export interface Order {
+  column: string;
+  asc: boolean;
+}
+
+export interface RecordList {
+  changeType: string;
+  changeContent: string;
+  operatorUid: string;
+  operatorName: string;
+  changedAt: string;
+  batchId: string;
+}
+
+export interface AddMemberRequest {
+  orgId: string;
+  email: string;
+  username: string;
+  phone: string;
+  roleIds: string[];
+}
+
+export interface AddMemberResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: AddMemberData;
+  timestamp: string;
+  traceId: string;
+}
+
+export interface AddMemberData {
+  memberId: string;
+  orgId: string;
+  orgName: string;
+  orgCode: string;
+  orgType: string;
+  uid: string;
+  userId: string;
+  username: string;
+  email: string;
+  phone: string;
+  userType: string;
+  roleList: RoleList[];
+  status: string;
+  isOwner: boolean;
+  applicationId: string;
+  joinedAt: Date;
+  createTime: Date;
+  updateTime: Date;
+  availableActions: string;
+}
+
+export interface RoleList {
+  roleId: string;
+  roleName: string;
+}
+
+export interface ReviewMemberApplicationResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: {
+    applicationId: string;
+    status: string;
+    reviewedAt: {
+      dateTime: string;
+      offset: {
+        totalSeconds: number;
+      };
+    };
+    message: string;
+  };
+  timestamp: string;
+  traceId: string;
 }

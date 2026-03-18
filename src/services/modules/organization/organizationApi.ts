@@ -1,4 +1,6 @@
 import type {
+  AddMemberRequest,
+  AddMemberResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   DeleteResponse,
@@ -8,6 +10,11 @@ import type {
   MemberUpdateResponse,
   OrganizationListParams,
   OrganizationListResponse,
+  PreviewMemberPermissionRequest,
+  PreviewMemberPermissionResponse,
+  RecordListResponse,
+  ReviewMemberApplicationResponse,
+  RoleListResponse,
   VerifyDeleteResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
@@ -43,8 +50,28 @@ export interface OrganizationApi {
   /** 更新组织成员信息 */
   updateMember: (
     memberId: string,
-    data: { status: string; roleId: string },
+    data: { status: string; roleIds: string[] },
   ) => Promise<MemberUpdateResponse>;
+
+  /** 预览组织成员权限 */
+  previewMemberPermission: (
+    params: PreviewMemberPermissionRequest,
+  ) => Promise<PreviewMemberPermissionResponse>;
+
+  /** 获取组织成员权限 */
+  getMemberPermissions: (memberId: string) => Promise<PreviewMemberPermissionResponse>;
+
+  /** 获取组织成员应用权限 */
+  getMemberApplicationDetail: (applicationId: string) => Promise<MemberDetailResponse>;
+
+  /** 获取组织成员变更日志 */
+  getMemberChangeLogs: (
+    memberId: string,
+    params: { pageNum: number; pageSize: number },
+  ) => Promise<RecordListResponse>;
+
+  /** 获取组织角色列表 */
+  getRoles: (params: MemberListParams) => Promise<RoleListResponse>;
 
   /** 验证组织信息（创建时） */
   verify: (data: CreateOrganizationRequest) => Promise<VerifyResponse>;
@@ -60,6 +87,23 @@ export interface OrganizationApi {
 
   /** 删除组织 */
   delete: (data: { orgId: string | number }) => Promise<DeleteResponse>;
+
+  /** 新增组织成员 */
+  addMember: (data: AddMemberRequest) => Promise<AddMemberResponse>;
+
+  /** 删除组织成员 */
+  deleteMember: (memberId: string, data: { confirmUid: string }) => Promise<DeleteResponse>;
+
+  /** 审核组织成员 */
+  reviewMemberApplication: (
+    applicationId: string,
+    data: { status: string; reason?: string },
+  ) => Promise<ReviewMemberApplicationResponse>;
+
+  changeMemberStatus: (
+    memberId: string,
+    data: { status: string; confirmUid: string; reason?: string },
+  ) => Promise<DeleteResponse>;
 }
 
 /**
@@ -162,6 +206,14 @@ class OrganizationApiImpl implements OrganizationApi {
   }
 
   /**
+   * 获取组织列表
+   * @returns 组织列表数据
+   */
+  async getRoles(params: MemberListParams): Promise<RoleListResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.ROLES, { params });
+  }
+
+  /**
    * 获取组织成员详情
    * @param memberId - 成员ID
    * @returns 组织成员详情数据
@@ -171,16 +223,104 @@ class OrganizationApiImpl implements OrganizationApi {
   }
 
   /**
+   * 获取组织成员变更日志
+   * @param memberId - 成员ID
+   * @returns 变更日志数据
+   */
+  async getMemberChangeLogs(
+    memberId: string,
+    params: { pageNum: number; pageSize: number },
+  ): Promise<RecordListResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.CHANGE_LOGS(memberId), { params });
+  }
+
+  /**
    * 更新组织成员信息
    * @param memberId - 成员ID
-   * @param data - 更新数据（包含状态、角色ID）
+   * @param data - 更新数据（包含状态、角色列表）
    * @returns 更新结果
    */
   async updateMember(
     memberId: string,
-    data: { status: string; roleId: string },
+    data: { status: string; roleIds: string[] },
   ): Promise<MemberUpdateResponse> {
     return apiClient.put(ORGANIZATION_ENDPOINTS.MEMBER_UPDATE(memberId), data);
+  }
+
+  /**
+   * 预览组织成员权限
+   * @param params - 预览数据（包含角色ID）
+   * @returns 预览结果
+   */
+  async previewMemberPermission(
+    params: PreviewMemberPermissionRequest,
+  ): Promise<PreviewMemberPermissionResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.PERMISSION_PREVIEW, { params });
+  }
+
+  /**
+   * 获取组织成员权限
+   * @param memberId - 成员ID
+   * @returns 权限数据
+   */
+  async getMemberPermissions(memberId: string): Promise<PreviewMemberPermissionResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.PERMISSIONS(memberId));
+  }
+
+  /**
+   * 获取组织成员应用权限
+   * @param applicationId - 应用ID
+   * @returns 应用权限数据
+   */
+  async getMemberApplicationDetail(applicationId: string): Promise<MemberDetailResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.APPLICATION_PERMISSIONS(applicationId));
+  }
+
+  /**
+   * 新增组织成员
+   * @param data - 新增数据（包含基本信息、角色列表、电站列表）
+   * @returns 新增结果
+   */
+  async addMember(data: AddMemberRequest): Promise<AddMemberResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.MEMBER_ADD, data);
+  }
+
+  /**
+   * 删除组织成员
+   * @param memberId - 成员ID
+   * @param data - 删除确认参数（包含确认用户ID）
+   * @returns 删除结果
+   */
+  async deleteMember(memberId: string, data: { confirmUid: string }): Promise<DeleteResponse> {
+    return apiClient.delete(ORGANIZATION_ENDPOINTS.MEMBER_DELETE(memberId), {
+      data,
+    });
+  }
+
+  /**
+   * 审核组织成员
+   * @param applicationId - 申请ID
+   * @param data - 审核数据（包含状态、原因）
+   * @returns 审核结果
+   */
+  async reviewMemberApplication(
+    applicationId: string,
+    data: { status: string; reason?: string | undefined },
+  ): Promise<ReviewMemberApplicationResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.APPLICATION_REVIEW(applicationId), data);
+  }
+
+  /**
+   * 改变组织成员状态
+   * @param memberId - 成员 ID
+   * @param data - 状态更新请求数据（包含 status）
+   * @returns 更新结果
+   */
+  async changeMemberStatus(
+    memberId: string,
+    data: { status: string; confirmUid: string; reason?: string },
+  ): Promise<DeleteResponse> {
+    return apiClient.patch(ORGANIZATION_ENDPOINTS.CHANGE_STATUS(memberId), data);
   }
 }
 

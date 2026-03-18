@@ -130,7 +130,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     {
       title: t('role.col.no'),
       dataIndex: 'no',
-      key: 'no',
+      key: 'index',
     },
     {
       title: t('role.col.name'),

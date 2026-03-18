@@ -1,9 +1,64 @@
 import type { ApiOrganization, TreeNodeData } from '@pages/organization/dto';
 
 /**
+ * 比较函数：按组织名称首字母升序排列
+ * 排序规则：A-Z > 0-9 > 特殊符号
+ * @param a 第一个组织名称
+ * @param b 第二个组织名称
+ * @returns 比较结果
+ */
+function compareByFirstChar(a: string, b: string): number {
+  const getSortPriority = (char: string): number => {
+    const lowerChar = char.toLowerCase();
+    // A-Z: 0-25
+    if (lowerChar >= 'a' && lowerChar <= 'z') {
+      return lowerChar.charCodeAt(0) - 97;
+    }
+    // 0-9: 26-35
+    if (lowerChar >= '0' && lowerChar <= '9') {
+      return 26 + (lowerChar.charCodeAt(0) - 48);
+    }
+    // 特殊符号: 36+
+    return 36;
+  };
+
+  const charA = a.charAt(0).toLowerCase();
+  const charB = b.charAt(0).toLowerCase();
+  const priorityA = getSortPriority(charA);
+  const priorityB = getSortPriority(charB);
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  // 相同优先级时，按字母顺序排序
+  return a.localeCompare(b);
+}
+
+/**
+ * 对树节点数组进行排序
+ * 按组织名称首字母升序排列（A-Z > 0-9 > 特殊符号）
+ * @param nodes 树节点数组
+ * @returns 排序后的树节点数组
+ */
+function sortTreeNodes(nodes: TreeNodeData[]): TreeNodeData[] {
+  // 先对当前层级的节点进行排序
+  const sortedNodes = [...nodes].sort((a, b) => compareByFirstChar(a.title, b.title));
+
+  // 递归排序子节点
+  for (const node of sortedNodes) {
+    if (node.children && node.children.length > 0) {
+      node.children = sortTreeNodes(node.children);
+    }
+  }
+
+  return sortedNodes;
+}
+
+/**
  * 将API组织数据转换为 antd 树形结构数据
  * @param apiData API 返回的组织列表数据
- * @returns antd 树形结构数据
+ * @returns antd 树形结构数据（已按名称首字母升序排列）
  */
 export function transformOrganizationToTreeData(apiData: ApiOrganization[]): TreeNodeData[] {
   // 创建节点映射表
@@ -49,7 +104,8 @@ export function transformOrganizationToTreeData(apiData: ApiOrganization[]): Tre
     }
   }
 
-  return treeData;
+  // 第三步：对树形结构进行排序（每层按首字母升序排列）
+  return sortTreeNodes(treeData);
 }
 
 /**

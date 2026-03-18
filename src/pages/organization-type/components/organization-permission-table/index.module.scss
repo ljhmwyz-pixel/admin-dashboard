@@ -1,4 +1,3 @@
-
 @use '@shared/styles/variables' as *;
 @use '@shared/styles/mixins' as *;
 
@@ -15,7 +14,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  box-shadow: 0px -1px 0px 0px #191B1F0F inset;
+  box-shadow: 0px -1px 0px 0px #191b1f0f inset;
 }
 
 // 搜索框容器
@@ -36,7 +35,6 @@
   background: '#ffffff';
   overflow: 'auto';
   border: 1px solid #191b1f0f;
-
 }
 .tableContainer {
   flex: 1;
@@ -45,27 +43,26 @@
   background: '#ffffff';
   overflow: 'auto';
   border: 1px solid #191b1f0f;
-
 }
 
 // 树节点样式
 .itemBlock {
   padding: 4px 10px;
-  
+
   .itemName {
     padding: 12px 20px;
     border-radius: $border-radius-sm;
     transition: all 0.3s ease;
-    
+
     &:hover {
       cursor: pointer;
-      background: #33C2C80F;
+      background: #33c2c80f;
       color: var(--ant-color-primary);
     }
-    
+
     &.active {
       font-weight: 600;
-      background: #33C2C80F;
+      background: #33c2c80f;
       color: var(--ant-color-primary);
       border-right: 2px solid var(--ant-color-primary);
     }
@@ -78,26 +75,26 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   &.noData {
     color: #8c8c8c;
   }
-  
+
   &.errData {
     color: red;
   }
 }
 .refreshBtn {
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
-    background-color: #191b1f0a;
-    border: none;
-  }
-  .refreshBtn:hover {
-    background-color: #191b1f0a !important;
-    border: none !important;
-  }
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background-color: #191b1f0a;
+  border: none;
+}
+.refreshBtn:hover {
+  background-color: #191b1f0a !important;
+  border: none !important;
+}
 
 // 编辑模式的表格行样式
 .editRow {
