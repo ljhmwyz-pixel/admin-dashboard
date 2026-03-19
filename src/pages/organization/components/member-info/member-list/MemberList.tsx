@@ -4,11 +4,13 @@ import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organizatio
 import { useMemberList } from '@pages/organization/hooks';
 import {
   addMember,
+  assignMemberPlants,
   changeMemberStatus,
   deleteMember,
   reviewMemberApplication,
   updateMember,
 } from '@pages/organization/services/organizationService';
+import { AntForm } from '@shared/components';
 import cls from 'classnames';
 
 import { useThemeModal } from '@/components/Modal';
@@ -84,6 +86,8 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const { t } = useLanguage();
   const user = useSelector(selectCurrentUser);
 
+  const [form] = AntForm.useForm();
+
   /**
    * 统一的 API 调用错误处理
    */
@@ -125,11 +129,12 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理成员信息模态框关闭
    */
   const handleInfoModalClose = useCallback(() => {
+    form.resetFields();
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
     setAddDrawerVisible(false);
-  }, []);
+  }, [form]);
 
   /**
    * 处理模态框中的删除操作
@@ -458,29 +463,34 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     async (formData: AddMemberFormData) => {
       if (!currentParentNode?.key || !formData.role?.length) return;
 
-      console.log(formData);
-
-      // try {
-      //   const { basicInfo, role } = formData || {};
-      //   const requestParams = {
-      //     email: basicInfo?.orgEmail || '',
-      //     username: basicInfo?.orgUsername || '',
-      //     phone: basicInfo?.orgPhone || '',
-      //     roleIds: role || [],
-      //     orgId: currentParentNode.key,
-      //   };
-      //   const result = await addMember(requestParams);
-      //   if (result?.code === 200) {
-      //     handleApiSuccess('Success !', 'The user has been successfully added.', () => {
-      //       handleSearch();
-      //       setAddDrawerVisible(false);
-      //     });
-      //   }
-      // } catch (err) {
-      //   handleApiError(err, 'Failed to add member.');
-      // }
+      try {
+        const { basicInfo, role, plants } = formData || {};
+        const requestParams = {
+          email: basicInfo?.orgEmail || '',
+          username: basicInfo?.orgUsername || '',
+          phone: basicInfo?.orgPhone || '',
+          roleIds: role || [],
+          orgId: currentParentNode.key,
+        };
+        const result = await addMember(requestParams);
+        if (result?.code === 200) {
+          const res = await assignMemberPlants(result.data?.memberId || '', {
+            orgId: currentParentNode.key,
+            orgScopeIds: plants?.organizationKeys || [],
+            plantIds: plants?.plantKeys || [],
+          });
+          if (res?.code === 200 && res?.success) {
+            handleApiSuccess('Success !', 'The user has been successfully added.', () => {
+              handleSearch();
+              handleInfoModalClose();
+            });
+          }
+        }
+      } catch (err) {
+        handleApiError(err, 'Failed to add member.');
+      }
     },
-    [currentParentNode, handleApiSuccess, handleSearch, handleApiError],
+    [currentParentNode.key, handleApiSuccess, handleSearch, handleInfoModalClose, handleApiError],
   );
 
   return (
@@ -531,7 +541,8 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       {/* 新增成员抽屉 */}
       <AddMemberDrawer
         visible={addDrawerVisible}
-        onClose={() => setAddDrawerVisible(false)}
+        form={form}
+        onClose={handleInfoModalClose}
         onSuccess={handleAddSuccess}
         orgId={orgId}
         currentParentNode={currentParentNode}

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { OrgTreeSelectorProps, PlantTreeDatum } from '@pages/organization/dto';
-import { AntButton, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
+import { AntButton, AntCheckbox, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
 import type { DataNode, TreeProps } from 'antd/es/tree';
 import clx from 'classnames';
 
@@ -58,6 +58,8 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
   className = '',
   style,
   loading = false,
+  selectAllCheckboxChecked,
+  setSelectAllCheckboxChecked,
 }) => {
   /**
    * 处理搜索变化
@@ -134,7 +136,8 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
 
     traverse(treeData);
     onChange?.(allKeys, allNodes);
-  }, [treeData, onChange]);
+    setSelectAllCheckboxChecked?.(true);
+  }, [treeData, onChange, setSelectAllCheckboxChecked]);
 
   /**
    * 默认标题渲染
@@ -184,9 +187,12 @@ const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
         </AntSpin>
       </div>
       <div className={styles.footer}>
-        <AntButton type="link" onClick={handleSelectAll} className={styles.selectAllBtn}>
-          Select All
-        </AntButton>
+        <span>Select All</span>
+        <AntCheckbox
+          onClick={handleSelectAll}
+          className={styles.selectAllCheckbox}
+          checked={selectAllCheckboxChecked}
+        />
       </div>
     </div>
   );

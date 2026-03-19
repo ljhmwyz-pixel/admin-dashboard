@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { OrganizationInfo } from '@pages/organization/components';
-import type { AddMemberFormData, TreeNodeData } from '@pages/organization/dto';
-import { AntForm, AntSteps } from '@shared/components';
+import type { AddMemberFormData, FieldProps, TreeNodeData } from '@pages/organization/dto';
+import { AntSteps } from '@shared/components';
 
 import { FormButton, FormDrawer } from '@/components';
 import { useThemeModal } from '@/components/Modal';
@@ -27,6 +27,8 @@ interface AddMemberDrawerProps {
   orgId: string;
   /** 当前节点数据 */
   currentParentNode?: TreeNodeData;
+  /** 表单实例 */
+  form: FieldProps['form'];
 }
 
 /**
@@ -48,6 +50,7 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   onSuccess,
   orgId,
   currentParentNode,
+  form,
 }) => {
   /** 当前步骤 */
   const [currentStep, setCurrentStep] = useState(0);
@@ -57,8 +60,6 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
     role: [],
     plants: { organizationKeys: [], plantKeys: [] },
   });
-  /** 表单实例 */
-  const [form] = AntForm.useForm();
   const { warning, warningConfirm } = useThemeModal();
   const { existingUsername, existingPhone, verifyEmail, setExistingPhone, setExistingUsername } =
     useOrganizationForm(currentParentNode);
@@ -126,7 +127,6 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       ...prev,
       plants: values,
     }));
-    // 这里可以调用新增成员的API
     onSuccess({ ...formData, plants: values });
   };
 

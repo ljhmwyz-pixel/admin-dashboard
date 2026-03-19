@@ -44,6 +44,8 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
   /** 加载状态 */
   const [loading, setLoading] = useState(false);
 
+  const [selectAllCheckboxChecked, setSelectAllCheckboxChecked] = useState(false);
+
   /**
    * 获取指定节点的所有后代节点（包括子组织和电站）
    */
@@ -266,6 +268,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
           return plantId && !idsToRemove.has(plantId);
         });
       });
+      setSelectAllCheckboxChecked(false);
     },
     [getAllDescendants, treeData],
   );
@@ -357,6 +360,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
           return processOrgs(prev);
         });
       }
+      setSelectAllCheckboxChecked(false);
     },
     [selectedPlantKeys, selectedPlants, selectedOrgKeys, getAncestors, treeData, isOrgFullyChecked],
   );
@@ -369,6 +373,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
     setSelectedOrgs([]);
     setSelectedPlantKeys([]);
     setSelectedPlants([]);
+    setSelectAllCheckboxChecked(false);
   }, []);
 
   // 合并选中的keys
@@ -406,7 +411,12 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
     <AntForm
       className={styles.form}
       form={form}
-      onFinish={() => onSubmit({ organizationKeys: selectedOrgKeys, plantKeys: selectedPlantKeys })}
+      onFinish={() =>
+        onSubmit({
+          organizationKeys: selectedOrgs.map((org) => org.nodeId || ''),
+          plantKeys: selectedPlantKeys,
+        })
+      }
       layout="vertical"
     >
       <div className={styles.stepContent}>
@@ -421,6 +431,8 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
               onSearch={setLeftSearchValue}
               searchPlaceholder="Please enter organization name or ID"
               loading={loading}
+              selectAllCheckboxChecked={selectAllCheckboxChecked}
+              setSelectAllCheckboxChecked={setSelectAllCheckboxChecked}
             />
           </div>
           <div className={styles.arrowIcon}>
@@ -492,6 +504,7 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
                 selectedKeys={selectedOrgKeys}
                 onChange={handleOrgListChange}
                 iconType="org"
+                showTips
               />
             </div>
             <div className={styles.selectedPlantSection}>

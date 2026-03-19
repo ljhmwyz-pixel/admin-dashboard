@@ -1,11 +1,32 @@
 .editableContainer {
-  border: 1px solid #191B1F0F;
   height: 100%;
   display: flex;
   flex-direction: column;
 
   .header {
     padding: 16px 20px;
+    border: 1px solid #191B1F0F;
+    display: flex;
+    align-items: center;
+    height: 46px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      color: #31C47F;
+      font-size: 14px;
+      line-height: 14px;
+      gap: 6px;
+      font-weight: 500;
+
+      &.orgIconType {
+        color: #33C2C8;
+      }
+    }
+
+    .searchInput {
+      background-color: #191B1F0F;
+    }
   }
 
   .listContainer {
@@ -15,7 +36,7 @@
     overflow: auto;
 
     &::-webkit-scrollbar {
-     display: none;
+      display: none;
     }
 
     .selectedItem {
@@ -30,5 +51,32 @@
       justify-content: space-between;
     }
   }
-}
 
+  .footer {
+    color: #191B1F66;
+    font-size: 14px;
+    font-weight: 500;
+    gap: 10px;
+    align-items: center;
+    padding: 16px 20px;
+    border-top: 1px solid #191B1F0F;
+    display: flex;
+    justify-content: flex-end;
+
+    .resetCheckbox {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      &:hover {
+        path {
+          stroke: #33C2C8;
+        }
+      }
+    }
+  }
+}

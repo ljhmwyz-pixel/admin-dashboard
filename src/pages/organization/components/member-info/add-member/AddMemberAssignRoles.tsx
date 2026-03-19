@@ -105,7 +105,7 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
   }, [form, handleRoleChange]);
 
   return (
-    <AntForm form={form} onFinish={onSubmit} layout="vertical">
+    <AntForm form={form} onFinish={onSubmit} className={styles.form} layout="vertical">
       <div className={styles.stepContent}>
         <RoleField
           form={form}
@@ -117,9 +117,8 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
           }))}
           onChange={handleRoleChange}
         />
-
-        <PermissionsList permissionList={permissionList} />
       </div>
+      <PermissionsList permissionList={permissionList} />
     </AntForm>
   );
 };

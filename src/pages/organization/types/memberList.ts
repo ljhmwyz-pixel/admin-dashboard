@@ -160,6 +160,22 @@ export interface MemberUpdateResponse {
 }
 
 /**
+ * 组织成员分配电站响应数据类型
+ * 用于返回组织成员分配电站结果
+ */
+export interface AssignMemberPlantsResponse {
+  code: number;
+  errorCode: string;
+  success: boolean;
+  message: string;
+  data: {
+    key: boolean;
+  };
+  timestamp: string;
+  traceId: string;
+}
+
+/**
  * 组织成员更新请求参数类型
  * 用于提交组织成员更新请求
  */
@@ -221,6 +237,8 @@ export interface SelectedListProps {
   emptyText?: React.ReactNode;
   /** 图标类型 */
   iconType?: 'org' | 'plant';
+  /** 是否展示提示 */
+  showTips?: boolean;
 }
 
 /**
@@ -263,6 +281,10 @@ export interface OrgTreeSelectorProps {
   emptyText?: React.ReactNode;
   /** 标题 */
   title?: string;
+  /** 是否全选 */
+  selectAllCheckboxChecked?: boolean;
+  /** 全选回调 */
+  setSelectAllCheckboxChecked?: (checked: boolean) => void;
 }
 
 /**
@@ -312,20 +334,25 @@ export interface PreviewMemberPermissionResponse {
 }
 
 export interface PreviewMemberPermissionData {
-  webPermissions: Permission[];
-  appPermissions: Permission[];
+  platformPermissions: PlatformPermissions[];
+}
+
+export interface PlatformPermissions {
+  platform: string;
+  platformName: string;
+  children: Permission[];
 }
 
 export interface Permission {
-  permissionId: string;
-  permissionCode: string;
-  permissionName: string;
-  parentId: string;
-  permissionType: string;
   level: number;
-  sortOrder: number;
+  parentId: string | null;
+  permissionCode: string;
+  permissionId: string;
+  permissionName: string;
+  permissionType: string;
   roles: Role[];
-  children: PreviewMemberPermissionData;
+  sortOrder: number;
+  children: Permission[];
 }
 
 export interface RoleListResponse {

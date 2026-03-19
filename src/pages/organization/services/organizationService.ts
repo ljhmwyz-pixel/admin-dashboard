@@ -2,6 +2,7 @@
 import type {
   AddMemberRequest,
   AddMemberResponse,
+  AssignMemberPlantsResponse,
   DeleteResponse,
   MemberDetailResponse,
   MemberListParams,
@@ -680,6 +681,42 @@ export const getMemberPlantTree = async (
     return await getMemberPlantTreeLogic();
   } catch (error) {
     console.error('Failed to get member plant tree:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 分配组织成员电站
+ * @param memberId 成员ID
+ * @param data 分配数据（包含组织ID、电站ID列表）
+ * @param withLoading 全局 loading 包装函数
+ * @returns 分配结果
+ */
+export const assignMemberPlants = async (
+  memberId: string,
+  data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<AssignMemberPlantsResponse | undefined> => {
+  const assignMemberPlantsLogic = async (): Promise<AssignMemberPlantsResponse> => {
+    const response = await organizationApi.assignMemberPlants(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(assignMemberPlantsLogic, {
+      onError: (error) => {
+        console.error('Assign member plants error:', error);
+      },
+    });
+  }
+
+  try {
+    return await assignMemberPlantsLogic();
+  } catch (error) {
+    console.error('Failed to assign member plants:', error);
     return undefined;
   }
 };

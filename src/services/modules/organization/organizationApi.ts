@@ -1,6 +1,7 @@
 import type {
   AddMemberRequest,
   AddMemberResponse,
+  AssignMemberPlantsResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   DeleteResponse,
@@ -116,6 +117,12 @@ export interface OrganizationApi {
     memberId: string,
     params?: PlantTreeParams,
   ) => Promise<MemberPlantTreeResponse>;
+
+  /** 成员分配电站 */
+  assignMemberPlants: (
+    memberId: string,
+    data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  ) => Promise<AssignMemberPlantsResponse>;
 }
 
 /**
@@ -354,6 +361,19 @@ class OrganizationApiImpl implements OrganizationApi {
     params?: PlantTreeParams,
   ): Promise<MemberPlantTreeResponse> {
     return apiClient.get(ORGANIZATION_ENDPOINTS.MEMBER_PLANT_TREE(memberId), { params });
+  }
+
+  /**
+   * 分配组织成员电站
+   * @param memberId - 成员ID
+   * @param data - 分配数据（包含组织ID、电站ID列表）
+   * @returns 分配结果
+   */
+  async assignMemberPlants(
+    memberId: string,
+    data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  ): Promise<AssignMemberPlantsResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.ASSIGN_PLANTS(memberId), data);
   }
 }
 

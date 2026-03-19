@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { DATA_PLATFORM_OPTIONS } from '@pages/organization/constants';
 import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
 import type { SegmentedValue } from 'antd/es/segmented';
 import cls from 'classnames';
@@ -23,7 +24,7 @@ interface PermissionsListProps {
  * 展示指定角色的权限清单，分为 Web 和 Phone 两个标签页
  */
 const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loading = false }) => {
-  const [activeKey, setActiveKey] = useState<SegmentedValue>('web');
+  const [activeKey, setActiveKey] = useState<SegmentedValue>('WEB');
 
   /**
    * 递归收集所有节点的 key
@@ -49,9 +50,8 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loadi
   /** 计算所有需要展开的行 key */
   const expandedRowKeys = useMemo(() => {
     return getAllRowKeys(
-      activeKey === 'web'
-        ? permissionList?.webPermissions || []
-        : permissionList?.appPermissions || [],
+      permissionList?.platformPermissions?.find((item) => item.platform === activeKey)?.children ||
+        [],
     );
   }, [activeKey, permissionList]);
 
@@ -61,104 +61,77 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loadi
   };
 
   return (
-    <div>
-      <h4>Permissions List</h4>
-      <div className={styles.segmentedContainer}>
-        <Segmented
-          value={activeKey}
-          options={[
-            {
-              label: (
-                <span
-                  className={cls(styles.segmentedLabel, {
-                    [styles.active]: activeKey === 'web',
-                  })}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0.999609 6H12.9996M2.99961 4H3.09961M5.09922 4H5.19922M7.19883 4H7.29883M2.59961 12H11.3996C12.5042 12 13.3996 11.1046 13.3996 10V4C13.3996 2.89543 12.5042 2 11.3996 2H2.59961C1.49504 2 0.599609 2.89543 0.599609 4V10C0.599609 11.1046 1.49504 12 2.59961 12Z"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  Web
-                </span>
-              ),
-              value: 'web',
-            },
-            {
-              label: (
-                <span
-                  className={cls(styles.segmentedLabel, {
-                    [styles.active]: activeKey === 'phone',
-                  })}
-                >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 8.39961V2.59961C12 1.49504 11.1046 0.599609 10 0.599609H4C2.89543 0.599609 2 1.49504 2 2.59961V8.39961M12 8.39961V11.3996C12 12.5042 11.1046 13.3996 10 13.3996H4C2.89543 13.3996 2 12.5042 2 11.3996V8.39961M12 8.39961H2M6.5 10.9996H7.5"
-                      stroke="#191B1F"
-                      strokeOpacity="0.4"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  Phone
-                </span>
-              ),
-              value: 'phone',
-            },
-          ]}
-          onChange={handleStatusChange}
-        />
+    <div className={styles.stepContent}>
+      <div className={styles.title}>
+        <span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0.599609 13.4001H13.3995M4.38626 11.3704L7.26394 9.76071C7.42117 9.67277 7.55172 9.54398 7.64179 9.38797L10.9813 3.60385C11.5335 2.64726 11.2058 1.42408 10.2492 0.871799C9.29262 0.319514 8.06944 0.647265 7.51715 1.60385L4.17769 7.38797C4.08761 7.54398 4.04136 7.72143 4.04381 7.90156L4.08864 11.1985C4.0907 11.3501 4.25399 11.4444 4.38626 11.3704Z"
+              stroke="#191B1F"
+              strokeOpacity="0.6"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+        <span>Permissions List</span>
       </div>
-      <AntSpin spinning={loading}>
-        <AntTable
-          className={styles.table}
-          dataSource={
-            activeKey === 'web'
-              ? permissionList?.webPermissions || []
-              : permissionList?.appPermissions || []
-          }
-          expandable={{
-            expandedRowKeys,
-          }}
-          columns={[
-            {
-              title: 'permissionName',
-              dataIndex: 'permissionCode',
-              key: 'permissionCode',
-            },
-            {
-              title: 'Roles',
-              dataIndex: 'roles',
-              key: 'roles',
-              render: (roles: Role[]) => (
-                <AntSpace>
-                  {roles.map((role, index) => (
-                    <AntTag key={index}>{role.roleName}</AntTag>
-                  ))}
-                </AntSpace>
-              ),
-            },
-          ]}
-          pagination={false}
-          rowKey="permissionId"
-        />
-      </AntSpin>
+      <div className={styles.segmented}>
+        <div className={styles.segmentedContainer}>
+          <Segmented
+            value={activeKey}
+            options={DATA_PLATFORM_OPTIONS}
+            onChange={handleStatusChange}
+          />
+        </div>
+        <AntSpin spinning={loading} style={{ height: '100%' }}>
+          <AntTable
+            styles={{
+              header: {
+                cell: {
+                  backgroundColor: '#191B1F0F',
+                  boxSizing: 'border-box',
+                },
+              },
+            }}
+            className={styles.table}
+            dataSource={
+              permissionList?.platformPermissions.find((item) => item.platform === activeKey)
+                ?.children || []
+            }
+            expandable={{
+              expandedRowKeys,
+            }}
+            columns={[
+              {
+                title: 'permissionName',
+                dataIndex: 'permissionCode',
+                key: 'permissionCode',
+              },
+              {
+                title: 'Roles',
+                dataIndex: 'roles',
+                key: 'roles',
+                render: (roles: Role[]) => (
+                  <AntSpace>
+                    {roles.map((role, index) => (
+                      <AntTag key={index}>{role.roleName}</AntTag>
+                    ))}
+                  </AntSpace>
+                ),
+              },
+            ]}
+            pagination={false}
+            rowKey="permissionId"
+          />
+        </AntSpin>
+      </div>
     </div>
   );
 };
