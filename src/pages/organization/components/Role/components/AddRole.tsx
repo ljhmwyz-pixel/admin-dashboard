@@ -3,8 +3,6 @@ import type { TreeNodeData } from '@pages/organization/dto';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
-  type CreateOrgRoleRes,
-  type DeleteOrgRoleReq,
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
   type GetOrgRoleLogRes,
