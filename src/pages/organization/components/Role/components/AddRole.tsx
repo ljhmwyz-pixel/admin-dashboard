@@ -31,10 +31,18 @@ interface AddRoleProps<T = any> {
   destroyOnClose?: boolean;
   onRefresh?: () => void;
   onDelete?: (record: T, callback: () => void) => void;
+  platformTypeOption: any;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
-  const { currentParentNode, width = '1130', destroyOnClose = true, onRefresh, onDelete } = props;
+  const {
+    currentParentNode,
+    width = '1130',
+    destroyOnClose = true,
+    onRefresh,
+    onDelete,
+    platformTypeOption,
+  } = props;
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
@@ -321,6 +329,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           checkedKeys={selectedPermissions}
           mode={opt === 'view' ? 'view' : 'edit'}
           onChange={(selectedPermissions) => setSelectedPermissions(selectedPermissions)}
+          platformTypeOption={platformTypeOption}
         />
       </AntRow>
     </div>
@@ -449,12 +458,12 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       footer={
         activeTabKey === 'Infomation' && (
           <div className={styles.footer}>
-            {opt === 'edit' && (
+            {(opt === 'edit' || opt === 'add') && (
               <FormButton color="default" onClick={() => setOpen(false)}>
                 {t('common.action.cancel')}
               </FormButton>
             )}
-            {opt === 'edit' && (
+            {(opt === 'edit' || opt === 'add') && (
               <FormButton color="primary" variant="solid" onClick={handleFinish}>
                 {t('common.action.confirm')}
               </FormButton>

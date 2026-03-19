@@ -13,6 +13,7 @@ interface IRolePermissions {
   permissionTreeKeys?: any; // 默认选中的节点 key 集合（树形结构）
   mode?: 'view' | 'edit'; // 模式：查看或编辑
   checkedKeys?: Record<string, string[]>; // 受控模式的选中 keys
+  platformTypeOption: any;
 }
 
 const RolePermissions: React.FC<IRolePermissions> = ({
@@ -21,6 +22,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({
   permissionTreeKeys,
   mode = 'edit',
   checkedKeys,
+  platformTypeOption,
 }) => {
   const { t } = useLanguage();
 
