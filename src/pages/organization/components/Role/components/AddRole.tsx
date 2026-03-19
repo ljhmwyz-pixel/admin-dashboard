@@ -489,36 +489,38 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         };
       }}
       footer={
-        activeTabKey === 'Infomation' && (
-          <div className={styles.footer}>
-            {(opt === 'edit' || opt === 'add') && (
-              <>
-                <FormButton color="default" onClick={() => setOpen(false)}>
-                  {t('common.action.cancel')}
-                </FormButton>
-                <FormButton color="primary" variant="solid" onClick={handleFinish}>
-                  {t('common.action.confirm')}
-                </FormButton>
-              </>
-            )}
-            {opt === 'view' && showButtonOnView && (
-              <>
-                <FormButton
-                  color="danger"
-                  variant="solid"
-                  onClick={() => {
-                    onDelete?.(currentRecord, () => setOpen(false));
-                  }}
-                >
-                  {t('common.action.delete')}
-                </FormButton>
-                <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
-                  {t('common.action.edit')}
-                </FormButton>
-              </>
-            )}
-          </div>
-        )
+        !showButtonOnView
+          ? null
+          : activeTabKey === 'Infomation' && (
+              <div className={styles.footer}>
+                {(opt === 'edit' || opt === 'add') && (
+                  <>
+                    <FormButton color="default" onClick={() => setOpen(false)}>
+                      {t('common.action.cancel')}
+                    </FormButton>
+                    <FormButton color="primary" variant="solid" onClick={handleFinish}>
+                      {t('common.action.confirm')}
+                    </FormButton>
+                  </>
+                )}
+                {opt === 'view' && (
+                  <>
+                    <FormButton
+                      color="danger"
+                      variant="solid"
+                      onClick={() => {
+                        onDelete?.(currentRecord, () => setOpen(false));
+                      }}
+                    >
+                      {t('common.action.delete')}
+                    </FormButton>
+                    <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
+                      {t('common.action.edit')}
+                    </FormButton>
+                  </>
+                )}
+              </div>
+            )
       }
     >
       <AntForm form={form} layout="vertical">
