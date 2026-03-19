@@ -33,7 +33,7 @@ interface AddRoleProps<T = any> {
   onRefresh?: () => void;
   onDelete?: (record: T, callback: () => void) => void;
   platformTypeOption: GetPlatformTypeListItem[];
-  showButtonOnView: boolean;
+  showButtonOnView?: boolean;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {

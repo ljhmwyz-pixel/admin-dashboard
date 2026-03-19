@@ -3,6 +3,7 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
 .rolePermissionsContainer {
   width: 100%;
   padding-inline: 15px;
+  margin-bottom: 30px;
 
   :global(.ant-checkbox-indeterminate) {
     border: none !important;
@@ -132,13 +133,12 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
   }
 }
 
-
 .platformIcon {
   display: inline-flex;
-  align-items: center;      // 垂直居中
-  justify-content: center;  // 水平居中
-  vertical-align: middle;   // 与文本对齐
-  
+  align-items: center; // 垂直居中
+  justify-content: center; // 水平居中
+  vertical-align: middle; // 与文本对齐
+
   svg {
     width: 14px;
     height: 14px;
