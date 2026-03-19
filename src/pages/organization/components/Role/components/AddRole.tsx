@@ -489,34 +489,33 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         };
       }}
       footer={
-        activeTabKey === 'Infomation' &&
-        showButtonOnView && (
+        activeTabKey === 'Infomation' && (
           <div className={styles.footer}>
             {(opt === 'edit' || opt === 'add') && (
-              <FormButton color="default" onClick={() => setOpen(false)}>
-                {t('common.action.cancel')}
-              </FormButton>
+              <>
+                <FormButton color="default" onClick={() => setOpen(false)}>
+                  {t('common.action.cancel')}
+                </FormButton>
+                <FormButton color="primary" variant="solid" onClick={handleFinish}>
+                  {t('common.action.confirm')}
+                </FormButton>
+              </>
             )}
-            {(opt === 'edit' || opt === 'add') && (
-              <FormButton color="primary" variant="solid" onClick={handleFinish}>
-                {t('common.action.confirm')}
-              </FormButton>
-            )}
-            {opt === 'view' && (
-              <FormButton
-                color="danger"
-                variant="solid"
-                onClick={() => {
-                  onDelete?.(currentRecord, () => setOpen(false));
-                }}
-              >
-                {t('common.action.delete')}
-              </FormButton>
-            )}
-            {opt === 'view' && (
-              <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
-                {t('common.action.edit')}
-              </FormButton>
+            {opt === 'view' && showButtonOnView && (
+              <>
+                <FormButton
+                  color="danger"
+                  variant="solid"
+                  onClick={() => {
+                    onDelete?.(currentRecord, () => setOpen(false));
+                  }}
+                >
+                  {t('common.action.delete')}
+                </FormButton>
+                <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
+                  {t('common.action.edit')}
+                </FormButton>
+              </>
             )}
           </div>
         )

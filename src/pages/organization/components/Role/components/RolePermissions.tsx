@@ -166,7 +166,12 @@ const RolePermissions: React.FC<IRolePermissions> = ({
           return (
             <div key={index} className={styles.rolePermissionsBody}>
               <div className={styles.header}>
-                {item.icon}
+                {item.icon && (
+                  <span
+                    className={styles.platformIcon}
+                    dangerouslySetInnerHTML={{ __html: item.icon }}
+                  />
+                )}
                 <div className={styles.headerText} style={{ color: item.color }}>
                   {item.label}
                 </div>
