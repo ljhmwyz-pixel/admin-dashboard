@@ -1,25 +1,15 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
-import { getParentNode } from '@pages/organization/utils';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
-  type CreateOrgRoleRes,
-  type DeleteOrgRoleReq,
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
-  type GetOrgRolePermissionReq,
+  type GetOrgRoleLogRes,
   type GetOrgRolePermissionRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
-import { AntMessage, AntModal, AntTag, AntTooltip } from '@/shared/components';
+import { AntMessage } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -48,7 +38,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
-  const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
+  const [dataSource, setDataSource] = useState<GetOrgRoleLogRes[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
@@ -56,7 +46,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const optRef = useRef<'add' | 'edit' | 'view'>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
-  const [rolePermissionData, setRolePermissionData] = useState();
+  const [rolePermissionData, setRolePermissionData] = useState<GetOrgRolePermissionRes['data']>();
   const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
   // 保存完整的权限树（用于查看模式）
   const [permissionTreeKeys, setPermissionTreeKeys] = useState<any>({});
@@ -65,11 +55,10 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const resolverRef = useRef<((val?: any) => void) | null>(null);
   const { t } = useLanguage();
   // 获取角色权限
-  const getRolePermission = async (roleId: string) => {
+  const getRolePermission = async () => {
     setLoading(true);
     try {
-      const reqParams: GetOrgRolePermissionReq = {};
-      const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission(reqParams);
+      const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission({});
       setRolePermissionData(data || []);
     } catch (error) {
       console.error('加载数据失败:', error);
@@ -118,12 +107,12 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         recordRef.current = record;
         setCurrentRecord(record);
         // 先获取角色权限，再获取角色详情，确保权限树数据先加载
-        getRolePermission(record?.roleId || '');
+        getRolePermission();
         // 获取角色详情（会回显权限）
         getRoleDetail(record.roleId);
       } else {
         // 新增模式，只需要获取权限列表
-        getRolePermission('');
+        getRolePermission();
       }
       setOpen(true);
       return new Promise((resolve) => {

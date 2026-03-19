@@ -366,6 +366,52 @@ export interface ScopeLevels {
   [key: string]: any;
 }
 /** ==============================================组织角色权限查询-end============================================== */
+/** ==============================================组织角色更新日志-start============================================== */
+/**
+ * 组织详情请求参数
+ */
+export interface GetOrgRoleLogReq {
+  /**
+   * 角色ID
+   */
+  roleId: string;
+  /**
+   * 页码
+   */
+  pageNum: number;
+  /**
+   * 每页大小
+   */
+  pageSize: number;
+  [property: string]: any;
+}
+/**
+ * 组织角色响应数据
+ */
+export type GetOrgRoleLogRes = CommonRes<{
+  /**
+   * 格式化变更内容
+   */
+  changeContent?: string;
+  /**
+   * 操作人 External UID
+   */
+  changedBy?: string;
+  /**
+   * 变更时间（含时区）
+   */
+  changeTime?: string;
+  /**
+   * 变更类型：Add / Modify / Delete
+   */
+  changeType?: string;
+  /**
+   * 序号
+   */
+  no?: number;
+  [property: string]: any;
+}>;
+/** ==============================================组织角色更新日志-end============================================== */
 /**
  * 组织角色管理 API 接口定义
  */
@@ -381,9 +427,9 @@ export interface OrgRoleService {
   /** 获取组织角色详情 */
   getOrgRoleDetail: (params: GetOrgRoleDetailReq) => Promise<GetOrgRoleDetailRes>;
   /** 获取组织角色更新日志 */
-  getOrgRoleLog: (params: DeleteOrgRoleReq) => Promise<DeleteOrgRoleRes>;
+  getOrgRoleLog: (params: GetOrgRoleLogReq) => Promise<GetOrgRoleLogRes>;
   /** 删除组织角色 */
-  deleteOrgRole: (params: any) => Promise<any>;
+  deleteOrgRole: (params: DeleteOrgRoleReq) => Promise<DeleteOrgRoleRes>;
 }
 
 /**
@@ -429,7 +475,7 @@ class OrgRoleApiImpl implements OrgRoleService {
   /**
    * 获取组织角色更新日志
    */
-  async getOrgRoleLog(params: any): Promise<any> {
+  async getOrgRoleLog(params: GetOrgRoleLogReq): Promise<GetOrgRoleLogRes> {
     return apiClient.get(ORG_ROLE_ENDPOINTS.LOG(params.roleId), { params });
   }
 

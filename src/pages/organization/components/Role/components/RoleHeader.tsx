@@ -15,7 +15,7 @@ interface RoleHeaderProps {
   searchInputRef?: React.RefObject<any>; // 搜索框 ref
   onPressEnter: () => void;
   onAdd: (() => void) | undefined;
-  onRefresh: () => void;
+  handleReset: () => void;
   statusList: OptionItem[];
 }
 
@@ -25,7 +25,7 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
   searchInputRef,
   onPressEnter,
   onAdd,
-  onRefresh,
+  handleReset,
   statusList,
 }) => {
   const { t } = useLanguage();
@@ -93,7 +93,7 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
                 />
               </svg>
             }
-            onClick={onRefresh}
+            onClick={handleReset}
             title="Refresh"
           />
         </AntSpace>
