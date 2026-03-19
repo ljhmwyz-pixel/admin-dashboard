@@ -110,6 +110,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         getRolePermission();
         getRoleDetail(record.roleId);
       } else {
+        // 新增模式，清除所有历史数据
+        setSelectedPermissions([]);
         setPermissionTreeKeys({});
         setRolePermissionData([]);
         getRolePermission();
