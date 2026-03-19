@@ -458,25 +458,27 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
     async (formData: AddMemberFormData) => {
       if (!currentParentNode?.key || !formData.role?.length) return;
 
-      try {
-        const { basicInfo, role } = formData || {};
-        const requestParams = {
-          email: basicInfo?.orgEmail || '',
-          username: basicInfo?.orgUsername || '',
-          phone: basicInfo?.orgPhone || '',
-          roleIds: role || [],
-          orgId: currentParentNode.key,
-        };
-        const result = await addMember(requestParams);
-        if (result?.code === 200) {
-          handleApiSuccess('Success !', 'The user has been successfully added.', () => {
-            handleSearch();
-            setAddDrawerVisible(false);
-          });
-        }
-      } catch (err) {
-        handleApiError(err, 'Failed to add member.');
-      }
+      console.log(formData);
+
+      // try {
+      //   const { basicInfo, role } = formData || {};
+      //   const requestParams = {
+      //     email: basicInfo?.orgEmail || '',
+      //     username: basicInfo?.orgUsername || '',
+      //     phone: basicInfo?.orgPhone || '',
+      //     roleIds: role || [],
+      //     orgId: currentParentNode.key,
+      //   };
+      //   const result = await addMember(requestParams);
+      //   if (result?.code === 200) {
+      //     handleApiSuccess('Success !', 'The user has been successfully added.', () => {
+      //       handleSearch();
+      //       setAddDrawerVisible(false);
+      //     });
+      //   }
+      // } catch (err) {
+      //   handleApiError(err, 'Failed to add member.');
+      // }
     },
     [currentParentNode, handleApiSuccess, handleSearch, handleApiError],
   );

@@ -176,9 +176,9 @@ export interface MemberUpdateRequest {
  */
 export interface ListItem {
   /** 唯一标识 */
-  key: string;
+  nodeId: string;
   /** 标题 */
-  title: string;
+  nodeName: string;
   /** 是否为电站 */
   isPlant?: boolean;
   /** 额外数据 */
@@ -192,11 +192,11 @@ export interface SelectedListProps {
   /** 列表标题 */
   title: string;
   /** 列表数据 */
-  data: ListItem[];
+  data: PlantTreeDatum[];
   /** 选中的keys */
   selectedKeys: React.Key[];
   /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[]) => void;
+  onChange: (selectedItems: PlantTreeDatum) => void;
   /** 搜索关键词 */
   searchValue?: string;
   /** 搜索变化回调 */
@@ -224,37 +224,15 @@ export interface SelectedListProps {
 }
 
 /**
- * 树节点数据类型
- */
-export interface TreeNode {
-  /** 节点唯一标识 */
-  key: string;
-  /** 节点标题 */
-  title: string;
-  /** 子节点列表 */
-  children?: TreeNode[];
-  /** 是否为电站 */
-  isPlant?: boolean;
-  /** 父节点ID */
-  parentId?: string;
-  /** 是否禁用 */
-  disabled?: boolean;
-  /** 是否可选 */
-  selectable?: boolean;
-  /** 是否可勾选 */
-  checkable?: boolean;
-}
-
-/**
  * OrgTreeSelector 组件属性接口
  */
 export interface OrgTreeSelectorProps {
   /** 树形数据 */
-  treeData: TreeNode[];
+  treeData: PlantTreeDatum[];
   /** 选中的节点keys */
-  selectedKeys: React.Key[];
-  /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[], selectedNodes: TreeNode[]) => void;
+  selectedKeys?: React.Key[];
+  /** 选中变化回调 - 返回选中的keys和nodes */
+  onChange: (checkedKeys: React.Key[], checkedNodes: PlantTreeDatum[]) => void;
   /** 搜索关键词 */
   searchValue?: string;
   /** 搜索变化回调 */
@@ -494,12 +472,57 @@ export interface PlantTreeResponse {
 }
 
 export interface PlantTreeDatum {
-  nodeId: string;
-  nodeName: string;
-  nodeType: string;
-  parentId: string;
-  plantId: string;
-  plantStatus: string;
-  hasOrgScope: boolean;
-  children: PlantTreeDatum[];
+  nodeId?: string;
+  nodeName?: string;
+  nodeType?: string;
+  parentId?: string;
+  plantId?: string;
+  plantStatus?: string;
+  hasOrgScope?: boolean;
+  children?: PlantTreeDatum[];
+}
+
+export interface MemberPlantTreeResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: MemberPlantTreeDatum[];
+  timestamp: string;
+  traceId: string;
+}
+
+export interface MemberPlantTreeDatum {
+  orgHierarchy: OrgHierarchy[];
+  orgScopes: OrgScope[];
+  plants: Plants[];
+}
+
+export interface OrgHierarchy {
+  scopeOrgId: string;
+  scopeOrgName: string;
+  level: number;
+}
+
+export interface OrgScope {
+  scopeOrgId: string;
+  scopeOrgName: string;
+  grantedAt: {
+    dateTime: string;
+    offset: {
+      totalSeconds: number;
+    };
+  };
+}
+
+export interface Plants {
+  plantId?: string;
+  plantName?: string;
+  orgId?: string;
+  orgName?: string;
+  grantedAt: {
+    dateTime: string;
+    offset: {
+      totalSeconds: number;
+    };
+  };
 }

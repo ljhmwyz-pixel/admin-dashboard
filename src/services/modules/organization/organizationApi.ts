@@ -7,6 +7,7 @@ import type {
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeResponse,
   MemberUpdateResponse,
   OrganizationListParams,
   OrganizationListResponse,
@@ -109,6 +110,12 @@ export interface OrganizationApi {
 
   /** 获取电站树 */
   getPlantTree: (params?: PlantTreeParams) => Promise<PlantTreeResponse>;
+
+  /** 获取组织成员电站树 */
+  getMemberPlantTree: (
+    memberId: string,
+    params?: PlantTreeParams,
+  ) => Promise<MemberPlantTreeResponse>;
 }
 
 /**
@@ -335,6 +342,18 @@ class OrganizationApiImpl implements OrganizationApi {
    */
   async getPlantTree(params?: PlantTreeParams): Promise<PlantTreeResponse> {
     return apiClient.get(ORGANIZATION_ENDPOINTS.PLANT_TREE, { params });
+  }
+
+  /**
+   * 获取组织成员电站树
+   * @param memberId - 成员ID
+   * @returns 电站树数据
+   */
+  async getMemberPlantTree(
+    memberId: string,
+    params?: PlantTreeParams,
+  ): Promise<MemberPlantTreeResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.MEMBER_PLANT_TREE(memberId), { params });
   }
 }
 

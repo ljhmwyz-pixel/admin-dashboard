@@ -6,6 +6,7 @@ import type {
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeResponse,
   MemberUpdateResponse,
   OrganizationListParams,
   PlantTreeParams,
@@ -643,6 +644,42 @@ export const getPlantTree = async (
     return await getPlantTreeLogic();
   } catch (error) {
     console.error('Failed to get plant tree:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取组织成员电站树
+ * @param memberId 成员ID
+ * @param params - 查询参数（电站ID、组织名称关键词）
+ * @param withLoading - 全局 loading 包装函数
+ * @returns 电站树数据
+ */
+export const getMemberPlantTree = async (
+  memberId: string,
+  params?: PlantTreeParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<MemberPlantTreeResponse | undefined> => {
+  const getMemberPlantTreeLogic = async (): Promise<MemberPlantTreeResponse> => {
+    const response = await organizationApi.getMemberPlantTree(memberId, params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(getMemberPlantTreeLogic, {
+      onError: (error) => {
+        console.error('Get member plant tree error:', error);
+      },
+    });
+  }
+
+  try {
+    return await getMemberPlantTreeLogic();
+  } catch (error) {
+    console.error('Failed to get member plant tree:', error);
     return undefined;
   }
 };

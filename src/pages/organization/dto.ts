@@ -9,9 +9,14 @@ import type {
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeDatum,
+  MemberPlantTreeResponse,
   MemberUpdateRequest,
   MemberUpdateResponse,
+  OrgHierarchy,
+  OrgScope,
   OrgTreeSelectorProps,
+  Plants,
   PlantTreeDatum,
   PlantTreeParams,
   PlantTreeResponse,
@@ -26,7 +31,6 @@ import type {
   RoleDataList,
   RoleListResponse,
   SelectedListProps,
-  TreeNode,
 } from '@pages/organization/types/memberList';
 import type { FormInstance } from 'antd';
 import type { DefaultOptionType } from 'antd/es/select';
@@ -618,9 +622,14 @@ export type {
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeDatum,
+  MemberPlantTreeResponse,
   MemberUpdateRequest,
   MemberUpdateResponse,
+  OrgHierarchy,
+  OrgScope,
   OrgTreeSelectorProps,
+  Plants,
   PlantTreeDatum,
   PlantTreeParams,
   PlantTreeResponse,
@@ -635,5 +644,4 @@ export type {
   RoleDataList,
   RoleListResponse,
   SelectedListProps,
-  TreeNode,
 };

@@ -63,6 +63,8 @@ export const ORGANIZATION_ENDPOINTS = {
   ORGANIZATION_TYPES: '/api/v1/organization/organization-types',
   /** 获取查询电站树 */
   PLANT_TREE: '/api/v1/organization/plants/tree',
+  /** 获取查询电站组织树 */
+  MEMBER_PLANT_TREE: (memberId: string) => `/api/v1/organization/members/${memberId}/plants`,
 } as const;
 
 // 用户管理相关

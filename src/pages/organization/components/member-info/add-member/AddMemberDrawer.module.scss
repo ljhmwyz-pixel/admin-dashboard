@@ -4,7 +4,8 @@
 
   .stepsSidebar {
     padding: 20px;
-    width: 260px;
+    max-width: 260px;
+    min-width: 210px;
     height: 100%;
     border: 1px solid #191B1F0F;
     flex-shrink: 0;
