@@ -40,10 +40,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   const { confirm: themeModalConfirm } = useThemeModal();
   // 加载中状态
   const [loading, setLoading] = useState(false);
-  const handlePageChange = (p: number, ps: number) => {
-    setPage(p);
-    setPageSize(ps);
-  };
   // 状态筛选
   const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
   const statusList: OptionItem[] = [
@@ -230,7 +226,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   /**
    *点击删除角色
    */
-  const onDelete = (record: GetOrgRoleDTO) => {
+  const onDelete = (record: GetOrgRoleDTO, callback?: () => void) => {
     themeModalConfirm({
       title: 'Confirm Deletion !',
       content: (
@@ -244,7 +240,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
             <div className={styles.confirmItems}>
               <div className={styles.confirmItem}>
                 <span>Role Name</span>
-                <span className={styles.confirmItemValue}>CED</span>
+                <span className={styles.confirmItemValue}>{record.roleName}</span>
               </div>
             </div>
           </div>
@@ -258,9 +254,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
           const reqParams: DeleteOrgRoleReq = {
             roleId: record.roleId || '',
           };
-          OrgRoleApi.deleteOrgRole(reqParams).then((res: any) => {
-            AntMessage.success('Delete role successfully');
-          });
+          await OrgRoleApi.deleteOrgRole(reqParams);
+          AntMessage.success('Delete role successfully');
+          setPage(1);
+          callback?.();
+          loadData();
         } catch (error) {
           console.error('error====:', error);
         } finally {
@@ -297,7 +295,10 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
               current: page,
               pageSize,
               total,
-              onChange: handlePageChange,
+              onChange: (p: number, ps: number) => {
+                setPage(p);
+                setPageSize(ps);
+              },
             }}
             filterConfig={{
               platform: {
@@ -410,6 +411,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
           ref={roleModalRef}
           currentParentNode={currentParentNode}
           onRefresh={handleRefresh}
+          onDelete={onDelete}
         />
       </div>
     </AntSpin>
