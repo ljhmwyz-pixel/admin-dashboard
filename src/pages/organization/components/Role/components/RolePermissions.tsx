@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AntCheckbox } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
@@ -12,6 +12,7 @@ interface IRolePermissions {
   onChange?: (selectedKeys: Record<string, string[]>) => void; // 返回选中的节点 key 集合
   permissionTreeKeys?: any; // 默认选中的节点 key 集合（树形结构）
   mode?: 'view' | 'edit'; // 模式：查看或编辑
+  checkedKeys?: Record<string, string[]>; // 受控模式的选中 keys
 }
 
 const RolePermissions: React.FC<IRolePermissions> = ({
@@ -19,6 +20,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({
   onChange,
   permissionTreeKeys,
   mode = 'edit',
+  checkedKeys,
 }) => {
   const { t } = useLanguage();
 
@@ -54,9 +56,12 @@ const RolePermissions: React.FC<IRolePermissions> = ({
     return ids;
   };
 
-  // 为每个平台维护独立的选中状态
-  const [checkedKeysMap, setCheckedKeysMap] =
+  // 为每个平台维护独立的选中状态（支持受控和非受控）
+  const [internalCheckedKeysMap, setInternalCheckedKeysMap] =
     useState<Record<string, string[]>>(getInitialCheckedKeysMap);
+
+  // 如果父组件传递了 checkedKeys，则使用父组件的值（受控模式），否则使用内部状态
+  const checkedKeysMap = checkedKeys !== undefined ? checkedKeys : internalCheckedKeysMap;
 
   const permissionsPlatform = [
     {
@@ -131,7 +136,11 @@ const RolePermissions: React.FC<IRolePermissions> = ({
       ...checkedKeysMap,
       [platform]: checked ? allKeys : [],
     };
-    setCheckedKeysMap(newCheckedKeysMap);
+
+    // 更新内部状态（如果是非受控模式）
+    if (checkedKeys === undefined) {
+      setInternalCheckedKeysMap(newCheckedKeysMap);
+    }
     onChange?.(newCheckedKeysMap);
   };
 
@@ -181,12 +190,12 @@ const RolePermissions: React.FC<IRolePermissions> = ({
                       ...checkedKeysMap,
                       [item.label]: keys,
                     };
-                    setCheckedKeysMap(newCheckedKeysMap);
+                    setInternalCheckedKeysMap(newCheckedKeysMap);
                     onChange?.(newCheckedKeysMap);
                   }}
                 />
               </div>
-              {mode === 'view' ? null : (
+              {mode === 'view' || item.treeData.length === 0 ? null : (
                 <div className={styles.footer}>
                   <span className={styles.selectAll}>Select All</span>
                   <AntCheckbox

@@ -127,7 +127,7 @@ export const ORG_ROLE_ENDPOINTS = {
   UPDATE: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
   DETAIL: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
   DELETE: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
-  LOG: (roleId: string) => `/api/v1/xxx/xxx/${roleId}`,
+  LOG: (roleId: string) => `/api/v1/organization/roles/${roleId}/changes`,
   PERMISSIONS: `/api/v1/platform/permissions`,
 } as const;
 

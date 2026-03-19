@@ -1,24 +1,18 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import {
   type CreateOrgRoleRes,
+  type DeleteOrgRoleReq,
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
   type GetOrgRolePermissionReq,
   type GetOrgRolePermissionRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
-import { AntMessage, AntTag, AntTooltip } from '@/shared/components';
+import { AntMessage, AntModal, AntTag, AntTooltip } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -37,29 +31,31 @@ interface AddRoleProps<T = any> {
   currentParentNode: TreeNodeData;
   title?: string;
   width?: number | string;
+  destroyOnClose?: boolean;
   onRefresh?: () => void;
+  onDelete?: (record: T, callback: () => void) => void;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
-  const { currentParentNode, width = '1130', onRefresh } = props;
+  const { currentParentNode, width = '1130', destroyOnClose = true, onRefresh, onDelete } = props;
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
+  // 使用 ref 保存当前的操作模式，避免闭包和异步问题
+  const optRef = useRef<'add' | 'edit' | 'view'>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
-  const [rolePermissionData, setRolePermissionData] = useState<any>([]);
-  const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({
-    Web: [],
-    Phone: [],
-  });
-  const [selectedPermissionsKeys, setSelectedPermissionsKeys] = useState<any>();
+  const [rolePermissionData, setRolePermissionData] = useState();
+  const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
+  // 保存完整的权限树（用于查看模式）
+  const [permissionTreeKeys, setPermissionTreeKeys] = useState<any>({});
   const recordRef = useRef<AddRoleRef>(null);
   const [currentRecord, setCurrentRecord] = useState<{ roleId?: string } | null>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
   const { t } = useLanguage();
   // 获取角色权限
-  const getRolePermission = async () => {
+  const getRolePermission = async (roleId: string) => {
     setLoading(true);
     try {
       const reqParams: GetOrgRolePermissionReq = {};
@@ -80,11 +76,19 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         roleId,
       };
       const { data }: GetOrgRoleDetailRes = await OrgRoleApi.getOrgRoleDetail(reqParams);
-      setActiveTabKey('Infomation');
-      // 查看详情给树赋值
-      setSelectedPermissionsKeys(data?.permissionTree);
       if (data) {
         form.setFieldsValue(data);
+        // 如果是编辑或查看模式，需要回显权限
+        if (optRef.current === 'edit' || optRef.current === 'view') {
+          // 保存完整的权限树（用于查看模式显示）
+          setPermissionTreeKeys(data.permissionTree || {});
+          // 从 permissionTree 中提取已选中的权限 ID
+          const permissions = {
+            Web: extractPermissionIds(data.permissionTree?.webPermissions || []),
+            Phone: extractPermissionIds(data.permissionTree?.appPermissions || []),
+          };
+          setSelectedPermissions(permissions);
+        }
       } else {
         form.resetFields();
       }
@@ -98,14 +102,18 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   useImperativeHandle(ref, () => ({
     open(record = null, opt = 'add') {
       setOpt(opt);
+      optRef.current = opt; // 同步更新 ref
       if (record) {
         recordRef.current = record;
         setCurrentRecord(record);
-        // 获取角色详情
+        // 先获取角色权限，再获取角色详情，确保权限树数据先加载
+        getRolePermission(record?.roleId || '');
+        // 获取角色详情（会回显权限）
         getRoleDetail(record.roleId);
+      } else {
+        // 新增模式，只需要获取权限列表
+        getRolePermission('');
       }
-      // 获取角色权限树
-      getRolePermission();
       setOpen(true);
       return new Promise((resolve) => {
         resolverRef.current = resolve;
@@ -113,7 +121,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     },
 
     close() {
-      handleClose();
+      setOpen(false);
     },
 
     submit() {
@@ -122,94 +130,62 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   }));
 
   /**
+   * 递归提取权限 ID
+   */
+  const extractPermissionIds = (permissions: any[]): string[] => {
+    const ids: string[] = [];
+    const traverse = (list: any[]) => {
+      list.forEach((item) => {
+        if (item.permissionId) {
+          ids.push(item.permissionId);
+        }
+        if (item.children && item.children.length > 0) {
+          traverse(item.children);
+        }
+      });
+    };
+    traverse(permissions);
+    return ids;
+  };
+
+  /**
    * 保存提交
    */
   const handleFinish = async () => {
     form.validateFields().then(async (values) => {
       setLoading(true);
       try {
-        const webPermissions = selectedPermissions?.Web || [];
-        const appPermissions = selectedPermissions?.Phone || [];
-
         const platform = [];
-        if (webPermissions.length > 0) {
+        if (selectedPermissions?.Web?.length > 0) {
           platform.push('WEB');
         }
-        if (appPermissions.length > 0) {
+        if (selectedPermissions?.Phone?.length > 0) {
           platform.push('APP');
         }
-        const reqParams = {
-          roleId: values.roleId,
+        const reqParams: any = {
           roleName: values.roleName,
           description: values.description,
+          roleId: values.roleId,
           orgId: currentParentNode?.key,
-          platform,
-          webPermissions,
-          appPermissions,
+          platform: ['WEB'],
+          appPermissions: selectedPermissions.Phone || [],
+          webPermissions: selectedPermissions.Web || [],
         };
-        if (reqParams.roleId) {
+        if (values.roleId) {
           await OrgRoleApi.updateOrgRole(reqParams);
+          AntMessage.success(t('role.toast.edit_success'));
         } else {
           await OrgRoleApi.createOrgRole(reqParams);
+          AntMessage.success(t('role.toast.create_success'));
         }
-        AntMessage.success('操作成功');
-        // 刷新角色数据列表（通过父组件传递的回调）
         onRefresh?.();
-        // 提交成功后关闭弹窗
-        handleClose();
+        setOpen(false);
       } catch (error) {
-        console.error('操作失败:', error);
-        AntMessage.error('操作失败，请重试');
+        console.error('加载数据失败:', error);
       } finally {
         setLoading(false);
       }
     });
-  };
-
-  /**
-   * 关闭弹窗并重置表单
-   */
-  const handleClose = useCallback(() => {
-    setOpen(false);
-    form.resetFields();
-    setSelectedPermissions({
-      Web: [],
-      Phone: [],
-    });
-    setSelectedPermissionsKeys(undefined); // 清空权限树数据
-    setOpt('add'); // 重置为新增模式
-  }, [form]);
-
-  /**
-   * 从查看模式切换到编辑模式
-   */
-  const handleEdit = useCallback(() => {
-    // 如果是从查看模式切换，需要将已选中的权限同步到 selectedPermissions
-    if (opt === 'view' && selectedPermissionsKeys) {
-      setSelectedPermissions({
-        Web: extractPermissionIds(selectedPermissionsKeys.webPermissions || []),
-        Phone: extractPermissionIds(selectedPermissionsKeys.appPermissions || []),
-      });
-    }
-    setOpt('edit');
-  }, [opt, selectedPermissionsKeys]);
-
-  // 从权限树中提取所有选中的权限 ID（叶子节点）
-  const extractPermissionIds = (permissions: any[]): string[] => {
-    const ids: string[] = [];
-    const traverse = (nodes: any[]) => {
-      nodes.forEach((node) => {
-        // 如果是叶子节点（没有子节点或子节点为空数组），则收集其 permissionId
-        if (!node.children || node.children.length === 0) {
-          ids.push(node.permissionId);
-        } else {
-          // 有子节点，递归遍历
-          traverse(node.children);
-        }
-      });
-    };
-    traverse(permissions);
-    return ids;
   };
 
   /**
@@ -336,27 +312,24 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       <AntRow gutter={30}>
         <RolePermissions
           rolePermissionData={rolePermissionData}
-          onChange={(selectedPermissions) => setSelectedPermissions(selectedPermissions)}
-          permissionTreeKeys={selectedPermissionsKeys}
+          permissionTreeKeys={permissionTreeKeys}
+          checkedKeys={selectedPermissions}
           mode={opt === 'view' ? 'view' : 'edit'}
+          onChange={(selectedPermissions) => setSelectedPermissions(selectedPermissions)}
         />
       </AntRow>
     </div>
   );
   // 获取更新记录
   const getRoleLog = async () => {
+    if (!currentRecord?.roleId) return;
+
     setLoading(true);
     try {
       const reqParams: any = {
         roleId: currentRecord?.roleId,
       };
-      // const { data }: any = await OrgRoleApi.getOrgRoleDetail(reqParams);
-      //   setActiveTabKey('Infomation');
-      //   if (data) {
-      //     form.setFieldsValue(data);
-      //   } else {
-      //     form.resetFields();
-      //   }
+      await OrgRoleApi.getOrgRoleLog(reqParams);
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
@@ -364,11 +337,14 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     }
   };
 
-  useEffect(() => {
-    if (activeTabKey === 'Record' && currentRecord?.roleId) {
+  // 处理 Tab 切换
+  const handleTabChange = (key: string) => {
+    setActiveTabKey(key);
+    // 只有在切换到 Record 标签时才请求数据
+    if (key === 'Record') {
       getRoleLog();
     }
-  }, [activeTabKey, currentRecord?.roleId]);
+  };
 
   // Tab内容配置
   const tabItems = [
@@ -423,7 +399,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 title: 'Changed Time',
                 dataIndex: 'time',
                 width: 200,
-                render: (_: any, record) => (
+                render: (_: any, record: any) => (
                   <div>
                     <div>{record.time}</div>
                     <div style={{ color: '#999', fontSize: 12 }}>{record.date}</div>
@@ -487,42 +463,44 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             : t('role.add.title')
       }
       open={open}
-      onClose={handleClose}
-      destroyOnHidden
+      onClose={() => setOpen(false)}
+      destroyOnHidden={destroyOnClose}
       size={width}
+      loading={loading}
       styles={() => {
         return {
           body: { padding: 0 },
         };
       }}
       footer={
-        <div className={styles.footer}>
-          {opt === 'view' ? (
-            <>
-              <FormButton color="default" onClick={handleEdit}>
-                Edit
-              </FormButton>
-              <FormButton color="danger" variant="outlined">
-                Delete
-              </FormButton>
-            </>
-          ) : (
-            <>
-              <FormButton color="default" onClick={handleClose} disabled={loading}>
-                {t('common.action.cancel')}
-              </FormButton>
+        activeTabKey === 'Infomation' && (
+          <div className={styles.footer}>
+            <FormButton color="default" onClick={() => setOpen(false)}>
+              {t('common.action.cancel')}
+            </FormButton>
+            {(opt === 'edit' || opt === 'view') && (
               <FormButton
-                color="primary"
+                color="danger"
                 variant="solid"
-                onClick={handleFinish}
-                loading={loading}
-                disabled={loading}
+                onClick={() => {
+                  onDelete?.(currentRecord, () => setOpen(false));
+                }}
               >
+                {t('common.action.delete')}
+              </FormButton>
+            )}
+            {(opt === 'edit' || opt === 'view') && (
+              <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
+                {t('common.action.edit')}
+              </FormButton>
+            )}
+            {(opt === 'edit' || opt === 'add') && (
+              <FormButton color="primary" variant="solid" onClick={handleFinish}>
                 {t('common.action.confirm')}
               </FormButton>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        )
       }
     >
       <AntForm form={form} layout="vertical">
@@ -534,11 +512,11 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             orgId={currentParentNode?.key}
           />
         )}
-        {/* Infomation和Record */}
+        {/* Infomation 和 Record */}
         {opt === 'view' ? (
           <FormTabs
             activeKey={activeTabKey}
-            onChange={setActiveTabKey}
+            onChange={handleTabChange}
             items={tabItems}
             className={styles.antTabs}
           />
