@@ -206,7 +206,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
                   key={platformCode}
                   className={`${styles.platformLabelContainer} ${value.includes(platformCode) ? '' : styles.platformLabelContainerDisabled}`}
                 >
-                  {item.icon}
+                  {item.icon && (
+                    <span
+                      className={styles.platformIcon}
+                      dangerouslySetInnerHTML={{ __html: item.icon }}
+                    />
+                  )}
                   <span className={styles.platformAPPStyle} style={{ color: item.color }}>
                     {item.name || platformCode}
                   </span>

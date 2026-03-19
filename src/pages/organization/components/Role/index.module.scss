@@ -150,3 +150,15 @@
     opacity: 0.2;
   }
 }
+
+.platformIcon {
+  display: inline-flex;
+  align-items: center;      // 垂直居中
+  justify-content: center;  // 水平居中
+  vertical-align: middle;   // 与文本对齐
+  
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
