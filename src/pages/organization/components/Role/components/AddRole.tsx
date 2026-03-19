@@ -19,8 +19,11 @@ import RolePermissions from './RolePermissions';
 
 import styles from './AddRole.module.scss';
 
+// 定义操作类型
+export type AddRoleMode = 'add' | 'edit' | 'view';
+
 export interface AddRoleRef<T = any> {
-  open: (record?: T, opt?: 'add' | 'edit' | 'view') => Promise<T | undefined>;
+  open: (record?: T, opt?: AddRoleMode) => Promise<T | undefined>;
   close: () => void;
   submit: () => void;
 }
@@ -52,9 +55,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const [dataSource, setDataSource] = useState<GetOrgRoleLogRes[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
+  const [opt, setOpt] = useState<AddRoleMode>('add');
   // 使用 ref 保存当前的操作模式，避免闭包和异步问题
-  const optRef = useRef<'add' | 'edit' | 'view'>('add');
+  const optRef = useRef<AddRoleMode>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
   const [rolePermissionTreeData, setRolePermissionTreeData] =
