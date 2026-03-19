@@ -175,7 +175,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({
                   />
                 )}
                 <div className={styles.headerText} style={{ color: item.color }}>
-                  {item.label}
+                  {item.name}
                 </div>
               </div>
               <div className={styles.content}>
