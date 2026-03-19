@@ -126,7 +126,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
         pageSize,
         status: statusFilter === 'All' ? '' : statusFilter,
         keyword: searchInputRef.current?.input?.value || '',
-        platform: platform.length === 2 ? ['APP', 'WEB'] : platform,
+        platform,
       };
       const {
         data: { current, records, size, total },
