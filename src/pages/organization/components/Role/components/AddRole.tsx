@@ -56,7 +56,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const optRef = useRef<'add' | 'edit' | 'view'>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
-  const [rolePermissionData, setRolePermissionData] = useState<GetOrgRolePermissionRes['data']>();
+  const [rolePermissionTreeData, setRolePermissionTreeData] =
+    useState<GetOrgRolePermissionRes['data']>();
   const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
   // 保存完整的权限树（用于查看模式）
   const [permissionTreeKeys, setPermissionTreeKeys] = useState<any>({});
@@ -64,17 +65,25 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const [currentRecord, setCurrentRecord] = useState<{ roleId?: string } | null>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
   const { t } = useLanguage();
-  // 获取角色权限
+  // 获取平台权限树, 暂时所有平台都是使用这个WEB的权限树
   const getRolePermission = async () => {
     setLoading(true);
     try {
-      const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission({});
-      setRolePermissionData(data || []);
+      const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission({
+        platform: 'WEB',
+      });
+      setRolePermissionTreeData(data || []);
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // 从 platformPermissions 中提取指定平台的权限树
+  const getPlatformPermissionsByCode = (platformPermissions: any[] = [], platformCode: string) => {
+    const platform = platformPermissions.find((p) => p.platform === platformCode);
+    return platform ? platform.children || [] : [];
   };
 
   // 获取角色详情
@@ -91,11 +100,18 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         if (optRef.current === 'edit' || optRef.current === 'view') {
           // 保存完整的权限树（用于查看模式显示）
           setPermissionTreeKeys(data.permissionTree || {});
-          // 从 permissionTree 中提取已选中的权限 ID
-          const permissions = {
-            Web: extractPermissionIds(data.permissionTree?.webPermissions || []),
-            Phone: extractPermissionIds(data.permissionTree?.appPermissions || []),
-          };
+
+          // 从 permissionTree.platformPermissions 中提取各平台的已选中权限 ID
+          const platformPermissions = data.permissionTree?.platformPermissions || [];
+          const permissions: Record<string, string[]> = {};
+
+          // 根据传入的平台枚举动态提取各平台的权限
+          platformTypeOption.forEach((platform) => {
+            const platformCode = platform.code || platform.name || '';
+            const platformPerms = getPlatformPermissionsByCode(platformPermissions, platformCode);
+            permissions[platformCode] = extractPermissionIds(platformPerms);
+          });
+
           setSelectedPermissions(permissions);
         }
       } else {
@@ -123,7 +139,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         // 新增模式，清除所有历史数据
         setSelectedPermissions([]);
         setPermissionTreeKeys({});
-        setRolePermissionData([]);
+        setRolePermissionTreeData([]);
         getRolePermission();
       }
       setOpen(true);
@@ -170,21 +186,35 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     form.validateFields().then(async (values) => {
       setLoading(true);
       try {
-        const platform = [];
-        if (selectedPermissions?.Web?.length > 0) {
-          platform.push('WEB');
-        }
-        if (selectedPermissions?.Phone?.length > 0) {
-          platform.push('APP');
-        }
+        // 构建 platformPermissions 结构
+        const platformPermissions: any[] = [];
+
+        // 根据传入的平台枚举动态构建 platformPermissions
+        platformTypeOption.forEach((platform) => {
+          const platformCode = platform.code || platform.name || '';
+          const selectedPerms = selectedPermissions[platformCode] || [];
+
+          // 只有当该平台有选中的权限时才添加
+          if (selectedPerms.length > 0) {
+            platformPermissions.push({
+              platform: platformCode,
+              platformName: platform.name || platformCode,
+              children: selectedPerms.map((permissionId: string) => ({
+                permissionId,
+              })),
+            });
+          }
+        });
+
         const reqParams: any = {
           roleName: values.roleName,
           description: values.description,
           roleId: values.roleId,
           orgId: currentParentNode?.key,
-          platform: ['WEB'],
-          appPermissions: selectedPermissions.Phone || [],
-          webPermissions: selectedPermissions.Web || [],
+          platform: platformPermissions.map((p) => p.platform),
+          permissionIds: platformPermissions.flatMap((p) =>
+            p.children.map((c: any) => c.permissionId),
+          ),
         };
         if (values.roleId) {
           await OrgRoleApi.updateOrgRole(reqParams);
@@ -326,7 +356,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       </AntRow>
       <AntRow gutter={30}>
         <RolePermissions
-          rolePermissionData={rolePermissionData}
+          rolePermissionTreeData={rolePermissionTreeData}
           permissionTreeKeys={permissionTreeKeys}
           checkedKeys={selectedPermissions}
           mode={opt === 'view' ? 'view' : 'edit'}
