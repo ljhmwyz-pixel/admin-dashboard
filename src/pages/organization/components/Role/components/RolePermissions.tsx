@@ -9,7 +9,7 @@ import TreeCheckList from './TreeCheckList';
 import styles from './RolePermissions.module.scss';
 
 interface IRolePermissions {
-  rolePermissionData?: any;
+  rolePermissionTreeData?: any;
   onChange?: (selectedKeys: Record<string, string[]>) => void; // 返回选中的节点 key 集合
   permissionTreeKeys?: any; // 默认选中的节点 key 集合（树形结构）
   mode?: 'view' | 'edit'; // 模式：查看或编辑
@@ -18,7 +18,7 @@ interface IRolePermissions {
 }
 
 const RolePermissions: React.FC<IRolePermissions> = ({
-  rolePermissionData,
+  rolePermissionTreeData,
   onChange,
   permissionTreeKeys,
   mode = 'edit',
@@ -29,16 +29,24 @@ const RolePermissions: React.FC<IRolePermissions> = ({
 
   // 初始化选中的权限状态
   const getInitialCheckedKeysMap = () => {
-    if (permissionTreeKeys) {
-      return {
-        Web: extractPermissionIds(permissionTreeKeys.webPermissions || []),
-        Phone: extractPermissionIds(permissionTreeKeys.appPermissions || []),
-      };
-    }
-    return {
-      Web: [],
-      Phone: [],
-    };
+    const initialKeys: Record<string, string[]> = {};
+
+    // 根据传入的平台枚举初始化
+    platformTypeOption.forEach((platform) => {
+      const platformCode = platform.code || platform.name || '';
+      if (permissionTreeKeys) {
+        // 从 permissionTree.platformPermissions 中获取对应平台的权限
+        const platformPermissions = permissionTreeKeys?.platformPermissions || [];
+        const platformPerm = platformPermissions.find((p: any) => p.platform === platformCode);
+        initialKeys[platformCode] = extractPermissionIds(
+          platformPerm ? platformPerm.children || [] : [],
+        );
+      } else {
+        initialKeys[platformCode] = [];
+      }
+    });
+
+    return initialKeys;
   };
 
   // 从权限树中提取所有选中的权限 ID（叶子节点）
@@ -66,51 +74,31 @@ const RolePermissions: React.FC<IRolePermissions> = ({
   // 如果父组件传递了 checkedKeys，则使用父组件的值（受控模式），否则使用内部状态
   const checkedKeysMap = checkedKeys !== undefined ? checkedKeys : internalCheckedKeysMap;
 
-  const permissionsPlatform = [
-    {
-      treeData:
-        mode === 'view' ? permissionTreeKeys?.webPermissions || [] : rolePermissionData || [],
-      label: 'Web',
-      color: 'rgba(49, 196, 127, 1)',
-      icon: (
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0.999609 6H12.9996M2.99961 4H3.09961M5.09922 4H5.19922M7.19883 4H7.29883M2.59961 12H11.3996C12.5042 12 13.3996 11.1046 13.3996 10V4C13.3996 2.89543 12.5042 2 11.3996 2H2.59961C1.49504 2 0.599609 2.89543 0.599609 4V10C0.599609 11.1046 1.49504 12 2.59961 12Z"
-            stroke="#31C47F"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      treeData: [],
-      label: 'Phone',
-      color: '#33C2C8',
-      icon: (
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 14 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12 8.4001V2.6001C12 1.49553 11.1046 0.600098 10 0.600098H4C2.89543 0.600098 2 1.49553 2 2.6001V8.4001M12 8.4001V11.4001C12 12.5047 11.1046 13.4001 10 13.4001H4C2.89543 13.4001 2 12.5047 2 11.4001V8.4001M12 8.4001H2M6.5 11.0001H7.5"
-            stroke="#33C2C8"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-    },
-  ];
+  // 根据平台枚举动态生成平台配置
+  const permissionsPlatform = platformTypeOption.map((platform) => {
+    const platformCode = platform.code || platform.name || '';
+
+    // 获取对应平台的树形数据
+    let treeData: any[] = [];
+    if (mode === 'view') {
+      // 查看模式下，从 permissionTreeKeys.platformPermissions 中获取
+      const platformPermissions = permissionTreeKeys?.platformPermissions || [];
+      const platformPerm = platformPermissions.find((p: any) => p.platform === platformCode);
+      treeData = platformPerm ? platformPerm.children || [] : [];
+    } else {
+      // 编辑模式下使用传入的权限数据
+      treeData = rolePermissionTreeData || [];
+    }
+
+    return {
+      treeData,
+      label: platformCode,
+      name: platform.name || platformCode,
+      description: platform.description || '',
+      color: platform.color || '#191B1F', // 使用服务端返回的颜色
+      icon: platform.icon || null, // 使用服务端返回的图标
+    };
+  });
 
   // 获取所有 checkbox 的 keys（包括所有层级）
   const getAllKeys = (nodes: any[]): string[] => {

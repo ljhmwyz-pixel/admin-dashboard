@@ -38,7 +38,7 @@ export interface GetOrgRoleListReq {
   /**
    * 平台筛选
    */
-  platform?: ('APP' | 'WEB')[];
+  platform?: string[];
 
   /** 排序字段 */
   sortBy?: 'name' | 'createdAt';
