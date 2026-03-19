@@ -19,7 +19,7 @@ import OrgRoleApi, {
 import { AntMessage, AntSpin } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
-import AddRole, { type AddRoleMode, type AddRoleRef } from './components/AddRole';
+import AddRole, { type AddRoleRef } from './components/AddRole';
 import RoleHeader from './components/RoleHeader';
 
 import styles from './index.module.scss';
