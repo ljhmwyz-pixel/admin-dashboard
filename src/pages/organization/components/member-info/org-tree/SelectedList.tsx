@@ -115,7 +115,7 @@ const SelectedList: React.FC<SelectedListProps> = ({
             </AntTooltip>
           )}
         </div>
-        {showSearch && (
+        {/* {showSearch && (
           <AntInput
             prefix={
               <svg
@@ -139,7 +139,7 @@ const SelectedList: React.FC<SelectedListProps> = ({
             onChange={handleSearchChange}
             className={styles.searchInput}
           />
-        )}
+        )} */}
       </div>
       <div className={styles.listContainer}>
         <AntSpin spinning={loading}>
