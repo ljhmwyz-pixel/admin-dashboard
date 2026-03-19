@@ -19,10 +19,16 @@ import OrgRoleApi, {
 import { AntMessage, AntSpin } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
-import AddRole, { type AddRoleMode, type AddRoleRef } from './components/AddRole';
+import AddRole, { type AddRoleRef } from './components/AddRole';
 import RoleHeader from './components/RoleHeader';
 
 import styles from './index.module.scss';
+
+// 定义操作模式类型
+export type AddRoleMode = 'add' | 'edit' | 'view';
+
+// 定义状态筛选类型
+export type RoleStatusFilter = 'All' | 'Normal' | 'Disabled';
 
 interface RoleInfoProps {
   currentParentNode: TreeNodeData;
@@ -48,7 +54,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   // 加载中状态
   const [loading, setLoading] = useState(false);
   // 状态筛选
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Normal' | 'Disabled'>('All');
+  const [statusFilter, setStatusFilter] = useState<RoleStatusFilter>('All');
   const statusList: OptionItem[] = [
     { label: t('common.tab.all'), value: 'All', color: '#33C2C8' },
     {
@@ -305,7 +311,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
         {/* 顶部操作栏 */}
         <RoleHeader
           statusFilter={statusFilter}
-          onStatusChange={(status: 'All' | 'Normal' | 'Disabled') => {
+          onStatusChange={(status: RoleStatusFilter) => {
             setStatusFilter(status);
           }}
           searchInputRef={searchInputRef}

@@ -15,12 +15,10 @@ import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
 import OrganizationInfo from '../../organization-info/OrganizationInfo';
+import { type AddRoleMode } from '../index';
 import RolePermissions from './RolePermissions';
 
 import styles from './AddRole.module.scss';
-
-// 定义操作类型
-export type AddRoleMode = 'add' | 'edit' | 'view';
 
 export interface AddRoleRef<T = any> {
   open: (record?: T, opt?: AddRoleMode) => Promise<T | undefined>;
