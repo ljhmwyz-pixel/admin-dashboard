@@ -6,6 +6,15 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
   background: #fff;
   border-radius: 6px;
 
+  // 查看模式下隐藏复选框
+  &.hideCheckbox {
+    :global {
+      .ant-tree-checkbox {
+        display: none !important;
+      }
+    }
+  }
+
   :global {
     .ant-tree {
       .ant-tree-treenode {

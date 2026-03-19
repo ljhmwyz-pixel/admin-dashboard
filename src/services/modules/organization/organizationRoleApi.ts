@@ -374,6 +374,8 @@ export interface OrgRoleService {
   getOrgRoleList: (params?: GetOrgRoleListReq) => Promise<GetOrgRoleListRes>;
   /** 新增组织角色 */
   createOrgRole: (params?: CreateOrgRoleReq) => Promise<CreateOrgRoleRes>;
+  /** 更新组织角色 */
+  updateOrgRole: (params: CreateOrgRoleReq) => Promise<CreateOrgRoleRes>;
   /** 获取组织角色权限 */
   getOrgRolePermission: (params: GetOrgRolePermissionReq) => Promise<GetOrgRolePermissionRes>;
   /** 获取组织角色详情 */
@@ -399,8 +401,15 @@ class OrgRoleApiImpl implements OrgRoleService {
   /**
    * 新增组织下的角色
    */
-  async createOrgRole(data?: GetOrgRoleListReq): Promise<CreateOrgRoleRes> {
+  async createOrgRole(data?: CreateOrgRoleReq): Promise<CreateOrgRoleRes> {
     return apiClient.post(ORG_ROLE_ENDPOINTS.CREATE, data);
+  }
+
+  /**
+   * 更新组织下的角色
+   */
+  async updateOrgRole(data: CreateOrgRoleReq): Promise<CreateOrgRoleRes> {
+    return apiClient.put(ORG_ROLE_ENDPOINTS.UPDATE(data.roleId), data);
   }
 
   /**

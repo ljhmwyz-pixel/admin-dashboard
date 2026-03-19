@@ -114,8 +114,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     loadData();
   }, [loadData]);
 
-  // 刷新 - 重置所有筛选条件
-  const handleRefresh = useCallback(() => {
+  // 重置所有筛选条件
+  const handleReset = useCallback(() => {
     setStatusFilter('all');
     setPlatformFilter({ App: false, Web: false });
     if (searchInputRef.current?.input) {
@@ -123,6 +123,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     }
     setPage(1);
   }, []);
+
+  // 刷新
+  const handleRefresh = () => {
+    setPage(1);
+    loadData();
+  };
 
   const columns: ColumnsType = [
     {
@@ -400,7 +406,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
           />
         </div>
         {/* 新增角色 */}
-        <AddRole ref={roleModalRef} currentParentNode={currentParentNode} treeData={treeData} />
+        <AddRole
+          ref={roleModalRef}
+          currentParentNode={currentParentNode}
+          onRefresh={handleRefresh}
+        />
       </div>
     </AntSpin>
   );
