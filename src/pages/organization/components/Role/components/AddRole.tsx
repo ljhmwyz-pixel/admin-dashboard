@@ -8,7 +8,6 @@ import {
   type GetOrgRoleLogRes,
   type GetOrgRolePermissionRes,
   type GetPlatformTypeListItem,
-  type GetPlatformTypeListRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
 import { AntMessage } from '@/shared/components';
@@ -34,6 +33,7 @@ interface AddRoleProps<T = any> {
   onRefresh?: () => void;
   onDelete?: (record: T, callback: () => void) => void;
   platformTypeOption: GetPlatformTypeListItem[];
+  showButtonOnView: boolean;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
@@ -44,6 +44,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     onRefresh,
     onDelete,
     platformTypeOption,
+    showButtonOnView = true,
   } = props;
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -488,7 +489,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         };
       }}
       footer={
-        activeTabKey === 'Infomation' && (
+        activeTabKey === 'Infomation' &&
+        showButtonOnView && (
           <div className={styles.footer}>
             {(opt === 'edit' || opt === 'add') && (
               <FormButton color="default" onClick={() => setOpen(false)}>

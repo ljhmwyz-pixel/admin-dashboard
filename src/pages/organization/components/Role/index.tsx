@@ -35,7 +35,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
-  const [platformTypeOption, setPlatformTypeOption] = useState<GetPlatformTypeListItem[]>([]);
+  // 定义扩展类型，包含 selected 字段
+  interface PlatformTypeWithSelected extends GetPlatformTypeListItem {
+    selected?: boolean;
+  }
+
+  const [platformTypeOption, setPlatformTypeOption] = useState<PlatformTypeWithSelected[]>([]);
   const searchInputRef = useRef<any>(null);
   const roleModalRef = useRef<AddRoleRef>(null);
   const { t } = useLanguage();
@@ -88,73 +93,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   const getPlatformList = async () => {
     try {
       const { data }: GetPlatformTypeListRes = await OrgRoleApi.getPlatform();
-      // 为过滤做准备，增加是否选中的字段
-      data.map((item: GetPlatformTypeListItem) => {
-        item.selected = false;
-        if (item.code === 'WEB') {
-          item.color = 'rgba(49, 196, 127, 1)';
-          item.icon = (
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1.0001 6H13.0001M3.0001 4H3.1001M5.09971 4H5.19971M7.19932 4H7.29932M2.6001 12H11.4001C12.5047 12 13.4001 11.1046 13.4001 10V4C13.4001 2.89543 12.5047 2 11.4001 2H2.6001C1.49553 2 0.600098 2.89543 0.600098 4V10C0.600098 11.1046 1.49553 12 2.6001 12Z"
-                stroke="#31C47F"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          );
-        }
-        if (item.code === 'APP') {
-          item.color = 'rgba(51, 194, 200, 1)';
-          item.icon = (
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 8.4001V2.6001C12 1.49553 11.1046 0.600098 10 0.600098H4C2.89543 0.600098 2 1.49553 2 2.6001V8.4001M12 8.4001V11.4001C12 12.5047 11.1046 13.4001 10 13.4001H4C2.89543 13.4001 2 12.5047 2 11.4001V8.4001M12 8.4001H2M6.5 11.0001H7.5"
-                stroke="#33C2C8"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          );
-        }
-        if (item.code === 'IOT') {
-          item.color = 'rgba(49, 196, 127, 1)';
-          item.icon = (
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M11.5 4.10001C11.5 6.033 9.933 7.60001 8.00001 7.60001C6.06701 7.60001 4.50001 6.033 4.50001 4.10001C4.50001 2.16701 6.06701 0.600006 8.00001 0.600006C9.933 0.600006 11.5 2.16701 11.5 4.10001Z"
-                fill="#33C2C8"
-                fillOpacity="0.2"
-              />
-              <path
-                d="M11.8 10H4.20001C2.21178 10 0.600006 11.6118 0.600006 13.6C0.600006 14.5941 1.40589 15.4 2.40001 15.4H13.6C14.5941 15.4 15.4 14.5941 15.4 13.6C15.4 12.687 15.0601 11.8533 14.4999 11.2187M11.5 4.10001C11.5 6.033 9.933 7.60001 8.00001 7.60001C6.06701 7.60001 4.50001 6.033 4.50001 4.10001C4.50001 2.16701 6.06701 0.600006 8.00001 0.600006C9.933 0.600006 11.5 2.16701 11.5 4.10001Z"
-                stroke="#33C2C8"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          );
-        }
-      });
-      setPlatformTypeOption(data);
+      // 为每个平台添加 selected 字段，用于筛选状态管理
+      const platformsWithSelected: PlatformTypeWithSelected[] = data.map((item) => ({
+        ...item,
+        selected: false,
+      }));
+      setPlatformTypeOption(platformsWithSelected);
     } catch (error) {
       console.error('error====:', error);
     }
@@ -495,6 +439,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
           onRefresh={handleRefresh}
           onDelete={onDelete}
           platformTypeOption={platformTypeOption}
+          // 查看详情时是否显示操作按钮
+          showButtonOnView={false}
         />
       </div>
     </AntSpin>
