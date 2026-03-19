@@ -19,7 +19,7 @@ import OrgRoleApi, {
 import { AntMessage, AntSpin } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
-import AddRole, { type AddRoleRef } from './components/AddRole';
+import AddRole, { type AddRoleMode, type AddRoleRef } from './components/AddRole';
 import RoleHeader from './components/RoleHeader';
 
 import styles from './index.module.scss';
@@ -176,6 +176,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     loadData();
   };
 
+  // 平台图标渲染
+  const renderPlatformIcon = (item: PlatformTypeWithSelected, platformCode: string) => {
+    if (!item.icon) return null;
+    return <span className={styles.platformIcon} dangerouslySetInnerHTML={{ __html: item.icon }} />;
+  };
+
   const columns: ColumnsType = [
     {
       title: t('role.col.no'),
@@ -206,12 +212,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
                   key={platformCode}
                   className={`${styles.platformLabelContainer} ${value.includes(platformCode) ? '' : styles.platformLabelContainerDisabled}`}
                 >
-                  {item.icon && (
-                    <span
-                      className={styles.platformIcon}
-                      dangerouslySetInnerHTML={{ __html: item.icon }}
-                    />
-                  )}
+                  {renderPlatformIcon(item, platformCode)}
                   <span className={styles.platformAPPStyle} style={{ color: item.color }}>
                     {item.name || platformCode}
                   </span>
@@ -249,9 +250,9 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     },
   ];
   /**
-   *点击添加角色
+   * 点击添加角色
    */
-  const onAdd = (record?: GetOrgRoleDTO, opt?: 'add' | 'edit' | 'view') => {
+  const onAdd = (record?: GetOrgRoleDTO, opt?: AddRoleMode) => {
     roleModalRef.current?.open(record, opt);
   };
   /**
