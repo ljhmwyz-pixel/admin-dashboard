@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import type { GetPlatformTypeListItem } from '@/services/modules/organization/organizationRoleApi';
 import { AntCheckbox } from '@/shared/components';
