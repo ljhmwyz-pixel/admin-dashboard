@@ -246,7 +246,41 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       Web: [],
       Phone: [],
     });
+    setSelectedPermissionsKeys(undefined); // 清空权限树数据
+    setOpt('add'); // 重置为新增模式
   }, [form]);
+
+  /**
+   * 从查看模式切换到编辑模式
+   */
+  const handleEdit = useCallback(() => {
+    // 如果是从查看模式切换，需要将已选中的权限同步到 selectedPermissions
+    if (opt === 'view' && selectedPermissionsKeys) {
+      setSelectedPermissions({
+        Web: extractPermissionIds(selectedPermissionsKeys.webPermissions || []),
+        Phone: extractPermissionIds(selectedPermissionsKeys.appPermissions || []),
+      });
+    }
+    setOpt('edit');
+  }, [opt, selectedPermissionsKeys]);
+
+  // 从权限树中提取所有选中的权限 ID（叶子节点）
+  const extractPermissionIds = (permissions: any[]): string[] => {
+    const ids: string[] = [];
+    const traverse = (nodes: any[]) => {
+      nodes.forEach((node) => {
+        // 如果是叶子节点（没有子节点或子节点为空数组），则收集其 permissionId
+        if (!node.children || node.children.length === 0) {
+          ids.push(node.permissionId);
+        } else {
+          // 有子节点，递归遍历
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(permissions);
+    return ids;
+  };
 
   /**
    * 表单内容
