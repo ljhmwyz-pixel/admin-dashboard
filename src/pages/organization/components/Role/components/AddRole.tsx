@@ -458,10 +458,17 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       footer={
         activeTabKey === 'Infomation' && (
           <div className={styles.footer}>
-            <FormButton color="default" onClick={() => setOpen(false)}>
-              {t('common.action.cancel')}
-            </FormButton>
-            {(opt === 'edit' || opt === 'view') && (
+            {opt === 'edit' && (
+              <FormButton color="default" onClick={() => setOpen(false)}>
+                {t('common.action.cancel')}
+              </FormButton>
+            )}
+            {opt === 'edit' && (
+              <FormButton color="primary" variant="solid" onClick={handleFinish}>
+                {t('common.action.confirm')}
+              </FormButton>
+            )}
+            {opt === 'view' && (
               <FormButton
                 color="danger"
                 variant="solid"
@@ -472,14 +479,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 {t('common.action.delete')}
               </FormButton>
             )}
-            {(opt === 'edit' || opt === 'view') && (
+            {opt === 'view' && (
               <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
                 {t('common.action.edit')}
-              </FormButton>
-            )}
-            {(opt === 'edit' || opt === 'add') && (
-              <FormButton color="primary" variant="solid" onClick={handleFinish}>
-                {t('common.action.confirm')}
               </FormButton>
             )}
           </div>
