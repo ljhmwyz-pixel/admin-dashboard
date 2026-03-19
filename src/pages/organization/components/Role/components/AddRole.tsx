@@ -371,7 +371,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     </div>
   );
   // 获取更新记录
-  const getRoleLog = useCallback(async () => {
+  const getRoleLog = async () => {
     if (!currentRecord?.roleId) return;
 
     setLoading(true);
@@ -395,7 +395,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     } finally {
       setLoading(false);
     }
-  }, [currentRecord?.roleId, page, pageSize]);
+  };
 
   // 处理 Tab 切换
   const handleTabChange = (key: string) => {
