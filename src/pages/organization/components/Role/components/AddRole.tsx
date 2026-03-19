@@ -1,4 +1,11 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
 
@@ -106,6 +113,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     open(record = null, opt = 'add') {
       setOpt(opt);
       optRef.current = opt; // 同步更新 ref
+      setActiveTabKey('Infomation');
       if (record) {
         recordRef.current = record;
         setCurrentRecord(record);
@@ -324,7 +332,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     </div>
   );
   // 获取更新记录
-  const getRoleLog = useCallback(async () => {
+  const getRoleLog = async () => {
     if (!currentRecord?.roleId) return;
 
     setLoading(true);
@@ -348,7 +356,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     } finally {
       setLoading(false);
     }
-  }, [currentRecord?.roleId, page, pageSize]);
+  };
 
   // 处理 Tab 切换
   const handleTabChange = (key: string) => {
@@ -358,6 +366,14 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       getRoleLog();
     }
   };
+
+  // 监听分页变化，自动加载数据
+  useEffect(() => {
+    if (activeTabKey === 'Record' && currentRecord?.roleId) {
+      getRoleLog();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize]);
 
   // Tab内容配置
   const tabItems = [
