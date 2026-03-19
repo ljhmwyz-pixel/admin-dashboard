@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 import { getParentNode } from '@pages/organization/utils';
 
@@ -324,13 +324,15 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     </div>
   );
   // 获取更新记录
-  const getRoleLog = async () => {
+  const getRoleLog = useCallback(async () => {
     if (!currentRecord?.roleId) return;
 
     setLoading(true);
     try {
       const reqParams: any = {
         roleId: currentRecord?.roleId,
+        pageNum: page,
+        pageSize,
       };
       const {
         data: { current, records, size, total },
@@ -346,7 +348,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentRecord?.roleId, page, pageSize]);
 
   // 处理 Tab 切换
   const handleTabChange = (key: string) => {
@@ -370,7 +372,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       children: (
         <div className={styles.recordContainer}>
           <Table
-            rowKey="key"
+            rowKey="no"
             columns={[
               {
                 title: 'No.',
