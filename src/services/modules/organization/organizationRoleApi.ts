@@ -412,6 +412,33 @@ export type GetOrgRoleLogRes = CommonRes<{
   [property: string]: any;
 }>;
 /** ==============================================组织角色更新日志-end============================================== */
+/** ==============================================平台类型枚举-start============================================== */
+/**
+ * 平台枚举响应 VO
+ *
+ * PlatformEnumVO
+ */
+export interface GetPlatformTypeListItem {
+  /**
+   * 平台编码
+   */
+  code?: string;
+  /**
+   * 平台描述（中文）
+   */
+  description?: string;
+  /**
+   * 平台名称（英文短名）
+   */
+  name?: string;
+  [property: string]: any;
+}
+
+/**
+ * 平台类型枚举响应数据
+ */
+export type GetPlatformTypeListRes = CommonRes<GetPlatformTypeListItem[]>;
+/** ==============================================平台类型枚举-end============================================== */
 /**
  * 组织角色管理 API 接口定义
  */
@@ -431,7 +458,7 @@ export interface OrgRoleService {
   /** 删除组织角色 */
   deleteOrgRole: (params: DeleteOrgRoleReq) => Promise<DeleteOrgRoleRes>;
   /** 获取平台类型 */
-  getPlatform: (params: string) => Promise<any>;
+  getPlatform: (params?: string) => Promise<GetPlatformTypeListRes>;
 }
 
 /**
@@ -491,7 +518,7 @@ class OrgRoleApiImpl implements OrgRoleService {
   /**
    * 获取平台类型
    */
-  async getPlatform(params?: string): Promise<any> {
+  async getPlatform(params?: string): Promise<GetPlatformTypeListRes> {
     return apiClient.get(ORG_ROLE_ENDPOINTS.PLATFORM, { params });
   }
 }

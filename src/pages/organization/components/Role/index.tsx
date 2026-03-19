@@ -13,6 +13,8 @@ import OrgRoleApi, {
   type GetOrgRoleDTO,
   type GetOrgRoleListReq,
   type GetOrgRoleListRes,
+  type GetPlatformTypeListItem,
+  type GetPlatformTypeListRes,
 } from '@/services/modules/organization/organizationRoleApi';
 import { AntMessage, AntSpin } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
@@ -33,7 +35,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
   const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
-  const [platformTypeOption, setPlatformTypeOption] = useState<any>([]);
+  const [platformTypeOption, setPlatformTypeOption] = useState<GetPlatformTypeListItem>([]);
   const searchInputRef = useRef<any>(null);
   const roleModalRef = useRef<AddRoleRef>(null);
   const { t } = useLanguage();
@@ -56,7 +58,10 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     },
   ];
   // Platform 筛选（使用 Table filterConfig 的状态）
-  const [platformFilter, setPlatformFilter] = useState<any>();
+  const [platformFilter, setPlatformFilter] = useState<{ App?: boolean; Web?: boolean }>({
+    App: false,
+    Web: false,
+  });
 
   useEffect(() => {
     // 查询平台类型
@@ -65,53 +70,12 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
 
   const getPlatformList = async () => {
     try {
-      // const { data } = await OrgRoleApi.getPlatform();
-      const data = [
-        {
-          label: 'WEB',
-          value: 'WEB',
-          WEB: false,
-          icon: (
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1.0001 6H13.0001M3.0001 4H3.1001M5.09971 4H5.19971M7.19932 4H7.29932M2.6001 12H11.4001C12.5047 12 13.4001 11.1046 13.4001 10V4C13.4001 2.89543 12.5047 2 11.4001 2H2.6001C1.49553 2 0.600098 2.89543 0.600098 4V10C0.600098 11.1046 1.49553 12 2.6001 12Z"
-                stroke="#31C47F"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          ),
-        },
-        {
-          label: 'APP',
-          value: 'APP',
-          APP: false,
-          icon: (
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 8.4001V2.6001C12 1.49553 11.1046 0.600098 10 0.600098H4C2.89543 0.600098 2 1.49553 2 2.6001V8.4001M12 8.4001V11.4001C12 12.5047 11.1046 13.4001 10 13.4001H4C2.89543 13.4001 2 12.5047 2 11.4001V8.4001M12 8.4001H2M6.5 11.0001H7.5"
-                stroke="#33C2C8"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
-          ),
-        },
-      ];
+      const { data }: GetPlatformTypeListRes = await OrgRoleApi.getPlatform();
+      // 为过滤做准备，增加是否选中的字段
+      data.map((item: GetPlatformTypeListItem) => {
+        item.selected = false;
+      });
       setPlatformTypeOption(data);
-      setPlatformFilter(data);
     } catch (error) {
       console.error('error====:', error);
     }
@@ -123,19 +87,17 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     setLoading(true);
     try {
       // 构建 platform 参数：根据筛选状态返回对应的平台数组
-      const platform: any = [];
-      platformFilter.map((item: any) => {
-        if (item[item.value]) {
-          platform.push(item.value);
-        }
-      });
+      const platform = Object.entries(platformFilter)
+        .filter(([_, enabled]) => enabled)
+        .map(([platform]) => platform.toUpperCase()) as ('APP' | 'WEB')[];
+
       const reqParams: GetOrgRoleListReq = {
         orgId: currentParentNode.key,
         pageNum: page,
         pageSize,
         status: statusFilter === 'All' ? '' : statusFilter,
         keyword: searchInputRef.current?.input?.value || '',
-        platform,
+        platform: platform.length === 2 ? ['APP', 'WEB'] : platform,
       };
       const {
         data: { current, records, size, total },
@@ -171,12 +133,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   // 重置所有筛选条件
   const handleReset = useCallback(() => {
     setStatusFilter('All');
-    const obj: any = [];
-    platformTypeOption.map((item: any) => {
-      item[item.value] = false;
-      obj.push(item);
-    });
-    setPlatformFilter(obj);
+    setPlatformFilter({ App: false, Web: false });
     if (searchInputRef.current?.input) {
       searchInputRef.current.input.value = ''; // 清空输入框
     }
@@ -360,11 +317,10 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
               // 监听筛选器变化
               if (filters.platform !== undefined) {
                 const platformValues = Array.isArray(filters.platform) ? filters.platform : [];
-                const _platformList = [...platformTypeOption];
-                _platformList.map((item: any) => {
-                  item[item.value] = platformValues.includes(item.value);
+                setPlatformFilter({
+                  App: platformValues.includes('App'),
+                  Web: platformValues.includes('Web'),
                 });
-                setPlatformFilter(_platformList);
               }
             }}
             operations={[

@@ -7,6 +7,8 @@ import {
   type GetOrgRoleDetailRes,
   type GetOrgRoleLogRes,
   type GetOrgRolePermissionRes,
+  type GetPlatformTypeListItem,
+  type GetPlatformTypeListRes,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
 import { AntMessage } from '@/shared/components';
@@ -31,7 +33,7 @@ interface AddRoleProps<T = any> {
   destroyOnClose?: boolean;
   onRefresh?: () => void;
   onDelete?: (record: T, callback: () => void) => void;
-  platformTypeOption: any;
+  platformTypeOption: GetPlatformTypeListItem[];
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
