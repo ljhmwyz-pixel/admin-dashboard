@@ -141,16 +141,19 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   }));
 
   /**
-   * 递归提取权限 ID
+   * 递归提取权限 ID（只提取叶子节点）
    */
   const extractPermissionIds = (permissions: any[]): string[] => {
     const ids: string[] = [];
     const traverse = (list: any[]) => {
       list.forEach((item) => {
-        if (item.permissionId) {
-          ids.push(item.permissionId);
-        }
-        if (item.children && item.children.length > 0) {
+        // 只有叶子节点（没有子节点或子节点为空数组）才添加其 permissionId
+        if (!item.children || item.children.length === 0) {
+          if (item.permissionId) {
+            ids.push(item.permissionId);
+          }
+        } else {
+          // 有子节点，递归遍历子节点
           traverse(item.children);
         }
       });
