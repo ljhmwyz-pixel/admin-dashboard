@@ -16,15 +16,18 @@ export interface TreeItem {
 interface TreeCheckListProps {
   data: TreeItem[];
   checkedKeys?: string[]; // 支持受控模式
+  hideCheckbox?: boolean; // 是否隐藏复选框
   onChange?: (checkedKeys: string[]) => void;
 }
 
 const TreeCheckList: React.FC<TreeCheckListProps> = ({
   data,
   checkedKeys: parentCheckedKeys,
+  hideCheckbox = false,
   onChange,
 }) => {
   const [internalCheckedKeys, setInternalCheckedKeys] = useState<string[]>([]);
+  const [userExpandedKeys, setUserExpandedKeys] = useState<string[]>([]);
 
   // 如果父组件传递了 checkedKeys，则使用父组件的值（受控模式），否则使用内部状态
   const checkedKeys = parentCheckedKeys !== undefined ? parentCheckedKeys : internalCheckedKeys;
@@ -44,7 +47,8 @@ const TreeCheckList: React.FC<TreeCheckListProps> = ({
     return keys;
   };
 
-  const expandedKeys = getAllKeys(data);
+  // 首次渲染时展开所有节点，之后使用用户控制的状态
+  const expandedKeys = userExpandedKeys.length > 0 ? userExpandedKeys : getAllKeys(data);
 
   // 将数据转换为 Ant Design Tree 需要的格式
   const transformData = (items: TreeItem[]): any[] => {
@@ -65,14 +69,20 @@ const TreeCheckList: React.FC<TreeCheckListProps> = ({
     onChange?.(keys);
   };
 
+  const handleExpand: TreeProps['onExpand'] = (expanded) => {
+    // 用户手动展开/折叠后，保存用户的选择
+    setUserExpandedKeys(expanded as string[]);
+  };
+
   const treeData = transformData(data);
 
   return (
-    <div className={`${styles.treeCheckList} ${styles.customCheckbox}`}>
+    <div className={`${styles.treeCheckList} ${hideCheckbox ? styles.hideCheckbox : ''}`}>
       <AntTree
-        checkable
+        checkable={!hideCheckbox}
         checkedKeys={checkedKeys}
         onCheck={handleCheck}
+        onExpand={handleExpand}
         treeData={treeData}
         showIcon={false}
         blockNode

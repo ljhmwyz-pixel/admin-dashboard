@@ -10,19 +10,58 @@ import styles from './RolePermissions.module.scss';
 interface IRolePermissions {
   rolePermissionData?: any;
   onChange?: (selectedKeys: Record<string, string[]>) => void; // 返回选中的节点 key 集合
+  permissionTreeKeys?: any; // 默认选中的节点 key 集合（树形结构）
+  mode?: 'view' | 'edit'; // 模式：查看或编辑
 }
 
-const RolePermissions: React.FC<IRolePermissions> = ({ rolePermissionData, onChange }) => {
+const RolePermissions: React.FC<IRolePermissions> = ({
+  rolePermissionData,
+  onChange,
+  permissionTreeKeys,
+  mode = 'edit',
+}) => {
   const { t } = useLanguage();
+
+  // 初始化选中的权限状态
+  const getInitialCheckedKeysMap = () => {
+    if (permissionTreeKeys) {
+      return {
+        Web: extractPermissionIds(permissionTreeKeys.webPermissions || []),
+        Phone: extractPermissionIds(permissionTreeKeys.appPermissions || []),
+      };
+    }
+    return {
+      Web: [],
+      Phone: [],
+    };
+  };
+
+  // 从权限树中提取所有选中的权限 ID（叶子节点）
+  const extractPermissionIds = (permissions: any[]): string[] => {
+    const ids: string[] = [];
+    const traverse = (nodes: any[]) => {
+      nodes.forEach((node) => {
+        // 如果是叶子节点（没有子节点或子节点为空数组），则收集其 permissionId
+        if (!node.children || node.children.length === 0) {
+          ids.push(node.permissionId);
+        } else {
+          // 有子节点，递归遍历
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(permissions);
+    return ids;
+  };
+
   // 为每个平台维护独立的选中状态
-  const [checkedKeysMap, setCheckedKeysMap] = useState<Record<string, string[]>>({
-    Web: [],
-    Phone: [],
-  });
+  const [checkedKeysMap, setCheckedKeysMap] =
+    useState<Record<string, string[]>>(getInitialCheckedKeysMap);
 
   const permissionsPlatform = [
     {
-      treeData: rolePermissionData || [],
+      treeData:
+        mode === 'view' ? permissionTreeKeys?.webPermissions || [] : rolePermissionData || [],
       label: 'Web',
       color: 'rgba(49, 196, 127, 1)',
       icon: (
@@ -43,7 +82,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({ rolePermissionData, onCha
       ),
     },
     {
-      treeData: rolePermissionData || [],
+      treeData: [],
       label: 'Phone',
       color: '#33C2C8',
       icon: (
@@ -136,6 +175,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({ rolePermissionData, onCha
                 <TreeCheckList
                   data={item.treeData}
                   checkedKeys={currentCheckedKeys}
+                  hideCheckbox={mode === 'view'}
                   onChange={(keys) => {
                     const newCheckedKeysMap = {
                       ...checkedKeysMap,
@@ -146,14 +186,16 @@ const RolePermissions: React.FC<IRolePermissions> = ({ rolePermissionData, onCha
                   }}
                 />
               </div>
-              <div className={styles.footer}>
-                <span className={styles.selectAll}>Select All</span>
-                <AntCheckbox
-                  checked={isAllChecked}
-                  indeterminate={!isAllChecked && currentCheckedKeys.length > 0}
-                  onChange={handleSelectAll(item.label)}
-                />
-              </div>
+              {mode === 'view' ? null : (
+                <div className={styles.footer}>
+                  <span className={styles.selectAll}>Select All</span>
+                  <AntCheckbox
+                    checked={isAllChecked}
+                    indeterminate={!isAllChecked && currentCheckedKeys.length > 0}
+                    onChange={handleSelectAll(item.label)}
+                  />
+                </div>
+              )}
             </div>
           );
         })}

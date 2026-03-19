@@ -35,33 +35,31 @@ export interface AddRoleRef<T = any> {
 
 interface AddRoleProps<T = any> {
   currentParentNode: TreeNodeData;
-  treeData: TreeNodeData[];
   title?: string;
   width?: number | string;
+  onRefresh?: () => void;
 }
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
-  const { currentParentNode, treeData, width = '1130' } = props;
+  const { currentParentNode, width = '1130', onRefresh } = props;
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
   const [form] = AntForm.useForm();
   const [activeTabKey, setActiveTabKey] = useState<string>('Infomation');
-  const [rolePermissionData, setRolePermissionData] = useState();
+  const [rolePermissionData, setRolePermissionData] = useState<any>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<Record<string, string[]>>({
     Web: [],
     Phone: [],
   });
+  const [selectedPermissionsKeys, setSelectedPermissionsKeys] = useState<any>();
   const recordRef = useRef<AddRoleRef>(null);
   const [currentRecord, setCurrentRecord] = useState<{ roleId?: string } | null>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
   const { t } = useLanguage();
-  // 获取父节点信息
-  const parentNode =
-    currentParentNode?.key && treeData ? getParentNode(treeData, currentParentNode.key) : null;
   // 获取角色权限
-  const getRolePermission = async (roleId: string) => {
+  const getRolePermission = async () => {
     setLoading(true);
     try {
       const reqParams: GetOrgRolePermissionReq = {};
@@ -83,6 +81,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       };
       const { data }: GetOrgRoleDetailRes = await OrgRoleApi.getOrgRoleDetail(reqParams);
       setActiveTabKey('Infomation');
+      // 查看详情给树赋值
+      setSelectedPermissionsKeys(data?.permissionTree);
       if (data) {
         form.setFieldsValue(data);
       } else {
@@ -104,8 +104,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         // 获取角色详情
         getRoleDetail(record.roleId);
       }
-      // 获取角色权限
-      getRolePermission(record?.roleId || '');
+      // 获取角色权限树
+      getRolePermission();
       setOpen(true);
       return new Promise((resolve) => {
         resolverRef.current = resolve;
@@ -139,18 +139,27 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           platform.push('APP');
         }
         const reqParams = {
-          ...values,
-          orgId: parentNode?.key,
+          roleId: values.roleId,
+          roleName: values.roleName,
+          description: values.description,
+          orgId: currentParentNode?.key,
           platform,
           webPermissions,
           appPermissions,
         };
-        const { data }: CreateOrgRoleRes = await OrgRoleApi.createOrgRole(reqParams);
+        if (reqParams.roleId) {
+          await OrgRoleApi.updateOrgRole(reqParams);
+        } else {
+          await OrgRoleApi.createOrgRole(reqParams);
+        }
+        AntMessage.success('操作成功');
+        // 刷新角色数据列表（通过父组件传递的回调）
+        onRefresh?.();
         // 提交成功后关闭弹窗
         handleClose();
       } catch (error) {
-        console.error('创建角色失败:', error);
-        AntMessage.error('创建角色失败，请重试');
+        console.error('操作失败:', error);
+        AntMessage.error('操作失败，请重试');
       } finally {
         setLoading(false);
       }
@@ -167,13 +176,48 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       Web: [],
       Phone: [],
     });
+    setSelectedPermissionsKeys(undefined); // 清空权限树数据
+    setOpt('add'); // 重置为新增模式
   }, [form]);
+
+  /**
+   * 从查看模式切换到编辑模式
+   */
+  const handleEdit = useCallback(() => {
+    // 如果是从查看模式切换，需要将已选中的权限同步到 selectedPermissions
+    if (opt === 'view' && selectedPermissionsKeys) {
+      setSelectedPermissions({
+        Web: extractPermissionIds(selectedPermissionsKeys.webPermissions || []),
+        Phone: extractPermissionIds(selectedPermissionsKeys.appPermissions || []),
+      });
+    }
+    setOpt('edit');
+  }, [opt, selectedPermissionsKeys]);
+
+  // 从权限树中提取所有选中的权限 ID（叶子节点）
+  const extractPermissionIds = (permissions: any[]): string[] => {
+    const ids: string[] = [];
+    const traverse = (nodes: any[]) => {
+      nodes.forEach((node) => {
+        // 如果是叶子节点（没有子节点或子节点为空数组），则收集其 permissionId
+        if (!node.children || node.children.length === 0) {
+          ids.push(node.permissionId);
+        } else {
+          // 有子节点，递归遍历
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(permissions);
+    return ids;
+  };
 
   /**
    * 表单内容
    */
   const formFields = () => (
     <div className={styles.formFields}>
+      <FormInput name="roleId" hidden />
       <AntRow gutter={30}>
         <AntCol span={12}>
           <FormInput
@@ -293,6 +337,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         <RolePermissions
           rolePermissionData={rolePermissionData}
           onChange={(selectedPermissions) => setSelectedPermissions(selectedPermissions)}
+          permissionTreeKeys={selectedPermissionsKeys}
+          mode={opt === 'view' ? 'view' : 'edit'}
         />
       </AntRow>
     </div>
@@ -451,28 +497,41 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       }}
       footer={
         <div className={styles.footer}>
-          <FormButton color="default" onClick={handleClose} disabled={loading}>
-            {t('common.action.cancel')}
-          </FormButton>
-          <FormButton
-            color="primary"
-            variant="solid"
-            onClick={handleFinish}
-            loading={loading}
-            disabled={loading}
-          >
-            {t('common.action.confirm')}
-          </FormButton>
+          {opt === 'view' ? (
+            <>
+              <FormButton color="default" onClick={handleEdit}>
+                Edit
+              </FormButton>
+              <FormButton color="danger" variant="outlined">
+                Delete
+              </FormButton>
+            </>
+          ) : (
+            <>
+              <FormButton color="default" onClick={handleClose} disabled={loading}>
+                {t('common.action.cancel')}
+              </FormButton>
+              <FormButton
+                color="primary"
+                variant="solid"
+                onClick={handleFinish}
+                loading={loading}
+                disabled={loading}
+              >
+                {t('common.action.confirm')}
+              </FormButton>
+            </>
+          )}
         </div>
       }
     >
       <AntForm form={form} layout="vertical">
         {/* 组织基本信息 */}
-        {parentNode && (
+        {currentParentNode && (
           <OrganizationInfo
-            orgName={parentNode?.title}
-            orgType={parentNode?.type}
-            orgId={parentNode?.key}
+            orgName={currentParentNode?.title}
+            orgType={currentParentNode?.type}
+            orgId={currentParentNode?.key}
           />
         )}
         {/* Infomation和Record */}
