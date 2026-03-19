@@ -101,17 +101,17 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   useImperativeHandle(ref, () => ({
     open(record = null, opt = 'add') {
       setOpt(opt);
-      optRef.current = opt; // 同步更新 ref
+      optRef.current = opt;
       setActiveTabKey('Infomation');
+      form.resetFields();
       if (record) {
         recordRef.current = record;
         setCurrentRecord(record);
-        // 先获取角色权限，再获取角色详情，确保权限树数据先加载
         getRolePermission();
-        // 获取角色详情（会回显权限）
         getRoleDetail(record.roleId);
       } else {
-        // 新增模式，只需要获取权限列表
+        setPermissionTreeKeys({});
+        setRolePermissionData([]);
         getRolePermission();
       }
       setOpen(true);
