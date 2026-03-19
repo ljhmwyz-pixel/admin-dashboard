@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { TreeNodeData } from '@pages/organization/dto';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
@@ -371,7 +371,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     </div>
   );
   // 获取更新记录
-  const getRoleLog = async () => {
+  const getRoleLog = useCallback(async () => {
     if (!currentRecord?.roleId) return;
 
     setLoading(true);
@@ -395,7 +395,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentRecord?.roleId, page, pageSize]);
 
   // 处理 Tab 切换
   const handleTabChange = (key: string) => {
