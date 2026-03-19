@@ -430,6 +430,8 @@ export interface OrgRoleService {
   getOrgRoleLog: (params: GetOrgRoleLogReq) => Promise<GetOrgRoleLogRes>;
   /** 删除组织角色 */
   deleteOrgRole: (params: DeleteOrgRoleReq) => Promise<DeleteOrgRoleRes>;
+  /** 获取平台类型 */
+  getPlatform: (params: string) => Promise<any>;
 }
 
 /**
@@ -484,6 +486,13 @@ class OrgRoleApiImpl implements OrgRoleService {
    */
   async deleteOrgRole(params: DeleteOrgRoleReq): Promise<DeleteOrgRoleRes> {
     return apiClient.delete(ORG_ROLE_ENDPOINTS.DELETE(params.roleId), { params });
+  }
+
+  /**
+   * 获取平台类型
+   */
+  async getPlatform(params?: string): Promise<any> {
+    return apiClient.get(ORG_ROLE_ENDPOINTS.PLATFORM, { params });
   }
 }
 

@@ -129,6 +129,7 @@ export const ORG_ROLE_ENDPOINTS = {
   DELETE: (roleId: string) => `/api/v1/organization/roles/${roleId}`,
   LOG: (roleId: string) => `/api/v1/organization/roles/${roleId}/changes`,
   PERMISSIONS: `/api/v1/platform/permissions`,
+  PLATFORM: `/api/v1/platform/type`,
 } as const;
 
 export default API_ENDPOINTS;
