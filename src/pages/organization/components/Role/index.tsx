@@ -24,12 +24,11 @@ import styles from './index.module.scss';
 
 interface RoleInfoProps {
   currentParentNode: TreeNodeData;
-  treeData: TreeNodeData[];
   onBatchEdit?: (records: RoleRecord[]) => void;
   onBatchDelete?: (records: RoleRecord[]) => void;
 }
 
-const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
+const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
@@ -41,17 +40,17 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
   // 加载中状态
   const [loading, setLoading] = useState(false);
   // 状态筛选
-  const [statusFilter, setStatusFilter] = useState<'all' | 'normal' | 'deleted'>('all');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Normal' | 'Disabled'>('All');
   const statusList: OptionItem[] = [
-    { label: t('common.tab.all'), value: 'all', color: '#33C2C8' },
+    { label: t('common.tab.all'), value: 'All', color: '#33C2C8' },
     {
       label: t('common.status.normal'),
-      value: 'normal',
+      value: 'Normal',
       color: '#31C47F',
     },
     {
       label: t('common.status.deleted'),
-      value: 'deleted',
+      value: 'Disabled',
       color: '#F45858',
     },
   ];
@@ -75,7 +74,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
         orgId: currentParentNode.key,
         pageNum: page,
         pageSize,
-        status: statusFilter === 'all' ? '' : statusFilter,
+        status: statusFilter === 'All' ? '' : statusFilter,
         keyword: searchInputRef.current?.input?.value || '',
         platform: platform.length === 2 ? ['APP', 'WEB'] : platform,
       };
@@ -112,12 +111,13 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
 
   // 重置所有筛选条件
   const handleReset = useCallback(() => {
-    setStatusFilter('all');
+    setStatusFilter('All');
     setPlatformFilter({ App: false, Web: false });
     if (searchInputRef.current?.input) {
       searchInputRef.current.input.value = ''; // 清空输入框
     }
     setPage(1);
+    setPageSize(10);
   }, []);
 
   // 刷新
@@ -193,8 +193,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
     },
     {
       title: t('role.col.members'),
-      dataIndex: 'userCount',
-      key: 'userCount',
+      dataIndex: 'memberCount',
+      key: 'memberCount',
       width: 90,
       minWidth: 90,
     },
@@ -273,7 +273,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
         {/* 顶部操作栏 */}
         <RoleHeader
           statusFilter={statusFilter}
-          onStatusChange={(status: 'all' | 'normal' | 'deleted') => {
+          onStatusChange={(status: 'All' | 'Normal' | 'Disabled') => {
             setStatusFilter(status);
           }}
           searchInputRef={searchInputRef}
@@ -282,7 +282,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode, treeData }) => {
             loadData();
           }}
           onAdd={() => onAdd(undefined, 'add')}
-          onRefresh={handleRefresh}
+          handleReset={handleReset}
           statusList={statusList}
         />
         {/* 数据表格 */}

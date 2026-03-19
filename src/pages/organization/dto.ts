@@ -576,7 +576,7 @@ export interface RoleRecord {
 /**
  * 状态筛选类型
  */
-export type StatusFilter = 'all' | 'normal' | 'deleted';
+export type StatusFilter = 'All' | 'Normal' | 'Disabled';
 
 /**
  * 平台筛选接口
