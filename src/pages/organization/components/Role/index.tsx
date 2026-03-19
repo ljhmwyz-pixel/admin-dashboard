@@ -445,7 +445,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
           onDelete={onDelete}
           platformTypeOption={platformTypeOption}
           // 查看详情时是否显示操作按钮
-          showButtonOnView={false}
+          showButtonOnView={true}
         />
       </div>
     </AntSpin>

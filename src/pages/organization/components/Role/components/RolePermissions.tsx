@@ -87,7 +87,9 @@ const RolePermissions: React.FC<IRolePermissions> = ({
       treeData = platformPerm ? platformPerm.children || [] : [];
     } else {
       // 编辑模式下使用传入的权限数据
-      treeData = rolePermissionTreeData || [];
+      if (platform.code === 'WEB') {
+        treeData = rolePermissionTreeData || [];
+      }
     }
 
     return {
@@ -95,8 +97,8 @@ const RolePermissions: React.FC<IRolePermissions> = ({
       label: platformCode,
       name: platform.name || platformCode,
       description: platform.description || '',
-      color: platform.color || '#191B1F', // 使用服务端返回的颜色
-      icon: platform.icon || null, // 使用服务端返回的图标
+      color: platform.color || '#191B1F',
+      icon: platform.icon || null,
     };
   });
 
