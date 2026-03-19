@@ -38,7 +38,10 @@ interface AddRoleProps<T = any> {
 
 const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const { currentParentNode, width = '1130', destroyOnClose = true, onRefresh, onDelete } = props;
-
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(1);
+  const [dataSource, setDataSource] = useState<GetOrgRoleDTO[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [opt, setOpt] = useState<'add' | 'edit' | 'view'>('add');
@@ -329,7 +332,15 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       const reqParams: any = {
         roleId: currentRecord?.roleId,
       };
-      await OrgRoleApi.getOrgRoleLog(reqParams);
+      const {
+        data: { current, records, size, total },
+      } = await OrgRoleApi.getOrgRoleLog(reqParams);
+      records.forEach((item: any, index: number) => {
+        item.no = (current - 1) * size + index + 1;
+      });
+      setDataSource(records);
+      setPageSize(size);
+      setTotal(total);
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {
@@ -368,17 +379,8 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
               },
               {
                 title: 'Change Type',
-                dataIndex: 'type',
+                dataIndex: 'changeType',
                 width: 140,
-                render: (type: any) => {
-                  const map: any = {
-                    add: { color: 'green', text: 'Add' },
-                    modify: { color: 'blue', text: 'Modify' },
-                    delete: { color: 'red', text: 'Deleted' },
-                  };
-
-                  return <AntTag color={map[type].color}>{map[type].text}</AntTag>;
-                },
               },
               {
                 title: 'Changed By',
@@ -387,66 +389,26 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
               },
               {
                 title: 'Changed Content',
-                dataIndex: 'content',
+                dataIndex: 'changeContent',
+                width: 150,
                 ellipsis: true,
-                render: (text: string) => (
-                  <AntTooltip title={text}>
-                    <div style={{ maxWidth: 420 }}>{text}</div>
-                  </AntTooltip>
-                ),
               },
               {
                 title: 'Changed Time',
-                dataIndex: 'time',
-                width: 200,
-                render: (_: any, record: any) => (
-                  <div>
-                    <div>{record.time}</div>
-                    <div style={{ color: '#999', fontSize: 12 }}>{record.date}</div>
-                  </div>
-                ),
+                dataIndex: 'changeTime',
+                width: 150,
               },
             ]}
-            dataSource={[
-              {
-                key: '1',
-                no: 1,
-                type: 'delete',
-                changedBy: 'USR-H6Q8-T9W3',
-                content: 'Delete Role',
-                time: '09:11:12 UTC+08:00',
-                date: '2026/01/22',
+            dataSource={dataSource}
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              onChange: (p: number, ps: number) => {
+                setPage(p);
+                setPageSize(ps);
               },
-              {
-                key: '2',
-                no: 2,
-                type: 'modify',
-                changedBy: 'USR-H6Q8-T9W3',
-                content: 'Update: Role Name, [Organization Admin] → [Admin]; Add Permissions: ...',
-                time: '09:11:12 UTC+08:00',
-                date: '2026/01/22',
-              },
-              {
-                key: '3',
-                no: 3,
-                type: 'add',
-                changedBy: 'USR-H6Q8-T9W3',
-                content:
-                  'Update: Role Name, [Organization Admin] → [Admin]\nAdd Permissions: [Web] → [Role Management]\nRemove Permissions: [App] → [All]',
-                time: '09:11:12 UTC+08:00',
-                date: '2026/01/22',
-              },
-              {
-                key: '4',
-                no: 4,
-                type: 'delete',
-                changedBy: 'USR-H6Q8-T9W3',
-                content: 'Delete Role',
-                time: '09:11:12 UTC+08:00',
-                date: '2026/01/22',
-              },
-            ]}
-            pagination={false}
+            }}
           />
         </div>
       ),
