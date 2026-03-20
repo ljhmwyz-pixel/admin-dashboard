@@ -12,6 +12,7 @@ import {
 } from '@/services/modules/organization/organizationRoleApi';
 import { AntMessage } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
+import { PermissionCode } from '@/shared/constants/permissions';
 import { useLanguage } from '@/shared/hooks';
 
 import OrganizationInfo from '../../organization-info/OrganizationInfo';
@@ -481,6 +482,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       }
       open={open}
       onClose={() => setOpen(false)}
+      forceRender
       destroyOnHidden={destroyOnClose}
       size={width}
       loading={loading}

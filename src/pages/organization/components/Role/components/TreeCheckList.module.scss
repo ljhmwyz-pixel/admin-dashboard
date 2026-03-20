@@ -23,7 +23,8 @@ $checkboxStatusIcon: '@/assets/images/form/checkbox_status_icon.png';
         transition: background-color 0.2s;
 
         &:hover {
-          background-color: #f5f5f5;
+          background-color: none;
+          // background-color: rgba(51, 194, 200, 0.06);
         }
 
         .ant-tree-node-content-wrapper {

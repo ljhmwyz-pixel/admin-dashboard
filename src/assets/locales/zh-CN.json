@@ -8,7 +8,7 @@
   "layout.userName": "Leyu.song",
   "layout.admin": "管理员",
   "sidebar.dashboard": "仪表板",
-  
+
   "org.mgmt.title": "组织管理",
   "org.list.title": "组织列表",
   "org.type.title": "组织类型",
@@ -263,5 +263,4 @@
   "auth.verification.send_failed": "验证码发送失败，请重试。",
   "auth.verification.expired": "验证码已过期。",
   "auth.verification.invalid": "验证码错误。"
-
 }

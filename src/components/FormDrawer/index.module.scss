@@ -48,7 +48,10 @@
 .footer {
   padding: 60px 0;
   transition: margin 0.2s;
-  background-color: #fff;
+  background-color: $color-bg-container;
+  @include dark-theme {
+    background-color: $dark-color-bg-container;
+  }
 }
 
 .footerOverflow {
