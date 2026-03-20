@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import type { TreeNodeData } from '@pages/organization/dto';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
+import { useThemeModal } from '@/components/Modal';
 import {
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
@@ -10,7 +11,6 @@ import {
   type GetPlatformTypeListItem,
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
-import { AntMessage } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
 
@@ -47,6 +47,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     platformTypeOption,
     showButtonOnView = true,
   } = props;
+  const { success: successModal } = useThemeModal();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
@@ -220,10 +221,16 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
         };
         if (values.roleId) {
           await OrgRoleApi.updateOrgRole(reqParams);
-          AntMessage.success(t('role.toast.edit_success'));
+          successModal({
+            title: 'Success !',
+            content: t('role.toast.edit_success'),
+          });
         } else {
           await OrgRoleApi.createOrgRole(reqParams);
-          AntMessage.success(t('role.toast.create_success'));
+          successModal({
+            title: 'Success !',
+            content: t('role.toast.create_success'),
+          });
         }
         onRefresh?.();
         setOpen(false);
@@ -508,15 +515,14 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                   <>
                     <FormButton
                       color="danger"
-                      variant="solid"
                       onClick={() => {
                         onDelete?.(currentRecord, () => setOpen(false));
                       }}
                     >
                       {t('common.action.delete')}
                     </FormButton>
-                    <FormButton color="primary" variant="solid" onClick={() => setOpt('edit')}>
-                      {t('common.action.edit')}
+                    <FormButton color="primary" onClick={() => setOpt('edit')}>
+                      {t('common.action.modify')}
                     </FormButton>
                   </>
                 )}
