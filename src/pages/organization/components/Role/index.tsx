@@ -219,7 +219,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       },
       showSorterTooltip: false,
       sortIcon: ({ sortOrder }) => (
-        <span style={{ position: 'absolute', left: 76, top: 18 }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 4 }}>
           {!sortOrder && (
             <svg
               width="14"

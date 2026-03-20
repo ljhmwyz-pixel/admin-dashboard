@@ -49,7 +49,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
     platformTypeOption,
     showButtonOnView = true,
   } = props;
-  const { success: successModal } = useThemeModal();
+  const { success: successModal, warning: warningModal, warningConfirm } = useThemeModal();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(1);
@@ -210,7 +210,14 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             });
           }
         });
-
+        // 至少选择一个平台
+        if (platformPermissions.length === 0) {
+          warningModal({
+            title: 'Warning !',
+            content: '至少选择一个平台',
+          });
+          return;
+        }
         const reqParams: any = {
           roleName: values.roleName,
           description: values.description,
@@ -245,6 +252,85 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   };
 
   /**
+   * 检查表单是否有修改
+   */
+  const checkFormHasChanges = (formValues: any, originalRecord: any) => {
+    // 新增模式：检查是否填写了任何内容或选择了权限
+    if (opt === 'add') {
+      const hasFormChanges = !!(formValues.roleName || formValues.description);
+      const hasPermissionChanges = Object.values(selectedPermissions).some(
+        (perms) => Array.isArray(perms) && perms.length > 0,
+      );
+      return hasFormChanges || hasPermissionChanges;
+    }
+
+    // 编辑模式：与原记录比较（包括表单字段和权限）
+    if (opt === 'edit') {
+      // 检查表单字段变化
+      const hasFormChanges =
+        formValues.roleName !== originalRecord?.roleName ||
+        formValues.description !== originalRecord?.description;
+
+      // 检查权限变化：使用 permissionTreeKeys 中保存的完整权限树进行比较
+      const hasPermissionChanges = (() => {
+        const originalPermissions = permissionTreeKeys?.platformPermissions || [];
+
+        // 遍历当前所有平台的权限，检查是否有变化
+        for (const platformCode of Object.keys(selectedPermissions)) {
+          const currentPermIds = selectedPermissions[platformCode] || [];
+
+          // 从原始权限树中找到对应平台的权限 ID
+          const originalPlatformPerms = originalPermissions.find(
+            (p: any) => p.platform === platformCode,
+          );
+          const originalPermIds = originalPlatformPerms
+            ? extractPermissionIds(originalPlatformPerms.children || [])
+            : [];
+
+          // 比较两个数组是否相等
+          if (currentPermIds.length !== originalPermIds.length) {
+            return true;
+          }
+
+          const sortedCurrent = [...currentPermIds].sort();
+          const sortedOriginal = [...originalPermIds].sort();
+          for (let i = 0; i < sortedCurrent.length; i++) {
+            if (sortedCurrent[i] !== sortedOriginal[i]) {
+              return true;
+            }
+          }
+        }
+        return false;
+      })();
+
+      return hasFormChanges || hasPermissionChanges;
+    }
+
+    return false;
+  };
+  // 点击取消
+  const handleCancel = () => {
+    if (opt === 'view') {
+      setOpen(false);
+      return;
+    }
+    const formValues = form.getFieldsValue();
+    const hasChanges = checkFormHasChanges(formValues, currentRecord);
+    if (!hasChanges) {
+      setOpen(false);
+    } else {
+      warningConfirm({
+        title: t('org.dialog.unsaved.title'),
+        content: t('org.dialog.unsaved.content'),
+        okText: 'Exit',
+        onOk: () => {
+          setOpen(false);
+        },
+      });
+    }
+  };
+
+  /**
    * 表单内容
    */
   const formFields = () => (
@@ -259,6 +345,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             inputProps={{
               placeholder: t('role.placeholder.enter_name'),
               disabled: opt === 'view',
+              maxLength: 32,
             }}
             prefixIcon={
               <svg
@@ -341,9 +428,11 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           <FormTextArea
             name="description"
             label={t('role.col.description')}
+            rules={[{ required: true, message: t('role.hint.description') }]}
             inputProps={{
               placeholder: t('role.hint.description'),
               disabled: opt === 'view',
+              maxLength: 254,
             }}
             prefixIcon={
               <svg
@@ -506,7 +595,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
               <div className={styles.footer}>
                 {(opt === 'edit' || opt === 'add') && (
                   <>
-                    <FormButton color="default" onClick={() => setOpen(false)}>
+                    <FormButton color="default" onClick={handleCancel}>
                       {t('common.action.cancel')}
                     </FormButton>
                     <FormButton color="primary" variant="solid" onClick={handleFinish}>
