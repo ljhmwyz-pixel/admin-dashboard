@@ -49,8 +49,8 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loadi
   /** 计算所有需要展开的行 key */
   const expandedRowKeys = useMemo(() => {
     return getAllRowKeys(
-      permissionList?.platformPermissions?.find((item) => item.platform === activeKey)?.children ||
-        [],
+      (permissionList?.platformPermissions || [])?.find((item) => item.platform === activeKey)
+        ?.children || [],
     );
   }, [activeKey, permissionList]);
 

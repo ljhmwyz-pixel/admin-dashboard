@@ -72,14 +72,9 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
    */
   const handleBasicInfoSubmit = async (values: AddMemberFormData['basicInfo']) => {
     const emailResult = await verifyEmail?.(values.orgEmail);
-    const {
-      userExists,
-      existingUsername = '',
-      existingPhone = '',
-      userType = '',
-    } = emailResult || {};
+    const { userExists, userType = '' } = emailResult || {};
     // 内部用户或者访客用户不能新增
-    if (userType === 'GUEST' || userType === 'INTERNAL') {
+    if (userType === 'GUEST' || userType === 'INTERNAL' || userExists) {
       warning({
         title: 'Email Exists !',
         content: 'This email address is already in ues.',
@@ -89,16 +84,6 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       });
 
       return;
-    }
-    if (userExists) {
-      setFormData((prev) => ({
-        ...prev,
-        basicInfo: {
-          ...values,
-          orgUsername: existingUsername,
-          orgPhone: existingPhone,
-        },
-      }));
     } else {
       setFormData((prev) => ({
         ...prev,

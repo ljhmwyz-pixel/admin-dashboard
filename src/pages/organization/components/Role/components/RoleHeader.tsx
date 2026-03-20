@@ -4,9 +4,7 @@ import { AntSpace } from '@shared/components';
 import { useLanguage } from '@shared/hooks/useLanguage';
 
 import { FormButton, SearchInput, Segmented } from '@/components';
-import { Permission } from '@/components/Permission';
 import type { OptionItem } from '@/components/Segmented';
-import { PermissionCode } from '@/shared/constants/permissions';
 
 import styles from './RoleHeader.module.scss';
 

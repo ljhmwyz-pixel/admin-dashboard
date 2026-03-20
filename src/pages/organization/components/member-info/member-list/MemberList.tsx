@@ -129,7 +129,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => 
    * 处理成员信息模态框关闭
    */
   const handleInfoModalClose = useCallback(() => {
-    form.resetFields();
+    form?.resetFields();
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
@@ -237,18 +237,14 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => 
           disabled: true,
         },
         onOk: async () => {
-          try {
-            const result = await deleteMember(member.memberId, { confirmUid });
-            if (result?.code === 200) {
-              handleApiSuccess('Success !', 'Member removed successfully.', handleSearch);
-            }
-          } catch (err) {
-            handleApiError(err, 'Failed to remove member.');
+          const result = await deleteMember(member.memberId, { confirmUid });
+          if (result?.code === 200) {
+            handleApiSuccess('Success !', 'Member removed successfully.', handleSearch);
           }
         },
       });
     },
-    [user, confirm, t, warning, handleApiSuccess, handleSearch, handleApiError],
+    [user, confirm, t, warning, handleApiSuccess, handleSearch],
   );
 
   /**
