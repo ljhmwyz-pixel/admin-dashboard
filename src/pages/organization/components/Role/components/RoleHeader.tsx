@@ -50,6 +50,7 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
             searchFields={['Role name']}
             inputRef={searchInputRef}
             onSearch={() => onPressEnter()}
+            maxLength={32}
           />
           <Permission value={PermissionCode.ORG_ROLE_CREATE}>
             <FormButton
