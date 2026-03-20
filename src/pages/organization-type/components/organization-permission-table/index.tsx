@@ -189,33 +189,66 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     (permission: OrganizationTypePermissionItem | null, parentCode: string = ''): any[] => {
       if (!permission) return [];
 
-      // 只返回children数据，不显示一级节点
-      if (!permission.children || permission.children.length === 0) {
-        return [];
+      // 生成当前节点的唯一key
+      const uniqueKey = parentCode
+        ? `${parentCode}-${permission.permissionCode}`
+        : permission.permissionCode;
+
+      // 检查是否有修改的数据
+      const hasModifiedData = modifiedData[uniqueKey];
+
+      // 创建当前节点
+      const currentNode = {
+        key: uniqueKey,
+        permissionName: permission.permissionName,
+        thisOrganization: hasModifiedData?.SELF || permission.scopeLevels.SELF,
+        directSubOrganizations:
+          hasModifiedData?.DIRECT_CHILD || permission.scopeLevels.DIRECT_CHILD,
+        indirectSubOrganizations:
+          hasModifiedData?.NON_DIRECT_CHILD || permission.scopeLevels.NON_DIRECT_CHILD,
+        children: undefined,
+      };
+
+      // 处理子节点，递归生成树结构
+      if (permission.children && permission.children.length > 0) {
+        currentNode.children = permission.children.map((child) => {
+          const childKey = `${uniqueKey}-${child.permissionCode}`;
+          const childHasModifiedData = modifiedData[childKey];
+
+          return {
+            key: childKey,
+            permissionName: child.permissionName,
+            thisOrganization: childHasModifiedData?.SELF || child.scopeLevels.SELF,
+            directSubOrganizations:
+              childHasModifiedData?.DIRECT_CHILD || child.scopeLevels.DIRECT_CHILD,
+            indirectSubOrganizations:
+              childHasModifiedData?.NON_DIRECT_CHILD || child.scopeLevels.NON_DIRECT_CHILD,
+            children:
+              child.children && child.children.length > 0
+                ? child.children.map((grandChild) => {
+                    const grandChildKey = `${childKey}-${grandChild.permissionCode}`;
+                    const grandChildHasModifiedData = modifiedData[grandChildKey];
+
+                    return {
+                      key: grandChildKey,
+                      permissionName: grandChild.permissionName,
+                      thisOrganization:
+                        grandChildHasModifiedData?.SELF || grandChild.scopeLevels.SELF,
+                      directSubOrganizations:
+                        grandChildHasModifiedData?.DIRECT_CHILD ||
+                        grandChild.scopeLevels.DIRECT_CHILD,
+                      indirectSubOrganizations:
+                        grandChildHasModifiedData?.NON_DIRECT_CHILD ||
+                        grandChild.scopeLevels.NON_DIRECT_CHILD,
+                    };
+                  })
+                : undefined,
+          };
+        });
       }
 
-      return permission.children.map((child) => {
-        // 生成唯一的key，避免重复
-        const uniqueKey = parentCode
-          ? `${parentCode}-${child.permissionCode}`
-          : child.permissionCode;
-
-        // 检查是否有修改的数据
-        const hasModifiedData = modifiedData[uniqueKey];
-
-        return {
-          key: uniqueKey,
-          permissionName: child.permissionName,
-          thisOrganization: hasModifiedData?.SELF || child.scopeLevels.SELF,
-          directSubOrganizations: hasModifiedData?.DIRECT_CHILD || child.scopeLevels.DIRECT_CHILD,
-          indirectSubOrganizations:
-            hasModifiedData?.NON_DIRECT_CHILD || child.scopeLevels.NON_DIRECT_CHILD,
-          children:
-            child.children && child.children.length > 0
-              ? generateTableData({ ...child, children: child.children }, uniqueKey)
-              : undefined,
-        };
-      });
+      // 返回包含当前节点及其子节点的树结构
+      return [currentNode];
     },
     [modifiedData],
   );
@@ -325,6 +358,9 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         key: 'thisOrganization',
         width: 170,
         render: (text: string, record: any) => {
+          if (text === 'NOT_APPLICABLE') {
+            return '--';
+          }
           // 不可编辑时显示文本，可编辑时显示Select组件
           if (!isEditMode) {
             // 根据值获取对应的标签
@@ -352,6 +388,9 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         key: 'directSubOrganizations',
         width: 220,
         render: (text: string, record: any) => {
+          if (text === 'NOT_APPLICABLE') {
+            return '--';
+          }
           // 不可编辑时显示文本，可编辑时显示Select组件
           if (!isEditMode) {
             // 根据值获取对应的标签
@@ -379,6 +418,9 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
         key: 'indirectSubOrganizations',
         width: 220,
         render: (text: string, record: any) => {
+          if (text === 'NOT_APPLICABLE') {
+            return '--';
+          }
           // 不可编辑时显示文本，可编辑时显示Select组件
           if (!isEditMode) {
             // 根据值获取对应的标签
