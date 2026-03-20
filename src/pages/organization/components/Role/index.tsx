@@ -3,7 +3,7 @@ import type { RoleRecord } from '@pages/organization/dto';
 import type { TreeNodeData } from '@pages/organization/dto';
 import type { ColumnsType } from 'antd/es/table';
 
-import { Table } from '@/components';
+import { Table, Tooltip } from '@/components';
 import { useThemeModal } from '@/components/Modal';
 import type { OptionItem } from '@/components/Segmented';
 import type { OperationAction } from '@/components/Table/dto';
@@ -203,7 +203,9 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       title: t('role.col.name'),
       dataIndex: 'roleName',
       key: 'roleName',
-      ellipsis: true,
+      ellipsis: {
+        showTitle: false,
+      },
       minWidth: 140,
       sorter: (a, b) => {
         const getKey = (name?: string) => {
@@ -292,6 +294,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
           )}
         </span>
       ),
+      render: (text) => (
+        <Tooltip title={text} placement="bottomLeft">
+          {text}
+        </Tooltip>
+      ),
     },
     {
       title: t('role.col.platform'),
@@ -340,8 +347,15 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       title: t('role.col.description'),
       dataIndex: 'description',
       key: 'description',
-      ellipsis: true,
+      ellipsis: {
+        showTitle: false,
+      },
       minWidth: 140,
+      render: (text) => (
+        <Tooltip title={text} placement="bottomLeft">
+          {text}
+        </Tooltip>
+      ),
     },
   ];
   /**
