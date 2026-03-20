@@ -195,7 +195,7 @@ const RolePermissions: React.FC<IRolePermissions> = ({
               </div>
               {mode === 'view' || item.treeData.length === 0 ? null : (
                 <div className={styles.footer}>
-                  <span className={styles.selectAll}>Select All</span>
+                  <span className={styles.selectAll}>{t('role.field.select_all')}</span>
                   <AntCheckbox
                     checked={isAllChecked}
                     indeterminate={!isAllChecked && currentCheckedKeys.length > 0}

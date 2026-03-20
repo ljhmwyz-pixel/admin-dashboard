@@ -3,6 +3,7 @@ import type { TreeNodeData } from '@pages/organization/dto';
 
 import { FormButton, FormDrawer, FormInput, FormTabs, FormTextArea, Table } from '@/components';
 import { useThemeModal } from '@/components/Modal';
+import { Permission } from '@/components/Permission';
 import {
   type GetOrgRoleDetailReq,
   type GetOrgRoleDetailRes,
@@ -12,6 +13,7 @@ import {
   OrgRoleApi,
 } from '@/services/modules/organization/organizationRoleApi';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
+import { PermissionCode } from '@/shared/constants/permissions';
 import { useLanguage } from '@/shared/hooks';
 
 import OrganizationInfo from '../../organization-info/OrganizationInfo';
@@ -514,17 +516,21 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 )}
                 {opt === 'view' && (
                   <>
-                    <FormButton
-                      color="danger"
-                      onClick={() => {
-                        onDelete?.(currentRecord, () => setOpen(false));
-                      }}
-                    >
-                      {t('common.action.delete')}
-                    </FormButton>
-                    <FormButton color="primary" onClick={() => setOpt('edit')}>
-                      {t('common.action.modify')}
-                    </FormButton>
+                    <Permission value={PermissionCode.ORG_ROLE_DELETE}>
+                      <FormButton
+                        color="danger"
+                        onClick={() => {
+                          onDelete?.(currentRecord, () => setOpen(false));
+                        }}
+                      >
+                        {t('common.action.delete')}
+                      </FormButton>
+                    </Permission>
+                    <Permission value={PermissionCode.ORG_ROLE_EDIT}>
+                      <FormButton color="primary" onClick={() => setOpt('edit')}>
+                        {t('common.action.modify')}
+                      </FormButton>
+                    </Permission>
                   </>
                 )}
               </div>
