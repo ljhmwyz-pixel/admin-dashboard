@@ -340,7 +340,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             name="description"
             label={t('role.col.description')}
             inputProps={{
-              placeholder: t('role.placeholder.description'),
+              placeholder: t('role.hint.description'),
               disabled: opt === 'view',
             }}
             prefixIcon={
