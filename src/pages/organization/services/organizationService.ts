@@ -474,6 +474,42 @@ export const loadMemberChangeLogs = async (
 };
 
 /**
+ * 获取组织成员应用变更日志
+ * @param applicationId 应用ID
+ * @param withLoading 全局 loading 包装函数
+ * @returns 组织成员应用变更日志数据
+ */
+
+export const loadMemberApplicationChangeLogs = async (
+  applicationId: string,
+  params: { pageNum: number; pageSize: number },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<RecordListResponse | undefined> => {
+  const loadMemberApplicationChangeLogsLogic = async (): Promise<RecordListResponse> => {
+    const response = await organizationApi.getMemberApplicationChangeLogs(applicationId, params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(loadMemberApplicationChangeLogsLogic, {
+      onError: (error) => {
+        console.error('Load member application change logs error:', error);
+      },
+    });
+  }
+
+  try {
+    return await loadMemberApplicationChangeLogsLogic();
+  } catch (error) {
+    console.error('Failed to load member application change logs:', error);
+    return undefined;
+  }
+};
+
+/**
  *
  * @param data
  * @param withLoading

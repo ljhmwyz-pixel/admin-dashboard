@@ -46,7 +46,6 @@ interface PermissionContentProps {
 const PermissionContent: React.FC<PermissionContentProps> = ({
   platform,
   data,
-  typeCode,
   isEditMode,
   onPermissionChange,
   onTreeSelect,

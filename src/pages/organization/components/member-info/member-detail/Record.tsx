@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import type { MemberDetail, RecordData } from '@pages/organization/dto';
-import { loadMemberChangeLogs } from '@pages/organization/services/organizationService';
+import {
+  loadMemberApplicationChangeLogs,
+  loadMemberChangeLogs,
+} from '@pages/organization/services/organizationService';
 import { AntTable, AntTag } from '@shared/components';
 
 interface RecordProps {
@@ -20,13 +23,25 @@ const Record: React.FC<RecordProps> = ({ member }) => {
   const [loading, setLoading] = useState(false);
 
   const loadRecordList = useCallback(async () => {
-    if (!member?.memberId) return;
+    if (!member?.memberId && !member.applicationId) return;
     try {
       setLoading(true);
-      const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
-      if (res) {
-        setRecordData(res.data);
-        setTotal(res.data.total);
+      if (member.memberId) {
+        const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
+        if (res) {
+          setRecordData(res.data);
+          setTotal(res.data.total);
+        }
+      } else if (member.applicationId) {
+        console.log('member.applicationId', member.applicationId);
+        const res = await loadMemberApplicationChangeLogs(member.applicationId, {
+          pageNum,
+          pageSize,
+        });
+        if (res) {
+          setRecordData(res.data);
+          setTotal(res.data.total);
+        }
       }
     } finally {
       setLoading(false);

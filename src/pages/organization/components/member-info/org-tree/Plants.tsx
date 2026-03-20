@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import type { ListItem } from '@pages/organization/dto';
 import type { MemberDetail } from '@pages/organization/types/memberList';
+import { AntEmpty } from '@shared/components';
 
 import OrgTreeSelector from './OrgTreeSelector';
 import SelectedList from './SelectedList';
@@ -33,7 +34,7 @@ interface PlantsProps {
  *   - 左侧底部支持全选按钮
  *   - 右侧底部支持重置按钮
  */
-const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
+const Plants: React.FC<PlantsProps> = ({ editMember = false, member }) => {
   /** 左侧搜索关键词 */
   const [leftSearchValue, setLeftSearchValue] = useState('');
   /** 右侧组织搜索关键词 */
@@ -195,6 +196,10 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
     () => [...selectedOrgKeys, ...selectedPlantKeys],
     [selectedOrgKeys, selectedPlantKeys],
   );
+
+  if (member.applicationId) {
+    return <AntEmpty />;
+  }
 
   return (
     <div className={styles.container}>

@@ -10,7 +10,6 @@ import {
   reviewMemberApplication,
   updateMember,
 } from '@pages/organization/services/organizationService';
-import { AntForm } from '@shared/components';
 import cls from 'classnames';
 
 import { useThemeModal } from '@/components/Modal';
@@ -86,8 +85,6 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => 
   const { t } = useLanguage();
   const user = useSelector(selectCurrentUser);
 
-  const [form] = AntForm.useForm();
-
   /**
    * 统一的 API 调用错误处理
    */
@@ -129,12 +126,11 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => 
    * 处理成员信息模态框关闭
    */
   const handleInfoModalClose = useCallback(() => {
-    form?.resetFields();
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
     setAddDrawerVisible(false);
-  }, [form]);
+  }, []);
 
   /**
    * 处理模态框中的删除操作
@@ -537,7 +533,6 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => 
       {/* 新增成员抽屉 */}
       <AddMemberDrawer
         visible={addDrawerVisible}
-        form={form}
         onClose={handleInfoModalClose}
         onSuccess={handleAddSuccess}
         orgId={orgId}

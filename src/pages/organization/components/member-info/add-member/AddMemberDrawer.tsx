@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { OrganizationInfo } from '@pages/organization/components';
 import type { AddMemberFormData, FieldProps, TreeNodeData } from '@pages/organization/dto';
-import { AntSteps } from '@shared/components';
+import { AntForm, AntSteps } from '@shared/components';
 
 import { FormButton, FormDrawer } from '@/components';
 import { useThemeModal } from '@/components/Modal';
@@ -27,8 +27,6 @@ interface AddMemberDrawerProps {
   orgId: string;
   /** 当前节点数据 */
   currentParentNode?: TreeNodeData;
-  /** 表单实例 */
-  form: FieldProps['form'];
 }
 
 /**
@@ -50,10 +48,10 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
   onSuccess,
   orgId,
   currentParentNode,
-  form,
 }) => {
   /** 当前步骤 */
   const [currentStep, setCurrentStep] = useState(0);
+  const [form] = AntForm.useForm();
   /** 表单数据 */
   const [formData, setFormData] = useState<AddMemberFormData>({
     basicInfo: { orgEmail: '', orgUsername: '', orgPhone: '' },
@@ -113,6 +111,9 @@ const AddMemberDrawer: React.FC<AddMemberDrawerProps> = ({
       plants: values,
     }));
     onSuccess({ ...formData, plants: values });
+    setTimeout(() => {
+      handleCloseDrawer();
+    }, 0);
   };
 
   /**

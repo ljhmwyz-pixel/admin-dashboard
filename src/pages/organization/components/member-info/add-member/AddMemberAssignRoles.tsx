@@ -65,31 +65,32 @@ const AddMemberAssignRoles: React.FC<AddMemberAssignRolesProps> = ({ form, onSub
     }
   }, []);
 
+  const loadRolesData = async () => {
+    if (!orgId) return;
+    try {
+      const roleList = await loadRoles({
+        orgId,
+        pageNum: 1,
+        pageSize: 1000,
+      });
+      if (roleList?.data?.records) {
+        setRoleList(
+          roleList.data.records.filter((role) => role.roleName !== 'Organization Owner') || [],
+        );
+      }
+    } catch (error) {
+      console.error('Failed to load roles:', error);
+    }
+  };
+
   /**
    * 加载角色列表数据
    * 过滤掉 Organization Owner 角色
    */
   useEffect(() => {
-    const loadRolesData = async () => {
-      if (!orgId) return;
-      try {
-        const roleList = await loadRoles({
-          orgId,
-          pageNum: 1,
-          pageSize: 1000,
-        });
-        if (roleList?.data?.records) {
-          setRoleList(
-            roleList.data.records.filter((role) => role.roleName !== 'Organization Owner') || [],
-          );
-        }
-      } catch (error) {
-        console.error('Failed to load roles:', error);
-      }
-    };
-
     loadRolesData();
-  }, [orgId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * 监听表单中角色字段的变化

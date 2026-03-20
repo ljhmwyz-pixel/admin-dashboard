@@ -193,6 +193,16 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
       placement="right"
       destroyOnHidden
       size="60%"
+      styles={{
+        header: {
+          padding: '18px 20px',
+        },
+        body: {
+          padding: 0,
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        },
+      }}
       footer={
         <MemberInfoFooter
           member={member}
@@ -210,12 +220,14 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
     >
       {currentParentNode && (
         <OrganizationInfo
+          className={styles.orgInfo}
           orgName={currentParentNode?.title}
           orgType={currentParentNode?.type}
           orgId={currentParentNode?.key}
         />
       )}
       <AntTabs
+        className={styles.tabs}
         defaultActiveKey="basic"
         items={[
           {

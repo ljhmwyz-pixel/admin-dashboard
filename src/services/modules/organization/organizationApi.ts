@@ -123,6 +123,12 @@ export interface OrganizationApi {
     memberId: string,
     data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
   ) => Promise<AssignMemberPlantsResponse>;
+
+  /** 获取组织成员应用变更日志 */
+  getMemberApplicationChangeLogs: (
+    applicationId: string,
+    params: { pageNum: number; pageSize: number },
+  ) => Promise<RecordListResponse>;
 }
 
 /**
@@ -251,6 +257,18 @@ class OrganizationApiImpl implements OrganizationApi {
     params: { pageNum: number; pageSize: number },
   ): Promise<RecordListResponse> {
     return apiClient.get(ORGANIZATION_ENDPOINTS.CHANGE_LOGS(memberId), { params });
+  }
+
+  /**
+   * 获取组织成员应用变更日志
+   * @param applicationId - 应用ID
+   * @returns 变更日志数据
+   */
+  async getMemberApplicationChangeLogs(
+    applicationId: string,
+    params: { pageNum: number; pageSize: number },
+  ): Promise<RecordListResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.APPLICATION_CHANGE_LOGS(applicationId), { params });
   }
 
   /**

@@ -86,6 +86,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       }));
     }, 300); // 300ms防抖
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, platformData[activeTab]?.searchText]);
 
   /**
@@ -181,13 +182,6 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     },
     [typeCode],
   );
-
-  /**
-   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
-   */
-  useEffect(() => {
-    // 搜索只在前端进行，不重新请求后端接口
-  }, [activeTab, platformData[activeTab]?.debouncedSearchText]);
 
   /**
    * 初始加载权限数据

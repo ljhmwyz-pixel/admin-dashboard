@@ -402,10 +402,9 @@ const AddMemberAssociatePlants: React.FC<AddMemberAssociatePlantsProps> = ({
   }, [orgId, leftSearchValue]);
 
   useEffect(() => {
-    setTimeout(() => {
-      loadPlants();
-    }, 0);
-  }, [loadPlants]);
+    loadPlants();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AntForm
