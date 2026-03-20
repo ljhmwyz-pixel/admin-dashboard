@@ -108,7 +108,12 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
 
       // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
       if (!selectedKey || !firstLevel.some((node) => node.permissionCode === selectedKey)) {
-        setSelectedKey(firstLevel[0]?.permissionCode || null);
+        const newSelectedKey = firstLevel[0]?.permissionCode || null;
+        setSelectedKey(newSelectedKey);
+        // 同时展开右侧节点
+        if (newSelectedKey) {
+          setExpandedRowKeys([newSelectedKey]);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch permissions');
@@ -130,15 +135,6 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
   useEffect(() => {
     fetchPermissions();
   }, [typeCode, activeTab, fetchPermissions]);
-
-  /**
-   * 处理树节点点击
-   * @param selectedKey 选中的节点编码
-   */
-  const handleTreeSelect = useCallback((selectedKey: string) => {
-    setSelectedKey(selectedKey || null);
-  }, []);
-
   /**
    * 根据权限编码查找权限
    * @param code 权限编码
@@ -170,6 +166,23 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     },
     [], // 空依赖数组，因为函数内部没有使用外部变量
   );
+  /**
+   * 处理树节点点击
+   * @param selectedKey 选中的节点编码
+   */
+  const handleTreeSelect = useCallback((selectedKey: string) => {
+    setSelectedKey(selectedKey || null);
+
+    // 当切换节点时，保持之前的展开状态，同时展开当前选中的节点
+    setExpandedRowKeys((prev) => {
+      // 如果当前选中的节点不在展开列表中，则添加它
+      if (!prev.includes(selectedKey)) {
+        return [...prev, selectedKey];
+      }
+      // 否则保持当前展开状态
+      return prev;
+    });
+  }, []);
 
   /**
    * 选中的权限数据
@@ -198,7 +211,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       const hasModifiedData = modifiedData[uniqueKey];
 
       // 创建当前节点
-      const currentNode = {
+      const currentNode: any = {
         key: uniqueKey,
         permissionName: permission.permissionName,
         thisOrganization: hasModifiedData?.SELF || permission.scopeLevels.SELF,
