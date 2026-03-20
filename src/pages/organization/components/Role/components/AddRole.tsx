@@ -13,6 +13,7 @@ import {
 import { AntMessage } from '@/shared/components';
 import { AntCol, AntForm, AntRow } from '@/shared/components';
 import { useLanguage } from '@/shared/hooks';
+import { formatDateTime } from '@/shared/utils/FormatTime';
 
 import OrganizationInfo from '../../organization-info/OrganizationInfo';
 import { type AddRoleMode } from '../index';
@@ -459,6 +460,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
                 title: 'Changed Time',
                 dataIndex: 'changeTime',
                 width: 150,
+                render: (text) => {
+                  return formatDateTime(text);
+                },
               },
             ]}
             dataSource={dataSource}
