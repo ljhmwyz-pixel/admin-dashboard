@@ -73,6 +73,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   ];
   // Platform 筛选（使用 Table filterConfig 的状态）
   const [platformFilter, setPlatformFilter] = useState<Record<string, boolean>>({});
+  // 排序状态
+  const [sorter, setSorter] = useState<{ field: string; order?: 'ascend' | 'descend' }>();
 
   // 将平台枚举转换为 Table 筛选器需要的格式
   const getPlatformFilterOptions = () => {
@@ -177,6 +179,8 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     }
     setPage(1);
     setPageSize(10);
+    // 重置排序
+    setSorter(undefined);
   }, [platformTypeOption]);
 
   // 刷新
@@ -207,12 +211,13 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
         showTitle: false,
       },
       minWidth: 140,
+      sortOrder: sorter?.field === 'roleName' ? sorter.order : undefined,
       sorter: (a, b) => {
         const getKey = (name?: string) => {
           if (!name) return 'zzz';
           const first = name.trim()[0];
           // 中文
-          if (/[\u4e00-\u9fa5]/.test(first)) {
+          if (/\u4e00-\u9fa5/.test(first)) {
             return 'z_' + first;
           }
           return 'a_' + first.toLowerCase();
@@ -299,6 +304,21 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
           {text}
         </Tooltip>
       ),
+      onHeaderCell: () => ({
+        onClick: () => {
+          // 点击表头时切换排序状态：无排序 -> 升序 -> 降序 -> 无排序
+          if (!sorter || sorter.field !== 'roleName') {
+            // 当前无排序或不是按 roleName 排序，设置为升序
+            setSorter({ field: 'roleName', order: 'ascend' });
+          } else if (sorter.order === 'ascend') {
+            // 当前是升序，切换为降序
+            setSorter({ field: 'roleName', order: 'descend' });
+          } else {
+            // 当前是降序，清除排序
+            setSorter(undefined);
+          }
+        },
+      }),
     },
     {
       title: t('role.col.platform'),
