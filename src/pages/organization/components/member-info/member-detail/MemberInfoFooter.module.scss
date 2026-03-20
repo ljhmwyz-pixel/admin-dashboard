@@ -1,0 +1,35 @@
+.cancelButton {
+    color: #A3A4A5;
+    border-color: #A3A4A5;
+
+    &:hover {
+        color: #A3A4A5 !important;
+        border-color: #A3A4A5 !important;
+    }
+}
+
+.deleteButton {
+    color: #F45858;
+    border-color: #F45858;
+
+    &:hover {
+        color: #F45858 !important;
+        border-color: #F45858 !important;
+    }
+}
+
+.lockButton {
+    color: #F4AA58;
+    border-color: #F4AA58;
+
+    &:hover {
+        color: #F4AA58 !important;
+        border-color: #F4AA58 !important;
+    }
+}
+
+.button {
+    width: 90px;
+    height: 42px;
+
+}

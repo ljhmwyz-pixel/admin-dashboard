@@ -1,7 +1,5 @@
 import type { ThemeConfig } from 'antd';
 
-import { getCurrentLanguage, type LanguageKey } from '@/i18n';
-
 // 颜色主题配置
 export const colorSchemes = {
   turquoise: {
@@ -10,29 +8,34 @@ export const colorSchemes = {
     primaryActive: '#33C2C8',
   },
   blue: {
-    primary: '#1677ff',
-    primaryHover: '#40a9ff',
-    primaryActive: '#0958d9',
+    primary: '#4083C6',
+    primaryHover: '#4083C6',
+    primaryActive: '#4083C6',
   },
   green: {
-    primary: '#52c41a',
-    primaryHover: '#73d13d',
-    primaryActive: '#389e0d',
+    primary: '#31C47F',
+    primaryHover: '#31C47F',
+    primaryActive: '#31C47F',
   },
   purple: {
-    primary: '#722ed1',
-    primaryHover: '#9254de',
-    primaryActive: '#531dab',
+    primary: '#8255C1',
+    primaryHover: '#8255C1',
+    primaryActive: '#8255C1',
   },
   orange: {
-    primary: '#fa8c16',
-    primaryHover: '#ffa940',
-    primaryActive: '#d46b08',
+    primary: '#F4AA58',
+    primaryHover: '#F4AA58',
+    primaryActive: '#F4AA58',
   },
   red: {
-    primary: '#f5222d',
-    primaryHover: '#ff4d4f',
-    primaryActive: '#cf1322',
+    primary: '#F45858',
+    primaryHover: '#F45858',
+    primaryActive: '#F45858',
+  },
+  gray: {
+    primary: '#A3A4A6',
+    primaryHover: '#A3A4A6',
+    primaryActive: '#A3A4A6',
   },
 } as const;
 
@@ -40,10 +43,10 @@ export const colorSchemes = {
 const baseTheme: ThemeConfig = {
   token: {
     colorPrimary: colorSchemes.turquoise.primary,
-    colorSuccess: '#52c41a',
-    colorWarning: '#faad14',
-    colorError: '#ff4d4f',
-    colorInfo: '#1677ff',
+    colorSuccess: '#31C47F',
+    colorWarning: '#F4AA58',
+    colorError: '#F45858',
+    colorInfo: '#4083C6',
     borderRadius: 6,
     wireframe: false,
   },

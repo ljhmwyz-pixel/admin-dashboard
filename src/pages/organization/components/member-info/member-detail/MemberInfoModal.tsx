@@ -15,12 +15,15 @@ import {
   loadRoles,
 } from '@pages/organization/services/organizationService';
 
-import { AntDrawer, AntForm, AntMessage, AntTabs } from '@/shared/components';
+import { FormDrawer } from '@/components';
+import { AntForm, AntMessage, AntTabs } from '@/shared/components';
 
 import Plants from '../org-tree/Plants';
 import BasicInfo from './BasicInfo';
 import MemberInfoFooter from './MemberInfoFooter';
 import Record from './Record';
+
+import styles from './MemberInfoModal.module.scss';
 
 /**
  * MemberInfoModal 组件属性接口
@@ -183,7 +186,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
   }
 
   return (
-    <AntDrawer
+    <FormDrawer
       title="Member Info"
       open={visible}
       onClose={onClose}
@@ -201,6 +204,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
           onReject={onReject}
           editMember={editMember}
           form={form}
+          className={styles.footer}
         />
       }
     >
@@ -242,7 +246,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
           },
         ]}
       />
-    </AntDrawer>
+    </FormDrawer>
   );
 };
 

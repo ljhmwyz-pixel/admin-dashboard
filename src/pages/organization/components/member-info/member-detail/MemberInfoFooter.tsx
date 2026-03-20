@@ -1,8 +1,12 @@
 import React from 'react';
 import type { FieldProps } from '@pages/organization/dto';
 import type { Member } from '@pages/organization/types/memberList';
+import clx from 'classnames';
 
-import { AntButton, AntSpace } from '@/shared/components';
+import { FormButton } from '@/components';
+import { AntSpace } from '@/shared/components';
+
+import styles from './MemberInfoFooter.module.scss';
 
 interface MemberInfoFooterProps {
   /** 成员数据 */
@@ -23,6 +27,8 @@ interface MemberInfoFooterProps {
   onReject?: (member: Member) => void;
   /** 表单实例 */
   form: FieldProps['form'];
+  /** 自定义类名 */
+  className?: string;
 }
 
 /**
@@ -39,6 +45,7 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
   onApprove,
   onReject,
   form,
+  className,
 }) => {
   // 处理按钮点击事件，确保 member 不为 null
   const handleButtonClick = (callback: (member: Member) => void) => {
@@ -50,9 +57,13 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
   // 生成按钮数组
   const renderButtons = () => {
     const buttons = [
-      <AntButton key="cancel" onClick={onClose}>
+      <FormButton
+        key="cancel"
+        className={clx(styles.cancelButton, styles.button)}
+        onClick={onClose}
+      >
         Cancel
-      </AntButton>,
+      </FormButton>,
     ];
 
     // 如果没有成员数据，只返回取消按钮
@@ -64,46 +75,65 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
     if (member.status === 'NORMAL' || member.status === 'LOCKED') {
       if (!editMember) {
         buttons.push(
-          <AntButton key="delete" danger onClick={() => handleButtonClick(onDelete)}>
+          <FormButton
+            key="delete"
+            className={clx(styles.deleteButton, styles.button)}
+            onClick={() => handleButtonClick(onDelete)}
+          >
             Delete
-          </AntButton>,
-          <AntButton
+          </FormButton>,
+          <FormButton
             key={member.status === 'LOCKED' ? 'unlock' : 'lock'}
+            className={clx(styles.lockButton, styles.button)}
             onClick={() => handleButtonClick(onLock)}
           >
             {member.status === 'LOCKED' ? 'Unlock' : 'Lock'}
-          </AntButton>,
+          </FormButton>,
         );
         if (!member?.isOwner) {
           buttons.push(
-            <AntButton key="modify" type="primary" onClick={() => handleButtonClick(onModify)}>
+            <FormButton
+              key="modify"
+              type="primary"
+              variant="solid"
+              className={clx(styles.modifyButton, styles.button)}
+              onClick={() => handleButtonClick(onModify)}
+            >
               Modify
-            </AntButton>,
+            </FormButton>,
           );
         }
       } else {
         buttons.push(
-          <AntButton key="save" type="primary" onClick={() => form.submit()}>
+          <FormButton
+            key="save"
+            type="primary"
+            variant="solid"
+            className={clx(styles.confirmButton, styles.button)}
+            onClick={() => form.submit()}
+          >
             Confirm
-          </AntButton>,
+          </FormButton>,
         );
       }
     } else if (member.status === 'WAITING') {
       buttons.push(
-        <AntButton
+        <FormButton
           key="reject"
-          danger
+          className={clx(styles.rejectButton, styles.button)}
           onClick={() => handleButtonClick(onReject as (member: Member) => void)}
         >
           Reject
-        </AntButton>,
-        <AntButton
+        </FormButton>,
+        <FormButton
           key="approve"
           type="primary"
+          variant="solid"
+          className={clx(styles.approveButton, styles.button)}
           onClick={() => handleButtonClick(onApprove as (member: Member) => void)}
         >
           Approve
-        </AntButton>,
+        </FormButton>,
       );
     }
 
@@ -111,7 +141,9 @@ const MemberInfoFooter: React.FC<MemberInfoFooterProps> = ({
   };
 
   return (
-    <AntSpace style={{ width: '100%', justifyContent: 'flex-end' }}>{renderButtons()}</AntSpace>
+    <AntSpace size={30} className={className}>
+      {renderButtons()}
+    </AntSpace>
   );
 };
 

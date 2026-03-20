@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { DATA_PLATFORM_OPTIONS } from '@pages/organization/constants';
 import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
 import type { SegmentedValue } from 'antd/es/segmented';
-import cls from 'classnames';
 
 import { Segmented } from '@/components';
 import type { PreviewMemberPermissionData, Role } from '@/pages/organization/dto';
@@ -96,7 +95,8 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loadi
               header: {
                 cell: {
                   backgroundColor: '#191B1F0F',
-                  boxSizing: 'border-box',
+                  color: '#191B1F99',
+                  fontWeight: 500,
                 },
               },
             }}
@@ -118,10 +118,14 @@ const PermissionsList: React.FC<PermissionsListProps> = ({ permissionList, loadi
                 title: 'Roles',
                 dataIndex: 'roles',
                 key: 'roles',
+                width: '60%',
+                fixed: 'left',
                 render: (roles: Role[]) => (
-                  <AntSpace>
+                  <AntSpace size={10}>
                     {roles.map((role, index) => (
-                      <AntTag key={index}>{role.roleName}</AntTag>
+                      <span key={index} className={styles.tag}>
+                        {role.roleName}
+                      </span>
                     ))}
                   </AntSpace>
                 ),
