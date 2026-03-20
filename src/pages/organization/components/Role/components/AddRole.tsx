@@ -27,7 +27,7 @@ export interface AddRoleRef<T = any> {
 }
 
 interface AddRoleProps<T = any> {
-  currentParentNode: TreeNodeData;
+  currentParentNode?: TreeNodeData;
   title?: string;
   width?: number | string;
   destroyOnClose?: boolean;

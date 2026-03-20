@@ -31,7 +31,7 @@ export type AddRoleMode = 'add' | 'edit' | 'view';
 export type RoleStatusFilter = 'All' | 'Normal' | 'Disabled';
 
 interface RoleInfoProps {
-  currentParentNode: TreeNodeData;
+  currentParentNode?: TreeNodeData;
   onBatchEdit?: (records: RoleRecord[]) => void;
   onBatchDelete?: (records: RoleRecord[]) => void;
 }
@@ -112,7 +112,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
 
   // 加载数据
   const loadData = useCallback(async () => {
-    if (!currentParentNode.key) return;
+    if (!currentParentNode?.key) return;
     setLoading(true);
     try {
       // 构建 platform 参数：根据筛选状态返回对应的平台数组
@@ -121,7 +121,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
         .map(([platformCode]) => platformCode);
 
       const reqParams: GetOrgRoleListReq = {
-        orgId: currentParentNode.key,
+        orgId: currentParentNode?.key,
         pageNum: page,
         pageSize,
         status: statusFilter === 'All' ? '' : statusFilter,
@@ -142,7 +142,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [currentParentNode.key, page, pageSize, platformFilter, statusFilter]);
+  }, [currentParentNode?.key, page, pageSize, platformFilter, statusFilter]);
 
   /**
    * 监听筛选条件变化，触发数据加载
