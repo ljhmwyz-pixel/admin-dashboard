@@ -99,6 +99,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   useEffect(() => {
     // 查询平台类型
     getPlatformList();
+    // eslint-disable-next-line
   }, []);
 
   const getPlatformList = async () => {
