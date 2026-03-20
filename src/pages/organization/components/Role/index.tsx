@@ -233,7 +233,6 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       title: t('role.col.members'),
       dataIndex: 'memberCount',
       key: 'memberCount',
-      width: 90,
       minWidth: 90,
     },
     {

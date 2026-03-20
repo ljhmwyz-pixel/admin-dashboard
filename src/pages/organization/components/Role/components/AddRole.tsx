@@ -253,9 +253,9 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
           <FormInput
             name="roleName"
             label={t('role.col.name')}
-            rules={[{ required: true, message: 'Please enter a role name' }]}
+            rules={[{ required: true, message: t('role.placeholder.enter_name') }]}
             inputProps={{
-              placeholder: 'Please enter a role name',
+              placeholder: t('role.placeholder.enter_name'),
               disabled: opt === 'view',
             }}
             prefixIcon={
@@ -340,7 +340,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
             name="description"
             label={t('role.col.description')}
             inputProps={{
-              placeholder: 'Please enter description',
+              placeholder: t('role.placeholder.description'),
               disabled: opt === 'view',
             }}
             prefixIcon={
@@ -488,6 +488,7 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
       }
       open={open}
       onClose={() => setOpen(false)}
+      forceRender
       destroyOnHidden={destroyOnClose}
       size={width}
       loading={loading}
