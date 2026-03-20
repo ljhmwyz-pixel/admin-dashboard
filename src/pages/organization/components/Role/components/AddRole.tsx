@@ -67,14 +67,21 @@ const AddRole = forwardRef<AddRoleRef, AddRoleProps>((props, ref) => {
   const [currentRecord, setCurrentRecord] = useState<{ roleId?: string } | null>(null);
   const resolverRef = useRef<((val?: any) => void) | null>(null);
   const { t } = useLanguage();
-  // 获取平台权限树, 暂时所有平台都是使用这个WEB的权限树
+  // 递归过滤权限树，只保留 level=2(可分配) 的节点
+  const filterRootLevel = (tree: any[], targetLevel: number) => {
+    return tree.filter((node) => Number(node.level) === targetLevel);
+  };
+  // 获取平台权限树，暂时所有平台都是使用这个 WEB 的权限树
   const getRolePermission = async () => {
     setLoading(true);
     try {
       const { data }: GetOrgRolePermissionRes = await OrgRoleApi.getOrgRolePermission({
         platform: 'WEB',
       });
-      setRolePermissionTreeData(data || []);
+      // 只保留 level=2 的节点
+      const treeData = Array.isArray(data) ? data : [];
+      const filteredData = filterRootLevel(treeData, 2);
+      setRolePermissionTreeData(filteredData);
     } catch (error) {
       console.error('加载数据失败:', error);
     } finally {

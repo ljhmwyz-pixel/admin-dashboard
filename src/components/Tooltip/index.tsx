@@ -5,9 +5,15 @@ import classNames from 'classnames';
 
 import styles from './index.module.scss';
 
-const MyTooltip: React.FC<TooltipProps> = ({ overlayClassName, children, ...rest }) => {
+const MyTooltip: React.FC<TooltipProps> = ({ classNames: userClassNames, children, ...rest }) => {
   return (
-    <Tooltip overlayClassName={classNames(styles.tooltip, overlayClassName)} {...rest}>
+    <Tooltip
+      {...rest}
+      classNames={{
+        ...userClassNames,
+        root: classNames(styles.tooltip),
+      }}
+    >
       {children}
     </Tooltip>
   );
