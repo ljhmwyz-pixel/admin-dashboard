@@ -205,6 +205,93 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       key: 'roleName',
       ellipsis: true,
       minWidth: 140,
+      sorter: (a, b) => {
+        const getKey = (name?: string) => {
+          if (!name) return 'zzz';
+          const first = name.trim()[0];
+          // 中文
+          if (/[\u4e00-\u9fa5]/.test(first)) {
+            return 'z_' + first;
+          }
+          return 'a_' + first.toLowerCase();
+        };
+        return getKey(a.roleName).localeCompare(getKey(b.roleName));
+      },
+      showSorterTooltip: false,
+      sortIcon: ({ sortOrder }) => (
+        <span style={{ position: 'absolute', left: 76, top: 18 }}>
+          {!sortOrder && (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 9.17593L4.83001 10.8585C4.89488 10.9141 4.99509 10.868 4.99509 10.7826V9V3"
+                stroke="#191B1F"
+                strokeOpacity="0.4"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M10.9951 4.82407L9.16507 3.1415C9.10021 3.0859 8.99999 3.13199 8.99999 3.21742V5V11"
+                stroke="#191B1F"
+                strokeOpacity="0.4"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          )}
+          {sortOrder === 'descend' && (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 9.17593L4.83001 10.8585C4.89488 10.9141 4.99509 10.868 4.99509 10.7826V9V3"
+                stroke="#33C2C8"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M10.9951 4.82407L9.1651 3.1415C9.10024 3.0859 9.00002 3.13199 9.00002 3.21742V5V11"
+                stroke="#191B1F"
+                strokeOpacity="0.4"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          )}
+          {sortOrder === 'ascend' && (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 9.17593L4.83001 10.8585C4.89488 10.9141 4.99509 10.868 4.99509 10.7826V9V3"
+                stroke="#191B1F"
+                strokeOpacity="0.4"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+              <path
+                d="M10.9951 4.82407L9.16507 3.1415C9.10021 3.0859 8.99999 3.13199 8.99999 3.21742V5V11"
+                stroke="#33C2C8"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          )}
+        </span>
+      ),
     },
     {
       title: t('role.col.platform'),
