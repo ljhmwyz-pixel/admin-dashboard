@@ -12,7 +12,7 @@
   justify-content: space-between;
   padding: 10px 20px;
   margin: 0 -20px 20px;
-  border-bottom: 1px solid #191b1f0f;
+  border-bottom: 1px solid #191B1F0F;
   gap: 12px;
 }
 
@@ -28,7 +28,7 @@
   .tooltipTitle {
     font-size: 12px;
     line-height: 12px;
-    color: #ffffff99;
+    color: #FFFFFF99
   }
 
   .tooltipItem {
@@ -42,12 +42,25 @@
   align-items: center;
   gap: 20px;
   justify-content: flex-end;
-}
 
-.switch-container {
-  cursor: pointer;
-  padding: 4px;
-  display: inline-block;
+  .searchInput {
+    width: 260px;
+    background-color: #191B1F0F;
+    height: 34px;
+  }
+
+  .addButton{
+    width: 74px;
+    height: 34px;
+    cursor: pointer;
+  }
+
+  .resetButton {
+    background-color: #191B1F0A;
+    cursor: pointer;
+    width: 34px;
+    height: 34px;
+  }
 }
 
 .role {
@@ -61,8 +74,8 @@
   }
 }
 
-.okConfirm,
-.okWarningConfirm {
+
+.okConfirm, .okWarningConfirm {
   width: 90px;
   height: 42px;
   border-radius: 6px;
@@ -91,18 +104,19 @@
 }
 
 .okWarningConfirm {
-  background: #f4aa58;
-  border-color: #f4aa58;
+  background: #F4AA58;
+  border-color: #F4AA58;
+  
 
   &:hover {
-    background: #f4aa58 !important;
-    border-color: #f4aa58 !important;
+    background: #F4AA58 !important;
+    border-color: #F4AA58 !important;
   }
 
   &:disabled,
   &.ant-btn-disabled {
-    background: #f4aa58 !important;
-    border-color: #f4aa58 !important;
+    background: #F4AA58 !important;
+    border-color: #F4AA58 !important;
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -118,7 +132,7 @@
 .operationButtonTitleStatus {
   font-size: 12px;
   line-height: 12px;
-  color: #ffffff99;
+  color: #FFFFFF99
 }
 
 .operationButtonTitleClick {

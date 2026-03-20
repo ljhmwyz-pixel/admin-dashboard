@@ -12,8 +12,7 @@
       font-size: 18px;
       line-height: 18px;
       font-weight: 600;
-      color: #191b1f;
-      color: $color-text-secondary !important;
+      color: $color-text-primary;
       @include dark-theme {
         color: $dark-color-text-secondary !important;
       }
@@ -43,6 +42,8 @@
   height: 100%;
   overflow-y: auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .footer {
   padding: 60px 0;

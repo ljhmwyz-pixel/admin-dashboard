@@ -381,5 +381,7 @@ export const useOrganizationForm = (currentParentNode?: TreeNodeData) => {
     resetVerifyStatus,
     requestParams,
     verifyOrganizationByUpdate,
+    setExistingPhone,
+    setExistingUsername,
   };
 };

@@ -1,15 +1,19 @@
 import type {
   AddMemberRequest,
   AddMemberResponse,
+  AssignMemberPlantsResponse,
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   DeleteResponse,
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeResponse,
   MemberUpdateResponse,
   OrganizationListParams,
   OrganizationListResponse,
+  PlantTreeParams,
+  PlantTreeResponse,
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
@@ -104,6 +108,21 @@ export interface OrganizationApi {
     memberId: string,
     data: { status: string; confirmUid: string; reason?: string },
   ) => Promise<DeleteResponse>;
+
+  /** 获取电站树 */
+  getPlantTree: (params?: PlantTreeParams) => Promise<PlantTreeResponse>;
+
+  /** 获取组织成员电站树 */
+  getMemberPlantTree: (
+    memberId: string,
+    params?: PlantTreeParams,
+  ) => Promise<MemberPlantTreeResponse>;
+
+  /** 成员分配电站 */
+  assignMemberPlants: (
+    memberId: string,
+    data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  ) => Promise<AssignMemberPlantsResponse>;
 }
 
 /**
@@ -321,6 +340,40 @@ class OrganizationApiImpl implements OrganizationApi {
     data: { status: string; confirmUid: string; reason?: string },
   ): Promise<DeleteResponse> {
     return apiClient.patch(ORGANIZATION_ENDPOINTS.CHANGE_STATUS(memberId), data);
+  }
+
+  /**
+   * 获取电站树
+   * @param params - 查询参数（分页、搜索、状态等）
+   * @returns 电站树数据
+   */
+  async getPlantTree(params?: PlantTreeParams): Promise<PlantTreeResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.PLANT_TREE, { params });
+  }
+
+  /**
+   * 获取组织成员电站树
+   * @param memberId - 成员ID
+   * @returns 电站树数据
+   */
+  async getMemberPlantTree(
+    memberId: string,
+    params?: PlantTreeParams,
+  ): Promise<MemberPlantTreeResponse> {
+    return apiClient.get(ORGANIZATION_ENDPOINTS.MEMBER_PLANT_TREE(memberId), { params });
+  }
+
+  /**
+   * 分配组织成员电站
+   * @param memberId - 成员ID
+   * @param data - 分配数据（包含组织ID、电站ID列表）
+   * @returns 分配结果
+   */
+  async assignMemberPlants(
+    memberId: string,
+    data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  ): Promise<AssignMemberPlantsResponse> {
+    return apiClient.post(ORGANIZATION_ENDPOINTS.ASSIGN_PLANTS(memberId), data);
   }
 }
 

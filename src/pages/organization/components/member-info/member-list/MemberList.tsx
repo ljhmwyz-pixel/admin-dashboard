@@ -4,11 +4,13 @@ import type { AddMemberFormData, Member, TreeNodeData } from '@pages/organizatio
 import { useMemberList } from '@pages/organization/hooks';
 import {
   addMember,
+  assignMemberPlants,
   changeMemberStatus,
   deleteMember,
   reviewMemberApplication,
   updateMember,
 } from '@pages/organization/services/organizationService';
+import { AntForm } from '@shared/components';
 import cls from 'classnames';
 
 import { useThemeModal } from '@/components/Modal';
@@ -16,7 +18,7 @@ import { selectCurrentUser } from '@/core/store/slices/authSlice';
 import { useLanguage } from '@/shared/hooks';
 
 import DeleteConfirmInput from '../../organization-tree/DeleteConfirmInput';
-import AddRole, { type AddRoleRef } from '../../Role/components/AddRole';
+import { type AddRoleRef } from '../../Role/components/AddRole';
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
 import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
@@ -54,7 +56,7 @@ interface MemberListProps {
  * - 支持锁定/解锁成员
  * - 支持审批加入申请
  */
-const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeData }) => {
+const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => {
   /** 使用自定义 Hook 管理成员列表的状态和数据加载 */
   const {
     loading,
@@ -84,6 +86,36 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const { t } = useLanguage();
   const user = useSelector(selectCurrentUser);
 
+  const [form] = AntForm.useForm();
+
+  /**
+   * 统一的 API 调用错误处理
+   */
+  const handleApiError = useCallback(
+    (err: unknown, defaultMessage: string) => {
+      console.error(err);
+      error({
+        title: 'Error !',
+        content: defaultMessage,
+      });
+    },
+    [error],
+  );
+
+  /**
+   * 统一的成功提示处理
+   */
+  const handleApiSuccess = useCallback(
+    (title: string, content: string, callback?: () => void) => {
+      success({
+        title,
+        content,
+      });
+      callback?.();
+    },
+    [success],
+  );
+
   /**
    * 处理查看成员详情操作
    * 完整展示成员的基本信息、平台权限范围和数据权限范围
@@ -97,15 +129,12 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    * 处理成员信息模态框关闭
    */
   const handleInfoModalClose = useCallback(() => {
-    if (editMember) {
-      setEditMember(false);
-      return;
-    }
+    form?.resetFields();
     setEditMember(false);
     setSelectedMember(null);
     setInfoModalVisible(false);
     setAddDrawerVisible(false);
-  }, [editMember]);
+  }, [form]);
 
   /**
    * 处理模态框中的删除操作
@@ -152,27 +181,19 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
   const handleSaveMember = useCallback(
     async (member: Member, roleIds: string[]) => {
       try {
-        // 调用更新接口
         const { memberId, status } = member;
         const result = await updateMember(memberId, { status, roleIds });
         if (result.success) {
-          success({
-            title: 'Success !',
-            content: 'Member modify successfully.',
-          });
-          handleSearch();
-          handleInfoModalClose();
-        } else {
-          error({
-            title: 'Error !',
-            content: result.message || '更新失败',
+          handleApiSuccess('Success !', 'Member modify successfully.', () => {
+            handleSearch();
+            handleInfoModalClose();
           });
         }
-      } catch (error) {
-        console.error('Error updating member:', error);
+      } catch (err) {
+        handleApiError(err, 'Failed to update member.');
       }
     },
-    [handleInfoModalClose, handleSearch, success, error],
+    [handleApiSuccess, handleInfoModalClose, handleSearch, handleApiError],
   );
 
   /**
@@ -184,10 +205,11 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       if (user?.userId === member.userId) {
         warning({
           title: 'Error !',
-          content: 'You can’t disable your own account.',
+          content: "You can't disable your own account.",
         });
         return;
       }
+
       let confirmUid = '';
       const modalInstance = confirm({
         title: 'Confirm Removal !',
@@ -196,15 +218,13 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
             placeholder="Please enter UID to confirm removal"
             onChange={(value) => {
               confirmUid = value;
-              if (modalInstance) {
-                modalInstance.update({
-                  okButtonProps: {
-                    danger: true,
-                    disabled: value !== member.userId,
-                    className: styles.okConfirm,
-                  },
-                });
-              }
+              modalInstance?.update({
+                okButtonProps: {
+                  danger: true,
+                  disabled: value !== member.userId,
+                  className: styles.okConfirm,
+                },
+              });
             }}
             confirmText="Are you sure you want to remove this member? This action cannot be undone."
             member={member}
@@ -217,32 +237,79 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
           disabled: true,
         },
         onOk: async () => {
-          try {
-            // 调用删除接口
-            const result = await deleteMember(member.memberId, { confirmUid });
-            if (result?.code === 200) {
-              success({
-                title: 'Success !',
-                content: 'Member removed successfully.',
-              });
-              handleSearch();
-            } else {
-              error({
-                title: 'Error !',
-                content: result?.message || 'Failed to remove member.',
-              });
-            }
-          } catch (err) {
-            console.error('Error deleting member:', err);
-            error({
-              title: 'Error !',
-              content: 'Failed to remove member.',
-            });
+          const result = await deleteMember(member.memberId, { confirmUid });
+          if (result?.code === 200) {
+            handleApiSuccess('Success !', 'Member removed successfully.', handleSearch);
           }
         },
       });
     },
-    [user, confirm, t, warning, success, handleSearch, error],
+    [user, confirm, t, warning, handleApiSuccess, handleSearch],
+  );
+
+  /**
+   * 处理禁用/启用成员的通用逻辑
+   */
+  const handleToggleMemberStatus = useCallback(
+    (
+      member: Member,
+      action: 'disable' | 'enable',
+      title: string,
+      confirmText: string,
+      placeholder: string,
+      successMsg: string,
+    ) => {
+      let reason = '';
+      let confirmUid = '';
+      const modalInstance = warningConfirm({
+        title,
+        content: (
+          <DeleteConfirmInput
+            textAreaPlaceholder="Please enter reason"
+            placeholder={placeholder}
+            confirmText={confirmText}
+            member={member}
+            showTextArea={true}
+            onTextAreaChange={(value) => {
+              reason = value;
+            }}
+            onChange={(value) => {
+              confirmUid = value;
+              modalInstance?.update({
+                okButtonProps: {
+                  disabled: value !== member?.userId,
+                  className: cls(styles.okConfirm, styles.okWarningConfirm),
+                },
+              });
+            }}
+          />
+        ),
+        okText: action === 'disable' ? 'Lock' : 'UnLock',
+        cancelText: 'Cancel',
+        okButtonProps: {
+          disabled: true,
+        },
+        onOk: async () => {
+          if (!member.memberId) return;
+          try {
+            const result = await changeMemberStatus(member.memberId, {
+              status: action === 'disable' ? 'LOCKED' : 'NORMAL',
+              confirmUid,
+              reason,
+            });
+            if (result?.code === 200) {
+              handleApiSuccess('Success !', successMsg, () => {
+                handleSearch();
+                handleInfoModalClose();
+              });
+            }
+          } catch (err) {
+            handleApiError(err, `Failed to ${action} member.`);
+          }
+        },
+      });
+    },
+    [warningConfirm, handleApiSuccess, handleSearch, handleInfoModalClose, handleApiError],
   );
 
   /**
@@ -251,67 +318,16 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    */
   const handleDisable = useCallback(
     (member: Member) => {
-      let reason = '';
-      let confirmUid = '';
-      const modalInstance = warningConfirm({
-        title: 'Confirm Disable !',
-        content: (
-          <DeleteConfirmInput
-            textAreaPlaceholder="Please enter reason"
-            placeholder="Please enter UID to confirm disable"
-            confirmText="Are you sure you want to lock this member?"
-            member={member}
-            showTextArea={true}
-            onTextAreaChange={(value) => {
-              reason = value;
-            }}
-            onChange={(value) => {
-              confirmUid = value;
-              if (modalInstance) {
-                modalInstance.update({
-                  okButtonProps: {
-                    disabled: value !== member?.userId,
-                    className: cls(styles.okConfirm, styles.okWarningConfirm),
-                  },
-                });
-              }
-            }}
-          />
-        ),
-        okText: 'Lock',
-        cancelText: 'Cancel',
-        onOk: async () => {
-          if (!member.memberId) return;
-          try {
-            const result = await changeMemberStatus(member.memberId, {
-              status: member?.status,
-              confirmUid,
-              reason,
-            });
-            if (result?.code === 200) {
-              success({
-                title: 'Success !',
-                content: 'Member disabled successfully.',
-              });
-              handleSearch();
-              handleInfoModalClose();
-            } else {
-              error({
-                title: 'Error !',
-                content: result?.message || 'Failed to disable member.',
-              });
-            }
-          } catch (err) {
-            console.error('Error disable member:', err);
-            error({
-              title: 'Error !',
-              content: 'Failed to disable member.',
-            });
-          }
-        },
-      });
+      handleToggleMemberStatus(
+        member,
+        'disable',
+        'Confirm Disable !',
+        'Are you sure you want to lock this member?',
+        'Please enter UID to confirm disable',
+        'Member disabled successfully.',
+      );
     },
-    [warningConfirm, success, handleSearch, handleInfoModalClose, error],
+    [handleToggleMemberStatus],
   );
 
   /**
@@ -320,140 +336,44 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    */
   const handleEnable = useCallback(
     (member: Member) => {
-      let reason = '';
-      let confirmUid = '';
-      const modalInstance = warningConfirm({
-        title: 'Confirm Disable !',
-        content: (
-          <DeleteConfirmInput
-            textAreaPlaceholder="Please enter reason"
-            placeholder="Please enter UID to confirm disable"
-            confirmText="Are you sure you want to lock this member?"
-            member={member}
-            showTextArea={true}
-            onTextAreaChange={(value) => {
-              reason = value;
-            }}
-            onChange={(value) => {
-              confirmUid = value;
-              if (modalInstance) {
-                modalInstance.update({
-                  okButtonProps: {
-                    disabled: value !== member?.userId,
-                    className: cls(styles.okConfirm, styles.okWarningConfirm),
-                  },
-                });
-              }
-            }}
-          />
-        ),
-        okText: 'UnLock',
-        cancelText: 'Cancel',
-        onOk: async () => {
-          if (!member.memberId) return;
-          try {
-            const result = await changeMemberStatus(member.memberId, {
-              status: member?.status,
-              confirmUid,
-              reason,
-            });
-            if (result?.code === 200) {
-              success({
-                title: 'Success !',
-                content: 'Member disabled successfully.',
-              });
-              handleSearch();
-              handleInfoModalClose();
-            } else {
-              error({
-                title: 'Error !',
-                content: result?.message || 'Failed to disable member.',
-              });
-            }
-          } catch (err) {
-            console.error('Error disable member:', err);
-            error({
-              title: 'Error !',
-              content: 'Failed to disable member.',
-            });
-          }
-        },
-      });
+      handleToggleMemberStatus(
+        member,
+        'enable',
+        'Confirm Enable !',
+        'Are you sure you want to unlock this member?',
+        'Please enter UID to confirm enable',
+        'Member enabled successfully.',
+      );
     },
-    [warningConfirm, success, handleSearch, handleInfoModalClose, error],
+    [handleToggleMemberStatus],
   );
 
   /**
-   * 处理通过加入组织申请操作
-   * 审批通过后需将成员状态更新为正常，并分配默认权限
+   * 处理通过/拒绝加入组织申请的通用逻辑
    */
-  const handleApprove = useCallback(
-    (member: Member) => {
-      warningConfirm({
-        title: 'Confirm Approval !',
-        content: (
-          <DeleteConfirmInput
-            placeholder="Please enter UID to confirm removal"
-            showInput={false}
-            showUid={false}
-            confirmText="Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role."
-            member={member}
-          />
-        ),
-        okText: 'Approve',
-        cancelText: 'Cancel',
-        onOk: async () => {
-          if (!member.applicationId) return;
-          try {
-            const result = await reviewMemberApplication(member.applicationId, {
-              status: member?.status,
-            });
-            if (result?.code === 200) {
-              success({
-                title: 'Success !',
-                content: 'Member approved successfully.',
-              });
-              handleSearch();
-              handleInfoModalClose();
-            } else {
-              error({
-                title: 'Error !',
-                content: result?.message || 'Failed to approve member.',
-              });
-            }
-          } catch (err) {
-            console.error('Error approving member:', err);
-            error({
-              title: 'Error !',
-              content: 'Failed to approve member.',
-            });
-          }
-        },
-      });
-    },
-    [error, handleInfoModalClose, handleSearch, success, warningConfirm],
-  );
-
-  /**
-   * 处理拒绝加入组织申请操作
-   * 拒绝时需填写拒绝原因（可选），操作后将成员状态更新为拒绝状态并通知申请人
-   */
-  const handleReject = useCallback(
-    (member: Member) => {
+  const handleReviewApplication = useCallback(
+    (
+      member: Member,
+      action: 'approve' | 'reject',
+      title: string,
+      confirmText: string,
+      needReason: boolean = false,
+      successMsg: string,
+    ) => {
       let confirmValue = '';
       const modalInstance = confirm({
-        title: 'Confirm Rejection !',
+        title,
         content: (
           <DeleteConfirmInput
-            textAreaPlaceholder="Please enter UID to confirm removal"
+            textAreaPlaceholder={needReason ? 'Please enter reason' : undefined}
             showInput={false}
             showUid={false}
-            confirmText="Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role."
+            confirmText={confirmText}
             member={member}
-            showTextArea={true}
+            showTextArea={needReason}
             onTextAreaChange={(value) => {
               confirmValue = value;
-              if (modalInstance) {
+              if (modalInstance && needReason) {
                 modalInstance.update({
                   okButtonProps: {
                     danger: true,
@@ -465,40 +385,64 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
             }}
           />
         ),
-        okText: 'Reject',
+        okText: action === 'approve' ? 'Approve' : 'Reject',
         cancelText: 'Cancel',
         onOk: async () => {
           if (!member.applicationId) return;
           try {
-            // 调用审核接口
             const result = await reviewMemberApplication(member.applicationId, {
-              status: member?.status,
-              reason: confirmValue,
+              status: action === 'approve' ? 'APPROVED' : 'REJECTED',
+              ...(needReason && { reason: confirmValue }),
             });
             if (result?.code === 200) {
-              success({
-                title: 'Success !',
-                content: 'Member rejected successfully.',
-              });
-              handleSearch();
-              handleInfoModalClose();
-            } else {
-              error({
-                title: 'Error !',
-                content: result?.message || 'Failed to reject member.',
+              handleApiSuccess('Success !', successMsg, () => {
+                handleSearch();
+                handleInfoModalClose();
               });
             }
           } catch (err) {
-            console.error('Error rejecting member:', err);
-            error({
-              title: 'Error !',
-              content: 'Failed to reject member.',
-            });
+            handleApiError(err, `Failed to ${action} member.`);
           }
         },
       });
     },
-    [confirm, success, handleSearch, handleInfoModalClose, error],
+    [confirm, handleApiSuccess, handleSearch, handleInfoModalClose, handleApiError],
+  );
+
+  /**
+   * 处理通过加入组织申请操作
+   * 审批通过后需将成员状态更新为正常，并分配默认权限
+   */
+  const handleApprove = useCallback(
+    (member: Member) => {
+      handleReviewApplication(
+        member,
+        'approve',
+        'Confirm Approval !',
+        'Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role.',
+        false,
+        'Member approved successfully.',
+      );
+    },
+    [handleReviewApplication],
+  );
+
+  /**
+   * 处理拒绝加入组织申请操作
+   * 拒绝时需填写拒绝原因（可选），操作后将成员状态更新为拒绝状态并通知申请人
+   */
+  const handleReject = useCallback(
+    (member: Member) => {
+      handleReviewApplication(
+        member,
+        'reject',
+        'Confirm Rejection !',
+        'Are you sure you want to approval this request? Once approved, the user will be added to the organization and granted access based on the assigned role.',
+        true,
+        'Member rejected successfully.',
+      );
+    },
+    [handleReviewApplication],
   );
 
   /**
@@ -513,10 +457,10 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
    */
   const handleAddSuccess = useCallback(
     async (formData: AddMemberFormData) => {
-      if (!currentParentNode?.key) return;
-      if (!formData.role?.length) return;
+      if (!currentParentNode?.key || !formData.role?.length) return;
+
       try {
-        const { basicInfo, role } = formData || {};
+        const { basicInfo, role, plants } = formData || {};
         const requestParams = {
           email: basicInfo?.orgEmail || '',
           username: basicInfo?.orgUsername || '',
@@ -526,27 +470,23 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         };
         const result = await addMember(requestParams);
         if (result?.code === 200) {
-          success({
-            title: 'Success !',
-            content: 'The user has been successfully added.',
+          const res = await assignMemberPlants(result.data?.memberId || '', {
+            orgId: currentParentNode.key,
+            orgScopeIds: plants?.organizationKeys || [],
+            plantIds: plants?.plantKeys || [],
           });
-          handleSearch();
-          setAddDrawerVisible(false);
-        } else {
-          error({
-            title: 'Error !',
-            content: result?.message || 'Failed to add member.',
-          });
+          if (res?.code === 200 && res?.success) {
+            handleApiSuccess('Success !', 'The user has been successfully added.', () => {
+              handleSearch();
+              handleInfoModalClose();
+            });
+          }
         }
       } catch (err) {
-        console.error('Error adding member:', err);
-        error({
-          title: 'Error !',
-          content: 'Failed to add member.',
-        });
+        handleApiError(err, 'Failed to add member.');
       }
     },
-    [currentParentNode, handleSearch, success, error],
+    [currentParentNode.key, handleApiSuccess, handleSearch, handleInfoModalClose, handleApiError],
   );
 
   return (
@@ -597,13 +537,14 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
       {/* 新增成员抽屉 */}
       <AddMemberDrawer
         visible={addDrawerVisible}
-        onClose={() => setAddDrawerVisible(false)}
+        form={form}
+        onClose={handleInfoModalClose}
         onSuccess={handleAddSuccess}
         orgId={orgId}
         currentParentNode={currentParentNode}
       />
 
-      <AddRole ref={roleModalRef} currentParentNode={currentParentNode} treeData={treeData} />
+      {/* <AddRole ref={roleModalRef} currentParentNode={currentParentNode} showButtonOnView={false} /> */}
     </div>
   );
 };

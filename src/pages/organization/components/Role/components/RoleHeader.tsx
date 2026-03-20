@@ -4,16 +4,14 @@ import { AntSpace } from '@shared/components';
 import { useLanguage } from '@shared/hooks/useLanguage';
 
 import { FormButton, SearchInput, Segmented } from '@/components';
-import { Permission } from '@/components/Permission';
 import type { OptionItem } from '@/components/Segmented';
-import { PermissionCode } from '@/shared/constants/permissions';
 
 import styles from './RoleHeader.module.scss';
 
 interface RoleHeaderProps {
   statusFilter: StatusFilter;
   onStatusChange: (status: StatusFilter) => void;
-  searchInputRef?: React.RefObject<any>;
+  searchInputRef?: React.RefObject<any>; // 搜索框 ref
   onPressEnter: () => void;
   onAdd: (() => void) | undefined;
   handleReset: () => void;
@@ -50,34 +48,31 @@ const RoleHeader: React.FC<RoleHeaderProps> = ({
             searchFields={['Role name']}
             inputRef={searchInputRef}
             onSearch={() => onPressEnter()}
-            maxLength={32}
           />
-          <Permission value={PermissionCode.ORG_ROLE_CREATE}>
-            <FormButton
-              color="primary"
-              variant="solid"
-              icon={
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1 6.99989H13M6.995 13.0049L6.99499 1.00488"
-                    stroke="white"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              }
-              onClick={onAdd}
-              className={styles.addBtn}
-            >
-              {t('common.action.add')}
-            </FormButton>
-          </Permission>
+          <FormButton
+            color="primary"
+            variant="solid"
+            icon={
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 6.99989H13M6.995 13.0049L6.99499 1.00488"
+                  stroke="white"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            }
+            onClick={onAdd}
+            className={styles.addBtn}
+          >
+            {t('common.action.add')}
+          </FormButton>
           <FormButton
             className={styles.refreshBtn}
             icon={

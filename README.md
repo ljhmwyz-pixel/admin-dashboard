@@ -120,17 +120,17 @@ pnpm clean
 
 ### 核心技术栈
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| React | 19.2.0 | 前端框架 |
-| TypeScript | 5.9.3 | 类型安全 |
-| Vite | 7.3.1 | 构建工具 |
-| Ant Design | 6.3.1 | UI 组件库 |
-| Redux Toolkit | 2.11.2 | 状态管理 |
-| React Router | 7.13.1 | 路由管理 |
-| i18next | 25.8.13 | 国际化 |
-| Winston | 3.19.0 | 日志系统 |
-| Sentry | 10.40.0 | 错误追踪 |
+| 技术          | 版本    | 用途      |
+| ------------- | ------- | --------- |
+| React         | 19.2.0  | 前端框架  |
+| TypeScript    | 5.9.3   | 类型安全  |
+| Vite          | 7.3.1   | 构建工具  |
+| Ant Design    | 6.3.1   | UI 组件库 |
+| Redux Toolkit | 2.11.2  | 状态管理  |
+| React Router  | 7.13.1  | 路由管理  |
+| i18next       | 25.8.13 | 国际化    |
+| Winston       | 3.19.0  | 日志系统  |
+| Sentry        | 10.40.0 | 错误追踪  |
 
 ### 架构模式
 
@@ -175,6 +175,7 @@ src/
 ### 🌐 国际化支持
 
 支持 5 种语言：
+
 - 🇨🇳 简体中文 (zh-CN)
 - 🇺🇸 English (en-US)
 - 🇩🇪 Deutsch (de-DE)
@@ -182,6 +183,7 @@ src/
 - 🇯🇵 日本語 (ja-JP)
 
 特性：
+
 - 语言包缓存机制
 - 云端语言包支持
 - 实时语言切换
@@ -206,12 +208,14 @@ src/
 ### 项目约定
 
 #### 代码规范
+
 - 使用 TypeScript 进行类型安全开发
 - 遵循 ESLint 和 Prettier 代码规范
 - 组件采用函数式组件和 Hooks
 - 状态管理使用 Redux Toolkit
 
 #### 目录结构规范
+
 ```
 features/
 └── moduleName/
@@ -223,20 +227,26 @@ features/
 ```
 
 #### 命名规范
+
 - 组件文件：PascalCase (`UserProfile.tsx`)
 - 工具函数：camelCase (`formatDate.ts`)
 - 常量：UPPER_SNAKE_CASE (`API_ENDPOINTS`)
 - 类型定义：PascalCase (`UserInterface`)
 
+> 具体参照：`./docs/CODE_STANDARDS.md`
+
 ### 开发工具
 
 #### Git Hooks
+
 项目集成了 Husky 和 lint-staged：
+
 - 提交前自动运行 ESLint 检查
 - 自动格式化代码风格
 - 类型检查前置验证
 
 #### 调试工具
+
 - React DevTools 浏览器扩展
 - Redux DevTools 浏览器扩展
 - 浏览器开发者工具
@@ -245,6 +255,7 @@ features/
 ### 环境变量
 
 不同环境的配置文件：
+
 - `.env.development` - 开发环境
 - `.env.production` - 生产环境
 - `.env.test` - 测试环境
@@ -252,6 +263,7 @@ features/
 ### 性能优化
 
 #### 代码分割
+
 ```typescript
 // 路由级别的代码分割
 const Dashboard = lazy(() => import('../features/dashboard/Dashboard'));
@@ -261,6 +273,7 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
 ```
 
 #### 缓存策略
+
 - HTTP缓存头配置
 - Service Worker 缓存
 - 本地存储优化
@@ -281,6 +294,7 @@ docker run -d -p 80:80 --name pylon_cloud_web pylon_cloud_web
 ### 云平台部署
 
 #### Vercel 部署
+
 ```bash
 # 安装 Vercel CLI
 npm install -g vercel
@@ -290,7 +304,9 @@ vercel --prod
 ```
 
 #### Netlify 部署
+
 在 Netlify 控制台中：
+
 1. 连接 Git 仓库
 2. 设置构建命令：`pnpm run build`
 3. 设置发布目录：`dist`
@@ -298,6 +314,7 @@ vercel --prod
 ### CI/CD 配置
 
 GitHub Actions 示例配置：
+
 ```yaml
 name: Deploy to Production
 
@@ -308,29 +325,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Install pnpm
-      run: npm install -g pnpm
-      
-    - name: Install dependencies
-      run: pnpm install
-      
-    - name: Build
-      run: pnpm run build
-      env:
-        VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
-        
-    - name: Deploy
-      run: |
-        # 部署脚本
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+
+      - name: Deploy
+        run: |
+          # 部署脚本
 ```
 
 ## 📁 项目结构详解
@@ -398,7 +415,9 @@ src/
 ### 代码规范
 
 #### 提交信息规范
+
 使用 conventional commits 格式：
+
 ```
 feat: 新功能
 fix: 修复 bug
@@ -410,6 +429,7 @@ chore: 构建过程或辅助工具的变动
 ```
 
 #### 分支命名规范
+
 ```
 feature/功能名称      # 新功能开发
 fix/问题描述        # Bug 修复

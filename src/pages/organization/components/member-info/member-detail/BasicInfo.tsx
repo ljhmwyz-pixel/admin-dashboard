@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   ApplyReasonField,
   OrgEmailField,
@@ -52,10 +52,11 @@ const BasicInfo: React.FC<BasicInfoProps> = ({
 
   const setFormValues = useCallback(() => {
     form.setFieldsValue({
-      role: member?.roleList?.map((role) => ({
-        value: role.roleId,
-        label: role.roleName,
-      })) || [member?.preAssignedRole],
+      role:
+        member?.roleList?.map((role) => ({
+          value: role.roleId,
+          label: role.roleName,
+        })) || (member?.preAssignedRole ? [member?.preAssignedRole] : []),
       status: [member.status],
       uid: member.uid,
       orgUsername: member.username,

@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Member } from '@pages/organization/dto';
-import { AntSpin, AntTable, AntTag } from '@shared/components';
-import type { TableColumnsType, TablePaginationConfig } from 'antd';
+import { AntSpin, AntTag } from '@shared/components';
+import type { TableColumnsType } from 'antd';
 import { uniqueId } from 'lodash-es';
+
+import { Table } from '@/components';
 
 import type { AddRoleRef } from '../../Role/components/AddRole';
 import MemberOperationButtons from './MemberOperationButtons';
@@ -38,7 +40,7 @@ interface MemberTableProps {
   /** 拒绝申请回调 */
   onReject: (member: Member) => void;
   /** 表格变更回调 */
-  onTableChange: (pagination: TablePaginationConfig, sorter: any) => void;
+  onTableChange: (p: number, ps: number) => void;
   /** 角色详情实例 */
   roleModalRef: React.RefObject<AddRoleRef>;
 }
@@ -143,7 +145,7 @@ const MemberTable: React.FC<MemberTableProps> = ({
 
   return (
     <AntSpin spinning={loading}>
-      <AntTable
+      <Table
         columns={columns}
         dataSource={members}
         showSorterTooltip={false}
@@ -152,11 +154,9 @@ const MemberTable: React.FC<MemberTableProps> = ({
           current,
           pageSize,
           total,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total) => `1-${Math.min(current * pageSize, total)} of ${total} items`,
+          pageSizeOptions: [5, 10, 15, 20, 25, 30],
+          onChange: onTableChange,
         }}
-        onChange={onTableChange}
       />
     </AntSpin>
   );

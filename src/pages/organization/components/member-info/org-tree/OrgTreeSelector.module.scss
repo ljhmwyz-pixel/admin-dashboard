@@ -3,165 +3,109 @@
   flex-direction: column;
   height: 100%;
   background: #fff;
-  border-radius: 8px;
-}
+  border-radius: 6px;
+  border: 1px solid #191B1F0F;
 
-.readonlyContainer {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  overflow: hidden;
-}
+  .searchHeader {
+    padding: 8px 10px;
+    border: 1px solid #191B1F0F;
 
-.searchHeader {
-  padding: 16px;
-  border-bottom: 1px solid #e8e8e8;
-}
+    .searchInput {
+      background-color: #191B1F0F;
+    }
+  }
 
-.searchInput {
-  width: 100%;
-}
+  .treeContainer {
+    flex: 1;
+    overflow: auto;
+    padding: 0 20px;
 
-.treeContainer {
-  flex: 1;
-  overflow: auto;
-  padding: 12px;
-}
+    .tree {
+      :global {
+        .ant-tree-node-content-wrapper {
+          flex: 1;
+          padding: 0;
+          overflow: hidden;
+        }
 
-.listContainer {
-  flex: 1;
-  overflow: auto;
-  padding: 16px;
-}
+        .ant-tree-treenode {
+          height: 34px;
+          margin: 0 !important;
+          display: flex;
+          align-items: center;
+          width: 100%;
 
-.tree {
-  :global {
-    .ant-tree-treenode {
-      height: 34px;
-      margin: 0 !important;
+          &::before {
+            display: none;
+          }
+
+          .ant-tree-switcher {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 6px;
+
+            &::before {
+              top: 5px;
+            }
+          }
+
+          .ant-tree-node-selected {
+            background-color: transparent;
+          }
+
+          .ant-tree-node-content-wrapper {
+            &:hover {
+              background-color: transparent;
+            }
+          }
+        }
+
+        .ant-tree-checkbox {
+          order: 999;
+        }
+
+        .ant-splitter-panel {
+          padding: 0;
+        }
+
+        .ant-tree-indent-unit::before,
+        .ant-tree-switcher-leaf-line::before,
+        .ant-tree-switcher-leaf-line:after {
+          display: none;
+        }
+      }
+
+    }
+
+    .treeNode {
+      overflow: hidden;
       display: flex;
-      align-items: center;
-      width: 100%;
 
-      &::before {
-        display: none;
-      }
-
-      .ant-tree-switcher {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 6px;
-
-        &::before {
-          top: 5px;
-        }
-      }
-
-      .ant-tree-node-selected {
-        background-color: transparent;
-      }
-
-      .ant-tree-node-content-wrapper {
-        &:hover {
-          background-color: transparent;
-        }
+      .treeNodeTitle {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 14px;
+        font-weight: 500;
       }
     }
+  }
 
-    .ant-tree-checkbox {
-      order: 999;
+  .footer {
+    color: #191B1F66;
+    font-size: 14px;
+    font-weight: 500;
+    gap: 10px;
+    align-items: center;
+    padding: 16px 20px;
+    border-top: 1px solid #191B1F0F;
+    display: flex;
+    justify-content: flex-end;
+
+    .selectAllCheckbox {
+      width: 14px;
+      height: 14px;
     }
-
-    .ant-splitter-panel {
-      padding: 0;
-    }
-
-    .ant-tree-indent-unit::before,
-    .ant-tree-switcher-leaf-line::before,
-    .ant-tree-switcher-leaf-line:after {
-      display: none;
-    }
   }
-}
-
-.treeNodeTitle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .orgIcon {
-    color: #1890ff;
-    font-size: 14px;
-  }
-
-  .plantIcon {
-    color: #52c41a;
-    font-size: 14px;
-  }
-}
-
-.highlight {
-  background-color: #fff2f0;
-  color: #ff4d4f;
-  padding: 0 2px;
-}
-
-.footer {
-  padding: 12px 16px;
-  border-top: 1px solid #e8e8e8;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.selectAllBtn {
-  color: #1890ff;
-  font-size: 14px;
-
-  &:hover {
-    color: #40a9ff;
-  }
-}
-
-.listItem {
-  display: flex;
-  align-items: center;
-  padding: 8px 0;
-  gap: 8px;
-
-  .orgIcon {
-    color: #1890ff;
-    font-size: 14px;
-  }
-
-  .plantIcon {
-    color: #52c41a;
-    font-size: 14px;
-  }
-
-  .itemText {
-    font-size: 14px;
-    color: #262626;
-  }
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #999;
-  font-size: 14px;
-}
-
-.empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #999;
-  font-size: 14px;
 }

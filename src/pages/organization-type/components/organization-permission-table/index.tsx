@@ -103,7 +103,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
       // 设置权限的原始数据
       setOriginalData(functionalPermissions);
       // 提取第一级节点，排除children属性
-      const firstLevel = functionalPermissions.map(({ children, ...rest }) => rest);
+      const firstLevel = functionalPermissions.map(({ children: _children, ...rest }) => rest);
       setFirstLevelNodes(firstLevel);
 
       // 保持当前选中的节点状态，只有当selectedKey不存在或无效时才设置为第一个节点
@@ -115,7 +115,14 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     } finally {
       setLoading(false);
     }
-  }, [typeCode, activeTab]);
+  }, [typeCode, activeTab, selectedKey]);
+
+  /**
+   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
+   */
+  useEffect(() => {
+    // 搜索只在前端进行，不重新请求后端接口
+  }, [debouncedSearchText]);
 
   /**
    * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口

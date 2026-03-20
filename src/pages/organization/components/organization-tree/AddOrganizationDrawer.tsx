@@ -131,6 +131,9 @@ const AddOrganizationDrawer: React.FC<AddOrganizationProps> = ({
       closable={{ placement: 'end' }}
       onClose={handleCancel}
       styles={{
+        header: {
+          padding: '18px 20px',
+        },
         body: {
           padding: '0',
           scrollbarWidth: 'none',

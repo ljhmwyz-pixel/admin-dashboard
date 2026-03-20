@@ -160,6 +160,22 @@ export interface MemberUpdateResponse {
 }
 
 /**
+ * 组织成员分配电站响应数据类型
+ * 用于返回组织成员分配电站结果
+ */
+export interface AssignMemberPlantsResponse {
+  code: number;
+  errorCode: string;
+  success: boolean;
+  message: string;
+  data: {
+    key: boolean;
+  };
+  timestamp: string;
+  traceId: string;
+}
+
+/**
  * 组织成员更新请求参数类型
  * 用于提交组织成员更新请求
  */
@@ -176,9 +192,9 @@ export interface MemberUpdateRequest {
  */
 export interface ListItem {
   /** 唯一标识 */
-  key: string;
+  nodeId: string;
   /** 标题 */
-  title: string;
+  nodeName: string;
   /** 是否为电站 */
   isPlant?: boolean;
   /** 额外数据 */
@@ -192,11 +208,11 @@ export interface SelectedListProps {
   /** 列表标题 */
   title: string;
   /** 列表数据 */
-  data: ListItem[];
+  data: PlantTreeDatum[];
   /** 选中的keys */
   selectedKeys: React.Key[];
   /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[]) => void;
+  onChange: (selectedItems: PlantTreeDatum) => void;
   /** 搜索关键词 */
   searchValue?: string;
   /** 搜索变化回调 */
@@ -221,28 +237,8 @@ export interface SelectedListProps {
   emptyText?: React.ReactNode;
   /** 图标类型 */
   iconType?: 'org' | 'plant';
-}
-
-/**
- * 树节点数据类型
- */
-export interface TreeNode {
-  /** 节点唯一标识 */
-  key: string;
-  /** 节点标题 */
-  title: string;
-  /** 子节点列表 */
-  children?: TreeNode[];
-  /** 是否为电站 */
-  isPlant?: boolean;
-  /** 父节点ID */
-  parentId?: string;
-  /** 是否禁用 */
-  disabled?: boolean;
-  /** 是否可选 */
-  selectable?: boolean;
-  /** 是否可勾选 */
-  checkable?: boolean;
+  /** 是否展示提示 */
+  showTips?: boolean;
 }
 
 /**
@@ -250,11 +246,11 @@ export interface TreeNode {
  */
 export interface OrgTreeSelectorProps {
   /** 树形数据 */
-  treeData: TreeNode[];
+  treeData: PlantTreeDatum[];
   /** 选中的节点keys */
-  selectedKeys: React.Key[];
-  /** 选中变化回调 */
-  onChange: (selectedKeys: React.Key[], selectedNodes: TreeNode[]) => void;
+  selectedKeys?: React.Key[];
+  /** 选中变化回调 - 返回选中的keys和nodes */
+  onChange: (checkedKeys: React.Key[], checkedNodes: PlantTreeDatum[]) => void;
   /** 搜索关键词 */
   searchValue?: string;
   /** 搜索变化回调 */
@@ -285,6 +281,10 @@ export interface OrgTreeSelectorProps {
   emptyText?: React.ReactNode;
   /** 标题 */
   title?: string;
+  /** 是否全选 */
+  selectAllCheckboxChecked?: boolean;
+  /** 全选回调 */
+  setSelectAllCheckboxChecked?: (checked: boolean) => void;
 }
 
 /**
@@ -334,20 +334,25 @@ export interface PreviewMemberPermissionResponse {
 }
 
 export interface PreviewMemberPermissionData {
-  webPermissions: Permission[];
-  appPermissions: Permission[];
+  platformPermissions: PlatformPermissions[];
+}
+
+export interface PlatformPermissions {
+  platform: string;
+  platformName: string;
+  children: Permission[];
 }
 
 export interface Permission {
-  permissionId: string;
-  permissionCode: string;
-  permissionName: string;
-  parentId: string;
-  permissionType: string;
   level: number;
-  sortOrder: number;
+  parentId: string | null;
+  permissionCode: string;
+  permissionId: string;
+  permissionName: string;
+  permissionType: string;
   roles: Role[];
-  children: PreviewMemberPermissionData;
+  sortOrder: number;
+  children: Permission[];
 }
 
 export interface RoleListResponse {
@@ -471,4 +476,80 @@ export interface ReviewMemberApplicationResponse {
   };
   timestamp: string;
   traceId: string;
+}
+
+/**
+ * 电站树请求参数类型
+ * 符合需求文档规范
+ */
+export interface PlantTreeParams {
+  /** 电站ID */
+  orgId: string;
+  /** 组织名称关键词（模糊搜索） */
+  keyword?: string;
+}
+
+export interface PlantTreeResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: PlantTreeDatum[];
+  timestamp: string;
+  traceId: string;
+}
+
+export interface PlantTreeDatum {
+  nodeId?: string;
+  nodeName?: string;
+  nodeType?: string;
+  parentId?: string;
+  plantId?: string;
+  plantStatus?: string;
+  hasOrgScope?: boolean;
+  children?: PlantTreeDatum[];
+}
+
+export interface MemberPlantTreeResponse {
+  code: number;
+  errorCode: string;
+  message: string;
+  data: MemberPlantTreeDatum[];
+  timestamp: string;
+  traceId: string;
+}
+
+export interface MemberPlantTreeDatum {
+  orgHierarchy: OrgHierarchy[];
+  orgScopes: OrgScope[];
+  plants: Plants[];
+}
+
+export interface OrgHierarchy {
+  scopeOrgId: string;
+  scopeOrgName: string;
+  level: number;
+}
+
+export interface OrgScope {
+  scopeOrgId: string;
+  scopeOrgName: string;
+  grantedAt: {
+    dateTime: string;
+    offset: {
+      totalSeconds: number;
+    };
+  };
+}
+
+export interface Plants {
+  plantId?: string;
+  plantName?: string;
+  orgId?: string;
+  orgName?: string;
+  grantedAt: {
+    dateTime: string;
+    offset: {
+      totalSeconds: number;
+    };
+  };
 }

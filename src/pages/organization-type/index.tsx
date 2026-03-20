@@ -45,7 +45,6 @@ const OrganizationType: React.FC = () => {
    * 存储API调用过程中发生的错误信息
    */
   const [error, setError] = useState<string | null>(null);
-
   /**
    * 详情弹窗可见性
    * 控制组织类型详情弹窗的显示和隐藏

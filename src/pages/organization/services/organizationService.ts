@@ -2,12 +2,16 @@
 import type {
   AddMemberRequest,
   AddMemberResponse,
+  AssignMemberPlantsResponse,
   DeleteResponse,
   MemberDetailResponse,
   MemberListParams,
   MemberListResponse,
+  MemberPlantTreeResponse,
   MemberUpdateResponse,
   OrganizationListParams,
+  PlantTreeParams,
+  PlantTreeResponse,
   PreviewMemberPermissionRequest,
   PreviewMemberPermissionResponse,
   RecordListResponse,
@@ -17,14 +21,6 @@ import type {
 } from '@pages/organization/dto';
 import { transformOrganizationToTreeData } from '@pages/organization/utils';
 
-import type {
-  MemberDetail,
-  MemberListParams,
-  MemberListResponse,
-  MemberUpdateResponse,
-  OrganizationListParams,
-  TreeNodeData,
-} from '@/pages/organization/dto';
 import { organizationApi } from '@/services/modules/organization/organizationApi';
 
 // 删除验证结果类型
@@ -615,6 +611,112 @@ export const changeMemberStatus = async (
     return await changeMemberStatusLogic();
   } catch (error) {
     console.error('Failed to change member status:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取电站树
+ * @param params - 查询参数（电站ID、组织名称关键词）
+ * @param withLoading - 全局 loading 包装函数
+ * @returns 电站树数据
+ */
+export const getPlantTree = async (
+  params?: PlantTreeParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<PlantTreeResponse | undefined> => {
+  const getPlantTreeLogic = async (): Promise<PlantTreeResponse> => {
+    const response = await organizationApi.getPlantTree(params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(getPlantTreeLogic, {
+      onError: (error) => {
+        console.error('Get plant tree error:', error);
+      },
+    });
+  }
+
+  try {
+    return await getPlantTreeLogic();
+  } catch (error) {
+    console.error('Failed to get plant tree:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 获取组织成员电站树
+ * @param memberId 成员ID
+ * @param params - 查询参数（电站ID、组织名称关键词）
+ * @param withLoading - 全局 loading 包装函数
+ * @returns 电站树数据
+ */
+export const getMemberPlantTree = async (
+  memberId: string,
+  params?: PlantTreeParams,
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<MemberPlantTreeResponse | undefined> => {
+  const getMemberPlantTreeLogic = async (): Promise<MemberPlantTreeResponse> => {
+    const response = await organizationApi.getMemberPlantTree(memberId, params);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(getMemberPlantTreeLogic, {
+      onError: (error) => {
+        console.error('Get member plant tree error:', error);
+      },
+    });
+  }
+
+  try {
+    return await getMemberPlantTreeLogic();
+  } catch (error) {
+    console.error('Failed to get member plant tree:', error);
+    return undefined;
+  }
+};
+
+/**
+ * 分配组织成员电站
+ * @param memberId 成员ID
+ * @param data 分配数据（包含组织ID、电站ID列表）
+ * @param withLoading 全局 loading 包装函数
+ * @returns 分配结果
+ */
+export const assignMemberPlants = async (
+  memberId: string,
+  data: { orgId: string; orgScopeIds: string[]; plantIds: string[] },
+  withLoading?: <T>(
+    asyncFn: () => Promise<T>,
+    options?: { onError?: (error: unknown) => void },
+  ) => Promise<T | undefined>,
+): Promise<AssignMemberPlantsResponse | undefined> => {
+  const assignMemberPlantsLogic = async (): Promise<AssignMemberPlantsResponse> => {
+    const response = await organizationApi.assignMemberPlants(memberId, data);
+    return response;
+  };
+
+  if (withLoading) {
+    return withLoading(assignMemberPlantsLogic, {
+      onError: (error) => {
+        console.error('Assign member plants error:', error);
+      },
+    });
+  }
+
+  try {
+    return await assignMemberPlantsLogic();
+  } catch (error) {
+    console.error('Failed to assign member plants:', error);
     return undefined;
   }
 };

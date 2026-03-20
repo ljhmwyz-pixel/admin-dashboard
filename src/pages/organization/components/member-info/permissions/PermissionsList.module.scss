@@ -1,38 +1,117 @@
-.segmentedContainer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+.stepContent {
 
-    .segmentedLabel {
+    flex: 1;
+
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
         font-weight: 600;
         font-style: SemiBold;
         font-size: 14px;
         line-height: 14px;
         letter-spacing: 0%;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        color: #191B1F66;
-
-        &.active {
-            color: #31C47F;
-
-            path {
-                stroke: #31C47F;
-                stroke-opacity: 1;
-            }
-        }
-
-
+        color: #191B1F99;
+        margin-bottom: 10px;
     }
-}
 
-.table {
     :global {
         .ant-table-row-expand-icon {
             display: none;
+        }
+
+        .ant-spin-container,
+        .ant-spin,
+        .ant-table-wrapper,
+        .ant-table,
+        .ant-table-container,
+        .ant-table-content,
+        table {
+            height: 100%;
+        }
+
+        .ant-table-cell {
+            border-bottom: none !important;
+        }
+
+        .ant-table-row {
+            border-bottom: none !important;
+        }
+
+        /* 设置表头高度 */
+        .ant-table-thead>tr>th {
+            height: 46px !important;
+            padding: 16px 30px !important;
+            line-height: 14px !important;
+        }
+
+        /* 设置表体行高度 */
+        .ant-table-tbody>tr>td {
+            height: 54px !important;
+            padding: 16px 30px !important;
+            line-height: 14px !important;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .ant-table-tbody>tr {
+            &:nth-child(2n) {
+                td {
+                    background-color: #191B1F05 !important;
+                }
+            }
+        }
+
+    }
+
+
+    .table {
+        padding: 20px;
+
+        .tag {
+            padding: 10px;
+            display: inline-block;
+            font-family: Montserrat;
+            font-weight: 500;
+            font-style: Medium;
+            font-size: 14px;
+            line-height: 14px;
+            letter-spacing: 0%;
+            border: 1px solid #191B1F0F;
+            background-color: #191B1F05;
+            border-radius: 3px;
+        }
+    }
+
+    .segmented {
+        border: 1px solid #191B1F0F;
+        border-radius: 6px;
+        overflow: hidden;
+        height: 100%;
+
+        .segmentedContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 10px 20px;
+            border-bottom: 1px solid #191B1F0F;
+
+            .segmentedLabel {
+                font-weight: 600;
+                font-style: SemiBold;
+                font-size: 14px;
+                line-height: 14px;
+                letter-spacing: 0%;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                color: #191B1F66;
+
+            }
         }
     }
 }

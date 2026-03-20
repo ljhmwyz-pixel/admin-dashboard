@@ -1,4 +1,4 @@
-import { type SetStateAction, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Member } from '@pages/organization/dto';
 import { loadMembers } from '@pages/organization/services/organizationService';
 import type { SegmentedValue } from 'antd/es/segmented';
@@ -38,7 +38,7 @@ interface UseMemberListReturn {
   /** 重置处理函数 */
   handleReset: () => void;
   /** 表格变更处理函数 */
-  handleTableChange: (pagination: any, sorter: any) => void;
+  handleTableChange: (p: number, ps: number) => void;
   /** 加载成员数据函数 */
   loadMembersData: () => Promise<void>;
 }
@@ -134,13 +134,10 @@ export const useMemberList = ({ orgId }: UseMemberListParams): UseMemberListRetu
    * @param pagination - 分页信息
    * @param sorter - 排序信息
    */
-  const handleTableChange = useCallback(
-    (pagination: { current: SetStateAction<number>; pageSize: SetStateAction<number> }) => {
-      if (pagination.current) setCurrent(pagination.current);
-      if (pagination.pageSize) setPageSize(pagination.pageSize);
-    },
-    [],
-  );
+  const handleTableChange = useCallback((p: number, ps: number) => {
+    setCurrent(p);
+    setPageSize(ps);
+  }, []);
 
   return {
     loading,

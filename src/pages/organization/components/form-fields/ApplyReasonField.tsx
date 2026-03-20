@@ -1,15 +1,12 @@
 import React from 'react';
 import type { FieldProps } from '@pages/organization/dto';
 import { AntCol } from '@shared/components';
-import { useLanguage } from '@shared/hooks';
 
 import { FormInput } from '@/components';
 
 type ApplyReasonFieldProps = FieldProps & { canEdit?: boolean; span?: number };
 
 const ApplyReasonField: React.FC<ApplyReasonFieldProps> = ({ canEdit = true, span = 12 }) => {
-  const { t } = useLanguage();
-
   return (
     <AntCol span={span}>
       <FormInput

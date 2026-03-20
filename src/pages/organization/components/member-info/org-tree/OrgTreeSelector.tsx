@@ -1,10 +1,40 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ApartmentOutlined, SearchOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import type { OrgTreeSelectorProps, TreeNode } from '@pages/organization/dto';
-import { AntButton, AntInput, AntTree } from '@shared/components';
-import type { TreeProps } from 'antd/es/tree';
+import React, { useCallback } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
+import type { OrgTreeSelectorProps, PlantTreeDatum } from '@pages/organization/dto';
+import { AntCheckbox, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
+import type { DataNode, TreeProps } from 'antd/es/tree';
+import clx from 'classnames';
 
 import styles from './OrgTreeSelector.module.scss';
+
+/**
+ * 获取节点的所有后代节点
+ */
+const getAllDescendants = (node: PlantTreeDatum): PlantTreeDatum[] => {
+  const descendants: PlantTreeDatum[] = [node];
+  if (node.children && node.children.length > 0) {
+    node.children.forEach((child) => {
+      descendants.push(...getAllDescendants(child));
+    });
+  }
+  return descendants;
+};
+
+/**
+ * 在树中查找指定节点
+ */
+const findNodeById = (nodeId: React.Key, data: PlantTreeDatum[]): PlantTreeDatum | null => {
+  for (const node of data) {
+    if (node.nodeId === nodeId) {
+      return node;
+    }
+    if (node.children && node.children.length > 0) {
+      const found = findNodeById(nodeId, node.children);
+      if (found) return found;
+    }
+  }
+  return null;
+};
 
 /**
  * 组织树选择器组件
@@ -16,304 +46,156 @@ import styles from './OrgTreeSelector.module.scss';
  * - 支持编辑态和展示态切换
  * - 支持自定义节点渲染
  * - 支持多选/单选
- * - 支持勾选模式
+ * - 支持级联勾选模式（勾选父节点自动勾选所有子节点）
  */
 const OrgTreeSelector: React.FC<OrgTreeSelectorProps> = ({
   treeData,
   selectedKeys,
   onChange,
-  searchValue: controlledSearchValue,
+  searchValue,
   onSearch,
-  editable = true,
-  showSearch = true,
   searchPlaceholder = 'Please enter organization name or ID',
-  showSelectAll = true,
-  onSelectAll,
   className = '',
   style,
-  defaultExpandAll = false,
-  expandedKeys: controlledExpandedKeys,
-  onExpand,
   loading = false,
-  emptyText = 'No data available',
-  title = 'Selected Oragnization',
+  selectAllCheckboxChecked,
+  setSelectAllCheckboxChecked,
 }) => {
-  /** 内部搜索状态 */
-  const [internalSearchValue, setInternalSearchValue] = useState('');
-  /** 内部展开状态 */
-  const [internalExpandedKeys, setInternalExpandedKeys] = useState<React.Key[]>([]);
-
-  /** 是否受控搜索 */
-  const isSearchControlled = controlledSearchValue !== undefined;
-  const searchValue = isSearchControlled ? controlledSearchValue : internalSearchValue;
-
-  /** 是否受控展开 */
-  const isExpandControlled = controlledExpandedKeys !== undefined;
-  const expandedKeys = isExpandControlled ? controlledExpandedKeys : internalExpandedKeys;
-
-  /**
-   * 过滤后的树形数据
-   */
-  const filteredTreeData = useMemo(() => {
-    if (!searchValue) return treeData;
-
-    const filterNodes = (nodes: TreeNode[]): TreeNode[] => {
-      return nodes
-        .map((node) => {
-          const match = node.title.toLowerCase().includes(searchValue.toLowerCase());
-          const filteredChildren = node.children ? filterNodes(node.children) : [];
-
-          if (match || filteredChildren.length > 0) {
-            return {
-              ...node,
-              children: filteredChildren,
-            };
-          }
-          return null;
-        })
-        .filter(Boolean) as TreeNode[];
-    };
-
-    return filterNodes(treeData);
-  }, [treeData, searchValue]);
-
   /**
    * 处理搜索变化
    */
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
-      if (!isSearchControlled) {
-        setInternalSearchValue(value);
-      }
       onSearch?.(value);
     },
-    [isSearchControlled, onSearch],
+    [onSearch],
   );
 
   /**
    * 处理树节点勾选变化
+   * 实现级联勾选逻辑：
+   * 1. 勾选父节点时，自动勾选所有子节点
+   * 2. 取消勾选子节点时，父节点的勾选状态也会被取消
    */
   const handleTreeCheck: TreeProps['onCheck'] = useCallback(
-    (checked: any) => {
-      const keys = checked;
-      // 获取选中的节点数据
-      const selectedNodes: TreeNode[] = [];
-      const findNodes = (nodes: TreeNode[], targetKeys: string | string[]) => {
-        nodes.forEach((node) => {
-          if (targetKeys.includes(node.key)) {
-            selectedNodes.push(node);
-          }
-          if (node.children) {
-            findNodes(node.children, targetKeys);
-          }
-        });
-      };
-      findNodes(treeData, keys);
-      onChange(keys, selectedNodes);
+    (
+      checked: React.Key[] | { checked: React.Key[]; halfChecked: React.Key[] },
+      info: { checkedNodes: PlantTreeDatum[]; node: PlantTreeDatum; checked: boolean },
+    ) => {
+      const checkedKeys = Array.isArray(checked) ? checked : checked.checked;
+      const currentNode = info.node;
+      const isChecked = info.checked;
+
+      let newCheckedKeys: React.Key[] = [...checkedKeys];
+      const newCheckedNodes: PlantTreeDatum[] = [];
+
+      if (isChecked) {
+        // 勾选操作：获取当前节点及其所有后代
+        const allDescendants = getAllDescendants(currentNode);
+        // 合并到已选列表（去重）
+        const allKeys = new Set([...newCheckedKeys, ...allDescendants.map((d) => d.nodeId)]);
+        newCheckedKeys = Array.from(allKeys).filter((key): key is React.Key => key !== undefined);
+      } else {
+        // 取消勾选操作：移除当前节点及其所有后代
+        const allDescendants = getAllDescendants(currentNode);
+        const keysToRemove = new Set(allDescendants.map((d) => d.nodeId));
+        newCheckedKeys = newCheckedKeys.filter((key) => !keysToRemove.has(String(key)));
+      }
+
+      // 根据新的keys构建节点列表
+      newCheckedKeys.forEach((key) => {
+        const node = findNodeById(key, treeData);
+        if (node) {
+          newCheckedNodes.push(node);
+        }
+      });
+
+      // 调用父组件的onChange，传递keys和nodes
+      onChange?.(newCheckedKeys, newCheckedNodes);
     },
     [onChange, treeData],
   );
 
   /**
-   * 处理展开变化
-   */
-  const handleExpand = useCallback(
-    (keys: React.Key[]) => {
-      if (!isExpandControlled) {
-        setInternalExpandedKeys(keys);
-      }
-      onExpand?.(keys);
-    },
-    [isExpandControlled, onExpand],
-  );
-
-  /**
-   * 获取所有节点keys
-   */
-  const getAllKeys = useCallback((nodes: TreeNode[]): string[] => {
-    const keys: string[] = [];
-    nodes.forEach((node) => {
-      keys.push(node.key);
-      if (node.children) {
-        // eslint-disable-next-line react-hooks/immutability
-        keys.push(...getAllKeys(node.children));
-      }
-    });
-    return keys;
-  }, []);
-
-  /**
    * 处理全选
    */
   const handleSelectAll = useCallback(() => {
-    if (onSelectAll) {
-      onSelectAll();
-      return;
-    }
+    const allKeys: React.Key[] = [];
+    const allNodes: PlantTreeDatum[] = [];
 
-    const allKeys = getAllKeys(treeData);
-    const allNodes: TreeNode[] = [];
-    const collectNodes = (nodes: TreeNode[]) => {
+    const traverse = (nodes: PlantTreeDatum[]) => {
       nodes.forEach((node) => {
+        allKeys.push(node.nodeId || '');
         allNodes.push(node);
-        if (node.children) {
-          collectNodes(node.children);
+        if (node.children && node.children.length > 0) {
+          traverse(node.children);
         }
       });
     };
-    collectNodes(treeData);
-    onChange(allKeys, allNodes);
-  }, [treeData, onChange, onSelectAll, getAllKeys]);
+
+    traverse(treeData);
+    onChange?.(allKeys, allNodes);
+    setSelectAllCheckboxChecked?.(true);
+  }, [treeData, onChange, setSelectAllCheckboxChecked]);
 
   /**
    * 默认标题渲染
    */
-  const defaultTitleRender = useCallback(
-    (node: TreeNode) => {
-      const isPlant = node.isPlant;
-      const icon = isPlant ? (
-        <ThunderboltOutlined className={styles.plantIcon} />
-      ) : (
-        <ApartmentOutlined className={styles.orgIcon} />
-      );
+  const defaultTitleRender = useCallback((node: PlantTreeDatum) => {
+    return (
+      <span className={styles.treeNode}>
+        <span className={styles.treeNodeTitle}>{node.nodeName}</span>
+      </span>
+    );
+  }, []);
 
-      if (searchValue && node.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        const index = node.title.toLowerCase().indexOf(searchValue.toLowerCase());
-        const before = node.title.slice(0, index);
-        const match = node.title.slice(index, index + searchValue.length);
-        const after = node.title.slice(index + searchValue.length);
-
-        return (
-          <span className={styles.treeNodeTitle}>
-            {icon}
-            <span>
-              {before}
-              <span className={styles.highlight}>{match}</span>
-              {after}
-            </span>
-          </span>
-        );
-      }
-
-      return (
-        <span className={styles.treeNodeTitle}>
-          {icon}
-          <span>{node.title}</span>
-        </span>
-      );
-    },
-    [searchValue],
-  );
-
-  /**
-   * 渲染编辑态
-   */
-  const renderEditable = () => (
-    <div className={`${styles.editableContainer} ${className}`} style={style}>
-      {showSearch && (
-        <div className={styles.searchHeader}>
-          <AntInput
-            prefix={<SearchOutlined />}
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={handleSearchChange}
-            className={styles.searchInput}
-            allowClear
-          />
-        </div>
-      )}
-      <div className={styles.treeContainer}>
-        {loading ? (
-          <div className={styles.loading}>Loading...</div>
-        ) : filteredTreeData.length === 0 ? (
-          <div className={styles.empty}>{emptyText}</div>
-        ) : (
-          <AntTree
-            checkable
-            showLine
-            treeData={filteredTreeData as any}
-            checkedKeys={selectedKeys}
-            expandedKeys={expandedKeys}
-            onCheck={handleTreeCheck}
-            onExpand={handleExpand}
-            titleRender={(node) => defaultTitleRender(node as TreeNode)}
-            className={styles.tree}
-            defaultExpandAll={defaultExpandAll}
-          />
-        )}
+  return (
+    <div className={clx(styles.editableContainer, className)} style={style}>
+      <div className={styles.searchHeader}>
+        <AntInput
+          prefix={<SearchOutlined />}
+          placeholder={searchPlaceholder}
+          value={searchValue}
+          onChange={handleSearchChange}
+          className={styles.searchInput}
+          allowClear
+        />
       </div>
-      {showSelectAll && editable && (
-        <div className={styles.footer}>
-          <AntButton type="link" onClick={handleSelectAll} className={styles.selectAllBtn}>
-            Select All
-          </AntButton>
-        </div>
-      )}
+      <div className={styles.treeContainer}>
+        <AntSpin spinning={loading}>
+          {treeData?.length === 0 ? (
+            <AntEmpty />
+          ) : (
+            <AntTree
+              checkable
+              showLine
+              checkStrictly={true}
+              treeData={treeData as unknown as DataNode[]}
+              checkedKeys={selectedKeys}
+              onCheck={handleTreeCheck}
+              height={window?.innerHeight - 430 || 550}
+              fieldNames={{
+                title: 'nodeName',
+                children: 'children',
+                key: 'nodeId',
+              }}
+              titleRender={(node) => defaultTitleRender(node)}
+              className={styles.tree}
+            />
+          )}
+        </AntSpin>
+      </div>
+      <div className={styles.footer}>
+        <span>Select All</span>
+        <AntCheckbox
+          onClick={handleSelectAll}
+          className={styles.selectAllCheckbox}
+          checked={selectAllCheckboxChecked}
+        />
+      </div>
     </div>
   );
-
-  /**
-   * 渲染展示态
-   */
-  const renderReadonly = () => {
-    // 获取选中的节点数据
-    const selectedNodes: TreeNode[] = [];
-    const findNodes = (nodes: TreeNode[]) => {
-      nodes.forEach((node) => {
-        if (selectedKeys.includes(node.key)) {
-          selectedNodes.push(node);
-        }
-        if (node.children) {
-          findNodes(node.children);
-        }
-      });
-    };
-    findNodes(treeData);
-
-    return (
-      <div className={`${styles.readonlyContainer} ${className}`} style={style}>
-        <div className={styles.title}>{title}</div>
-        {showSearch && (
-          <div className={styles.searchHeader}>
-            <AntInput
-              prefix={<SearchOutlined />}
-              placeholder={searchPlaceholder}
-              value={searchValue}
-              onChange={handleSearchChange}
-              className={styles.searchInput}
-              allowClear
-            />
-          </div>
-        )}
-        <div className={styles.listContainer}>
-          {loading ? (
-            <div className={styles.loading}>Loading...</div>
-          ) : selectedNodes.length === 0 ? (
-            <div className={styles.empty}>{emptyText}</div>
-          ) : (
-            selectedNodes.map((node) => {
-              const isPlant = node.isPlant;
-              const icon = isPlant ? (
-                <ThunderboltOutlined className={styles.plantIcon} />
-              ) : (
-                <ApartmentOutlined className={styles.orgIcon} />
-              );
-
-              return (
-                <div key={node.key} className={styles.listItem}>
-                  {icon}
-                  <span className={styles.itemText}>{node.title}</span>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  return editable ? renderEditable() : renderReadonly();
 };
 
 export default OrgTreeSelector;

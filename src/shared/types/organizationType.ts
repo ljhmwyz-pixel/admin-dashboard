@@ -46,6 +46,78 @@ export interface OrganizationTypeRecordItem {
   changeTime: string; // 变更时间（格式：yyyy-MM-dd HH:mm:ss）
 }
 
+// 组织类型详情-权限项
+export interface OrganizationTypePermissionItem {
+  permissionId: string | null; // 权限 ID
+  permissionCode: string; // 权限编码
+  permissionName: string; // 权限名称
+  parentPermissionCode: string | null; // 父权限编码（null 表示顶级）
+  permissionLevel: number; // 权限层级（1/2/3）
+  scopeLevels: {
+    SELF: string; // 本组织访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+    DIRECT_CHILD: string; // 直属下级访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+    NON_DIRECT_CHILD: string; // 非直属下级访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+  };
+  children?: OrganizationTypePermissionItem[]; // 子权限项（递归）
+}
+// 数据权限项
+export interface OrganizationTypeDataItem {
+  dataPermissionCode: string; // 数据权限编码
+  dataPermissionName: string; // 数据权限名称
+  resourceType: string; // 资源类型：ORGANIZATION / MEMBER / STATION
+  resourceTypeName: string; // 资源类型名称
+  levels: {
+    // 各范围的访问级别
+    SELF: string; // 本组织：FULL / MASKED / HIDDEN
+    DIRECT_CHILD: string; // 直属下级：FULL / MASKED / HIDDEN
+    NON_DIRECT_CHILD: string; // 非直属下级：FULL / MASKED / HIDDEN
+  };
+}
+// 变更记录项
+export interface OrganizationTypeRecordItem {
+  no: number; // 记录序号
+  changeType: string; // 变更类型：UPDATE（变更）
+  changedBy: string; // 变更者的 External UID
+  changeContent: string; // 变更内容摘要，前缀 [P] 代表功能权限变更、[D] 代表数据权限变更
+  changeTime: string; // 变更时间（格式：yyyy-MM-dd HH:mm:ss）
+}
+
+// 组织类型详情-权限项
+export interface OrganizationTypePermissionItem {
+  permissionId: string | null; // 权限 ID
+  permissionCode: string; // 权限编码
+  permissionName: string; // 权限名称
+  parentPermissionCode: string | null; // 父权限编码（null 表示顶级）
+  permissionLevel: number; // 权限层级（1/2/3）
+  scopeLevels: {
+    SELF: string; // 本组织访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+    DIRECT_CHILD: string; // 直属下级访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+    NON_DIRECT_CHILD: string; // 非直属下级访问级别：NO_ACCESS / OWNER_ONLY / ASSIGNABLE
+  };
+  children?: OrganizationTypePermissionItem[]; // 子权限项（递归）
+}
+// 数据权限项
+export interface OrganizationTypeDataItem {
+  dataPermissionCode: string; // 数据权限编码
+  dataPermissionName: string; // 数据权限名称
+  resourceType: string; // 资源类型：ORGANIZATION / MEMBER / STATION
+  resourceTypeName: string; // 资源类型名称
+  levels: {
+    // 各范围的访问级别
+    SELF: string; // 本组织：FULL / MASKED / HIDDEN
+    DIRECT_CHILD: string; // 直属下级：FULL / MASKED / HIDDEN
+    NON_DIRECT_CHILD: string; // 非直属下级：FULL / MASKED / HIDDEN
+  };
+}
+// 变更记录项
+export interface OrganizationTypeRecordItem {
+  no: number; // 记录序号
+  changeType: string; // 变更类型：UPDATE（变更）
+  changedBy: string; // 变更者的 External UID
+  changeContent: string; // 变更内容摘要，前缀 [P] 代表功能权限变更、[D] 代表数据权限变更
+  changeTime: string; // 变更时间（格式：yyyy-MM-dd HH:mm:ss）
+}
+
 /**
  * 组织类型列表响应体
  */

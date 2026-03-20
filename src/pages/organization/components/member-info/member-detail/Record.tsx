@@ -1,4 +1,4 @@
-import React, { type SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { MemberDetail, RecordData } from '@pages/organization/dto';
 import { loadMemberChangeLogs } from '@pages/organization/services/organizationService';
 import { AntTable, AntTag } from '@shared/components';
@@ -13,23 +13,27 @@ interface RecordProps {
  */
 const Record: React.FC<RecordProps> = ({ member }) => {
   const [recordData, setRecordData] = useState<RecordData>();
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const loadRecordList = useCallback(async () => {
     if (!member?.memberId) return;
-    const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
-    console.log(res, 'res');
-    if (res) {
-      setRecordData(res.data);
-      setTotal(res.data.total);
+    try {
+      setLoading(true);
+      const res = await loadMemberChangeLogs(member.memberId, { pageNum, pageSize });
+      if (res) {
+        setRecordData(res.data);
+        setTotal(res.data.total);
+      }
+    } finally {
+      setLoading(false);
     }
   }, [member, pageNum, pageSize]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadRecordList();
   }, [loadRecordList]);
   /**
@@ -65,6 +69,7 @@ const Record: React.FC<RecordProps> = ({ member }) => {
     <div style={{ padding: '0 16px' }}>
       <AntTable
         dataSource={recordData?.records || []}
+        loading={loading}
         columns={[
           {
             title: 'No.',
