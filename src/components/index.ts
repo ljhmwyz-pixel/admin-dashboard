@@ -29,3 +29,4 @@ export { default as SearchInput } from './SearchInput';
  * 表格
  */
 export { default as Table } from './Table';
+export { default as Tooltip } from './Tooltip';
