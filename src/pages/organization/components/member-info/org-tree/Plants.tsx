@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import type { ListItem, TreeNode } from '@pages/organization/dto';
+import type { ListItem } from '@pages/organization/dto';
 import type { MemberDetail } from '@pages/organization/types/memberList';
 
 import OrgTreeSelector from './OrgTreeSelector';
@@ -49,7 +49,7 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
    * 模拟组织和电站数据
    * 实际项目中应该从接口获取
    */
-  const treeData: TreeNode[] = useMemo(
+  const treeData: any[] = useMemo(
     () => [
       {
         key: 'pylontech',
@@ -104,13 +104,15 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
    */
   const selectedOrgs: ListItem[] = useMemo(() => {
     const orgs: ListItem[] = [];
-    const findOrgs = (nodes: TreeNode[]) => {
+    const findOrgs = (nodes: any[]) => {
       nodes.forEach((node) => {
         if (!node.isPlant && selectedOrgKeys.includes(node.key)) {
           orgs.push({
             key: node.key,
             title: node.title,
             isPlant: false,
+            nodeId: '',
+            nodeName: '',
           });
         }
         if (node.children) {
@@ -127,13 +129,15 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
    */
   const selectedPlants: ListItem[] = useMemo(() => {
     const plants: ListItem[] = [];
-    const findPlants = (nodes: TreeNode[]) => {
+    const findPlants = (nodes: any[]) => {
       nodes.forEach((node) => {
         if (node.isPlant && selectedPlantKeys.includes(node.key)) {
           plants.push({
             key: node.key,
             title: node.title,
             isPlant: true,
+            nodeId: '',
+            nodeName: '',
           });
         }
         if (node.children) {
@@ -148,7 +152,7 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
   /**
    * 处理树选择变化
    */
-  const handleTreeChange = useCallback((keys: React.Key[], nodes: TreeNode[]) => {
+  const handleTreeChange = useCallback((_keys: React.Key[], nodes: any[]) => {
     const orgKeys: string[] = [];
     const plantKeys: string[] = [];
 
@@ -167,14 +171,14 @@ const Plants: React.FC<PlantsProps> = ({ editMember = false }) => {
   /**
    * 处理组织列表变化
    */
-  const handleOrgListChange = useCallback((keys: React.Key[]) => {
+  const handleOrgListChange = useCallback((keys: any) => {
     setSelectedOrgKeys(keys);
   }, []);
 
   /**
    * 处理电站列表变化
    */
-  const handlePlantListChange = useCallback((keys: React.Key[]) => {
+  const handlePlantListChange = useCallback((keys: any) => {
     setSelectedPlantKeys(keys);
   }, []);
 

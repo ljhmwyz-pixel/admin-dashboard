@@ -96,11 +96,13 @@
       border-right: 2px solid var(--ant-color-primary);
     }
   }
+
+  &.errData {
+    color: red;
+  }
 }
 
-&.errData {
-  color: red;
-}
+
 
 .refreshBtn {
   width: 34px;
@@ -155,17 +157,19 @@
     padding: 16px 16px !important;
   }
 }
+
 .refreshBtn {
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
-    background-color: #191b1f0a;
-    border: none;
-  }
-  .refreshBtn:hover {
-    background-color: #191b1f0a !important;
-    border: none !important;
-  }
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background-color: #191b1f0a;
+  border: none;
+}
+
+.refreshBtn:hover {
+  background-color: #191b1f0a !important;
+  border: none !important;
+}
 
 // 编辑模式的表格行样式
 .editRow {

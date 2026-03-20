@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { OrgTreeSelectorProps, PlantTreeDatum } from '@pages/organization/dto';
-import { AntButton, AntCheckbox, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
+import { AntCheckbox, AntEmpty, AntInput, AntSpin, AntTree } from '@shared/components';
 import type { DataNode, TreeProps } from 'antd/es/tree';
 import clx from 'classnames';
 

@@ -90,13 +90,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
       setPlatformFilter(initialFilter);
     }
   }, [platformTypeOption]);
-
-  useEffect(() => {
-    // 查询平台类型
-    getPlatformList();
-  }, []);
-
-  const getPlatformList = async () => {
+  const getPlatformList = useCallback(async () => {
     try {
       const { data }: GetPlatformTypeListRes = await OrgRoleApi.getPlatform();
       // 为每个平台添加 selected 字段，用于筛选状态管理
@@ -108,7 +102,11 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
     } catch (error) {
       console.error('error====:', error);
     }
-  };
+  }, []);
+  useEffect(() => {
+    // 查询平台类型
+    getPlatformList();
+  }, [getPlatformList]);
 
   // 加载数据
   const loadData = useCallback(async () => {
@@ -183,7 +181,7 @@ const RoleInfo: React.FC<RoleInfoProps> = ({ currentParentNode }) => {
   };
 
   // 平台图标渲染
-  const renderPlatformIcon = (item: PlatformTypeWithSelected, platformCode: string) => {
+  const renderPlatformIcon = (item: PlatformTypeWithSelected, _platformCode: string) => {
     if (!item.icon) return null;
     return <span className={styles.platformIcon} dangerouslySetInnerHTML={{ __html: item.icon }} />;
   };

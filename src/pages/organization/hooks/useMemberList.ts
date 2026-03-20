@@ -1,4 +1,4 @@
-import { type SetStateAction, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Member } from '@pages/organization/dto';
 import { loadMembers } from '@pages/organization/services/organizationService';
 import type { SegmentedValue } from 'antd/es/segmented';

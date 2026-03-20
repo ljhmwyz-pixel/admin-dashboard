@@ -18,7 +18,7 @@ import { selectCurrentUser } from '@/core/store/slices/authSlice';
 import { useLanguage } from '@/shared/hooks';
 
 import DeleteConfirmInput from '../../organization-tree/DeleteConfirmInput';
-import AddRole, { type AddRoleRef } from '../../Role/components/AddRole';
+import { type AddRoleRef } from '../../Role/components/AddRole';
 import AddMemberDrawer from '../add-member/AddMemberDrawer';
 import MemberInfoModal from '../member-detail/MemberInfoModal';
 import MemberListHeader from './MemberListHeader';
@@ -56,7 +56,7 @@ interface MemberListProps {
  * - 支持锁定/解锁成员
  * - 支持审批加入申请
  */
-const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeData }) => {
+const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode }) => {
   /** 使用自定义 Hook 管理成员列表的状态和数据加载 */
   const {
     loading,
@@ -548,7 +548,7 @@ const MemberList: React.FC<MemberListProps> = ({ orgId, currentParentNode, treeD
         currentParentNode={currentParentNode}
       />
 
-      <AddRole ref={roleModalRef} currentParentNode={currentParentNode} treeData={treeData} />
+      {/* <AddRole ref={roleModalRef} currentParentNode={currentParentNode} showButtonOnView={false} /> */}
     </div>
   );
 };

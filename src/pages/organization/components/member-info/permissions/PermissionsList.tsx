@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { DATA_PLATFORM_OPTIONS } from '@pages/organization/constants';
-import { AntSpace, AntSpin, AntTable, AntTag } from '@shared/components';
+import { AntSpace, AntSpin, AntTable } from '@shared/components';
 import type { SegmentedValue } from 'antd/es/segmented';
 
 import { Segmented } from '@/components';

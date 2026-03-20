@@ -1,4 +1,4 @@
-import React, { type SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import type { MemberDetail, RecordData } from '@pages/organization/dto';
 import { loadMemberChangeLogs } from '@pages/organization/services/organizationService';
 import { AntTable, AntTag } from '@shared/components';
@@ -13,7 +13,7 @@ interface RecordProps {
  */
 const Record: React.FC<RecordProps> = ({ member }) => {
   const [recordData, setRecordData] = useState<RecordData>();
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [current, setCurrent] = useState(1);
   const [total, setTotal] = useState(0);

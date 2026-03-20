@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { AntButton, AntInput, AntTooltip } from '@shared/components';
 import type { SegmentedValue } from 'antd/es/segmented';
 

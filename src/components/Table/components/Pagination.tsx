@@ -15,7 +15,6 @@ const BasePagination: React.FC<BasePaginationProps> = ({
   total = 0,
   onChange,
   pageSizeOptions = [10, 20, 50, 100],
-  ...otherConfig
 }) => {
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
   const isFirst = current === 1;
@@ -74,7 +73,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           showPrevNextJumpers={false}
           showQuickJumper={false}
           showSizeChanger={false}
-          itemRender={(page, type, originalElement) => {
+          itemRender={(_page, type, originalElement) => {
             // 自定义上一页按钮
             if (type === 'prev') {
               return (
