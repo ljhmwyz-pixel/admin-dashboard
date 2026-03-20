@@ -115,14 +115,7 @@ const OrganizationPermissionTable: React.FC<OrganizationPermissionTableProps> = 
     } finally {
       setLoading(false);
     }
-  }, [typeCode, activeTab, selectedKey]);
-
-  /**
-   * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
-   */
-  useEffect(() => {
-    // 搜索只在前端进行，不重新请求后端接口
-  }, [debouncedSearchText]);
+  }, [typeCode, activeTab]);
 
   /**
    * 当debouncedSearchText变化时，只进行前端搜索，不重新请求后端接口
