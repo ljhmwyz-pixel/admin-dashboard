@@ -1,5 +1,8 @@
 import { createRoot } from 'react-dom/client';
 
+import { i18n } from '@/i18n';
+import { setDayjsLocale } from '@/shared/utils/FormatTime';
+
 import './index.module.scss';
 if (typeof window !== 'undefined' && !(window as any).process) {
   (window as any).process = {
@@ -8,6 +11,8 @@ if (typeof window !== 'undefined' && !(window as any).process) {
     },
   };
 }
+
+setDayjsLocale(i18n.language);
 
 // 添加全局错误监听器来捕获slice相关错误
 window.addEventListener('error', (event) => {
