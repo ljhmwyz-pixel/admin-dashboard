@@ -105,6 +105,7 @@ function BaseTable<RecordType extends object = any>({
   return (
     <div>
       <AntTable
+        locale={{ emptyText: t('common.empty.no_data') }}
         {...props}
         rowSelection={finalRowSelection}
         columns={finalColumns}
